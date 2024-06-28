@@ -51,10 +51,16 @@
 		0D8C66322C2DA96000853EDE /* MindfulPacer */ = {
 			isa = PBXGroup;
 			children = (
-				0D8C66332C2DA96000853EDE /* MindfulPacerApp.swift */,
-				0D8C66352C2DA96000853EDE /* ContentView.swift */,
-				0D8C66372C2DA96100853EDE /* Assets.xcassets */,
+				0DC3FDD12C2EDCBA00335543 /* Application */,
+				0DC3FDD02C2EDCB400335543 /* Common UI */,
+				0DC3FDCF2C2EDCB000335543 /* Data */,
+				0DC3FDCE2C2EDCAB00335543 /* Extensions */,
+				0DC3FDCD2C2EDC9F00335543 /* Models */,
 				0D8C66392C2DA96100853EDE /* Preview Content */,
+				0DC3FDCC2C2EDC9800335543 /* Resources */,
+				0DC3FDCB2C2EDC9200335543 /* Services */,
+				0DC3FDCA2C2EDC8B00335543 /* Scenes */,
+				0DC3FDC92C2EDC8500335543 /* Use Cases */,
 			);
 			path = MindfulPacer;
 			sourceTree = "<group>";
@@ -65,6 +71,112 @@
 				0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Use Cases";
+			sourceTree = "<group>";
+		};
+		0DC3FDCA2C2EDC8B00335543 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				0D8C66352C2DA96000853EDE /* ContentView.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		0DC3FDCB2C2EDC9200335543 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0DC3FDCC2C2EDC9800335543 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0D8C66372C2DA96100853EDE /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		0DC3FDCD2C2EDC9F00335543 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0DC3FDD62C2EDCFA00335543 /* DTOs */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0DC3FDCE2C2EDCAB00335543 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		0DC3FDCF2C2EDCB000335543 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		0DC3FDD02C2EDCB400335543 /* Common UI */ = {
+			isa = PBXGroup;
+			children = (
+				0DC3FDD52C2EDCE700335543 /* Formatters */,
+				0DC3FDD42C2EDCE100335543 /* Styling */,
+				0DC3FDD32C2EDCDC00335543 /* View Modifiers */,
+				0DC3FDD22C2EDCD800335543 /* Views */,
+			);
+			path = "Common UI";
+			sourceTree = "<group>";
+		};
+		0DC3FDD12C2EDCBA00335543 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				0D8C66332C2DA96000853EDE /* MindfulPacerApp.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		0DC3FDD22C2EDCD800335543 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0DC3FDD32C2EDCDC00335543 /* View Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "View Modifiers";
+			sourceTree = "<group>";
+		};
+		0DC3FDD42C2EDCE100335543 /* Styling */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Styling;
+			sourceTree = "<group>";
+		};
+		0DC3FDD52C2EDCE700335543 /* Formatters */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Formatters;
+			sourceTree = "<group>";
+		};
+		0DC3FDD62C2EDCFA00335543 /* DTOs */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DTOs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
