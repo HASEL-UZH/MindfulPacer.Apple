@@ -11,7 +11,7 @@ import SwiftUI
 struct MindfulPacerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }

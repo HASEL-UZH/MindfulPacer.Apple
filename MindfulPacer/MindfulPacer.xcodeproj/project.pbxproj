@@ -8,17 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		0D8C66342C2DA96000853EDE /* MindfulPacerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* MindfulPacerApp.swift */; };
-		0D8C66362C2DA96000853EDE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66352C2DA96000853EDE /* ContentView.swift */; };
 		0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C66372C2DA96100853EDE /* Assets.xcassets */; };
 		0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */; };
+		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0D8C66302C2DA96000853EDE /* MindfulPacer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MindfulPacer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8C66332C2DA96000853EDE /* MindfulPacerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulPacerApp.swift; sourceTree = "<group>"; };
-		0D8C66352C2DA96000853EDE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0D8C66372C2DA96100853EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +73,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		0DBA37192C31EF5B00209681 /* Root View */ = {
+			isa = PBXGroup;
+			children = (
+				0DBA371A2C31EF6000209681 /* RootView.swift */,
+			);
+			path = "Root View";
+			sourceTree = "<group>";
+		};
 		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
@@ -83,7 +91,7 @@
 		0DC3FDCA2C2EDC8B00335543 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				0D8C66352C2DA96000853EDE /* ContentView.swift */,
+				0DBA37192C31EF5B00209681 /* Root View */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -249,7 +257,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D8C66362C2DA96000853EDE /* ContentView.swift in Sources */,
+				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* MindfulPacerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
