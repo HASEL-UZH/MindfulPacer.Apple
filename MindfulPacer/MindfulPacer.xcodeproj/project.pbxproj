@@ -76,9 +76,58 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D27BFC32C32DA8B007F4CFA /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0D27BFC82C32DAC0007F4CFA /* Common UI */,
+				0D27BFC52C32DAB0007F4CFA /* Data */,
+				0D27BFC62C32DAB6007F4CFA /* Extensions */,
+				0DC3FDCD2C2EDC9F00335543 /* Models */,
+				0D27BFC42C32DAA5007F4CFA /* Services */,
+				0D27BFC72C32DABB007F4CFA /* Use Cases */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		0D27BFC42C32DAA5007F4CFA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0D27BFC52C32DAB0007F4CFA /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		0D27BFC62C32DAB6007F4CFA /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		0D27BFC72C32DABB007F4CFA /* Use Cases */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Use Cases";
+			sourceTree = "<group>";
+		};
+		0D27BFC82C32DAC0007F4CFA /* Common UI */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Common UI";
+			sourceTree = "<group>";
+		};
 		0D8C66272C2DA96000853EDE = {
 			isa = PBXGroup;
 			children = (
+				0D27BFC32C32DA8B007F4CFA /* Shared */,
 				0D8C66322C2DA96000853EDE /* iOS */,
 				0DBA37392C32087300209681 /* WatchOS */,
 				0D8C66312C2DA96000853EDE /* Products */,
@@ -101,7 +150,6 @@
 				0DC3FDD02C2EDCB400335543 /* Common UI */,
 				0DC3FDCF2C2EDCB000335543 /* Data */,
 				0DC3FDCE2C2EDCAB00335543 /* Extensions */,
-				0DC3FDCD2C2EDC9F00335543 /* Models */,
 				0D8C66392C2DA96100853EDE /* Preview Content */,
 				0DC3FDCC2C2EDC9800335543 /* Resources */,
 				0DC3FDCB2C2EDC9200335543 /* Services */,
@@ -564,6 +612,8 @@
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -595,6 +645,8 @@
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -625,7 +677,7 @@
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = WatchOS;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -633,7 +685,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.WatchOS;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -655,7 +707,7 @@
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = WatchOS;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -663,7 +715,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.WatchOS;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

@@ -74,3 +74,53 @@ The architecture uses a dependency injection framework to manage dependencies an
 ---
 
 This architecture ensures a clear separation of concerns, making the application easier to maintain, test, and extend. By adhering to these principles, the MindfulPacer application will be resilient to changes and new requirements.
+
+# Project Structure
+
+This project follows a clean architecture approach combined with MVVM principles. The structure is designed to ensure a clear separation of concerns, making the codebase scalable, maintainable, and testable. Below is an overview of the project structure:
+
+## iOS
+
+Contains iOS-specific components and configurations.
+
+- **Application**: Entry point and main configuration for the iOS app.
+- **Common UI**: UI components and styles specific to iOS.
+- **Data**: iOS-specific data handling components.
+- **Extensions**: iOS-specific extensions.
+- **Resources**: Assets and resources specific to the iOS app.
+- **Services**: iOS-specific services.
+- **Scenes**: Views, view models, and view states specific to iOS.
+- **Use Cases**: Business logic specific to iOS.
+
+## WatchOS
+
+Contains WatchOS-specific components and configurations.
+
+- **Application**: Entry point and main configuration for the WatchOS app.
+- **Common UI**: UI components and styles specific to WatchOS.
+- **Resources**: Assets and resources specific to the WatchOS app.
+- **Scenes**: Views, view models, and view states specific to WatchOS.
+
+## Shared
+
+Contains components that are shared between iOS and WatchOS.
+
+- **Models**: Data models used across both iOS and WatchOS apps.
+- **Services**: Shared services that encapsulate business logic and interact with external systems.
+- **Data**: Shared data handling components.
+- **Extensions**: Extensions that are used by both platforms.
+- **Use Cases**: Shared business logic.
+- **Common UI**: UI components and styles that are used by both iOS and WatchOS.
+
+## Benefits of This Structure
+
+- **Reusability**: Shared code can be reused across both platforms, reducing duplication and ensuring consistency.
+- **Maintainability**: A clear separation of concerns makes the codebase easier to manage and maintain.
+- **Scalability**: This structure can easily accommodate new features and components as the app grows.
+
+## Best Practices
+
+- **Use Conditional Compilation**: Handle platform-specific code within shared components using conditional compilation.
+- **Modularize Code**: Create separate modules or frameworks for shared code to manage dependencies and updates.
+- **Consistent Naming Conventions**: Use consistent naming conventions across both platforms.
+- **Documentation**: Document the architecture and project structure clearly to help new developers understand the structure and conventions used.
