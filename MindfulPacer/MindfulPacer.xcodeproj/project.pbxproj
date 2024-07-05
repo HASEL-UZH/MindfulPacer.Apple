@@ -3,21 +3,29 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
+		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
+		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
 		0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* iOSApp.swift */; };
 		0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C66372C2DA96100853EDE /* Assets.xcassets */; };
 		0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */; };
+		0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */; };
+		0DA6CB012C37F7A300FE1E61 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */; };
+		0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */; };
+		0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */; };
+		0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */; };
+		0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */; };
+		0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
-		0DBA371D2C3203B600209681 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA371C2C3203B600209681 /* Localizable.xcstrings */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
 		0DBA373D2C32087300209681 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373C2C32087300209681 /* ContentView.swift */; };
 		0DBA373F2C32087400209681 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA373E2C32087400209681 /* Assets.xcassets */; };
 		0DBA37422C32087400209681 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA37412C32087400209681 /* Preview Assets.xcassets */; };
 		0DBA37452C32087400209681 /* WatchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0DBA37382C32087300209681 /* WatchOS.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0DBA374F2C320B2500209681 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA371C2C3203B600209681 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,12 +53,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
 		0D8C66302C2DA96000853EDE /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8C66332C2DA96000853EDE /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		0D8C66372C2DA96100853EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
+		0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
+		0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
+		0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
+		0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewState.swift; sourceTree = "<group>"; };
+		0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		0DBA371C2C3203B600209681 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DBA373A2C32087300209681 /* WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOSApp.swift; sourceTree = "<group>"; };
 		0DBA373C2C32087300209681 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,11 +72,33 @@
 		0DBA37412C32087400209681 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0D0DE2D22C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Localizable.xcstrings,
+			);
+			target = 0D8C662F2C2DA96000853EDE /* iOS */;
+		};
+		0D0DE2D32C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Localizable.xcstrings,
+			);
+			target = 0DBA37372C32087300209681 /* WatchOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0D0DE2D12C32DDCE00C54B0C /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0D0DE2D22C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 0D0DE2D32C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		0D8C662D2C2DA96000853EDE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,49 +116,19 @@
 		0D27BFC32C32DA8B007F4CFA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				0D27BFC82C32DAC0007F4CFA /* Common UI */,
 				0D27BFC52C32DAB0007F4CFA /* Data */,
-				0D27BFC62C32DAB6007F4CFA /* Extensions */,
 				0DC3FDCD2C2EDC9F00335543 /* Models */,
-				0D27BFC42C32DAA5007F4CFA /* Services */,
-				0D27BFC72C32DABB007F4CFA /* Use Cases */,
+				0D0DE2D12C32DDCE00C54B0C /* Resources */,
 			);
 			path = Shared;
-			sourceTree = "<group>";
-		};
-		0D27BFC42C32DAA5007F4CFA /* Services */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Services;
 			sourceTree = "<group>";
 		};
 		0D27BFC52C32DAB0007F4CFA /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */,
 			);
 			path = Data;
-			sourceTree = "<group>";
-		};
-		0D27BFC62C32DAB6007F4CFA /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		0D27BFC72C32DABB007F4CFA /* Use Cases */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Use Cases";
-			sourceTree = "<group>";
-		};
-		0D27BFC82C32DAC0007F4CFA /* Common UI */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Common UI";
 			sourceTree = "<group>";
 		};
 		0D8C66272C2DA96000853EDE = {
@@ -148,12 +155,11 @@
 			children = (
 				0DC3FDD12C2EDCBA00335543 /* Application */,
 				0DC3FDD02C2EDCB400335543 /* Common UI */,
-				0DC3FDCF2C2EDCB000335543 /* Data */,
 				0DC3FDCE2C2EDCAB00335543 /* Extensions */,
 				0D8C66392C2DA96100853EDE /* Preview Content */,
 				0DC3FDCC2C2EDC9800335543 /* Resources */,
-				0DC3FDCB2C2EDC9200335543 /* Services */,
 				0DC3FDCA2C2EDC8B00335543 /* Scenes */,
+				0DC3FDCB2C2EDC9200335543 /* Services */,
 				0DC3FDC92C2EDC8500335543 /* Use Cases */,
 			);
 			path = iOS;
@@ -167,10 +173,34 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		0DA6CB042C37F88200FE1E61 /* Use Cases */ = {
+			isa = PBXGroup;
+			children = (
+				0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */,
+			);
+			path = "Use Cases";
+			sourceTree = "<group>";
+		};
+		0DA6CB052C37F89800FE1E61 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0DA6CB112C382DC500FE1E61 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		0DBA37192C31EF5B00209681 /* Root View */ = {
 			isa = PBXGroup;
 			children = (
 				0DBA371A2C31EF6000209681 /* RootView.swift */,
+				0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */,
+				0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */,
 			);
 			path = "Root View";
 			sourceTree = "<group>";
@@ -180,9 +210,12 @@
 			children = (
 				0DBA374B2C320AD800209681 /* Application */,
 				0DBA374A2C320AD200209681 /* Common UI */,
-				0DBA37492C320ACB00209681 /* Scenes */,
-				0DBA374E2C320B1500209681 /* Resources */,
+				0DA6CB112C382DC500FE1E61 /* Extensions */,
 				0DBA37402C32087400209681 /* Preview Content */,
+				0DBA374E2C320B1500209681 /* Resources */,
+				0DBA37492C320ACB00209681 /* Scenes */,
+				0DA6CB052C37F89800FE1E61 /* Services */,
+				0DA6CB042C37F88200FE1E61 /* Use Cases */,
 			);
 			path = WatchOS;
 			sourceTree = "<group>";
@@ -199,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				0DBA373C2C32087300209681 /* ContentView.swift */,
+				0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -245,6 +279,7 @@
 		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */,
 			);
 			path = "Use Cases";
 			sourceTree = "<group>";
@@ -253,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				0DBA37192C31EF5B00209681 /* Root View */,
+				0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -268,7 +304,6 @@
 			isa = PBXGroup;
 			children = (
 				0D8C66372C2DA96100853EDE /* Assets.xcassets */,
-				0DBA371C2C3203B600209681 /* Localizable.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -286,13 +321,6 @@
 			children = (
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		0DC3FDCF2C2EDCB000335543 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Data;
 			sourceTree = "<group>";
 		};
 		0DC3FDD02C2EDCB400335543 /* Common UI */ = {
@@ -367,6 +395,9 @@
 				0DBA37442C32087400209681 /* PBXTargetDependency */,
 			);
 			name = iOS;
+			packageProductDependencies = (
+				0D0DE2D52C32DEB100C54B0C /* Factory */,
+			);
 			productName = MindfulPacer;
 			productReference = 0D8C66302C2DA96000853EDE /* iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -384,6 +415,9 @@
 			dependencies = (
 			);
 			name = WatchOS;
+			packageProductDependencies = (
+				0D0DE2D72C32DEE900C54B0C /* Factory */,
+			);
 			productName = "WatchOS Watch App";
 			productReference = 0DBA37382C32087300209681 /* WatchOS.app */;
 			productType = "com.apple.product-type.application";
@@ -418,6 +452,9 @@
 				it,
 			);
 			mainGroup = 0D8C66272C2DA96000853EDE;
+			packageReferences = (
+				0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */,
+			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -435,7 +472,6 @@
 			files = (
 				0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */,
 				0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */,
-				0DBA371D2C3203B600209681 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,7 +481,6 @@
 			files = (
 				0DBA37422C32087400209681 /* Preview Assets.xcassets in Resources */,
 				0DBA373F2C32087400209681 /* Assets.xcassets in Resources */,
-				0DBA374F2C320B2500209681 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,8 +491,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */,
+				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
+				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
+				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
+				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,8 +505,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
 				0DBA373D2C32087300209681 /* ContentView.swift in Sources */,
+				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
+				0DA6CB012C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -757,6 +800,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0D0DE2D52C32DEB100C54B0C /* Factory */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = Factory;
+		};
+		0D0DE2D72C32DEE900C54B0C /* Factory */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = Factory;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0D8C66282C2DA96000853EDE /* Project object */;
 }

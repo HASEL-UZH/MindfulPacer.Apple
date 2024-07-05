@@ -1,6 +1,6 @@
 //
 //  WatchOSApp.swift
-//  WatchOS Watch App
+//  WatchOSApp
 //
 //  Created by Grigor Dochev on 30.06.2024.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct WatchOS_Watch_AppApp: App {
+struct WatchOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

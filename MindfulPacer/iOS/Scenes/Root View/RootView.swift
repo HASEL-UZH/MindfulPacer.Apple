@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
+    @StateObject var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
+
     var body: some View {
         TabView {
             EmptyView()
