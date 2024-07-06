@@ -20,6 +20,20 @@
 		0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */; };
 		0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */; };
 		0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */; };
+		0DA6CB1E2C3953EE00FE1E61 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */; };
+		0DA6CB1F2C3953EE00FE1E61 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */; };
+		0DA6CB222C39541D00FE1E61 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */; };
+		0DA6CB232C39541D00FE1E61 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */; };
+		0DA6CB252C39543D00FE1E61 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB242C39543D00FE1E61 /* NotificationService.swift */; };
+		0DA6CB262C39543D00FE1E61 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB242C39543D00FE1E61 /* NotificationService.swift */; };
+		0DA6CB282C39548600FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */; };
+		0DA6CB292C39548600FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */; };
+		0DA6CB322C39581400FE1E61 /* iOSConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */; };
+		0DA6CB342C39583300FE1E61 /* WatchConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */; };
+		0DA6CB362C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */; };
+		0DA6CB382C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */; };
+		0DA6CB3C2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */; };
+		0DA6CB3E2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
 		0DBA373D2C32087300209681 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373C2C32087300209681 /* ContentView.swift */; };
@@ -64,6 +78,20 @@
 		0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
 		0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewState.swift; sourceTree = "<group>"; };
 		0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		0DA6CB192C38370800FE1E61 /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
+		0DA6CB1A2C38373600FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0DA6CB1B2C38374500FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchOS.entitlements; sourceTree = "<group>"; };
+		0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRate.swift; sourceTree = "<group>"; };
+		0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		0DA6CB242C39543D00FE1E61 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
+		0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSConnectivityService.swift; sourceTree = "<group>"; };
+		0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityService.swift; sourceTree = "<group>"; };
+		0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
+		0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
+		0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
+		0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DBA373A2C32087300209681 /* WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOSApp.swift; sourceTree = "<group>"; };
@@ -121,6 +149,7 @@
 				0D27BFC52C32DAB0007F4CFA /* Data */,
 				0DC3FDCD2C2EDC9F00335543 /* Models */,
 				0D0DE2D12C32DDCE00C54B0C /* Resources */,
+				0DA6CB202C39540D00FE1E61 /* Services */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -129,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */,
+				0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -155,6 +185,8 @@
 		0D8C66322C2DA96000853EDE /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB192C38370800FE1E61 /* iOS.entitlements */,
+				0DA6CB1A2C38373600FE1E61 /* Info.plist */,
 				0DC3FDD12C2EDCBA00335543 /* Application */,
 				0DC3FDD02C2EDCB400335543 /* Common UI */,
 				0DC3FDCE2C2EDCAB00335543 /* Extensions */,
@@ -178,6 +210,7 @@
 		0DA6CB042C37F88200FE1E61 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB3A2C39892900FE1E61 /* Heart Rate */,
 				0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */,
 			);
 			path = "Use Cases";
@@ -186,6 +219,7 @@
 		0DA6CB052C37F89800FE1E61 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -195,6 +229,34 @@
 			children = (
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		0DA6CB202C39540D00FE1E61 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */,
+				0DA6CB242C39543D00FE1E61 /* NotificationService.swift */,
+				0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0DA6CB392C3988A900FE1E61 /* Heart Rate */ = {
+			isa = PBXGroup;
+			children = (
+				0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */,
+				0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */,
+			);
+			path = "Heart Rate";
+			sourceTree = "<group>";
+		};
+		0DA6CB3A2C39892900FE1E61 /* Heart Rate */ = {
+			isa = PBXGroup;
+			children = (
+				0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */,
+				0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */,
+			);
+			path = "Heart Rate";
 			sourceTree = "<group>";
 		};
 		0DBA37192C31EF5B00209681 /* Root View */ = {
@@ -210,6 +272,8 @@
 		0DBA37392C32087300209681 /* WatchOS */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */,
+				0DA6CB1B2C38374500FE1E61 /* Info.plist */,
 				0DBA374B2C320AD800209681 /* Application */,
 				0DBA374A2C320AD200209681 /* Common UI */,
 				0DA6CB112C382DC500FE1E61 /* Extensions */,
@@ -281,6 +345,7 @@
 		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB392C3988A900FE1E61 /* Heart Rate */,
 				0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */,
 			);
 			path = "Use Cases";
@@ -298,6 +363,7 @@
 		0DC3FDCB2C2EDC9200335543 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -432,7 +498,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					0D8C662F2C2DA96000853EDE = {
 						CreatedOnToolsVersion = 15.4;
@@ -495,11 +561,18 @@
 			files = (
 				0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */,
 				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
+				0DA6CB1E2C3953EE00FE1E61 /* HeartRate.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
+				0DA6CB262C39543D00FE1E61 /* NotificationService.swift in Sources */,
+				0DA6CB282C39548600FE1E61 /* ConnectivityService.swift in Sources */,
+				0DA6CB382C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */,
+				0DA6CB322C39581400FE1E61 /* iOSConnectivityService.swift in Sources */,
+				0DA6CB362C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */,
+				0DA6CB232C39541D00FE1E61 /* HealthKitService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,7 +583,14 @@
 				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
 				0DBA373D2C32087300209681 /* ContentView.swift in Sources */,
 				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
+				0DA6CB292C39548600FE1E61 /* ConnectivityService.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
+				0DA6CB3C2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */,
+				0DA6CB252C39543D00FE1E61 /* NotificationService.swift in Sources */,
+				0DA6CB222C39541D00FE1E61 /* HealthKitService.swift in Sources */,
+				0DA6CB3E2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */,
+				0DA6CB342C39583300FE1E61 /* WatchConnectivityService.swift in Sources */,
+				0DA6CB1F2C3953EE00FE1E61 /* HeartRate.swift in Sources */,
 				0DA6CB012C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -531,6 +611,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -594,6 +675,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -648,15 +730,16 @@
 		0D8C663F2C2DA96100853EDE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -681,15 +764,16 @@
 		0D8C66402C2DA96100853EDE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -716,12 +800,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
@@ -746,12 +832,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = Y9D7H5XKKW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;

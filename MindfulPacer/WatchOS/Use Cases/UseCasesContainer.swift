@@ -11,3 +11,25 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
     var manager = ContainerManager()
 }
+
+extension UseCasesContainer {
+    // MARK: - Heart Rate
+    
+    var startHeartRateMonitoringUseCase: Factory<DefaultStartHeartRateMonitoringUseCase> {
+        self {
+            DefaultStartHeartRateMonitoringUseCase(
+                healthKitService: HealthKitService.shared,
+                notificationService: NotificationService.shared,
+                connectivityService: WatchConnectivityService.shared
+            )
+        }
+    }
+    
+    var stopHeartRateMonitoringUseCase: Factory<DefaultStopHeartRateMonitoringUseCase> {
+        self {
+            DefaultStopHeartRateMonitoringUseCase(
+                healthKitService: HealthKitService.shared
+            )
+        }
+    }
+}
