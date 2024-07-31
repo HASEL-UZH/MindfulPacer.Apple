@@ -11,3 +11,6 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
     var manager = ContainerManager()
 }
+
+extension UseCasesContainer {
+}

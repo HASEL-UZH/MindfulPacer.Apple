@@ -7,7 +7,20 @@
 
 import Factory
 
+
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
+    
+    // MARK: - Root
+    
+    var rootViewModel: Factory<RootViewModel> {
+        self {
+            RootViewModel(
+                startHeartRateMonitoringUseCase: UseCasesContainer.shared.startHeartRateMonitoringUseCase(),
+                healthKitService: HealthKitService.shared,
+                dataProviderService: DataProviderService.shared
+            )
+        }
+    }
 }
