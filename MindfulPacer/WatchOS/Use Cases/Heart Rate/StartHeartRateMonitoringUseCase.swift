@@ -14,9 +14,9 @@ protocol StartHeartRateMonitoringUseCase {
 class DefaultStartHeartRateMonitoringUseCase: StartHeartRateMonitoringUseCase {
     private let healthKitService: HealthKitServiceProtocol
     private let notificationService: NotificationServiceProtocol
-    private let connectivityService: WatchConnectivityServiceProtocol
+    private let connectivityService: ConnectivityServiceProtocol
 
-    init(healthKitService: HealthKitServiceProtocol, notificationService: NotificationServiceProtocol, connectivityService: WatchConnectivityServiceProtocol) {
+    init(healthKitService: HealthKitServiceProtocol, notificationService: NotificationServiceProtocol, connectivityService: ConnectivityServiceProtocol) {
         self.healthKitService = healthKitService
         self.notificationService = notificationService
         self.connectivityService = connectivityService

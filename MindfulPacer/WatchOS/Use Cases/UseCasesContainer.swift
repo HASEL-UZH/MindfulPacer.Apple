@@ -24,12 +24,4 @@ extension UseCasesContainer {
             )
         }
     }
-    
-    var stopHeartRateMonitoringUseCase: Factory<DefaultStopHeartRateMonitoringUseCase> {
-        self {
-            DefaultStopHeartRateMonitoringUseCase(
-                healthKitService: HealthKitService.shared
-            )
-        }
-    }
 }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-class RootViewModel: ObservableObject {
-    @Published private(set) var state: RootViewState = .initial
+@Observable class RootViewModel {
+    private(set) var state: RootViewState = .initial
     
     init() {
     }

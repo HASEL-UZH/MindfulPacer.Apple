@@ -7,5 +7,11 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Need access to health data for heart rate and step count.</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>Need access to health data for heart rate and step count.</string>
+    <key>NSUserNotificationUsageDescription</key>
+    <string>We need to send you notifications for important updates.</string>
 </dict>
 </plist>

@@ -10,9 +10,22 @@
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
+		0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1016F12C57B229008AF31D /* HealthKitService.swift */; };
+		0D1016F42C57C1DF008AF31D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1016F32C57C1DF008AF31D /* HomeView.swift */; };
+		0D2F82022C3FF06C0004CD34 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82012C3FF06C0004CD34 /* OnboardingView.swift */; };
+		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
+		0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82062C46654B0004CD34 /* RootViewModel.swift */; };
+		0D2F82092C46655B0004CD34 /* RootViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82082C46655B0004CD34 /* RootViewState.swift */; };
+		0D5EA1A12C4A65B800527AB0 /* HeartRateSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */; };
+		0D5EA1A22C4A65B800527AB0 /* HeartRateSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */; };
+		0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
+		0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
+		0D5EA1AA2C4D831600527AB0 /* DataProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A92C4D831600527AB0 /* DataProviderService.swift */; };
+		0D5EA1AB2C4D831600527AB0 /* DataProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A92C4D831600527AB0 /* DataProviderService.swift */; };
 		0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* iOSApp.swift */; };
 		0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C66372C2DA96100853EDE /* Assets.xcassets */; };
 		0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */; };
+		0D9411AB2C4E89E1006F9B18 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9411AA2C4E89E1006F9B18 /* HealthKitService.swift */; };
 		0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */; };
 		0DA6CB012C37F7A300FE1E61 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */; };
 		0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */; };
@@ -20,26 +33,20 @@
 		0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */; };
 		0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0C2C37F91D00FE1E61 /* RootViewState.swift */; };
 		0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */; };
-		0DA6CB1E2C3953EE00FE1E61 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */; };
-		0DA6CB1F2C3953EE00FE1E61 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */; };
-		0DA6CB222C39541D00FE1E61 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */; };
-		0DA6CB232C39541D00FE1E61 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */; };
 		0DA6CB252C39543D00FE1E61 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB242C39543D00FE1E61 /* NotificationService.swift */; };
 		0DA6CB262C39543D00FE1E61 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB242C39543D00FE1E61 /* NotificationService.swift */; };
 		0DA6CB282C39548600FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */; };
 		0DA6CB292C39548600FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */; };
 		0DA6CB322C39581400FE1E61 /* iOSConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */; };
 		0DA6CB342C39583300FE1E61 /* WatchConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */; };
-		0DA6CB362C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */; };
-		0DA6CB382C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */; };
 		0DA6CB3C2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */; };
-		0DA6CB3E2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */; };
+		0DA6CB472C3ADE7000FE1E61 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 0DA6CB462C3ADE7000FE1E61 /* SwiftUIX */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
-		0DBA373D2C32087300209681 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373C2C32087300209681 /* ContentView.swift */; };
 		0DBA373F2C32087400209681 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA373E2C32087400209681 /* Assets.xcassets */; };
 		0DBA37422C32087400209681 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA37412C32087400209681 /* Preview Assets.xcassets */; };
 		0DBA37452C32087400209681 /* WatchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0DBA37382C32087300209681 /* WatchOS.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0DFF97162C58F50A00F58393 /* DragAndDropTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFF97152C58F50A00F58393 /* DragAndDropTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,10 +75,20 @@
 
 /* Begin PBXFileReference section */
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
+		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		0D1016F32C57C1DF008AF31D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0D2F82012C3FF06C0004CD34 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		0D2F82042C46653E0004CD34 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		0D2F82062C46654B0004CD34 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		0D2F82082C46655B0004CD34 /* RootViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewState.swift; sourceTree = "<group>"; };
+		0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateSample.swift; sourceTree = "<group>"; };
+		0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
+		0D5EA1A92C4D831600527AB0 /* DataProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProviderService.swift; sourceTree = "<group>"; };
 		0D8C66302C2DA96000853EDE /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8C66332C2DA96000853EDE /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		0D8C66372C2DA96100853EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0D9411AA2C4E89E1006F9B18 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
 		0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
 		0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
@@ -82,28 +99,24 @@
 		0DA6CB1A2C38373600FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1B2C38374500FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchOS.entitlements; sourceTree = "<group>"; };
-		0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRate.swift; sourceTree = "<group>"; };
-		0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		0DA6CB242C39543D00FE1E61 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSConnectivityService.swift; sourceTree = "<group>"; };
 		0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityService.swift; sourceTree = "<group>"; };
-		0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
-		0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
 		0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
-		0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopHeartRateMonitoringUseCase.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DBA373A2C32087300209681 /* WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOSApp.swift; sourceTree = "<group>"; };
-		0DBA373C2C32087300209681 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0DBA373E2C32087400209681 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0DBA37412C32087400209681 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0DFF97152C58F50A00F58393 /* DragAndDropTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDropTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		0D0DE2D22C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets.xcassets,
 				Localizable.xcstrings,
 			);
 			target = 0D8C662F2C2DA96000853EDE /* iOS */;
@@ -111,7 +124,24 @@
 		0D0DE2D32C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets.xcassets,
 				Localizable.xcstrings,
+			);
+			target = 0DBA37372C32087300209681 /* WatchOS */;
+		};
+		0D2F820E2C4668060004CD34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"View Modifiers/OnViewFirstAppearModifier.swift",
+				"View Modifiers/View+Modifiers.swift",
+			);
+			target = 0D8C662F2C2DA96000853EDE /* iOS */;
+		};
+		0D2F820F2C4668060004CD34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"View Modifiers/OnViewFirstAppearModifier.swift",
+				"View Modifiers/View+Modifiers.swift",
 			);
 			target = 0DBA37372C32087300209681 /* WatchOS */;
 		};
@@ -119,7 +149,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0D0DE2D12C32DDCE00C54B0C /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0D0DE2D22C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 0D0DE2D32C32DDD400C54B0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
-		0DA6CB122C3833BB00FE1E61 /* Common UI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Common UI"; sourceTree = "<group>"; };
+		0DA6CB122C3833BB00FE1E61 /* Common UI */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0D2F820E2C4668060004CD34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 0D2F820F2C4668060004CD34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Common UI"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */,
+				0DA6CB472C3ADE7000FE1E61 /* SwiftUIX in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,14 +189,24 @@
 			isa = PBXGroup;
 			children = (
 				0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */,
-				0DA6CB1D2C3953EE00FE1E61 /* HeartRate.swift */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		0D2F82032C4665390004CD34 /* Root View */ = {
+			isa = PBXGroup;
+			children = (
+				0D2F82042C46653E0004CD34 /* RootView.swift */,
+				0D2F82062C46654B0004CD34 /* RootViewModel.swift */,
+				0D2F82082C46655B0004CD34 /* RootViewState.swift */,
+			);
+			path = "Root View";
 			sourceTree = "<group>";
 		};
 		0D8C66272C2DA96000853EDE = {
 			isa = PBXGroup;
 			children = (
+				0DA6CB3F2C3989FD00FE1E61 /* Mockups */,
 				0D27BFC32C32DA8B007F4CFA /* Shared */,
 				0D8C66322C2DA96000853EDE /* iOS */,
 				0DBA37392C32087300209681 /* WatchOS */,
@@ -219,6 +260,7 @@
 		0DA6CB052C37F89800FE1E61 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0D9411AA2C4E89E1006F9B18 /* HealthKitService.swift */,
 				0DA6CB332C39583300FE1E61 /* WatchConnectivityService.swift */,
 			);
 			path = Services;
@@ -234,29 +276,29 @@
 		0DA6CB202C39540D00FE1E61 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				0DA6CB212C39541D00FE1E61 /* HealthKitService.swift */,
-				0DA6CB242C39543D00FE1E61 /* NotificationService.swift */,
 				0DA6CB272C39548600FE1E61 /* ConnectivityService.swift */,
+				0D5EA1A92C4D831600527AB0 /* DataProviderService.swift */,
+				0DA6CB242C39543D00FE1E61 /* NotificationService.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		0DA6CB392C3988A900FE1E61 /* Heart Rate */ = {
-			isa = PBXGroup;
-			children = (
-				0DA6CB352C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift */,
-				0DA6CB372C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift */,
-			);
-			path = "Heart Rate";
 			sourceTree = "<group>";
 		};
 		0DA6CB3A2C39892900FE1E61 /* Heart Rate */ = {
 			isa = PBXGroup;
 			children = (
 				0DA6CB3B2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift */,
-				0DA6CB3D2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift */,
 			);
 			path = "Heart Rate";
+			sourceTree = "<group>";
+		};
+		0DA6CB3F2C3989FD00FE1E61 /* Mockups */ = {
+			isa = PBXGroup;
+			children = (
+				0D2F82012C3FF06C0004CD34 /* OnboardingView.swift */,
+				0D1016F32C57C1DF008AF31D /* HomeView.swift */,
+				0DFF97152C58F50A00F58393 /* DragAndDropTest.swift */,
+			);
+			path = Mockups;
 			sourceTree = "<group>";
 		};
 		0DBA37192C31EF5B00209681 /* Root View */ = {
@@ -297,7 +339,7 @@
 		0DBA37492C320ACB00209681 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				0DBA373C2C32087300209681 /* ContentView.swift */,
+				0D2F82032C4665390004CD34 /* Root View */,
 				0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */,
 			);
 			path = Scenes;
@@ -345,7 +387,6 @@
 		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
-				0DA6CB392C3988A900FE1E61 /* Heart Rate */,
 				0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */,
 			);
 			path = "Use Cases";
@@ -363,6 +404,7 @@
 		0DC3FDCB2C2EDC9200335543 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0D1016F12C57B229008AF31D /* HealthKitService.swift */,
 				0DA6CB312C39581400FE1E61 /* iOSConnectivityService.swift */,
 			);
 			path = Services;
@@ -379,7 +421,8 @@
 		0DC3FDCD2C2EDC9F00335543 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0DC3FDD62C2EDCFA00335543 /* DTOs */,
+				0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */,
+				0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -438,13 +481,6 @@
 			path = Formatters;
 			sourceTree = "<group>";
 		};
-		0DC3FDD62C2EDCFA00335543 /* DTOs */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DTOs;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -465,6 +501,7 @@
 			name = iOS;
 			packageProductDependencies = (
 				0D0DE2D52C32DEB100C54B0C /* Factory */,
+				0DA6CB462C3ADE7000FE1E61 /* SwiftUIX */,
 			);
 			productName = MindfulPacer;
 			productReference = 0D8C66302C2DA96000853EDE /* iOS.app */;
@@ -522,6 +559,7 @@
 			mainGroup = 0D8C66272C2DA96000853EDE;
 			packageReferences = (
 				0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */,
+				0DA6CB452C3ADE7000FE1E61 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
@@ -561,18 +599,21 @@
 			files = (
 				0DA6CB0D2C37F91D00FE1E61 /* RootViewState.swift in Sources */,
 				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
-				0DA6CB1E2C3953EE00FE1E61 /* HeartRate.swift in Sources */,
+				0D5EA1A12C4A65B800527AB0 /* HeartRateSample.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
+				0DFF97162C58F50A00F58393 /* DragAndDropTest.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
+				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
+				0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
+				0D5EA1AB2C4D831600527AB0 /* DataProviderService.swift in Sources */,
+				0D2F82022C3FF06C0004CD34 /* OnboardingView.swift in Sources */,
 				0DA6CB262C39543D00FE1E61 /* NotificationService.swift in Sources */,
 				0DA6CB282C39548600FE1E61 /* ConnectivityService.swift in Sources */,
-				0DA6CB382C39888900FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* iOSConnectivityService.swift in Sources */,
-				0DA6CB362C39881500FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */,
-				0DA6CB232C39541D00FE1E61 /* HealthKitService.swift in Sources */,
+				0D1016F42C57C1DF008AF31D /* HomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -581,16 +622,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
-				0DBA373D2C32087300209681 /* ContentView.swift in Sources */,
 				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
 				0DA6CB292C39548600FE1E61 /* ConnectivityService.swift in Sources */,
+				0D5EA1A22C4A65B800527AB0 /* HeartRateSample.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
 				0DA6CB3C2C39892F00FE1E61 /* StartHeartRateMonitoringUseCase.swift in Sources */,
+				0D2F82092C46655B0004CD34 /* RootViewState.swift in Sources */,
 				0DA6CB252C39543D00FE1E61 /* NotificationService.swift in Sources */,
-				0DA6CB222C39541D00FE1E61 /* HealthKitService.swift in Sources */,
-				0DA6CB3E2C39894F00FE1E61 /* StopHeartRateMonitoringUseCase.swift in Sources */,
+				0D9411AB2C4E89E1006F9B18 /* HealthKitService.swift in Sources */,
+				0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */,
+				0D5EA1AA2C4D831600527AB0 /* DataProviderService.swift in Sources */,
+				0D2F82052C46653E0004CD34 /* RootView.swift in Sources */,
+				0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0DA6CB342C39583300FE1E61 /* WatchConnectivityService.swift in Sources */,
-				0DA6CB1F2C3953EE00FE1E61 /* HeartRate.swift in Sources */,
 				0DA6CB012C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -809,6 +853,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -841,6 +887,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -900,6 +948,14 @@
 				minimumVersion = 2.3.2;
 			};
 		};
+		0DA6CB452C3ADE7000FE1E61 /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -912,6 +968,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
+		};
+		0DA6CB462C3ADE7000FE1E61 /* SwiftUIX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DA6CB452C3ADE7000FE1E61 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
+			productName = SwiftUIX;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
