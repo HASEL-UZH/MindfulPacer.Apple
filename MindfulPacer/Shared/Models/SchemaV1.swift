@@ -9,6 +9,8 @@ import SwiftData
 
 typealias CurrentScheme = SchemaV1
 
+// MARK: - Schema1
+
 enum SchemaV1: VersionedSchema {
     static var versionIdentifier: Schema.Version {
         .init(1, 0, 0)
@@ -23,6 +25,7 @@ enum SchemaV1: VersionedSchema {
 
 extension ModelContainer {
     @MainActor
+    /// Container used in production
     static let prod: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -35,9 +38,10 @@ extension ModelContainer {
     }()
     
     @MainActor
+    /// Container used to provide data for the Previews
     static let preview: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: schema, configurations: [modelConfiguration])
         
         // TODO: Only add categories if it's empty!!

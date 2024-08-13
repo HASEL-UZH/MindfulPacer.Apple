@@ -202,7 +202,6 @@ class YourViewModelName {
         // Clean up resources if necessary.
     }
 }
-
 ```
 
 ### Best Practices for Ordering SwiftUI Modifiers
@@ -258,7 +257,6 @@ By leveraging the `Factory` framework, this project adheres to the principles of
 
 This project follows a clean architecture approach combined with MVVM principles. The structure is designed to ensure a clear separation of concerns, making the codebase scalable, maintainable, and testable. 
 
-
 ```plaintext
 MindfulPacer
 ├── iOS
@@ -285,8 +283,6 @@ MindfulPacer
     ├── Resources
     └── Services
 ```
-
-This chart provides a clear hierarchical view of the project structure, making it easy to understand the organization of the components across iOS, WatchOS, and shared layers.
 
 ## iOS
 

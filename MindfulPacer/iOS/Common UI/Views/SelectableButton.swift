@@ -35,17 +35,29 @@ struct SelectableButton<Content: View>: View {
 // MARK: - Preview
 
 #Preview {
-    @Previewable @State var isSelected = false
-    
+    @Previewable @State var isIconButtonSelected = false
+    @Previewable @State var isLabelButtonSelected = false
+
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
-        SelectableButton(isSelected: isSelected) {
-            isSelected.toggle()
-        } content: {
-            Image(systemName: "heart.fill")
+        VStack(spacing: 32) {
+            SelectableButton(isSelected: isIconButtonSelected) {
+                isIconButtonSelected.toggle()
+            } content: {
+                Image(systemName: "heart.fill")
+            }
+            .frame(width: 64)
+            
+            SelectableButton(isSelected: isLabelButtonSelected) {
+                isLabelButtonSelected.toggle()
+            } content: {
+                Label("Steps", systemImage: "figure.walk")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        .frame(width: 64)
+        .padding(.horizontal)
     }
 }
