@@ -1,3 +1,10 @@
+<p align="center">
+    <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0" />
+    <img src="https://img.shields.io/badge/iOS-18.0-pink.svg" alt="iOS 18.0" />
+    <img src="https://img.shields.io/badge/WatchOS-11.0.0-blue.svg" alt="WatchOS 11.0" />
+
+</p>
+
 # Architecture Overview
 
 This project follows a clean architecture approach combined with MVVM (Model-View-ViewModel) principles. The architecture is designed to ensure a clear separation of concerns, making the codebase scalable, maintainable, and testable. Below is an in-depth explanation of each aspect of the architecture.
@@ -284,7 +291,7 @@ MindfulPacer
     └── Services
 ```
 
-## iOS
+## 📱 iOS
 
 Contains iOS-specific components and configurations.
 
@@ -296,7 +303,7 @@ Contains iOS-specific components and configurations.
 - **Services**: iOS-specific services.
 - **Use Cases**: Business logic specific to iOS.
 
-## WatchOS
+## ⌚️ WatchOS
 
 Contains WatchOS-specific components and configurations.
 

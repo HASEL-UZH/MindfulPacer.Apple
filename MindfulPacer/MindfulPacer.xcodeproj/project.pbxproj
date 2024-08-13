@@ -100,7 +100,6 @@
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		0D9E5F5A2C64BD17005BA46C /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		0D9E5F5F2C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefaultCategoriesUseCase.swift; sourceTree = "<group>"; };
-		0D9E5F612C64E450005BA46C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
 		0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
 		0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
@@ -220,7 +219,6 @@
 		0D8C66272C2DA96000853EDE = {
 			isa = PBXGroup;
 			children = (
-				0D9E5F612C64E450005BA46C /* README.md */,
 				0DA6CB3F2C3989FD00FE1E61 /* Mockups */,
 				0D27BFC32C32DA8B007F4CFA /* Shared */,
 				0D8C66322C2DA96000853EDE /* iOS */,
