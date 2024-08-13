@@ -16,11 +16,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     
     var rootViewModel: Factory<RootViewModel> {
         self {
-            RootViewModel(
-                startHeartRateMonitoringUseCase: UseCasesContainer.shared.startHeartRateMonitoringUseCase(),
-                healthKitService: HealthKitService.shared,
-                dataProviderService: DataProviderService.shared
-            )
+            RootViewModel()
         }
     }
 }

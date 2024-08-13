@@ -24,6 +24,6 @@ struct WatchOSApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(DataProviderService.shared.sharedModelContainer)
+        .modelContainer(.prod)
     }
 }

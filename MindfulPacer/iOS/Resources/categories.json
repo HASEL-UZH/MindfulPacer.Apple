@@ -1,0 +1,36 @@
+[
+    {
+        "id": "c1a1eecb-1a21-4a73-8e5f-dbdc10a3093b",
+        "name": "Electronics",
+        "icon": "electronics_icon",
+        "subcategories": [
+            {
+                "id": "b7a6b676-7a6d-4c6e-bb9a-417ce5d68256",
+                "name": "Mobile Phones",
+                "icon": "mobile_icon"
+            },
+            {
+                "id": "d5a78f5a-78d6-4d1a-98ef-bde49f547c5f",
+                "name": "Laptops",
+                "icon": "laptop_icon"
+            }
+        ]
+    },
+    {
+        "id": "a3c1aeec-31a4-4b73-85e5-d3bd9c3a09b3",
+        "name": "Home Appliances",
+        "icon": "home_appliances_icon",
+        "subcategories": [
+            {
+                "id": "c8a2becc-2a1b-4b6a-9e5f-ebdf10b309cb",
+                "name": "Refrigerators",
+                "icon": "refrigerator_icon"
+            },
+            {
+                "id": "e5b79f5a-79d6-4e1a-98ef-fde49f547d6f",
+                "name": "Washing Machines",
+                "icon": "washing_machine_icon"
+            }
+        ]
+    }
+]

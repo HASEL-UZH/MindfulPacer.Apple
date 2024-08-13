@@ -7,15 +7,32 @@
 
 import Factory
 import SwiftUI
-
+import SwiftData
 
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
-
+    
     // MARK: - Root
-
+    
+    @MainActor
     var rootViewModel: Factory<RootViewModel> {
-        self { RootViewModel() }
+        self {
+            RootViewModel(
+                modelContext: ModelContainer.prod.mainContext,
+                addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase()
+            )
+        }
+    }
+    // MARK: - Review
+    
+    @MainActor
+    var createReviewViewModel: Factory<CreateReviewViewModel> {
+        self {
+            CreateReviewViewModel(
+                modelContext: ModelContainer.prod.mainContext,
+                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
+            )
+        }
     }
 }

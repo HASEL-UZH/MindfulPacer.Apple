@@ -6,6 +6,7 @@
 //
 
 import Factory
+import SwiftData
 
 final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
@@ -13,4 +14,15 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
+    // MARK: - Review
+    
+    @MainActor
+    var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
+        self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var fetchDefaultCategoriesUseCase: Factory<DefaultFetchDefaultCategoriesUseCase> {
+        self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
 }

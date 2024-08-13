@@ -100,6 +100,9 @@
     "Can't find MindfulPacer on your Apple Watch?" : {
 
     },
+    "Category" : {
+
+    },
     "Climbing Stairs" : {
 
     },
@@ -110,6 +113,9 @@
 
     },
     "Continue" : {
+
+    },
+    "Create Review" : {
 
     },
     "Diary on Activities & Energy" : {
@@ -157,9 +163,6 @@
     "Here is a summary of the events triggered today." : {
 
     },
-    "Hi" : {
-
-    },
     "Hide Widget" : {
 
     },
@@ -202,10 +205,10 @@
     "MindfulPacer only processes raw data from your Apple Watch and your diary entries, and does **NOT** make automated recommendations." : {
 
     },
-    "Note" : {
+    "Mood" : {
 
     },
-    "OK" : {
+    "Note" : {
 
     },
     "Open Settings" : {
@@ -238,10 +241,10 @@
     "Strong" : {
 
     },
-    "Support for Activity Pacing" : {
+    "Subcategory" : {
 
     },
-    "Test" : {
+    "Support for Activity Pacing" : {
 
     },
     "Threshold Exceeded" : {
