@@ -1,7 +1,7 @@
 <p align="center">
     <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0" />
     <img src="https://img.shields.io/badge/iOS-18.0-pink.svg" alt="iOS 18.0" />
-    <img src="https://img.shields.io/badge/WatchOS-11.0.0-blue.svg" alt="WatchOS 11.0" />
+    <img src="https://img.shields.io/badge/WatchOS-11.0-blue.svg" alt="WatchOS 11.0" />
 
 </p>
 
