@@ -13,6 +13,7 @@ import SwiftData
 enum CreateReviewNavigationDestination: Hashable {
     case category
     case subcategory(Category?)
+    case mood
 }
 
 // MARK: - Create Review
@@ -24,13 +25,33 @@ struct CreateReviewView: View {
         NavigationStack(path: $viewModel.navigationPath) {
             List {
                 category
-                if viewModel.selectedCategory.isNotNil {
-                    subcategory
-                }
+                mood
+                triggeredCrashView
+                ratings
+                additionalInformation
             }
             .navigationTitle("Create Review")
+            .safeAreaInset(edge: .bottom) {
+                createButton
+            }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
+            }
+            .sheet(isPresented: $viewModel.isRatingSheetPresented, onDismiss: {
+                viewModel.currentRatingType = nil
+            }) {
+                if let ratingType = viewModel.currentRatingType,
+                   let rating = viewModel.ratings.first(where: { $0.type == ratingType }
+                   ) {
+                    RatingSelectionView(
+                        rating: rating,
+                        onRatingSelected: { value in
+                            viewModel.updateRating(for: ratingType, with: value)
+                        }
+                    )
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                }
             }
             .navigationDestination(for: CreateReviewNavigationDestination.self) { destination in
                 switch destination {
@@ -38,34 +59,89 @@ struct CreateReviewView: View {
                     reviewCategoryView
                 case .subcategory(let category):
                     reviewSubCategoryView(category.unsafelyUnwrapped)
+                case .mood:
+                    reviewMoodView
                 }
             }
         }
     }
     
     private var category: some View {
-        NavigationLink(value: CreateReviewNavigationDestination.category) {
-            if let selectedCategory = viewModel.selectedCategory {
-                Label(selectedCategory.name, systemImage: selectedCategory.icon)
-                    .fontWeight(.semibold)
-                    .symbolVariant(.fill)
-            } else {
-                Label("Category", systemImage: "square.grid.2x2.fill")
-                    .fontWeight(.semibold)
+        Section {
+            NavigationLink(value: CreateReviewNavigationDestination.category) {
+                HStack {
+                    Label("Category", systemImage: "square.grid.2x2.fill")
+                    Spacer()
+                    if let selectedCategory = viewModel.selectedCategory {
+                        Text(selectedCategory.name)
+                            .foregroundStyle(.gray)
+                    }
+                }
+            }
+            
+            if viewModel.selectedCategory.isNotNil {
+                NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
+                    HStack {
+                        Label("Subcategory", systemImage: "rectangle.grid.3x3.fill")
+                        Spacer()
+                        if let selectedSubcategory = viewModel.selectedSubcategory {
+                            Text(selectedSubcategory.name)
+                                .foregroundStyle(.gray)
+                        }
+                    }
+                }
             }
         }
     }
     
-    private var subcategory: some View {
-        NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
-            if let selectedSubcategory = viewModel.selectedSubcategory {
-                Label(selectedSubcategory.name, systemImage: selectedSubcategory.icon)
-                    .fontWeight(.semibold)
-                    .symbolVariant(.fill)
-            } else {
-                Label("Subcategory", systemImage: "rectangle.grid.3x3.fill")
-                    .fontWeight(.semibold)
+    private var mood: some View {
+        Section {
+            NavigationLink(value: CreateReviewNavigationDestination.mood) {
+                HStack {
+                    Label("Mood", systemImage: "face.smiling.inverse")
+                    Spacer()
+                    if let selectedMood = viewModel.selectedMood {
+                        Text(selectedMood)
+                    }
+                }
             }
+        }
+    }
+    
+    private var ratings: some View {
+        Section {
+            ForEach(viewModel.ratings, id: \.type) { rating in
+                Button {
+                    viewModel.showRatingSheet(for: rating.type)
+                } label: {
+                    HStack {
+                        Label {
+                            Text(rating.type.name)
+                                .foregroundStyle(Color.primary)
+                        } icon: {
+                            Image(systemName: rating.type.icon)
+                        }
+                        Spacer()
+                        Text(rating.description)
+                            .foregroundColor(rating.color)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var additionalInformation: some View {
+        TextField("Additional information", text: $viewModel.additionalInformation, axis: .vertical)
+    }
+    
+    private var createButton: some View {
+        PrimaryButton(title: "Create") {
+            viewModel.createReview()
+        }
+        .padding([.horizontal, .top])
+        .background(.ultraThinMaterial)
+        .overlay(alignment: .top) {
+            Divider()
         }
     }
 }
@@ -75,23 +151,28 @@ struct CreateReviewView: View {
 extension CreateReviewView {
     private var reviewCategoryView: some View {
         ScrollView {
-            LazyVGrid(columns: Array(repeating: GridItem(spacing: 16), count: 2), spacing: 16) {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(spacing: 16), count: 3),
+                spacing: 16
+            ) {
                 ForEach(viewModel.categories) { category in
                     SelectableButton(
-                        isSelected: viewModel.selectedCategory == category
-                    ) {
-                        viewModel.selectCategory(category)
-                    } content: {
-                        VStack(spacing: 16) {
-                            Image(systemName: category.icon)
-                                .resizable()
-                                .scaledToFit()
-                                .symbolVariant(.fill)
-                                .frame(width: 64, height: 64)
-                            Text(category.name)
-                                .fontWeight(.semibold)
+                        shape: .roundedRectangle(cornerRadius: 16),
+                        isSelected: viewModel.selectedCategory == category,
+                        action: {
+                            viewModel.selectCategory(category)
+                        }) {
+                            VStack(spacing: 16) {
+                                Image(systemName: category.icon)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .symbolVariant(.fill)
+                                    .frame(height: 32)
+                                Text(category.name)
+                                    .font(.subheadline)
+                                    .lineLimit(1)
+                            }
                         }
-                    }
                 }
             }
             .padding(.horizontal)
@@ -107,9 +188,101 @@ extension CreateReviewView {
 // MARK: - Review Subcategory
 
 extension CreateReviewView {
-    @ViewBuilder private func reviewSubCategoryView(_ category: Category) -> some View {
+    @ViewBuilder
+    private func reviewSubCategoryView(_ category: Category) -> some View {
         ScrollView {
             
+        }
+    }
+}
+
+// MARK: - Review Mood
+
+extension CreateReviewView {
+    private var reviewMoodView: some View {
+        ScrollView {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(spacing: 16), count: 5),
+                spacing: 16
+            ) {
+                ForEach(viewModel.moods, id: \.self) { mood in
+                    SelectableButton(
+                        shape: .circle,
+                        isSelected: viewModel.selectedMood == mood,
+                        action: {
+                            viewModel.selectMood(mood)
+                        }) {
+                            Text(mood)
+                                .font(.title)
+                        }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .navigationTitle("Mood")
+        .background {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+        }
+    }
+}
+
+// MARK: - Review Crash Status
+
+extension CreateReviewView {
+    private var triggeredCrashView: some View {
+        Section {
+            Toggle(isOn: $viewModel.didTriggerCrash) {
+                Label("Did this trigger a crash?", systemImage: "bandage.fill")
+            }
+        }
+    }
+}
+
+// MARK: - Rating Selecion
+
+fileprivate struct RatingSelectionView: View {
+    let rating: ReviewMetricRating
+    let onRatingSelected: (Int?) -> Void
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                VStack(alignment: .leading, spacing: 16) {
+                    GroupBox {
+                        Label {
+                            Text("How much this did affect you?")
+                        } icon: {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .backgroundStyle(Color(.secondarySystemGroupedBackground))
+                    
+                    HStack(spacing: 16) {
+                        ForEach(0 ..< 4, id: \.self) { index in
+                            SelectableButton(
+                                shape: .circle,
+                                selectionColor: rating.color,
+                                isSelected: rating.value == index,
+                                action: {
+                                    onRatingSelected(index)
+                                }) {
+                                    Text("\(index)")
+                                        .fontWeight(.semibold)
+                                }
+                                .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                Spacer()
+            }
+            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .navigationTitle(rating.type.name)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -124,6 +297,6 @@ extension CreateReviewView {
     )
     
     return CreateReviewView(viewModel: viewModel)
-        .tint(Color("PrimaryGreen"))
         .modelContainer(container)
+        .tint(Color("PrimaryGreen"))
 }

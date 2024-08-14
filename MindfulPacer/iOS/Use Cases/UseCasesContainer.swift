@@ -21,6 +21,12 @@ extension UseCasesContainer {
         self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
+    
+    @MainActor
+    var createReviewUseCase: Factory<CreateReviewUseCase> {
+        self { DefaulCreateReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
     @MainActor
     var fetchDefaultCategoriesUseCase: Factory<DefaultFetchDefaultCategoriesUseCase> {
         self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }

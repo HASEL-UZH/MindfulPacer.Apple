@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld" : {
+
+    },
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
 
     },
@@ -73,6 +76,9 @@
     "Above we will put a screenshot of the feature being explained. Here we can put a short description of the feature and explain it a bit." : {
 
     },
+    "Additional information" : {
+
+    },
     "Adjust Move Goals" : {
 
     },
@@ -121,6 +127,9 @@
     "Diary on Activities & Energy" : {
 
     },
+    "Did this trigger a crash?" : {
+
+    },
     "Disable Activity Promoting Features" : {
 
     },
@@ -167,6 +176,9 @@
 
     },
     "Home" : {
+
+    },
+    "How much this did affect you?" : {
 
     },
     "HR above 100" : {

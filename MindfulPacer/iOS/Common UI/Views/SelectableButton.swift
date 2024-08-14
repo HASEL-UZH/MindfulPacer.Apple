@@ -8,9 +8,16 @@
 import SwiftUI
 
 struct SelectableButton<Content: View>: View {
-    let isSelected: Bool
-    let action: () -> Void
-    let content: () -> Content
+    enum ButtonShape {
+        case roundedRectangle(cornerRadius: CGFloat)
+        case circle
+    }
+    
+    var shape: ButtonShape
+    var selectionColor: Color = Color("PrimaryGreen")
+    var isSelected: Bool
+    var action: () -> Void
+    @ViewBuilder let content: () -> Content
     
     var body: some View {
         Button(action: action) {
@@ -18,45 +25,76 @@ struct SelectableButton<Content: View>: View {
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .foregroundStyle(isSelected ? Color("PrimaryGreen").opacity(0.1) : Color(.secondarySystemGroupedBackground))
+                    backgroundShape()
+                        .foregroundStyle(
+                            isSelected ? selectionColor
+                                .opacity(0.1) : Color(
+                                    .secondarySystemGroupedBackground
+                                )
+                        )
                 }
                 .overlay {
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color("PrimaryGreen"), lineWidth: 2)
+                        overlayShape()
                     }
                 }
         }
-        .foregroundStyle(isSelected ? Color("PrimaryGreen") : Color.primary)
+        .foregroundStyle(isSelected ? selectionColor : Color.primary)
+    }
+    
+    @ViewBuilder
+    private func backgroundShape() -> some View {
+        switch shape {
+        case .roundedRectangle(let cornerRadius):
+            RoundedRectangle(cornerRadius: cornerRadius)
+        case .circle:
+            Circle()
+        }
+    }
+    
+    @ViewBuilder
+    private func overlayShape() -> some View {
+        switch shape {
+        case .roundedRectangle(let cornerRadius):
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(selectionColor, lineWidth: 2)
+        case .circle:
+            Circle()
+                .stroke(selectionColor, lineWidth: 2)
+        }
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    @Previewable @State var isIconButtonSelected = false
-    @Previewable @State var isLabelButtonSelected = false
-
+    @Previewable @State var isRoundedRectangleButtonSelected = false
+    @Previewable @State var isCircleButtonSelected = false
+    
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
         VStack(spacing: 32) {
-            SelectableButton(isSelected: isIconButtonSelected) {
-                isIconButtonSelected.toggle()
-            } content: {
-                Image(systemName: "heart.fill")
-            }
-            .frame(width: 64)
+            SelectableButton(
+                shape: .roundedRectangle(cornerRadius: 16),
+                isSelected: isRoundedRectangleButtonSelected,
+                action: {
+                    isRoundedRectangleButtonSelected.toggle()
+                }) {
+                    Label("Save", systemImage: "square.and.arrow.down.fill")
+                        .fontWeight(.semibold)
+                }
             
-            SelectableButton(isSelected: isLabelButtonSelected) {
-                isLabelButtonSelected.toggle()
-            } content: {
-                Label("Steps", systemImage: "figure.walk")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            SelectableButton(
+                shape: .circle,
+                selectionColor: .yellow,
+                isSelected: isCircleButtonSelected,
+                action: {
+                    isCircleButtonSelected.toggle()
+                }) {
+                    Image(systemName: "star.fill")
+                }
         }
         .padding(.horizontal)
     }

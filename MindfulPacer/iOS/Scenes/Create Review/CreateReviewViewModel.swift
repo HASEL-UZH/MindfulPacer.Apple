@@ -15,14 +15,31 @@ class CreateReviewViewModel {
     
     private let modelContext: ModelContext
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
-
+    
     // MARK: - Published Properties (State)
-
-    var categories: [Category] = []
-    var selectedCategory: Category? = nil
-    var selectedSubcategory: Subcategory? = nil
+    
     var navigationPath = NavigationPath()
-
+    var isRatingSheetPresented: Bool = false
+    var currentRatingType: ReviewMetricRatingType? = nil
+    
+    var categories: [Category] = []
+    var moods: [String] = ["😁", "😭", "😓", "😡", "😴", "😆", "🥳", "🤢", "🤧"]
+    
+    var selectedCategory: Category? = nil
+    var selectedMood: String? = nil
+    var selectedSubcategory: Subcategory? = nil
+    var didTriggerCrash: Bool = false
+    var additionalInformation: String = ""    
+    
+    var ratings: [ReviewMetricRating] = [
+        ReviewMetricRating(type: .headaches),
+        ReviewMetricRating(type: .energyLevel),
+        ReviewMetricRating(type: .shortnessOfBreath),
+        ReviewMetricRating(type: .fever),
+        ReviewMetricRating(type: .painsAndNeedles),
+        ReviewMetricRating(type: .muscleAches)
+    ]
+    
     // MARK: - Initialization
     
     init(
@@ -32,7 +49,7 @@ class CreateReviewViewModel {
         self.modelContext = modelContext
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
     }
-
+    
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
@@ -40,7 +57,7 @@ class CreateReviewViewModel {
             categories = fetchedCategories
         }
     }
-
+    
     // MARK: - User Actions
     
     func selectCategory(_ category: Category) {
@@ -48,19 +65,42 @@ class CreateReviewViewModel {
             selectedCategory = nil
         } else {
             selectedCategory = category
+            navigationPath.removeLast()
         }
-        navigationPath.removeLast()
     }
-
+    
+    func selectMood(_ mood: String) {
+        if selectedMood == mood {
+            selectedMood = nil
+        } else {
+            selectedMood = mood
+            navigationPath.removeLast()
+        }
+    }
+    
+    func updateRating(for type: ReviewMetricRatingType, with value: Int?) {
+        if let index = ratings.firstIndex(where: { $0.type == type }) {
+            if ratings[index].value == value {
+                ratings[index].value = nil
+                isRatingSheetPresented = true
+            } else {
+                ratings[index].value = value
+                isRatingSheetPresented = false
+            }
+        }
+    }
+    
+    func showRatingSheet(for type: ReviewMetricRatingType) {
+        currentRatingType = type
+        isRatingSheetPresented = true
+    }
+    
+    func createReview() {
+        
+    }
+    
     // MARK: - Private Methods
     
-    private func somePrivateHelperMethod() {
-        // Any private methods to support the ViewModel's logic
-    }
-
     // MARK: - Error Handling
     
-    private func handleError(_ error: Error) {
-        // Handle errors that occur within the ViewModel
-    }
 }
