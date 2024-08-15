@@ -31,6 +31,8 @@
 		0D9AB0C12C6D4C6900BB773F /* ReviewRatingMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0BF2C6D4C6900BB773F /* ReviewRatingMetric.swift */; };
 		0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */; };
 		0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */; };
+		0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */; };
+		0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */; };
 		0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5A2C64BD17005BA46C /* Review.swift */; };
 		0D9E5F5D2C64BE56005BA46C /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5A2C64BD17005BA46C /* Review.swift */; };
 		0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5F2C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift */; };
@@ -100,6 +102,8 @@
 		0D9AB0BF2C6D4C6900BB773F /* ReviewRatingMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRatingMetric.swift; sourceTree = "<group>"; };
 		0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewUseCase.swift; sourceTree = "<group>"; };
+		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
+		0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShowingViewModifier.swift; sourceTree = "<group>"; };
 		0D9E5F5A2C64BD17005BA46C /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		0D9E5F5F2C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefaultCategoriesUseCase.swift; sourceTree = "<group>"; };
 		0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
@@ -268,6 +272,16 @@
 				0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		0D9AB0C62C6E093D00BB773F /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */,
+				0D9E5F5A2C64BD17005BA46C /* Review.swift */,
+				0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		0D9E5F5E2C64C7A6005BA46C /* Review */ = {
@@ -444,10 +458,8 @@
 		0DC3FDCD2C2EDC9F00335543 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */,
-				0D9E5F5A2C64BD17005BA46C /* Review.swift */,
+				0D9AB0C62C6E093D00BB773F /* Persistence */,
 				0D9AB0BF2C6D4C6900BB773F /* ReviewRatingMetric.swift */,
-				0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -455,6 +467,7 @@
 		0DC3FDCE2C2EDCAB00335543 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -490,6 +503,7 @@
 		0DC3FDD32C2EDCDC00335543 /* View Modifiers */ = {
 			isa = PBXGroup;
 			children = (
+				0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */,
 			);
 			path = "View Modifiers";
 			sourceTree = "<group>";
@@ -645,9 +659,11 @@
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
 				0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
+				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
 				0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */,
 				0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DFCA1D22C623FB40000C87C /* CreateReviewViewModel.swift in Sources */,
+				0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */,
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 				0D2F82022C3FF06C0004CD34 /* OnboardingView.swift in Sources */,

@@ -13,6 +13,8 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .tint(Color("PrimaryGreen"))
+                .addKeyboardVisibilityToEnvironment()
         }
         .modelContainer(.prod)
     }

@@ -14,6 +14,7 @@ class CreateReviewViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
+    private let createReviewUseCase: CreateReviewUseCase
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
     
     // MARK: - Published Properties (State)
@@ -23,7 +24,7 @@ class CreateReviewViewModel {
     var currentRatingType: ReviewMetricRatingType? = nil
     
     var categories: [Category] = []
-    var moods: [String] = ["😁", "😭", "😓", "😡", "😴", "😆", "🥳", "🤢", "🤧"]
+    var moods: [String] = ["😁", "😭", "😓", "😡", "😴", "😆", "🥳", "🤢", "🤧", "😤"]
     
     var selectedCategory: Category? = nil
     var selectedMood: String? = nil
@@ -44,9 +45,11 @@ class CreateReviewViewModel {
     
     init(
         modelContext: ModelContext,
+        createReviewUseCase: CreateReviewUseCase,
         fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
     ) {
         self.modelContext = modelContext
+        self.createReviewUseCase = createReviewUseCase
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
     }
     
@@ -96,11 +99,22 @@ class CreateReviewViewModel {
     }
     
     func createReview() {
-        
+        // TODO: If a Review could not be saved, show an alert and do not disimss the view
+        createReviewUseCase.execute(
+            category: selectedCategory,
+            subcategory: selectedSubcategory,
+            didTriggerCrash: didTriggerCrash,
+            perceivedEnergyLevelRating: ratings[.energyLevel]?.value,
+            headachesRating: ratings[.headaches]?.value,
+            shortnessOfBreatheRating: ratings[.shortnessOfBreath]?.value,
+            feverRating: ratings[.fever]?.value,
+            painsAndNeedlesRating: ratings[.painsAndNeedles]?.value,
+            muscleAchesRating: ratings[.muscleAches]?.value,
+            additionalInformation: additionalInformation
+        )
     }
     
     // MARK: - Private Methods
     
     // MARK: - Error Handling
-    
 }

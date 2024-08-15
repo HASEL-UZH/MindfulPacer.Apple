@@ -14,7 +14,7 @@ struct PrimaryButton: View {
     
     var body: some View {
         Button {
-            
+            action()
         } label: {
             ZStack {
                 if let icon {

@@ -30,7 +30,6 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     }
     
     private func categoriesExist() async -> Bool {
-        
         do {
             let descriptor = FetchDescriptor<Category>()
             let categories = try modelContext.fetch(descriptor)
@@ -41,19 +40,16 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
         }
     }
     
+    @MainActor
     private func addDefaultCategories() async {
-//        await Category.defaultCategories.forEach { category in
-//            
-//        }
+        DefaultCategoryData.categories.forEach { category in
+            modelContext.insert(category)
+        }
         
-//        for category in Category.defaultCategories {
-//            modelContext.insert(category)
-//        }
-//        
-//        do {
-//            try modelContext.save()
-//        } catch {
-//            print("Error saving default categories: \(error)")
-//        }
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving default categories: \(error)")
+        }
     }
 }

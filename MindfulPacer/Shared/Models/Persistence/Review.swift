@@ -115,7 +115,7 @@ extension SchemaV1 {
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 struct SampleData: PreviewModifier {
     static func makeSharedContext() throws -> ModelContainer {
@@ -144,4 +144,18 @@ struct SampleData: PreviewModifier {
 
 extension PreviewTrait where T == Preview.ViewTraits {
     @MainActor static var sampleData: Self = .modifier(SampleData())
+}
+
+// MARK: - Default Categories
+
+struct DefaultCategoryData {
+    @MainActor
+    static let categories: [Category] = [
+        Category(name: "Movement", icon: "figure.run", subcategories: []),
+        Category(name: "Household", icon: "house"),
+        Category(name: "Self-Care", icon: "shower"),
+        Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
+        Category(name: "Alarms", icon: "alarm"),
+        Category(name: "Others", icon: "puzzlepiece")
+    ]
 }

@@ -19,6 +19,8 @@ enum CreateReviewNavigationDestination: Hashable {
 // MARK: - Create Review
 
 struct CreateReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: CreateReviewViewModel = ScenesContainer.shared.createReviewViewModel()
     
     var body: some View {
@@ -31,8 +33,21 @@ struct CreateReviewView: View {
                 additionalInformation
             }
             .navigationTitle("Create Review")
+            .scrollDismissesKeyboard(.interactively)
             .safeAreaInset(edge: .bottom) {
                 createButton
+            }
+            .toolbar {
+                ToolbarItem(placement: .keyboard) {
+                    hideKeyboardButton
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                }
             }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
@@ -137,12 +152,22 @@ struct CreateReviewView: View {
     private var createButton: some View {
         PrimaryButton(title: "Create") {
             viewModel.createReview()
+            dismiss()
         }
-        .padding([.horizontal, .top])
+        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
         .background(.ultraThinMaterial)
         .overlay(alignment: .top) {
             Divider()
         }
+    }
+    
+    private var hideKeyboardButton: some View {
+        Button {
+            hideKeyboard()
+        } label: {
+            Image(systemName: "keyboard.chevron.compact.down.fill")
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 
@@ -235,6 +260,7 @@ extension CreateReviewView {
             Toggle(isOn: $viewModel.didTriggerCrash) {
                 Label("Did this trigger a crash?", systemImage: "bandage.fill")
             }
+            .tint(.accentColor)
         }
     }
 }
@@ -293,6 +319,7 @@ fileprivate struct RatingSelectionView: View {
     let container = ModelContainer.preview
     let viewModel = CreateReviewViewModel(
         modelContext: container.mainContext,
+        createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
         fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
     )
     

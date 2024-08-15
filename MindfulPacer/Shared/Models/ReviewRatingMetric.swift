@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - ReviewMetricRatingType
+
 enum ReviewMetricRatingType: CaseIterable {
     case headaches
     case energyLevel
@@ -38,6 +40,8 @@ enum ReviewMetricRatingType: CaseIterable {
     }
 }
 
+// MARK: - ReviewMetricRating
+
 struct ReviewMetricRating {
     let type: ReviewMetricRatingType
     var value: Int?
@@ -60,5 +64,11 @@ struct ReviewMetricRating {
         case 3: "Severe"
         default: ""
         }
+    }
+}
+
+extension Array where Element == ReviewMetricRating {
+    subscript(type: ReviewMetricRatingType) -> ReviewMetricRating? {
+        return first { $0.type == type }
     }
 }

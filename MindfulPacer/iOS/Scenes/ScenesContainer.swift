@@ -31,6 +31,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             CreateReviewViewModel(
                 modelContext: ModelContainer.prod.mainContext,
+                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
             )
         }
