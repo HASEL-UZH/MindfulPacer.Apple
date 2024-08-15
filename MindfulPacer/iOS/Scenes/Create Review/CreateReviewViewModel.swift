@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+@MainActor
 @Observable
 class CreateReviewViewModel {
     // MARK: - Dependencies
@@ -22,10 +23,12 @@ class CreateReviewViewModel {
     var navigationPath = NavigationPath()
     var isRatingSheetPresented: Bool = false
     var currentRatingType: ReviewMetricRatingType? = nil
+    var alertItem: AlertItem? = nil
     
     var categories: [Category] = []
     var moods: [String] = ["😁", "😭", "😓", "😡", "😴", "😆", "🥳", "🤢", "🤧", "😤"]
     
+    var date: Date = .now
     var selectedCategory: Category? = nil
     var selectedMood: String? = nil
     var selectedSubcategory: Subcategory? = nil
@@ -56,14 +59,12 @@ class CreateReviewViewModel {
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
-            categories = fetchedCategories
-        }
+        fetchDefaultCategories()
     }
     
     // MARK: - User Actions
     
-    func selectCategory(_ category: Category) {
+    func toggleCategorySelection(_ category: Category) {
         if selectedCategory == category {
             selectedCategory = nil
         } else {
@@ -72,7 +73,7 @@ class CreateReviewViewModel {
         }
     }
     
-    func selectMood(_ mood: String) {
+    func toggleMoodSelection(_ mood: String) {
         if selectedMood == mood {
             selectedMood = nil
         } else {
@@ -81,7 +82,7 @@ class CreateReviewViewModel {
         }
     }
     
-    func updateRating(for type: ReviewMetricRatingType, with value: Int?) {
+    func setRating(for type: ReviewMetricRatingType, with value: Int?) {
         if let index = ratings.firstIndex(where: { $0.type == type }) {
             if ratings[index].value == value {
                 ratings[index].value = nil
@@ -93,14 +94,14 @@ class CreateReviewViewModel {
         }
     }
     
-    func showRatingSheet(for type: ReviewMetricRatingType) {
+    func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type
         isRatingSheetPresented = true
     }
     
-    func createReview() {
-        // TODO: If a Review could not be saved, show an alert and do not disimss the view
-        createReviewUseCase.execute(
+    func saveReview() {
+        let result = createReviewUseCase.execute(
+            date: date,
             category: selectedCategory,
             subcategory: selectedSubcategory,
             didTriggerCrash: didTriggerCrash,
@@ -112,9 +113,19 @@ class CreateReviewViewModel {
             muscleAchesRating: ratings[.muscleAches]?.value,
             additionalInformation: additionalInformation
         )
+        
+        if case .failure(_) = result {
+            alertItem = AlertContext.unableToSaveReview
+        }
     }
     
     // MARK: - Private Methods
     
+    private func fetchDefaultCategories() {
+        if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
+            categories = fetchedCategories
+        }
+    }
+        
     // MARK: - Error Handling
 }

@@ -24,7 +24,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    // MARK: - Review
+    // MARK: - Create Review
     
     @MainActor
     var createReviewViewModel: Factory<CreateReviewViewModel> {
@@ -35,5 +35,12 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
             )
         }
+    }
+    
+    // MARK: - Create Review Reminder
+    
+    @MainActor
+    var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {
+        self { CreateReviewReminderViewModel(modelContext: ModelContainer.prod.mainContext) }
     }
 }

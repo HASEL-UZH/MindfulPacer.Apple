@@ -22,13 +22,13 @@ struct AlertItem: Identifiable, Equatable {
     }
 }
 
+@MainActor
 struct AlertContext {
+    // MARK: - Create Review
     
-    // MARK: - Article Deck
-    
-    //    static let unableToGetArticles = AlertItem(
-    //        title: Text("Articles Error"),
-    //        message: Text("Unable to retrieve articles at this time.\nPlease try again."),
-    //        dismissButton: .default(Text("Ok"))
-    //    )
+    static let unableToSaveReview = AlertItem(
+        title: Text("Articles Error"),
+        message: Text("Unable to save your review.\nPlease try again.\nIf this problem persists, please contact us."),
+        dismissButton: .default(Text("Ok"))
+    )
 }

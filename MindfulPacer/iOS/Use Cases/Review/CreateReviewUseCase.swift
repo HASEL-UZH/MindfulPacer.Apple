@@ -10,6 +10,7 @@ import SwiftData
 
 protocol CreateReviewUseCase {
     func execute(
+        date: Date,
         category: Category?,
         subcategory: Subcategory?,
         didTriggerCrash: Bool?,
@@ -20,7 +21,7 @@ protocol CreateReviewUseCase {
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
         additionalInformation: String?
-    )
+    ) -> Result<Review, Error>
 }
 
 // MARK: - Use Case Implementation
@@ -33,6 +34,7 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
     }
     
     func execute(
+        date: Date,
         category: Category?,
         subcategory: Subcategory?,
         didTriggerCrash: Bool?,
@@ -43,8 +45,9 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
         additionalInformation: String?
-    ) {
+    ) -> Result<Review, Error> {
         let review = Review(
+            date: date,
             category: category,
             subcategory: subcategory,
             didTriggerCrash: didTriggerCrash,
@@ -61,9 +64,9 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         
         do {
             try modelContext.save()
-            print("DEBUGY: Saved Review with id \(review.id)")
+            return .success(review)
         } catch {
-            print("DEBUGY: Could not create Review")
+            return .failure(error)
         }
     }
 }

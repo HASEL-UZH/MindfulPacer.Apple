@@ -100,6 +100,9 @@
     "Apple Watch Sync" : {
 
     },
+    "Articles Error" : {
+
+    },
     "Better manage your physical and mental energy, by regulating your activity levels." : {
 
     },
@@ -124,7 +127,13 @@
     "Continue" : {
 
     },
+    "Create Reminder" : {
+
+    },
     "Create Review" : {
+
+    },
+    "Date" : {
 
     },
     "Diary on Activities & Energy" : {
@@ -232,6 +241,9 @@
     "Note" : {
 
     },
+    "Ok" : {
+
+    },
     "Open Settings" : {
 
     },
@@ -268,10 +280,16 @@
     "Support for Activity Pacing" : {
 
     },
+    "This allows you to add a new alarm which can be triggered on your Apple Watch or iPhone." : {
+
+    },
     "Threshold Exceeded" : {
 
     },
     "Time" : {
+
+    },
+    "Unable to save your review.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
     "Walking" : {

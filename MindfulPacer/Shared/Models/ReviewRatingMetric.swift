@@ -57,12 +57,16 @@ struct ReviewMetricRating {
     }
     
     var description: String {
+        return description(for: value)
+    }
+    
+    func description(for value: Int?) -> String {
         switch value {
-        case 0: "None"
-        case 1: "Mild"
-        case 2: "Moderate"
-        case 3: "Severe"
-        default: ""
+        case 0: return "None"
+        case 1: return "Mild"
+        case 2: return "Moderate"
+        case 3: return "Severe"
+        default: return ""
         }
     }
 }

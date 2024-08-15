@@ -26,17 +26,18 @@ struct CreateReviewView: View {
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             List {
+                date
                 category
                 mood
-                triggeredCrashView
                 ratings
+                triggeredCrashView
                 additionalInformation
             }
             .navigationTitle("Create Review")
-            .scrollDismissesKeyboard(.interactively)
             .safeAreaInset(edge: .bottom) {
                 createButton
             }
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
@@ -52,6 +53,7 @@ struct CreateReviewView: View {
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
+            .alert(item: $viewModel.alertItem) { $0.alert }
             .sheet(isPresented: $viewModel.isRatingSheetPresented, onDismiss: {
                 viewModel.currentRatingType = nil
             }) {
@@ -61,10 +63,10 @@ struct CreateReviewView: View {
                     RatingSelectionView(
                         rating: rating,
                         onRatingSelected: { value in
-                            viewModel.updateRating(for: ratingType, with: value)
+                            viewModel.setRating(for: ratingType, with: value)
                         }
                     )
-                    .presentationDetents([.medium])
+                    .presentationDetents([.height(220)])
                     .presentationDragIndicator(.visible)
                 }
             }
@@ -77,6 +79,14 @@ struct CreateReviewView: View {
                 case .mood:
                     reviewMoodView
                 }
+            }
+        }
+    }
+    
+    private var date: some View {
+        Section {
+            DatePicker(selection: $viewModel.date) {
+                Label("Date", systemImage: "calendar")
             }
         }
     }
@@ -127,7 +137,7 @@ struct CreateReviewView: View {
         Section {
             ForEach(viewModel.ratings, id: \.type) { rating in
                 Button {
-                    viewModel.showRatingSheet(for: rating.type)
+                    viewModel.presentRatingSheet(for: rating.type)
                 } label: {
                     HStack {
                         Label {
@@ -151,7 +161,7 @@ struct CreateReviewView: View {
     
     private var createButton: some View {
         PrimaryButton(title: "Create") {
-            viewModel.createReview()
+            viewModel.saveReview()
             dismiss()
         }
         .padding(keyboardShowing ? [.all] : [.horizontal, .top])
@@ -185,7 +195,7 @@ extension CreateReviewView {
                         shape: .roundedRectangle(cornerRadius: 16),
                         isSelected: viewModel.selectedCategory == category,
                         action: {
-                            viewModel.selectCategory(category)
+                            viewModel.toggleCategorySelection(category)
                         }) {
                             VStack(spacing: 16) {
                                 Image(systemName: category.icon)
@@ -235,7 +245,7 @@ extension CreateReviewView {
                         shape: .circle,
                         isSelected: viewModel.selectedMood == mood,
                         action: {
-                            viewModel.selectMood(mood)
+                            viewModel.toggleMoodSelection(mood)
                         }) {
                             Text(mood)
                                 .font(.title)
@@ -278,27 +288,35 @@ fileprivate struct RatingSelectionView: View {
                     GroupBox {
                         Label {
                             Text("How much this did affect you?")
+                                .font(.subheadline)
                         } icon: {
                             Image(systemName: "info.circle.fill")
                                 .foregroundStyle(.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .backgroundStyle(Color(.secondarySystemGroupedBackground))
+                    .backgroundStyle(Color(.systemGray5))
                     
-                    HStack(spacing: 16) {
-                        ForEach(0 ..< 4, id: \.self) { index in
-                            SelectableButton(
-                                shape: .circle,
-                                selectionColor: rating.color,
-                                isSelected: rating.value == index,
-                                action: {
-                                    onRatingSelected(index)
-                                }) {
-                                    Text("\(index)")
-                                        .fontWeight(.semibold)
+                    VStack(spacing: 16) {
+                        HStack(spacing: 16) {
+                            ForEach(0 ..< 4, id: \.self) { index in
+                                VStack(spacing: 12) {
+                                    SelectableButton(
+                                        shape: .circle,
+                                        selectionColor: rating.color,
+                                        isSelected: rating.value == index,
+                                        action: {
+                                            onRatingSelected(index)
+                                        }) {
+                                            Text("\(index)")
+                                                .fontWeight(.semibold)
+                                        }
+                                        .buttonStyle(.plain)
+                                    
+                                    Text(rating.description(for: index))
+                                        .font(.footnote)
                                 }
-                                .buttonStyle(.plain)
+                            }
                         }
                     }
                 }

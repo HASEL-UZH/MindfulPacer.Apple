@@ -14,12 +14,12 @@ protocol iOSConnectivityServiceProtocol: ConnectivityServiceProtocol {
 
 final class iOSConnectivityService: NSObject, iOSConnectivityServiceProtocol, WCSessionDelegate, @unchecked Sendable {
     static let shared = iOSConnectivityService()
-
+    
     private override init() {
         super.init()
         setupConnectivity()
     }
-
+    
     func setupConnectivity() {
         if WCSession.isSupported() {
             let session = WCSession.default
@@ -27,7 +27,7 @@ final class iOSConnectivityService: NSObject, iOSConnectivityServiceProtocol, WC
             session.activate()
         }
     }
-
+    
     func sendHeartRateToWatch(heartRate: Double, timestamp: Date) {
         if WCSession.default.isReachable {
             let message: [String: Any] = ["heartRate": heartRate, "timestamp": timestamp.timeIntervalSince1970]
@@ -36,9 +36,9 @@ final class iOSConnectivityService: NSObject, iOSConnectivityServiceProtocol, WC
             }
         }
     }
-
+    
     // MARK: - WCSessionDelegate
-
+    
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
             print("WCSession activation failed with error: \(error.localizedDescription)")
@@ -46,7 +46,7 @@ final class iOSConnectivityService: NSObject, iOSConnectivityServiceProtocol, WC
             print("WCSession activated with state: \(activationState.rawValue)")
         }
     }
-
+    
     func sessionReachabilityDidChange(_ session: WCSession) {
         if session.isReachable {
             print("WCSession is reachable.")
@@ -54,11 +54,9 @@ final class iOSConnectivityService: NSObject, iOSConnectivityServiceProtocol, WC
             print("WCSession is not reachable.")
         }
     }
-
-    #if os(iOS)
-    public func sessionDidBecomeInactive(_ session: WCSession) { }
-    public func sessionDidDeactivate(_ session: WCSession) {
+    
+    func sessionDidBecomeInactive(_ session: WCSession) { }
+    func sessionDidDeactivate(_ session: WCSession) {
         session.activate()
     }
-    #endif
 }

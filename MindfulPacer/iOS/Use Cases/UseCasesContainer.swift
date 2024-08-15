@@ -14,7 +14,7 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
-    // MARK: - Review
+    // MARK: - Create Review
     
     @MainActor
     var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {

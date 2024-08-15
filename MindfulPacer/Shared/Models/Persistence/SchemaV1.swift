@@ -6,10 +6,11 @@
 //
 
 import SwiftData
-
-typealias CurrentScheme = SchemaV1
+import SwiftUI
 
 // MARK: - Schema1
+
+typealias CurrentScheme = SchemaV1
 
 enum SchemaV1: VersionedSchema {
     static var versionIdentifier: Schema.Version {
@@ -17,7 +18,13 @@ enum SchemaV1: VersionedSchema {
     }
     
     static var models: [any PersistentModel.Type] {
-        [HeartRateSample.self, Review.self, Category.self, Subcategory.self]
+        [
+            HeartRateSample.self,
+            Review.self,
+            Category.self,
+            Subcategory.self,
+            ReviewReminder.self
+        ]
     }
 }
 
@@ -60,4 +67,35 @@ extension ModelContainer {
         
         return container
     }()
+}
+
+// MARK: - Preview
+
+struct SampleData: PreviewModifier {
+    static func makeSharedContext() throws -> ModelContainer {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: Category.self, configurations: config)
+        
+        let categories: [Category] = [
+            Category(name: "Movement", icon: "figure.run", subcategories: []),
+            Category(name: "Household", icon: "house"),
+            Category(name: "Self-Care", icon: "shower"),
+            Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
+            Category(name: "Alarms", icon: "alarm"),
+            Category(name: "Others", icon: "puzzlepiece")
+        ]
+        
+        categories.forEach { container.mainContext.insert($0) }
+        try container.mainContext.save()
+        
+        return container
+    }
+    
+    func body(content: Content, context: ModelContainer) -> some View {
+        content.modelContainer(context)
+    }
+}
+
+extension PreviewTrait where T == Preview.ViewTraits {
+    @MainActor static var sampleData: Self = .modifier(SampleData())
 }

@@ -22,7 +22,6 @@
 		0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* iOSApp.swift */; };
 		0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C66372C2DA96100853EDE /* Assets.xcassets */; };
 		0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */; };
-		0D9AB0832C6A21CA00BB773F /* categories.json in Resources */ = {isa = PBXBuildFile; fileRef = 0D9AB07F2C6A21CA00BB773F /* categories.json */; };
 		0D9AB09A2C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0992C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift */; };
 		0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */; };
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
@@ -33,6 +32,11 @@
 		0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */; };
 		0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */; };
 		0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */; };
+		0D9AB0CC2C6E403000BB773F /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0CB2C6E403000BB773F /* CloseButton.swift */; };
+		0D9AB0CF2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0CE2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift */; };
+		0D9AB0D12C6E8B3D00BB773F /* CreateReviewReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0D02C6E8B3D00BB773F /* CreateReviewReminderView.swift */; };
+		0D9AB0D32C6E8EA500BB773F /* ReviewReminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0D22C6E8EA500BB773F /* ReviewReminder.swift */; };
+		0D9AB0D42C6E8EA500BB773F /* ReviewReminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0D22C6E8EA500BB773F /* ReviewReminder.swift */; };
 		0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5A2C64BD17005BA46C /* Review.swift */; };
 		0D9E5F5D2C64BE56005BA46C /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5A2C64BD17005BA46C /* Review.swift */; };
 		0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5F2C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift */; };
@@ -95,7 +99,6 @@
 		0D8C66332C2DA96000853EDE /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		0D8C66372C2DA96100853EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0D9AB07F2C6A21CA00BB773F /* categories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = categories.json; sourceTree = "<group>"; };
 		0D9AB0992C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDefaultCategoriesUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
@@ -104,6 +107,10 @@
 		0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShowingViewModifier.swift; sourceTree = "<group>"; };
+		0D9AB0CB2C6E403000BB773F /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
+		0D9AB0CE2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewReminderViewModel.swift; sourceTree = "<group>"; };
+		0D9AB0D02C6E8B3D00BB773F /* CreateReviewReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewReminderView.swift; sourceTree = "<group>"; };
+		0D9AB0D22C6E8EA500BB773F /* ReviewReminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReminder.swift; sourceTree = "<group>"; };
 		0D9E5F5A2C64BD17005BA46C /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		0D9E5F5F2C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefaultCategoriesUseCase.swift; sourceTree = "<group>"; };
 		0DA6CAFF2C37F7A300FE1E61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
@@ -279,9 +286,19 @@
 			children = (
 				0D5EA1A02C4A65B800527AB0 /* HeartRateSample.swift */,
 				0D9E5F5A2C64BD17005BA46C /* Review.swift */,
+				0D9AB0D22C6E8EA500BB773F /* ReviewReminder.swift */,
 				0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */,
 			);
 			path = Persistence;
+			sourceTree = "<group>";
+		};
+		0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */ = {
+			isa = PBXGroup;
+			children = (
+				0D9AB0D02C6E8B3D00BB773F /* CreateReviewReminderView.swift */,
+				0D9AB0CE2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift */,
+			);
+			path = "Create Review Reminder";
 			sourceTree = "<group>";
 		};
 		0D9E5F5E2C64C7A6005BA46C /* Review */ = {
@@ -431,6 +448,7 @@
 			isa = PBXGroup;
 			children = (
 				0DFCA1CE2C623FA10000C87C /* Create Review */,
+				0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */,
 				0DBA37192C31EF5B00209681 /* Root View */,
 				0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */,
 			);
@@ -449,7 +467,6 @@
 		0DC3FDCC2C2EDC9800335543 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0D9AB07F2C6A21CA00BB773F /* categories.json */,
 				0D8C66372C2DA96100853EDE /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -494,8 +511,9 @@
 		0DC3FDD22C2EDCD800335543 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */,
+				0D9AB0CB2C6E403000BB773F /* CloseButton.swift */,
 				0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */,
+				0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -624,7 +642,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D9AB0832C6A21CA00BB773F /* categories.json in Resources */,
 				0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */,
 				0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */,
 			);
@@ -646,6 +663,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D9AB0D12C6E8B3D00BB773F /* CreateReviewReminderView.swift in Sources */,
 				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
 				0D5EA1A12C4A65B800527AB0 /* HeartRateSample.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
@@ -653,6 +671,7 @@
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
 				0DFF97162C58F50A00F58393 /* DragAndDropTest.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
+				0D9AB0D42C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
@@ -665,12 +684,14 @@
 				0DFCA1D22C623FB40000C87C /* CreateReviewViewModel.swift in Sources */,
 				0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */,
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
+				0D9AB0CF2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 				0D2F82022C3FF06C0004CD34 /* OnboardingView.swift in Sources */,
 				0DA6CB262C39543D00FE1E61 /* NotificationService.swift in Sources */,
 				0DFCA1D02C623FAC0000C87C /* CreateReviewView.swift in Sources */,
 				0D9AB09A2C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift in Sources */,
 				0DA6CB282C39548600FE1E61 /* ConnectivityService.swift in Sources */,
+				0D9AB0CC2C6E403000BB773F /* CloseButton.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* iOSConnectivityService.swift in Sources */,
 				0D1016F42C57C1DF008AF31D /* HomeView.swift in Sources */,
 			);
@@ -682,6 +703,7 @@
 			files = (
 				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
 				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
+				0D9AB0D32C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
 				0DA6CB292C39548600FE1E61 /* ConnectivityService.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0D5EA1A22C4A65B800527AB0 /* HeartRateSample.swift in Sources */,
