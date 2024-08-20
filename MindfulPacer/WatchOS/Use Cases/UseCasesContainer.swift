@@ -12,4 +12,18 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     var manager = ContainerManager()
 }
 
-extension UseCasesContainer {}
+extension UseCasesContainer {
+    // MARK: - iOS Communication
+    
+    @MainActor
+    var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
+        self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
+    }
+    
+    // MARK: - System
+    
+    @MainActor
+    var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
+        self { DefaultInitializeNotificationsUseCase(watchNotificationService: NotificationService.shared) }
+    }
+}

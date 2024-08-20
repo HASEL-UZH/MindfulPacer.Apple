@@ -24,11 +24,25 @@ struct AlertItem: Identifiable, Equatable {
 
 @MainActor
 struct AlertContext {
-    // MARK: - Create Review
+    // MARK: - Reviews
     
     static let unableToSaveReview = AlertItem(
-        title: Text("Articles Error"),
-        message: Text("Unable to save your review.\nPlease try again.\nIf this problem persists, please contact us."),
+        title: Text("Save Error"),
+        message: Text("Unable to save your Review.\nPlease try again.\nIf this problem persists, please contact us."),
+        dismissButton: .default(Text("Ok"))
+    )
+    
+    static let unableToSaveReviewReminder = AlertItem(
+        title: Text("Save Error"),
+        message: Text("Unable to save your Review Reminder.\nPlease try again.\nIf this problem persists, please contact us."),
+        dismissButton: .default(Text("Ok"))
+    )
+    
+    // MARK: - Communication
+    
+    static let unableToTriggerVibration = AlertItem(
+        title: Text("Unable to Trigger Vibration"),
+        message: Text("Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again."),
         dismissButton: .default(Text("Ok"))
     )
 }

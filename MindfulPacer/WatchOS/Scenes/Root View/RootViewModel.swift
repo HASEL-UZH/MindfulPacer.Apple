@@ -6,7 +6,27 @@
 //
 
 import Foundation
+import UserNotifications
+@Observable
+class RootViewModel {
+    // MARK: - Dependencies
+    private let initializeNotificationsUseCase: InitializeNotificationsUseCase
+    private let initializeConnectivityUseCase: InitializeConnectivityUseCase
+    
+    // MARK: - Initialization
 
-@Observable class RootViewModel {
- 
+    init(
+        initializeNotificationsUseCase: InitializeNotificationsUseCase,
+        initializeConnectivityUseCase: InitializeConnectivityUseCase
+    ) {
+        self.initializeNotificationsUseCase = initializeNotificationsUseCase
+        self.initializeConnectivityUseCase = initializeConnectivityUseCase
+    }
+    
+    // MARK: View Events
+    
+    func onViewFirstAppear() {
+        initializeNotificationsUseCase.execute()
+        initializeConnectivityUseCase.execute()
+    }
 }

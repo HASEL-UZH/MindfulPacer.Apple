@@ -14,9 +14,13 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     
     // MARK: - Root
     
+    @MainActor
     var rootViewModel: Factory<RootViewModel> {
         self {
-            RootViewModel()
+            RootViewModel(
+                initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase(),
+                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
+            )
         }
     }
 }

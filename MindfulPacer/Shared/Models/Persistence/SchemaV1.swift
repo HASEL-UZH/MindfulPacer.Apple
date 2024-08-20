@@ -19,7 +19,6 @@ enum SchemaV1: VersionedSchema {
     
     static var models: [any PersistentModel.Type] {
         [
-            HeartRateSample.self,
             Review.self,
             Category.self,
             Subcategory.self,
@@ -38,6 +37,7 @@ extension ModelContainer {
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         
         do {
+            // FIXME: Performing I/O on the main thread can cause slow launches.
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("DEBUG: Failed to initialize ModelContainer.")

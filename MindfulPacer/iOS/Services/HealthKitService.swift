@@ -28,10 +28,14 @@ enum Period {
     }
 }
 
+// MARK: - HealthKitServiceProtocol
+
 protocol HealthKitServiceProtocol {
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void)
     func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], Error>) -> Void)
 }
+
+// MARK: - HealthKitService
 
 class HealthKitService: HealthKitServiceProtocol,  @unchecked Sendable {
     static let shared = HealthKitService()

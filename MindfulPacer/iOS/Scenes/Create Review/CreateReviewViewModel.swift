@@ -20,8 +20,8 @@ class CreateReviewViewModel {
     
     // MARK: - Published Properties (State)
     
-    var navigationPath = NavigationPath()
-    var isRatingSheetPresented: Bool = false
+    var navigationPath: [CreateReviewNavigationDestination] = []
+    var activeSheet: CreateReviewSheet? = nil
     var currentRatingType: ReviewMetricRatingType? = nil
     var alertItem: AlertItem? = nil
     
@@ -33,7 +33,7 @@ class CreateReviewViewModel {
     var selectedMood: String? = nil
     var selectedSubcategory: Subcategory? = nil
     var didTriggerCrash: Bool = false
-    var additionalInformation: String = ""    
+    var additionalInformation: String = ""
     
     var ratings: [ReviewMetricRating] = [
         ReviewMetricRating(type: .headaches),
@@ -64,21 +64,14 @@ class CreateReviewViewModel {
     
     // MARK: - User Actions
     
-    func toggleCategorySelection(_ category: Category) {
-        if selectedCategory == category {
-            selectedCategory = nil
+    func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
+        if selectedItem == item {
+            selectedItem = nil
         } else {
-            selectedCategory = category
-            navigationPath.removeLast()
-        }
-    }
-    
-    func toggleMoodSelection(_ mood: String) {
-        if selectedMood == mood {
-            selectedMood = nil
-        } else {
-            selectedMood = mood
-            navigationPath.removeLast()
+            selectedItem = item
+            if !ProcessInfo.processInfo.isRunningInPreview {
+                navigationPath.removeLast()
+            }
         }
     }
     
@@ -86,17 +79,25 @@ class CreateReviewViewModel {
         if let index = ratings.firstIndex(where: { $0.type == type }) {
             if ratings[index].value == value {
                 ratings[index].value = nil
-                isRatingSheetPresented = true
+                presentSheet(.ratingSheet)
             } else {
                 ratings[index].value = value
-                isRatingSheetPresented = false
+                dismissSheet(.ratingSheet)
             }
         }
     }
     
     func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type
-        isRatingSheetPresented = true
+        presentSheet(.ratingSheet)
+    }
+    
+    func presentSheet(_ sheet: CreateReviewSheet) {
+        activeSheet = sheet
+    }
+    
+    func dismissSheet(_ sheet: CreateReviewSheet) {
+        activeSheet = nil
     }
     
     func saveReview() {
@@ -126,6 +127,4 @@ class CreateReviewViewModel {
             categories = fetchedCategories
         }
     }
-        
-    // MARK: - Error Handling
 }

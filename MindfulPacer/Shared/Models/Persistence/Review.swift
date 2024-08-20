@@ -31,7 +31,6 @@ extension SchemaV1 {
         var painsAndNeedlesRating: Int?
         var muscleAchesRating: Int?
         var additionalInformation: String?
-        // TODO: Add timestamp
         
         init(
             id: UUID = UUID(),

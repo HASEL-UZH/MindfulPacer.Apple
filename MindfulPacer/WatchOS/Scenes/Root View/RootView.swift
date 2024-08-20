@@ -12,8 +12,13 @@ struct RootView: View {
     
     var body: some View {
         Image(systemName: "heart.fill")
+            .onViewFirstAppear {
+                viewModel.onViewFirstAppear()
+            }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     RootView()

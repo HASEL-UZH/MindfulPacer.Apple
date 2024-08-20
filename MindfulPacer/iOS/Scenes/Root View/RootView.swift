@@ -10,23 +10,25 @@ import SwiftData
 
 struct RootView: View {
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
-    // Temporary
+    
+    // TODO: Temporary, remove for production
     @State private var showCreateReviewView = false
-    @Query private var reviews: [Review]
+    @State private var showCreateReviewReminderView = false
+    @Query private var reviewReminders: [ReviewReminder]
     
     var body: some View {
         TabView {
             List {
-                if reviews.isEmpty {
-                    Text("No Reviews")
+                if reviewReminders.isEmpty {
+                    Text("No Review Reminders")
                 } else {
-                    ForEach(reviews) { review in
+                    ForEach(reviewReminders) { reviewReminder in
                         VStack(alignment: .leading, spacing: 16) {
-                            Text(review.category?.name ?? "No category selected")
-                            Text(review.subcategory?.name ?? "No subcategory selected")
-                            Text(review.mood ?? "No mood selected")
-                            Text("Crash triggered? \(review.didTriggerCrash ?? false))")
-                            Text("Headaches rating: \(review.headachesRating ?? 0)")
+                            Text(reviewReminder.measurementType.rawValue)
+                            Text(reviewReminder.alarmType.rawValue)
+                            Text(String(reviewReminder.threshold))
+                            Text(reviewReminder.vibrationStrength.rawValue)
+                            Text(reviewReminder.interval.rawValue)
                         }
                     }
                 }
@@ -35,7 +37,7 @@ struct RootView: View {
                 Label("Home", systemImage: "house.fill")
             }
             .onAppear {
-                showCreateReviewView.toggle()
+                showCreateReviewReminderView.toggle()
             }
         }
         .onViewFirstAppear {
@@ -43,10 +45,14 @@ struct RootView: View {
         }
         .sheet(isPresented: $showCreateReviewView) {
             CreateReviewView()
-                .interactiveDismissDisabled()
+        }
+        .sheet(isPresented: $showCreateReviewReminderView) {
+            CreateReviewReminderView()
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     RootView()

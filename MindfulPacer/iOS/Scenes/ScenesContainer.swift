@@ -6,7 +6,6 @@
 //
 
 import Factory
-import SwiftUI
 import SwiftData
 
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
@@ -20,7 +19,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             RootViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase()
+                addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
+                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
             )
         }
     }
@@ -41,6 +41,13 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     
     @MainActor
     var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {
-        self { CreateReviewReminderViewModel(modelContext: ModelContainer.prod.mainContext) }
+        self {
+            CreateReviewReminderViewModel(
+                modelContext: ModelContainer.prod.mainContext,
+                createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
+                triggerHapticFeedbackUseCase: UseCasesContainer.shared.triggerHapticFeedbackUseCase(),
+                triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
+            )
+        }
     }
 }

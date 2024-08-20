@@ -15,29 +15,169 @@ class CreateReviewReminderViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
+    private let createReviewReminderUseCase: CreateReviewReminderUseCase
+    private let triggerHapticFeedbackUseCase: TriggerHapticFeedbackUseCase
+    private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     
     // MARK: - Published Properties (State)
     
-    var navigationPath = NavigationPath()
+    var navigationPath: [CreateReviewReminderNavigationDestination] = []
+    var activeSheet: CreateReviewReminderSheet? = nil
     var alertItem: AlertItem? = nil
-
+    
+    var isContinueButtonDisabled: Bool {
+        guard let lastDestination = navigationPath.last else {
+            return false
+        }
+        
+        switch lastDestination {
+        case .measurementType:
+            return selectedMeasurementType == nil
+        case .alarmType:
+            return selectedAlarmType == nil
+        case .threshold:
+            return threshold == nil
+        case .vibrationStrength:
+            return selectedVibrationStrength == nil
+        case .interval:
+            return selectedInterval == nil
+        default:
+            return false
+        }
+    }
+    
+    var showContinueButton: Bool {
+        /// Check if the second-to-last element in the navigationPath is .summary
+        if navigationPath.dropLast().last == .summary {
+            return false
+        }
+        return true
+    }
+    
+    var continueButtonTitle: String {
+        guard let lastDestination = navigationPath.last else {
+            return "Continue"
+        }
+        
+        switch lastDestination {
+        case .summary:
+            return "Create"
+        default:
+            return "Continue"
+        }
+    }
+    
+    var thresholdUnitText: String {
+        switch selectedMeasurementType {
+        case .heartRate:
+            "bpm"
+        case .steps:
+            "steps"
+        case nil:
+            ""
+        }
+    }
+    
+    var notificationPreviewBodyText: String {
+        String("A Review Reminder was triggered because your \(selectedMeasurementType?.rawValue ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText) over a period of \(selectedInterval?.rawValue ?? "<INTERBAL>").")
+    }
+    
+    var selectedMeasurementType: ReviewReminder.MeasurementType? = nil
+    var selectedAlarmType: ReviewReminder.AlarmType? = nil
+    var threshold: Int? = nil
+    var selectedVibrationStrength: ReviewReminder.VibrationStrength? = nil
+    var selectedInterval: ReviewReminder.Interval? = nil
+    
     // MARK: - Initialization
     
     init(
-        modelContext: ModelContext
+        modelContext: ModelContext,
+        createReviewReminderUseCase: CreateReviewReminderUseCase,
+        triggerHapticFeedbackUseCase: TriggerHapticFeedbackUseCase,
+        triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     ) {
         self.modelContext = modelContext
+        self.createReviewReminderUseCase = createReviewReminderUseCase
+        self.triggerHapticFeedbackUseCase = triggerHapticFeedbackUseCase
+        self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
     
     // MARK: - View Lifecycle
     
-    func onViewFirstAppear() {
-
-    }
+    func onViewFirstAppear() {}
     
     // MARK: - User Actions
     
+    func continueButtonTapped() {
+        /// Check if we are on the first page
+        guard let currentDestination = navigationPath.last else {
+            navigationPath.append(CreateReviewReminderNavigationDestination.measurementType)
+            return
+        }
+        
+        switch currentDestination {
+        case .measurementType:
+            navigationPath.append(CreateReviewReminderNavigationDestination.alarmType)
+        case .alarmType:
+            navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
+        case .threshold:
+            navigationPath.append(CreateReviewReminderNavigationDestination.vibrationStrength)
+        case .vibrationStrength:
+            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
+        case .interval:
+            navigationPath.append(CreateReviewReminderNavigationDestination.summary)
+        case .summary:
+            saveReviewReminder()
+        }
+    }
+    
+    func testVibrationStrengthTapped() {
+        guard let selectedVibrationStrength else { return }
+        triggerHapticFeedbackUseCase.execute(vibrationStrength: selectedVibrationStrength) { result in
+            if case .failure(_) = result {
+                self.alertItem = AlertContext.unableToTriggerVibration
+            }
+        }
+    }
+    
+    func sendNotificationToWatch() {
+        triggerWatchNotificationUseCase.execute(title: "Review Reminder", body: notificationPreviewBodyText) { result in
+            switch result {
+            case .success:
+                print("DEBUGY: Notification sent successfully.")
+            case .failure(let error):
+                print("DEBUGY: Failed to send notification: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func presentSheet(_ sheet: CreateReviewReminderSheet) {
+        activeSheet = sheet
+    }
+    
+    func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
+        selectedItem = (selectedItem == item) ? nil : item
+    }
+    
     // MARK: - Private Methods
     
-    // MARK: - Error Handling
+    private func saveReviewReminder() {
+        guard let measurementType = selectedMeasurementType,
+              let alarmType = selectedAlarmType,
+              let threshold,
+              let vibrationStrength = selectedVibrationStrength,
+              let interval = selectedInterval else { return }
+        
+        let result = createReviewReminderUseCase.execute(
+            measurementType: measurementType,
+            alarmType: alarmType,
+            threshold: threshold,
+            vibrationStrength: vibrationStrength,
+            interval: interval
+        )
+        
+        if case .failure(_) = result {
+            alertItem = AlertContext.unableToSaveReviewReminder
+        }
+    }
 }

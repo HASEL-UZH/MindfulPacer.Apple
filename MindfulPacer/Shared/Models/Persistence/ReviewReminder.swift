@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftData
+#if os(watchOS)
+import WatchKit
+#endif
 
 // MARK: - Review Reminder
 
@@ -46,7 +49,7 @@ extension ReviewReminder {
     enum MeasurementType: String, Codable, CaseIterable {
         case heartRate = "Heart Rate"
         case steps = "Steps"
-        
+                
         var icon: String {
             switch self {
             case .heartRate: "heart"
@@ -60,10 +63,10 @@ extension ReviewReminder {
 
 extension ReviewReminder {
     enum AlarmType: String, Codable, CaseIterable {
-        case light
-        case medium
-        case strong
-        
+        case light = "Light"
+        case medium = "Medium"
+        case strong = "Strong"
+                
         var icon: String {
             switch self {
             case .light: "sun.min"
@@ -89,10 +92,26 @@ extension ReviewReminder {
 
 extension ReviewReminder {
     enum VibrationStrength: String, Codable, CaseIterable {
-        case none
-        case light
-        case medium
-        case strong
+        case none = "None"
+        case light = "Light"
+        case medium = "Medium"
+        case strong = "Strong"
+        
+        #if os(watchOS)
+        /// Since there is no direct mapping to the concept of 'strength' with haptic feedback on the Apple Watch, we are using default types to mimic a scale from 'light' to 'strong'
+        func hapticType() -> WKHapticType? {
+            switch self {
+            case .none:
+                return nil
+            case .light:
+                return .start
+            case .medium:
+                return .success
+            case .strong:
+                return .failure
+            }
+        }
+        #endif
     }
 }
 
@@ -100,10 +119,10 @@ extension ReviewReminder {
 
 extension ReviewReminder {
     enum Interval: String, Codable, CaseIterable {
-        case immediately
-        case _10seconds
-        case _30second
-        case _1minute
+        case immediately = "Immediately"
+        case _10seconds = "10 Seconds"
+        case _30second = "30 Seconds"
+        case _1minute = "1 Minute"
         
         var icon: String {
             switch self {
