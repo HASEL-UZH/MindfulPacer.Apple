@@ -41,6 +41,10 @@ extension CreateReviewReminderView {
                             }
                     }
                     
+                    Text("Select for which measurement type you want to receive reminders to do a review.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    
                     Spacer()
                 }
                 .padding(.horizontal)

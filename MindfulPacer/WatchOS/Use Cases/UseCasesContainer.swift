@@ -24,6 +24,6 @@ extension UseCasesContainer {
     
     @MainActor
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
-        self { DefaultInitializeNotificationsUseCase(watchNotificationService: NotificationService.shared) }
+        self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }
 }

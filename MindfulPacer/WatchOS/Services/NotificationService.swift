@@ -11,7 +11,7 @@ import UserNotifications
 // MARK: - NotificationServiceProtocol
 
 protocol NotificationServiceProtocol: Sendable {
-    func requestNotificationAuthorization()
+    func requestNotificationAuthorization(completion: @escaping (Result<Void, Error>) -> Void)
     func triggerLocalNotification(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void)
     func setDelegate()
 }
@@ -32,20 +32,25 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
     }
 
     // MARK: - Notification Authorization
-
-    func requestNotificationAuthorization() {
+    
+    func requestNotificationAuthorization(completion: @escaping (Result<Void, Error>) -> Void) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error = error {
-                print("DEBUGY: Notification authorization failed with error: \(error.localizedDescription)")
+                print("DEBUG: Notification authorization failed with error: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else if granted {
+                print("DEBUG: Notification authorization granted: \(granted)")
+                completion(.success(()))
             } else {
-                print("DEBUGY: Notification authorization granted: \(granted)")
+                print("DEBUG: Notification authorization not granted.")
+                completion(.failure(NSError(domain: "com.yourapp.notification", code: 1, userInfo: [NSLocalizedDescriptionKey: "Notification authorization not granted."])))
             }
         }
     }
-
+    
     // MARK: - Trigger Local Notification
-
+    
     func triggerLocalNotification(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {
         print("DEBUGY: triggerLocalNotification called")
         let content = UNMutableNotificationContent()

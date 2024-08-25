@@ -20,24 +20,24 @@ extension SchemaV1 {
     final class ReviewReminder {
         var id: UUID = UUID()
         var measurementType: MeasurementType = MeasurementType.heartRate
-        var alarmType: AlarmType = AlarmType.light
+//        var alarmType: AlarmType = AlarmType.light
         var threshold: Int = 0
-        var vibrationStrength: VibrationStrength = VibrationStrength.none
+//        var vibrationStrength: VibrationStrength = VibrationStrength.none
         var interval: Interval = Interval._10seconds
         
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
-            alarmType: AlarmType = AlarmType.light,
+//            alarmType: AlarmType = AlarmType.light,
             threshold: Int = 0,
-            vibrationStrength: VibrationStrength = VibrationStrength.none,
+//            vibrationStrength: VibrationStrength = VibrationStrength.none,
             interval: Interval = Interval._10seconds
         ) {
             self.id = id
             self.measurementType = measurementType
-            self.alarmType = alarmType
+//            self.alarmType = alarmType
             self.threshold = threshold
-            self.vibrationStrength = vibrationStrength
+//            self.vibrationStrength = vibrationStrength
             self.interval = interval
         }
     }

@@ -22,11 +22,12 @@ extension CreateReviewReminderView {
                 ScrollView {
                     VStack(spacing: 16) {
                         measurementType
-                        alarmType
+//                        alarmType
                         threshold
-                        vibrationStrength
+//                        vibrationStrength
                         interval
-                        notificationPreview
+                        notificationPreviewButton
+                            .padding(.top)
                         
                         Spacer()
                     }
@@ -35,6 +36,22 @@ extension CreateReviewReminderView {
             }
             .navigationTitle("Summary")
         }
+        
+        private var notificationPreviewButton: some View {
+            Button {
+                viewModel.sendNotificationToWatch()
+            } label: {
+                SFSymbolLabel(
+                    icon: "bell.badge",
+                    title: "Test Notification on Apple Watch",
+                    symbolRenderingMode: .hierarchical
+                )
+                .fontWeight(.semibold)
+            }
+            .buttonBorderShape(.capsule)
+            .buttonStyle(.bordered)
+            .disabled(viewModel.isContinueButtonDisabled)
+        }
     }
 }
 
@@ -42,13 +59,14 @@ extension CreateReviewReminderView {
 
 extension CreateReviewReminderView.SummaryView {
     @ViewBuilder private func widgetView<Content: View>(
+        icon: String,
         title: String,
         destination: CreateReviewReminderNavigationDestination,
         @ViewBuilder label: @escaping () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(title)
+                SFSymbolLabel(icon: icon, title: title)
                     .foregroundStyle(.secondary)
                     .font(.subheadline.weight(.semibold))
                 Spacer()
@@ -75,12 +93,14 @@ extension CreateReviewReminderView.SummaryView {
 extension CreateReviewReminderView.SummaryView {
     private var measurementType: some View {
         widgetView(
+            icon: "ruler",
             title: "Measurement Type",
             destination: .measurementType) {
-                if let selectedMeasurementType = viewModel.selectedMeasurementType {
-                    SFSymbolLabel(icon: selectedMeasurementType.icon, title: selectedMeasurementType.rawValue)
+                if let measurementType = viewModel.selectedMeasurementType {
+                    Text(measurementType.rawValue)
                 } else {
                     Text("No Measurement Type Selected")
+                        .foregroundStyle(.red)
                 }
             }
     }
@@ -88,25 +108,28 @@ extension CreateReviewReminderView.SummaryView {
 
 // MARK: - Alarm Type
 
-extension CreateReviewReminderView.SummaryView {
-    private var alarmType: some View {
-        widgetView(
-            title: "Alarm Type",
-            destination: .alarmType) {
-                if let selectedAlarmType = viewModel.selectedAlarmType {
-                    SFSymbolLabel(icon: selectedAlarmType.icon, title: selectedAlarmType.rawValue)
-                } else {
-                    Text("No Alarm Type Selected")
-                }
-            }
-    }
-}
+//extension CreateReviewReminderView.SummaryView {
+//    private var alarmType: some View {
+//        widgetView(
+//            icon: "alarm",
+//            title: "Alarm Type",
+//            destination: .alarmType) {
+//                if let alarmType = viewModel.selectedAlarmType {
+//                    Text(alarmType.rawValue)
+//                } else {
+//                    Text("No Alarm Type Selected")
+//                        .foregroundStyle(.red)
+//                }
+//            }
+//    }
+//}
 
 // MARK: - Threshold
 
 extension CreateReviewReminderView.SummaryView {
     private var threshold: some View {
         widgetView(
+            icon: "chart.line.flattrend.xyaxis",
             title: "Threshold",
             destination: .threshold) {
                 if let threshold = viewModel.threshold {
@@ -118,6 +141,7 @@ extension CreateReviewReminderView.SummaryView {
                     }
                 } else {
                     Text("No Threshold Set")
+                        .foregroundStyle(.red)
                 }
             }
     }
@@ -125,86 +149,37 @@ extension CreateReviewReminderView.SummaryView {
 
 // MARK: - Vibration Strength
 
-extension CreateReviewReminderView.SummaryView {
-    private var vibrationStrength: some View {
-        widgetView(
-            title: "Vibration Strength",
-            destination: .vibrationStrength) {
-                if let selectedVibrationStrength = viewModel.selectedVibrationStrength {
-                    Text(selectedVibrationStrength.rawValue)
-                } else {
-                    Text("No Vibration Strength Selected")
-                }
-            }
-    }
-}
+//extension CreateReviewReminderView.SummaryView {
+//    private var vibrationStrength: some View {
+//        widgetView(
+//            icon: "hammer",
+//            title: "Vibration Strength",
+//            destination: .vibrationStrength) {
+//                if let vibrationStrength = viewModel.selectedVibrationStrength {
+//                    Text(vibrationStrength.rawValue)
+//                } else {
+//                    Text("No Vibration Strength Selected")
+//                        .foregroundStyle(.red)
+//                }
+//            }
+//    }
+//}
 
 // MARK: - Interval
 
 extension CreateReviewReminderView.SummaryView {
     private var interval: some View {
         widgetView(
+            icon: "timer",
             title: "Interval",
             destination: .interval) {
-                if let selectedInterval = viewModel.selectedInterval {
-                    SFSymbolLabel(icon: selectedInterval.icon, title: selectedInterval.rawValue)
+                if let interval = viewModel.selectedInterval {
+                    Text(interval.rawValue)
                 } else {
                     Text("No Interval Selected")
+                        .foregroundStyle(.red)
                 }
             }
-    }
-}
-
-// MARK: - Notification Preview
-
-extension CreateReviewReminderView.SummaryView {
-    private var notificationPreview: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            SFSymbolLabel(icon: "app.badge.fill", title: "Notification Preview")
-                .foregroundStyle(Color("BrandPrimary"))
-            Divider()
-            HStack(spacing: 8) {
-                Image("MindfulPacer Icon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text("Review Reminder")
-                            .fontWeight(.semibold)
-                        
-                        Spacer()
-                        
-                        Text("now")
-                            .font(.footnote)
-                            .foregroundStyle(.primary.opacity(0.4))
-                    }
-                    Text(viewModel.notificationPreviewBodyText)
-                        .font(.subheadline)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(.ultraThinMaterial)
-            }
-            
-            Button {
-                viewModel.sendNotificationToWatch()
-            } label: {
-                Text("Send Test Notification")
-                    .fontWeight(.semibold)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
-        }
-        .padding(.bottom, 64)
     }
 }
 

@@ -8,20 +8,21 @@
 import Foundation
 
 protocol InitializeNotificationsUseCase {
-    func execute()
+    func execute(completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 // MARK: - Use Case Implementation
 
 final class DefaultInitializeNotificationsUseCase: InitializeNotificationsUseCase {
-    private let watchNotificationService: NotificationService
+    private let notificationService: NotificationService
     
-    init(watchNotificationService: NotificationService) {
-        self.watchNotificationService = watchNotificationService
+    init(notificationService: NotificationService) {
+        self.notificationService = notificationService
     }
     
-    func execute() {
-        // TODO: Add error handling
-        watchNotificationService.requestNotificationAuthorization()
+    func execute(completion: @escaping (Result<Void, Error>) -> Void) {
+        notificationService.requestNotificationAuthorization { result in
+            completion(result)
+        }
     }
 }

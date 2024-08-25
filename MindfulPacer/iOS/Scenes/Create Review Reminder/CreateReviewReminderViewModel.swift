@@ -33,16 +33,16 @@ class CreateReviewReminderViewModel {
         switch lastDestination {
         case .measurementType:
             return selectedMeasurementType == nil
-        case .alarmType:
-            return selectedAlarmType == nil
+//        case .alarmType:
+//            return selectedAlarmType == nil
         case .threshold:
             return threshold == nil
-        case .vibrationStrength:
-            return selectedVibrationStrength == nil
+//        case .vibrationStrength:
+//            return selectedVibrationStrength == nil
         case .interval:
             return selectedInterval == nil
-        default:
-            return false
+        case .summary:
+            return (selectedMeasurementType == nil /*|| selectedAlarmType == nil*/ || threshold == nil /*|| selectedVibrationStrength == nil*/ || selectedInterval == nil)
         }
     }
     
@@ -117,13 +117,13 @@ class CreateReviewReminderViewModel {
         
         switch currentDestination {
         case .measurementType:
-            navigationPath.append(CreateReviewReminderNavigationDestination.alarmType)
-        case .alarmType:
             navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
+//        case .alarmType:
+//            navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
         case .threshold:
-            navigationPath.append(CreateReviewReminderNavigationDestination.vibrationStrength)
-        case .vibrationStrength:
             navigationPath.append(CreateReviewReminderNavigationDestination.interval)
+//        case .vibrationStrength:
+//            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
         case .interval:
             navigationPath.append(CreateReviewReminderNavigationDestination.summary)
         case .summary:
@@ -163,16 +163,16 @@ class CreateReviewReminderViewModel {
     
     private func saveReviewReminder() {
         guard let measurementType = selectedMeasurementType,
-              let alarmType = selectedAlarmType,
+//              let alarmType = selectedAlarmType,
               let threshold,
-              let vibrationStrength = selectedVibrationStrength,
+//              let vibrationStrength = selectedVibrationStrength,
               let interval = selectedInterval else { return }
         
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
-            alarmType: alarmType,
+//            alarmType: alarmType,
             threshold: threshold,
-            vibrationStrength: vibrationStrength,
+//            vibrationStrength: vibrationStrength,
             interval: interval
         )
         

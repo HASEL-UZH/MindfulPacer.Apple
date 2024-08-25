@@ -7,13 +7,7 @@
     "0" : {
 
     },
-    "1. **Light**: coloured display, vibration.\n2. **Medium**: vibration, confirmation required.\n3. **Strong**: blinking display, vibration, sound, confirmation required." : {
-
-    },
     "Additional information" : {
-
-    },
-    "Alarm Type" : {
 
     },
     "Cancel" : {
@@ -22,10 +16,10 @@
     "Category" : {
 
     },
-    "Create Reminder" : {
+    "Create Review" : {
 
     },
-    "Create Review" : {
+    "Create Review Reminder" : {
 
     },
     "Did this trigger a crash?" : {
@@ -43,9 +37,6 @@
     "Mood" : {
 
     },
-    "No Alarm Type Selected" : {
-
-    },
     "No Interval Selected" : {
 
     },
@@ -58,34 +49,37 @@
     "No Threshold Set" : {
 
     },
-    "No Vibration Strength Selected" : {
-
-    },
-    "now" : {
-
-    },
     "Ok" : {
 
     },
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
 
     },
-    "Review Reminder" : {
-
-    },
     "Save Error" : {
 
     },
-    "Send Test Notification" : {
+    "Select for which measurement type you want to receive reminders to do a review." : {
+
+    },
+    "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
     "Summary" : {
 
     },
-    "Test" : {
+    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
 
     },
-    "This allows you to add a new alarm which can be triggered on your Apple Watch or iPhone." : {
+    "The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
+
+    },
+    "The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer." : {
+
+    },
+    "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes." : {
+
+    },
+    "This allows you to add a new Review Reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
     "Threshold" : {
@@ -98,12 +92,6 @@
 
     },
     "Unable to Trigger Vibration" : {
-
-    },
-    "Vibration Strength" : {
-
-    },
-    "You can test how the selected vibration strength feels by tapping on the '**Test**' button. Please ensure you are wearing your Apple Watch to be able to test this functionality." : {
 
     }
   },

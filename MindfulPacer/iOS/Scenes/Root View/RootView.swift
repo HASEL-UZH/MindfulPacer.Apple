@@ -25,9 +25,9 @@ struct RootView: View {
                     ForEach(reviewReminders) { reviewReminder in
                         VStack(alignment: .leading, spacing: 16) {
                             Text(reviewReminder.measurementType.rawValue)
-                            Text(reviewReminder.alarmType.rawValue)
+//                            Text(reviewReminder.alarmType.rawValue)
                             Text(String(reviewReminder.threshold))
-                            Text(reviewReminder.vibrationStrength.rawValue)
+//                            Text(reviewReminder.vibrationStrength.rawValue)
                             Text(reviewReminder.interval.rawValue)
                         }
                     }

@@ -12,6 +12,8 @@ struct SFSymbolLabel: View {
     var icon: String
     var title: String
     var textColor: Color? = nil
+    var symbolVariant: SymbolVariants = .fill
+    var symbolRenderingMode: SymbolRenderingMode = .monochrome
     
     var body: some View {
         Label {
@@ -24,7 +26,8 @@ struct SFSymbolLabel: View {
         } icon: {
             Image(systemName: icon)
                 .frame(width: 24)
-                .symbolVariant(.fill)
+                .symbolVariant(symbolVariant)
+                .symbolRenderingMode(symbolRenderingMode)
         }
 
     }

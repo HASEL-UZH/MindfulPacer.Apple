@@ -26,7 +26,14 @@ class RootViewModel {
     // MARK: View Events
     
     func onViewFirstAppear() {
-        initializeNotificationsUseCase.execute()
+        initializeNotificationsUseCase.execute { result in
+            switch result {
+            case .success(let success):
+                print("DEBUGY: Successfully initialized notifications")
+            case .failure(let failure):
+                print("DEBUGY: Could not initialize notifications")
+            }
+        }
         initializeConnectivityUseCase.execute()
     }
 }

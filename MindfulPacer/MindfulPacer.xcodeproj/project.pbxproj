@@ -10,6 +10,7 @@
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
+		0D0FE4A42C7772C1002E001B /* SFSymbolGroupBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0FE4A32C7772C1002E001B /* SFSymbolGroupBox.swift */; };
 		0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1016F12C57B229008AF31D /* HealthKitService.swift */; };
 		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
 		0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82062C46654B0004CD34 /* RootViewModel.swift */; };
@@ -109,6 +110,7 @@
 
 /* Begin PBXFileReference section */
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
+		0D0FE4A32C7772C1002E001B /* SFSymbolGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		0D2F82042C46653E0004CD34 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0D2F82062C46654B0004CD34 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
@@ -648,6 +650,7 @@
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0D4EBE352C727B6200C1865D /* InfoSheetView.swift */,
 				0D8203B32C6E9D680023EE2D /* SFSymbolLabel.swift */,
+				0D0FE4A32C7772C1002E001B /* SFSymbolGroupBox.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -834,6 +837,7 @@
 				0D500FE82C749AA300395AEB /* RatingSelectionView.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9AB0C02C6D4C6900BB773F /* ReviewRatingMetric.swift in Sources */,
+				0D0FE4A42C7772C1002E001B /* SFSymbolGroupBox.swift in Sources */,
 				0D500FE32C7498E300395AEB /* ReviewCategoryView.swift in Sources */,
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
 				0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */,

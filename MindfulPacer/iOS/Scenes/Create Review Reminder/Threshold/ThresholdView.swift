@@ -33,6 +33,10 @@ extension CreateReviewReminderView {
                             .foregroundStyle(Color(.secondarySystemGroupedBackground))
                     }
                     
+                    Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
