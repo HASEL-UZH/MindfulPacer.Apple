@@ -69,7 +69,7 @@ class CreateReviewViewModel {
             selectedItem = nil
         } else {
             selectedItem = item
-            if !ProcessInfo.processInfo.isRunningInPreview {
+            if !ProcessInfo.processInfo.isRunningInPreviewOrTest {
                 navigationPath.removeLast()
             }
         }

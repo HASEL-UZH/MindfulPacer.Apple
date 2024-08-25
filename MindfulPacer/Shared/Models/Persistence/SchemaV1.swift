@@ -30,8 +30,9 @@ enum SchemaV1: VersionedSchema {
 // MARK: - Container
 
 extension ModelContainer {
-    @MainActor
+    
     /// Container used in production
+    @MainActor
     static let prod: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -44,26 +45,65 @@ extension ModelContainer {
         }
     }()
     
-    @MainActor
     /// Container used to provide data for the Previews
+    @MainActor
     static let preview: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: schema, configurations: [modelConfiguration])
         
-        // TODO: Only add categories if it's empty!!
+        let fetchDescriptor = FetchDescriptor<Category>()
         
-//        let categories: [Category] = [
-//            Category(name: "Movement", icon: "figure.run", subcategories: []),
-//            Category(name: "Household", icon: "house"),
-//            Category(name: "Self-Care", icon: "shower"),
-//            Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
-//            Category(name: "Alarms", icon: "alarm"),
-//            Category(name: "Others", icon: "puzzlepiece")
-//        ]
-//        
-//        categories.forEach { container.mainContext.insert($0) }
-//        try! container.mainContext.save()
+        do {
+            let categoriesCount = try container.mainContext.fetch(fetchDescriptor).count
+            
+            if categoriesCount == 0 {
+                let categories: [Category] = [
+                    Category(name: "Movement", icon: "figure.run", subcategories: []),
+                    Category(name: "Household", icon: "house"),
+                    Category(name: "Self-Care", icon: "shower"),
+                    Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
+                    Category(name: "Alarms", icon: "alarm"),
+                    Category(name: "Others", icon: "puzzlepiece")
+                ]
+                
+                categories.forEach { container.mainContext.insert($0) }
+                try! container.mainContext.save()
+            }
+        } catch {
+            
+        }
+        
+        return container
+    }()
+    
+    @MainActor
+    static let testing: ModelContainer = {
+        let schema = Schema(CurrentScheme.models)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: schema, configurations: [modelConfiguration])
+        
+        let fetchDescriptor = FetchDescriptor<Category>()
+        
+        do {
+            let categoriesCount = try container.mainContext.fetch(fetchDescriptor).count
+            
+            if categoriesCount == 0 {
+                let categories: [Category] = [
+                    Category(name: "Movement", icon: "figure.run", subcategories: []),
+                    Category(name: "Household", icon: "house"),
+                    Category(name: "Self-Care", icon: "shower"),
+                    Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
+                    Category(name: "Alarms", icon: "alarm"),
+                    Category(name: "Others", icon: "puzzlepiece")
+                ]
+                
+                categories.forEach { container.mainContext.insert($0) }
+                try! container.mainContext.save()
+            }
+        } catch {
+            
+        }
         
         return container
     }()
