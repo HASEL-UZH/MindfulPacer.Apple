@@ -394,8 +394,8 @@
 				0D27BFC32C32DA8B007F4CFA /* Shared */,
 				0D8C66322C2DA96000853EDE /* iOS */,
 				0DBA37392C32087300209681 /* WatchOS */,
-				0DDD33772C7B609200A0B091 /* MindfulPacerTests */,
-				0DDD33842C7B60A900A0B091 /* MindfulPacerWatchTests */,
+				0DDD33772C7B609200A0B091 /* iOSTests */,
+				0DDD33842C7B60A900A0B091 /* WatchOSTests */,
 				0D8C66312C2DA96000853EDE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -727,7 +727,7 @@
 			path = Errors;
 			sourceTree = "<group>";
 		};
-		0DDD33772C7B609200A0B091 /* MindfulPacerTests */ = {
+		0DDD33772C7B609200A0B091 /* iOSTests */ = {
 			isa = PBXGroup;
 			children = (
 				0DDD33922C7B622700A0B091 /* Mocks */,
@@ -736,15 +736,15 @@
 				0DDD338E2C7B60F500A0B091 /* Use Cases Tests */,
 				0DDD33912C7B612300A0B091 /* Utilities Tests */,
 			);
-			path = MindfulPacerTests;
+			path = iOSTests;
 			sourceTree = "<group>";
 		};
-		0DDD33842C7B60A900A0B091 /* MindfulPacerWatchTests */ = {
+		0DDD33842C7B60A900A0B091 /* WatchOSTests */ = {
 			isa = PBXGroup;
 			children = (
 				0DDD33852C7B60A900A0B091 /* MindfulPacerWatchTests.swift */,
 			);
-			path = MindfulPacerWatchTests;
+			path = WatchOSTests;
 			sourceTree = "<group>";
 		};
 		0DDD338E2C7B60F500A0B091 /* Use Cases Tests */ = {

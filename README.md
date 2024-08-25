@@ -266,10 +266,18 @@ This project follows a clean architecture approach combined with MVVM principles
 
 ```plaintext
 MindfulPacer
+├── Shared
+│   ├── Common UI
+│   ├── Data
+│   ├── Errors
+│   ├── Extensions
+│   ├── Models
+│   ├── Resources
 ├── iOS
 │   ├── Application
 │   ├── Common UI
 │   ├── Extensions
+│   ├── Preview Content
 │   ├── Resources
 │   ├── Scenes
 │   ├── Services
@@ -278,18 +286,34 @@ MindfulPacer
 │   ├── Application
 │   ├── Common UI
 │   ├── Extensions
+│   ├── Preview Content
 │   ├── Resources
 │   ├── Scenes
 │   ├── Services
 │   └── Use Cases
-└── Shared
-    ├── Common UI
-    ├── Data
-    ├── Extensions
-    ├── Models
-    ├── Resources
-    └── Services
+├── iOSTests
+│   ├── Mocks
+│   ├── Services Tests
+│   ├── View Models Tests
+│   ├── Use Cases Tests
+│   ├── Utilities Tests
+└── WatchOSTests
+    ├── Mocks
+    ├── Services Tests
+    ├── View Models Tests
+    ├── Use Cases Tests
+    └── Utilities Tests
 ```
+
+## 🍏 Shared
+
+Contains components that are shared between iOS and WatchOS.
+
+- **Common UI**: UI components and styles that are used by both iOS and WatchOS.
+- **Data**: Shared data handling components.
+- **Errors**: Contains error types and handling mechanisms that are used across both iOS and WatchOS.
+- **Models**: Data models used across both iOS and WatchOS apps.
+- **Resources**: Assets and resources use across both iOS and WatchOS apps.
 
 ## 📱 iOS
 
@@ -298,6 +322,7 @@ Contains iOS-specific components and configurations.
 - **Application**: Entry point and main configuration for the iOS app.
 - **Common UI**: UI components and styles specific to iOS.
 - **Extensions**: iOS-specific extensions.
+- **Preview Content**: Provides mock data and configurations used for SwiftUI previews on iOS.
 - **Resources**: Assets and resources specific to the iOS app.
 - **Scenes**: Views and view models specific to iOS.
 - **Services**: iOS-specific services.
@@ -310,20 +335,11 @@ Contains WatchOS-specific components and configurations.
 - **Application**: Entry point and main configuration for the WatchOS app.
 - **Common UI**: UI components and styles specific to WatchOS.
 - **Extensions**: WatchOS-specific extensions.
+- **Preview Content**: Provides mock data and configurations used for SwiftUI previews on WatchOS.
 - **Resources**: Assets and resources specific to the WatchOS app.
 - **Scenes**: Views and view models specific to WatchOS.
 - **Services**: WatchOS-specific services.
 - **Use Cases**: Business logic specific to WatchOS.
-
-## Shared
-
-Contains components that are shared between iOS and WatchOS.
-
-- **Common UI**: UI components and styles that are used by both iOS and WatchOS.
-- **Data**: Shared data handling components.
-- **Models**: Data models used across both iOS and WatchOS apps.
-- **Resources**: Assets and resources use across both iOS and WatchOS apps.
-- **Services**: Shared services that encapsulate business logic and interact with external systems.
 
 ## Benefits of This Structure
 
