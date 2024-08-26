@@ -1,0 +1,67 @@
+//
+//  MeasurementTypeView.swift
+//  iOS
+//
+//  Created by Grigor Dochev on 18.08.2024.
+//
+
+import SwiftUI
+import SwiftData
+
+extension CreateReviewReminderView {
+    struct MeasurementTypeView: View {
+        @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        var body: some View {
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 16) {
+                    ForEach(ReviewReminder.MeasurementType.allCases, id: \.self) { measurementType in
+                        SelectableButton(
+                            shape: .roundedRectangle(cornerRadius: 16),
+                            isSelected: viewModel.selectedMeasurementType == measurementType,
+                            action: {
+                                viewModel.toggleSelection(
+                                    measurementType,
+                                    selectedItem: &viewModel.selectedMeasurementType
+                                )
+                            }) {
+                                HStack {
+                                    SFSymbolLabel(
+                                        icon: measurementType.icon,
+                                        title: measurementType.rawValue
+                                    )
+                                    Spacer()
+                                    if viewModel.selectedMeasurementType == measurementType {
+                                        Image(systemName: "checkmark.circle.fill")
+                                    }
+                                }
+                            }
+                    }
+                    
+                    Text("Select for which measurement type you want to receive reminders to do a review.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+            }
+            .navigationTitle("Measurement Type")
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    let container = ModelContainer.preview
+    let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
+    
+    NavigationStack {
+        CreateReviewReminderView.MeasurementTypeView(viewModel: viewModel)
+    }
+    .tint(Color("BrandPrimary"))
+}

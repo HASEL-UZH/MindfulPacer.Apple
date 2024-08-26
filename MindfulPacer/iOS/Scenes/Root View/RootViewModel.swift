@@ -6,18 +6,35 @@
 //
 
 import Foundation
+import SwiftData
 
-@Observable class RootViewModel {
-    private(set) var state: RootViewState = .initial
+@Observable
+class RootViewModel {
+    // MARK: - Dependencies
+
+    private let modelContext: ModelContext
+    private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
+    private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     
-    init() {
+    // MARK: - Initialization
+    
+    init(
+        modelContext: ModelContext,
+        addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
+        initializeConnectivityUseCase: InitializeConnectivityUseCase
+    ) {
+        self.modelContext = modelContext
+        self.addDefaultCategoriesUseCase = addDefaultCategoriesUseCase
+        self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
     // MARK: View Events
     
+    @MainActor
     func onViewFirstAppear() {
-       
+        Task {
+            await addDefaultCategoriesUseCase.execute()
+            initializeConnectivityUseCase.execute()
+        }
     }
-    
-    // MARK: Observing and Updating State
 }

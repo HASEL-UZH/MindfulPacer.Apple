@@ -1,271 +1,97 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
+    "%lld" : {
 
     },
-    "1. Open the Activity app on your Apple Watch." : {
+    "0" : {
 
     },
-    "1. Open the Watch app on your iPhone." : {
+    "Additional information" : {
 
     },
-    "2. Firmly press the display." : {
+    "Cancel" : {
 
     },
-    "2. Tap on 'My Watch' at the bottom." : {
+    "Category" : {
 
     },
-    "2. Tap on 'My Watch'." : {
+    "Create Review" : {
 
     },
-    "3" : {
+    "Create Review Reminder" : {
 
     },
-    "3. Scroll down and tap on 'Activity'." : {
-
-    },
-    "3. Tap 'Change Move Goal'." : {
-
-    },
-    "3. Tap on 'Breathe'." : {
-
-    },
-    "3. Tap on 'Notifications'." : {
-
-    },
-    "4" : {
-
-    },
-    "4. Adjust the goal to a level that suits your current capabilities." : {
-
-    },
-    "4. Select 'Activity'." : {
-
-    },
-    "4. Toggle off 'Breathe Reminders'." : {
-
-    },
-    "4. Toggle off 'Stand Reminders'." : {
-
-    },
-    "5" : {
-
-    },
-    "5. Toggle off 'Activity Reminders'." : {
-
-    },
-    "5. Toggle off 'Workout Reminders'." : {
-
-    },
-    "9,870" : {
-
-    },
-    "12" : {
-
-    },
-    "80 bpm" : {
-
-    },
-    "100 bpm" : {
-
-    },
-    "Above we will put a screenshot of the feature being explained. Here we can put a short description of the feature and explain it a bit." : {
-
-    },
-    "Adjust Move Goals" : {
-
-    },
-    "alarms" : {
-
-    },
-    "Allow Health Access" : {
-
-    },
-    "Allow Notifications" : {
-
-    },
-    "Amend your diary with biometric data and receive reminders for reflection." : {
-
-    },
-    "Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these." : {
-
-    },
-    "Apple Watch Sync" : {
-
-    },
-    "Better manage your physical and mental energy, by regulating your activity levels." : {
-
-    },
-    "Can't find MindfulPacer on your Apple Watch?" : {
-
-    },
-    "Climbing Stairs" : {
-
-    },
-    "Connect to Apple Health" : {
-
-    },
-    "Connect to your Apple Watch" : {
-
-    },
-    "Continue" : {
-
-    },
-    "Diary on Activities & Energy" : {
-
-    },
-    "Disable Activity Promoting Features" : {
-
-    },
-    "Disabling Activity Reminders" : {
-
-    },
-    "Disabling Breathe Reminders" : {
-
-    },
-    "Disabling Exercise Notifications" : {
-
-    },
-    "Disabling Stand Reminders" : {
-
-    },
-    "Disclaimer" : {
-
-    },
-    "Do **NOT** solely rely on MindfulPacer for pacing and managing your activities and energy." : {
-
-    },
-    "events" : {
-
-    },
-    "Events" : {
-
-    },
-    "Explain Main Features X" : {
-
-    },
-    "Finish" : {
-
-    },
-    "Heart Rate" : {
-
-    },
-    "Here is a summary different alarms triggered today." : {
-
-    },
-    "Here is a summary of the events triggered today." : {
-
-    },
-    "Hi" : {
-
-    },
-    "Hide Widget" : {
+    "Did this trigger a crash?" : {
 
     },
     "Home" : {
 
     },
-    "HR above 100" : {
+    "Interval" : {
 
     },
-    "I Understand and Accept" : {
+    "Measurement Type" : {
 
     },
-    "Insights" : {
+    "Mood" : {
 
     },
-    "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline." : {
+    "No Interval Selected" : {
 
     },
-    "Learn More" : {
+    "No Measurement Type Selected" : {
 
     },
-    "Light" : {
+    "No Review Reminders" : {
 
     },
-    "Medium" : {
+    "No Threshold Set" : {
 
     },
-    "MindfulPacer" : {
+    "Ok" : {
 
     },
-    "MindfulPacer as well as the Apple Watch are **NOT** medical grade apps and may display inaccurate data." : {
+    "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
 
     },
-    "MindfulPacer can remind you to reflect on your activities, energy management, moods and symptoms, for example at specific times or when a biometric value (such as your heart rate or steps) reaches a certain threshold.\n\nPlease allow MindfulPacer to send notifications to receive the reflection reminders." : {
+    "Save Error" : {
 
     },
-    "MindfulPacer can visualize your biometric data (as measured by your Apple Watch) and visualize it together with your diary entries in the Analysis page.\n\nPlease allow MindfulPacer to access your Apple Health data. Select the biometric data that you want to share (e.g. heart rate and/or steps)." : {
+    "Select for which measurement type you want to receive reminders to do a review." : {
 
     },
-    "MindfulPacer only processes raw data from your Apple Watch and your diary entries, and does **NOT** make automated recommendations." : {
+    "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
-    "Note" : {
+    "Summary" : {
 
     },
-    "OK" : {
+    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
 
     },
-    "Open Settings" : {
+    "The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
 
     },
-    "Point %lld" : {
+    "The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer." : {
 
     },
-    "Receive Reminders for Reflection" : {
+    "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes." : {
 
     },
-    "Reflect on your activities, energy management, moods and symptoms." : {
+    "This allows you to add a new Review Reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
-    "Self-Reports / Events / Diary Entries" : {
+    "Threshold" : {
 
     },
-    "Showering" : {
+    "Unable to save your Review Reminder.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
-    "Skip" : {
+    "Unable to save your Review.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
-    "steps" : {
-
-    },
-    "Steps" : {
-
-    },
-    "Strong" : {
-
-    },
-    "Support for Activity Pacing" : {
-
-    },
-    "Test" : {
-
-    },
-    "Threshold Exceeded" : {
-
-    },
-    "Time" : {
-
-    },
-    "Walking" : {
-
-    },
-    "When in doubt, please contact an experienced physician, personal trainer or other qualified professional." : {
-
-    },
-    "When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you.\n\nMindfulPacer is automatically installed on your Apple Watch." : {
-
-    },
-    "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer." : {
-
-    },
-    "You can always change this permission later, by navigating to Settings > Privacy & Security > Notifications > MindfulPacer." : {
-
-    },
-    "You can reach out to the following email address in case you have further questions: mindfulpacer@outlook.com" : {
+    "Unable to Trigger Vibration" : {
 
     }
   },

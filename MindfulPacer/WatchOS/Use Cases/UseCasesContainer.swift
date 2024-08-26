@@ -13,15 +13,17 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
-    // MARK: - Heart Rate
+    // MARK: - iOS Communication
     
-    var startHeartRateMonitoringUseCase: Factory<DefaultStartHeartRateMonitoringUseCase> {
-        self {
-            DefaultStartHeartRateMonitoringUseCase(
-                healthKitService: HealthKitService.shared,
-                notificationService: NotificationService.shared,
-                connectivityService: WatchConnectivityService.shared
-            )
-        }
+    @MainActor
+    var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
+        self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
+    }
+    
+    // MARK: - System
+    
+    @MainActor
+    var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
+        self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }
 }

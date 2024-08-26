@@ -10,34 +10,16 @@ import SwiftData
 
 @main
 struct iOSApp: App {
+    init() {
+        // FIXME: This is a temporary workaround due to the bug that causes alert items to not have the tint color provided upstream
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "BrandPrimary")
+    }
     var body: some Scene {
         WindowGroup {
-//            MainView()
-//                .tint(Color("PrimaryGreen"))
-            TabView {
-                HomeView()
-                    .tabItem {
-                        Label("Home", systemImage: "house.fill")
-                    }
-                
-                DragAndDropTest()
-                    .tabItem {
-                        Label("Test", systemImage: "rectangle.grid.2x2")
-                    }
-            }
-            .tint(Color("PrimaryGreen"))
+            RootView()
+                .tint(Color("BrandPrimary"))
+                .addKeyboardVisibilityToEnvironment()
         }
-        .modelContainer(DataProviderService.shared.sharedModelContainer)
-    }
-}
-
-
-struct MainView: View {
-    var body: some View {
-        Text("OK")
-            .sheet(isPresented: .constant(true)) {
-                OnboardingView()
-                    .presentationDragIndicator(.visible)
-            }
+        .modelContainer(.prod)
     }
 }

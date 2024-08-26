@@ -1,5 +1,5 @@
 {
-  "originHash" : "535202ad1d6898bf84c620ccf10af5e936c7ec7a31237c844612aa0861c6b0e3",
+  "originHash" : "5b3200dcd6c8794f4639f5e6eaeb4953239cf2b830e81de3d2743fe5480b7515",
   "pins" : [
     {
       "identity" : "factory",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "swiftuix",
+      "identity" : "systemnotification",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftUIX/SwiftUIX.git",
+      "location" : "https://github.com/danielsaidi/SystemNotification.git",
       "state" : {
-        "revision" : "ff1176d8c06c2ac81db3dfd36c63ec8a9c2ccbca",
-        "version" : "0.2.1"
+        "revision" : "c0d2dbd7c0320656728a0e876bf552f959e0e5a2",
+        "version" : "1.1.1"
       }
     }
   ],

@@ -6,58 +6,34 @@
 //
 
 import Foundation
-import Combine
-import SwiftData
+import UserNotifications
+@Observable
+class RootViewModel {
+    // MARK: - Dependencies
+    private let initializeNotificationsUseCase: InitializeNotificationsUseCase
+    private let initializeConnectivityUseCase: InitializeConnectivityUseCase
+    
+    // MARK: - Initialization
 
-@Observable class RootViewModel {
-    private let startHeartRateMonitoringUseCase: StartHeartRateMonitoringUseCase
-    private let healthKitService: HealthKitServiceProtocol
-    private let dataProviderService: DataProviderService
-    
-    private var cancellables: Set<AnyCancellable> = []
-    
-    private(set) var state: RootViewState = .initial
-    var currentHeartRateSample: HeartRateSample?
-    
     init(
-        startHeartRateMonitoringUseCase: StartHeartRateMonitoringUseCase,
-        healthKitService: HealthKitServiceProtocol,
-        dataProviderService: DataProviderService
+        initializeNotificationsUseCase: InitializeNotificationsUseCase,
+        initializeConnectivityUseCase: InitializeConnectivityUseCase
     ) {
-        self.startHeartRateMonitoringUseCase = startHeartRateMonitoringUseCase
-        self.healthKitService = healthKitService
-        self.dataProviderService = dataProviderService
-        
-        healthKitService.heartRatePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] heartRateSample in
-                self?.currentHeartRateSample = heartRateSample
-                self?.state.currentHeartRate = heartRateSample.heartRate
-                self?.saveHeartRateSample(heartRateSample)
-            }
-            .store(in: &cancellables)
+        self.initializeNotificationsUseCase = initializeNotificationsUseCase
+        self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
     // MARK: View Events
     
     func onViewFirstAppear() {
-        startHeartRateMonitoringUseCase.execute()
-    }
-    
-    // MARK: Observing and Updating State
-    
-    func saveHeartRateSample(_ heartRateSample: HeartRateSample) {
-        let timestamp = heartRateSample.timestamp
-        let heartRate = heartRateSample.heartRate
-        let dataHandlerCreator = dataProviderService.dataHandlerCreator()
-        
-        Task { @MainActor in
-            let dataHandler = await dataHandlerCreator()
-            do {
-                try await dataHandler.newItem(timestamp: timestamp, heartRate: heartRate)
-            } catch {
-                print("Error saving heart rate sample: \(error)")
+        initializeNotificationsUseCase.execute { result in
+            switch result {
+            case .success(let success):
+                print("DEBUGY: Successfully initialized notifications")
+            case .failure(let failure):
+                print("DEBUGY: Could not initialize notifications")
             }
         }
+        initializeConnectivityUseCase.execute()
     }
 }

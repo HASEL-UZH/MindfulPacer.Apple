@@ -10,20 +10,19 @@ import SwiftData
 
 @main
 struct WatchOSApp: App {
-    let container: ModelContainer
-    
-    init() {
-        do {
-            container = try ModelContainer(for: HeartRateSample.self)
-        } catch {
-            fatalError("Failed to create ModelContainer for HeartRateSample.")
-        }
-    }
-    
+    @WKApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some Scene {
         WindowGroup {
             RootView()
         }
-        .modelContainer(DataProviderService.shared.sharedModelContainer)
+    }
+}
+
+// MARK: - AppDelegate
+
+class AppDelegate: NSObject, WKApplicationDelegate {
+    func applicationDidFinishLaunching() {
+        NotificationService.shared.setDelegate()
     }
 }

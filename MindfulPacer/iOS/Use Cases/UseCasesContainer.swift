@@ -6,6 +6,7 @@
 //
 
 import Factory
+import SwiftData
 
 final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
@@ -13,4 +14,43 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
+    // MARK: - Reviews
+    
+    @MainActor
+    var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
+        self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    
+    @MainActor
+    var createReviewUseCase: Factory<CreateReviewUseCase> {
+        self { DefaulCreateReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
+        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var fetchDefaultCategoriesUseCase: Factory<DefaultFetchDefaultCategoriesUseCase> {
+        self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    // MARK: - Watch Communication
+    
+    @MainActor
+    var triggerHapticFeedbackUseCase: Factory<DefaultTriggerHapticFeedbackUseCase> {
+        self { DefaultTriggerHapticFeedbackUseCase(connectivityService: ConnectivityService.shared) }
+    }
+    
+    @MainActor
+    var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
+        self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
+    }
+    
+    @MainActor
+    var triggerWatchNotificationUseCase: Factory<DefaultTriggerWatchNotificationUseCase> {
+        self { DefaultTriggerWatchNotificationUseCase(notificationService: NotificationService.shared)}
+    }
 }
