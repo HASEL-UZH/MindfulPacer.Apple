@@ -20,7 +20,8 @@ extension CreateReviewReminderView {
                 VStack(spacing: 16) {
                     HStack(alignment: .lastTextBaseline) {
                         TextField("0", value: $viewModel.threshold, format: .number)
-                            .font(.largeTitle)
+                            .font(.largeTitle.weight(.semibold))
+                            .foregroundStyle(Color("BrandPrimary"))
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.numberPad)
                         
@@ -29,7 +30,7 @@ extension CreateReviewReminderView {
                     }
                     .padding()
                     .background {
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 8)
                             .foregroundStyle(Color(.secondarySystemGroupedBackground))
                     }
                     

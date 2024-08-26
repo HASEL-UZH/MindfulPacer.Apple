@@ -98,7 +98,11 @@ struct CreateReviewView: View {
     private var date: some View {
         Section {
             DatePicker(selection: $viewModel.date) {
-                SFSymbolLabel(icon: "calendar", title: "Date")
+                SFSymbolLabel(
+                    icon: "calendar",
+                    title: "Date",
+                    iconColor: Color("BrandPrimary")
+                )
             }
         }
     }
@@ -107,7 +111,11 @@ struct CreateReviewView: View {
         Section {
             NavigationLink(value: CreateReviewNavigationDestination.category) {
                 HStack {
-                    SFSymbolLabel(icon: "square.grid.2x2.fill", title: "Category")
+                    SFSymbolLabel(
+                        icon: "square.grid.2x2.fill",
+                        title: "Category",
+                        iconColor: Color("BrandPrimary")
+                    )
                     Spacer()
                     if let selectedCategory = viewModel.selectedCategory {
                         Text(selectedCategory.name)
@@ -119,7 +127,11 @@ struct CreateReviewView: View {
             if viewModel.selectedCategory.isNotNil {
                 NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
                     HStack {
-                        SFSymbolLabel(icon: "rectangle.grid.3x3.fill", title: "Subcategory")
+                        SFSymbolLabel(
+                            icon: "rectangle.grid.3x3.fill",
+                            title: "Subcategory",
+                            iconColor: Color("BrandPrimary")
+                        )
                         Spacer()
                         if let selectedSubcategory = viewModel.selectedSubcategory {
                             Text(selectedSubcategory.name)
@@ -135,7 +147,11 @@ struct CreateReviewView: View {
         Section {
             NavigationLink(value: CreateReviewNavigationDestination.mood) {
                 HStack {
-                    SFSymbolLabel(icon: "face.smiling.inverse", title: "Mood")
+                    SFSymbolLabel(
+                        icon: "face.smiling.inverse",
+                        title: "Mood",
+                        iconColor: Color("BrandPrimary")
+                    )
                     Spacer()
                     if let selectedMood = viewModel.selectedMood {
                         Text(selectedMood)
@@ -155,7 +171,7 @@ struct CreateReviewView: View {
                         SFSymbolLabel(
                             icon: rating.type.icon,
                             title: rating.type.name,
-                            textColor: .primary
+                            iconColor: Color("BrandPrimary")
                         )
                         Spacer()
                         Text(rating.description)

@@ -50,4 +50,17 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
+    
+    // MARK: - Home
+    
+    @MainActor
+    var homeViewModel: Factory<HomeViewModel> {
+        self {
+            HomeViewModel(
+                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                modelContext: ModelContainer.prod.mainContext
+            )
+        }
+    }
 }

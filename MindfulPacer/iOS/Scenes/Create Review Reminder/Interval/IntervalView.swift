@@ -31,7 +31,8 @@ extension CreateReviewReminderView {
                                 HStack {
                                     SFSymbolLabel(
                                         icon: interval.icon,
-                                        title: interval.rawValue
+                                        title: interval.rawValue,
+                                        symbolColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
                                     )
                                     Spacer()
                                     if viewModel.selectedInterval == interval {

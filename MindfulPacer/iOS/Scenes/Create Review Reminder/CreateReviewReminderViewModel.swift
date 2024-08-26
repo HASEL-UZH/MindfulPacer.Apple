@@ -146,6 +146,7 @@ class CreateReviewReminderViewModel {
             case .success:
                 print("DEBUGY: Notification sent successfully.")
             case .failure(let error):
+                self.alertItem = AlertContext.unableToSendTestNotification
                 print("DEBUGY: Failed to send notification: \(error.localizedDescription)")
             }
         }

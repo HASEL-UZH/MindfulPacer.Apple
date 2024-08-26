@@ -22,7 +22,7 @@ extension CreateReviewView {
                 ) {
                     ForEach(viewModel.categories) { category in
                         SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
+                            shape: .roundedRectangle(cornerRadius: 8),
                             isSelected: viewModel.selectedCategory == category,
                             action: {
                                 viewModel.toggleSelection(category, selectedItem: &viewModel.selectedCategory)

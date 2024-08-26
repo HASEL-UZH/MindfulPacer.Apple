@@ -37,6 +37,16 @@ extension UseCasesContainer {
         self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
+    @MainActor
+    var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
+        self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var fetchReviewRemindersUseCase: Factory<DefaultFetchReviewRemindersUseCase> {
+        self { DefaultFetchReviewRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
     // MARK: - Watch Communication
     
     @MainActor

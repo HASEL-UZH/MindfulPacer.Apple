@@ -24,8 +24,8 @@ struct InfoBox: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.systemGray5))
+            RoundedRectangle(cornerRadius: 8)
+                .foregroundStyle(Color(.tertiarySystemFill))
         }
     }
 }

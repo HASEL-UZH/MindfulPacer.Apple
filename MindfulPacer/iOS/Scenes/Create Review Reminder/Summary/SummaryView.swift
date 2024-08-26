@@ -44,6 +44,7 @@ extension CreateReviewReminderView {
                 SFSymbolLabel(
                     icon: "bell.badge",
                     title: "Test Notification on Apple Watch",
+                    iconColor: viewModel.isContinueButtonDisabled ? Color.primary : Color("BrandPrimary"),
                     symbolRenderingMode: .hierarchical
                 )
                 .fontWeight(.semibold)
@@ -64,26 +65,17 @@ extension CreateReviewReminderView.SummaryView {
         destination: CreateReviewReminderNavigationDestination,
         @ViewBuilder label: @escaping () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                SFSymbolLabel(icon: icon, title: title)
-                    .foregroundStyle(.secondary)
-                    .font(.subheadline.weight(.semibold))
-                Spacer()
-                Button {
-                    viewModel.navigationPath.append(destination)
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                }
+        SFSymbolGroupBox(
+            label: SFSymbolLabel(icon: icon, title: title)
+        ) {
+            label()
+        } button: {
+            Button {
+                viewModel.navigationPath.append(destination)
+            } label: {
+                Image(systemName: "pencil.circle.fill")
             }
             
-            label()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
     }
 }

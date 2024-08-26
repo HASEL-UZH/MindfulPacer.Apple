@@ -31,7 +31,8 @@ extension CreateReviewReminderView {
                                 HStack {
                                     SFSymbolLabel(
                                         icon: measurementType.icon,
-                                        title: measurementType.rawValue
+                                        title: measurementType.rawValue,
+                                        symbolColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
                                     )
                                     Spacer()
                                     if viewModel.selectedMeasurementType == measurementType {

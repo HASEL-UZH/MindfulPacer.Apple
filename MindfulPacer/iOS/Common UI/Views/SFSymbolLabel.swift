@@ -12,32 +12,41 @@ struct SFSymbolLabel: View {
     var icon: String
     var title: String
     var textColor: Color? = nil
+    var iconColor: Color? = nil
+    var labelColor: Color? = nil
     var symbolVariant: SymbolVariants = .fill
     var symbolRenderingMode: SymbolRenderingMode = .monochrome
+    var background: Bool = false
+    
+    private var resolvedTextColor: Color {
+        labelColor ?? textColor ?? .primary
+    }
+    
+    private var resolvedIconColor: Color {
+        labelColor ?? iconColor ?? .primary
+    }
     
     var body: some View {
         Label {
-            if let textColor {
-                Text(title)
-                    .foregroundStyle(textColor)
-            } else {
-                Text(title)
-            }
+            Text(title)
+                .foregroundStyle(resolvedTextColor)
         } icon: {
-            Image(systemName: icon)
-                .frame(width: 24)
-                .symbolVariant(symbolVariant)
-                .symbolRenderingMode(symbolRenderingMode)
+            SFSymbolIcon(
+                name: icon,
+                color: resolvedIconColor,
+                variant: symbolVariant,
+                renderingMode: symbolRenderingMode,
+                background: background
+            )
         }
-
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    VStack(alignment: .leading, spacing: 8) {
-        SFSymbolLabel(icon: "figure.walk", title: "Walking")
-        SFSymbolLabel(icon: "heart.fill", title: "Heart Rate")
+    VStack(alignment: .leading, spacing: 16) {
+        SFSymbolLabel(icon: "figure.walk", title: "Walking", textColor: .pink, iconColor: .pink, background: true)
+        SFSymbolLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .red, background: true)
     }
 }

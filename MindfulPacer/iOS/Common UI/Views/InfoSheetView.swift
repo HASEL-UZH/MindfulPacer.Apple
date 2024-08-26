@@ -12,7 +12,11 @@ struct InfoSheetView<Content: View>: View {
     var info: String? = nil
     var content: () -> Content
 
-    init(title: String, info: String?, @ViewBuilder content: @escaping () -> Content) {
+    init(
+        title: String,
+        info: String?,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.title = title
         self.info = info
         self.content = content

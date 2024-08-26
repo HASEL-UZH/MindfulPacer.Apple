@@ -7,7 +7,19 @@
     "0" : {
 
     },
+    "9,870" : {
+
+    },
+    "68" : {
+
+    },
+    "Add Review" : {
+
+    },
     "Additional information" : {
+
+    },
+    "bpm" : {
 
     },
     "Cancel" : {
@@ -43,7 +55,7 @@
     "No Measurement Type Selected" : {
 
     },
-    "No Review Reminders" : {
+    "No Reviews" : {
 
     },
     "No Threshold Set" : {
@@ -64,7 +76,16 @@
     "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
+    "steps" : {
+
+    },
     "Summary" : {
+
+    },
+    "Tap the **+** button to create a review reminder." : {
+
+    },
+    "Tap the **+** button to create a review." : {
 
     },
     "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
@@ -82,6 +103,12 @@
     "This allows you to add a new Review Reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
+    "This is a summary of your review reminders." : {
+
+    },
+    "This is a summary of your reviews." : {
+
+    },
     "Threshold" : {
 
     },
@@ -91,7 +118,13 @@
     "Unable to save your Review.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
+    "Unable to Send Notification" : {
+
+    },
     "Unable to Trigger Vibration" : {
+
+    },
+    "View Graph" : {
 
     }
   },
