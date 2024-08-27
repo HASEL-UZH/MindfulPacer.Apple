@@ -27,10 +27,19 @@ struct SFSymbolLabel: View {
     }
     
     var body: some View {
-        Label {
-            Text(title)
-                .foregroundStyle(resolvedTextColor)
-        } icon: {
+//        Label {
+//            Text(title)
+//                .foregroundStyle(resolvedTextColor)
+//        } icon: {
+//            SFSymbolIcon(
+//                name: icon,
+//                color: resolvedIconColor,
+//                variant: symbolVariant,
+//                renderingMode: symbolRenderingMode,
+//                background: background
+//            )
+//        }
+        HStack(spacing: 2) {
             SFSymbolIcon(
                 name: icon,
                 color: resolvedIconColor,
@@ -38,6 +47,8 @@ struct SFSymbolLabel: View {
                 renderingMode: symbolRenderingMode,
                 background: background
             )
+            Text(title)
+                .foregroundStyle(resolvedTextColor)
         }
     }
 }
@@ -46,7 +57,7 @@ struct SFSymbolLabel: View {
 
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
-        SFSymbolLabel(icon: "figure.walk", title: "Walking", textColor: .pink, iconColor: .pink, background: true)
-        SFSymbolLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .red, background: true)
+        SFSymbolLabel(icon: "figure.walk", title: "Walking", textColor: .blue, iconColor: .pink, background: true)
+        SFSymbolLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .pink, background: false)
     }
 }

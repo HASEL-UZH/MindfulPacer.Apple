@@ -119,7 +119,7 @@ struct CreateReviewView: View {
                     Spacer()
                     if let selectedCategory = viewModel.selectedCategory {
                         Text(selectedCategory.name)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Color(.systemGray2))
                     }
                 }
             }
@@ -175,7 +175,8 @@ struct CreateReviewView: View {
                         )
                         Spacer()
                         Text(rating.description)
-                            .foregroundColor(rating.color)
+                            // FIXME: Workaround for suspected bug `Type 'UIColor' has no member 'systemGray2'`
+                            .foregroundColor(rating.description == "Not Set" ? Color(.systemGray2) : rating.color)
                     }
                 }
             }
@@ -202,6 +203,7 @@ struct CreateReviewView: View {
         }
         .padding(keyboardShowing ? [.all] : [.horizontal, .top])
         .background(.ultraThinMaterial)
+        .disabled(viewModel.isCreateButtonDisabled)
         .overlay(alignment: .top) {
             Divider()
         }

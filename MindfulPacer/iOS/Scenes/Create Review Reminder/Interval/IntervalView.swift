@@ -32,7 +32,7 @@ extension CreateReviewReminderView {
                                     SFSymbolLabel(
                                         icon: interval.icon,
                                         title: interval.rawValue,
-                                        symbolColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+                                        iconColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
                                     )
                                     Spacer()
                                     if viewModel.selectedInterval == interval {

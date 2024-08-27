@@ -35,6 +35,10 @@ class CreateReviewViewModel {
     var didTriggerCrash: Bool = false
     var additionalInformation: String = ""
     
+    var isCreateButtonDisabled: Bool {
+        selectedCategory == nil
+    }
+    
     var ratings: [ReviewMetricRating] = [
         ReviewMetricRating(type: .headaches),
         ReviewMetricRating(type: .energyLevel),

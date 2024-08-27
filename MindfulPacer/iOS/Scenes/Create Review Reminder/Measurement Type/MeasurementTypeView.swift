@@ -32,7 +32,7 @@ extension CreateReviewReminderView {
                                     SFSymbolLabel(
                                         icon: measurementType.icon,
                                         title: measurementType.rawValue,
-                                        symbolColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
+                                        iconColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
                                     )
                                     Spacer()
                                     if viewModel.selectedMeasurementType == measurementType {

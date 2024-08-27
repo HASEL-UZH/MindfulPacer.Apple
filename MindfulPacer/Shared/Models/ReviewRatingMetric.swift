@@ -66,7 +66,7 @@ struct ReviewMetricRating {
         case 1: return "Mild"
         case 2: return "Moderate"
         case 3: return "Severe"
-        default: return ""
+        default: return "Not Set"
         }
     }
 }

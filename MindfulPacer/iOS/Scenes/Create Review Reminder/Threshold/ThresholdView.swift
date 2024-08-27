@@ -30,7 +30,7 @@ extension CreateReviewReminderView {
                     }
                     .padding()
                     .background {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: 16)
                             .foregroundStyle(Color(.secondarySystemGroupedBackground))
                     }
                     

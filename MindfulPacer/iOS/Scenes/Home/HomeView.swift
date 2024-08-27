@@ -113,15 +113,13 @@ struct HomeView: View {
                 icon: "book.pages.fill",
                 title: "Reviews",
                 labelColor: Color("BrandPrimary")
-            )
+            ),
+            description:
+                Text("This is a summary of your reviews.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         ) {
             VStack(alignment: .leading, spacing: 16) {
-                Text("This is a summary of your reviews.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                
-                Divider()
-                
                 if viewModel.reviews.isEmpty {
                     ContentUnavailableView(
                         "No Reviews",
@@ -142,6 +140,7 @@ struct HomeView: View {
             }
             .labelStyle(.iconOnly)
         }
+        .symbolGroupBoxStyle(.divider)
     }
     
     private var reviewRemindersWidget: some View {
@@ -150,15 +149,13 @@ struct HomeView: View {
                 icon: "bell.badge.fill",
                 title: "Review Reminders",
                 labelColor: Color("BrandPrimary")
-            )
+            ),
+            description:
+                Text("This is a summary of your review reminders.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         ) {
             VStack(alignment: .leading, spacing: 16) {
-                Text("This is a summary of your review reminders.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                
-                Divider()
-                
                 ContentUnavailableView(
                     "No Reviews",
                     systemImage: "bell.badge.slash.fill",
@@ -171,6 +168,7 @@ struct HomeView: View {
             }
             .labelStyle(.iconOnly)
         }
+        .symbolGroupBoxStyle(.divider)
     }
 }
 

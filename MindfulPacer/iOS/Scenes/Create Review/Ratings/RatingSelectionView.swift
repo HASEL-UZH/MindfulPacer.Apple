@@ -50,6 +50,11 @@ extension CreateReviewView {
                 .background(Color(.systemGroupedBackground).ignoresSafeArea())
                 .navigationTitle(rating.type.name)
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        CloseButton()
+                    }
+                }
             }
         }
     }
