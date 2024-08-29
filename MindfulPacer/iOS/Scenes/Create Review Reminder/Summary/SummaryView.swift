@@ -47,16 +47,20 @@ extension CreateReviewReminderView.SummaryView {
         @ViewBuilder label: @escaping () -> Content
     ) -> some View {
         IconLabelGroupBox(
-            label: IconLabel(icon: icon, title: title, labelColor: Color("BrandPrimary"))
+            label: IconLabel(
+                icon: icon,
+                title: title,
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
         ) {
             label()
-        } button: {
+        } accessoryIndicator: {
             Button {
                 viewModel.navigationPath.append(destination)
             } label: {
-                Icon(name: "pencil", variant: .circle)
+                Icon(name: "pencil.circle", variant: .fill)
             }
-            
         }
     }
 }
@@ -161,7 +165,12 @@ extension CreateReviewReminderView.SummaryView {
 extension CreateReviewReminderView.SummaryView {
     private var notificationPreview: some View {
         IconLabelGroupBox(
-            label: IconLabel(icon: "eye", title: "Preview Notification", labelColor: Color("BrandPrimary")),
+            label: IconLabel(
+                icon: "eye",
+                title: "Preview Notification",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            ),
             description:
                 Text("See how the notification will look.")
                 .font(.subheadline)

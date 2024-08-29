@@ -30,10 +30,8 @@ struct HomeView: View {
             ScrollView {
                 VStack {
                     VStack(spacing: 16) {
-                        HStack(spacing: 16) {
-                            stepsWidget
-                            heartRateWidget
-                        }
+                        stepsWidget
+                        heartRateWidget
                         reviewsWidget
                         reviewRemindersWidget
                     }
@@ -67,97 +65,94 @@ struct HomeView: View {
     }
     
     private var stepsWidget: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "figure.walk",
-                title: "Steps",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-        ) {
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text("9,870")
-                    .font(.title.weight(.semibold))
-                Text("steps")
-                    .foregroundStyle(.secondary)
+        NavigationLink(value: Int()) {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "figure.walk",
+                    title: "Steps",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+            ) {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("9,870")
+                        .font(.title.weight(.semibold))
+                    Text("steps")
+                        .foregroundStyle(.secondary)
+                }
+            } accessoryIndicator: {
+                Icon(name: "chevron.right", color: .secondary)
             }
-        } button: {
-            Button {
-                // TODO: Show Steps analytics
-            } label: {
-                Icon(name: "chevron.right.circle", variant: .fill)
-            }
+            .foregroundColor(.primary)
         }
     }
     
     private var heartRateWidget: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "heart.fill",
-                title: "Heart Rate",
-                labelColor: Color("BrandPrimary")
-            )
-        ) {
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text("68")
-                    .font(.title.weight(.semibold))
-                Text("bpm")
-                    .foregroundStyle(.secondary)
-            }
-        } button: {
-            Button {
-                // TODO: Show Heart Rate analytics
-            } label: {
+        NavigationLink(value: Int()) {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "heart.fill",
+                    title: "Heart Rate",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+            ) {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("68")
+                        .font(.title.weight(.semibold))
+                    Text("bpm")
+                        .foregroundStyle(.secondary)
+                }
+            } accessoryIndicator: {
                 Icon(name: "chevron.right", color: .secondary)
             }
+            .foregroundColor(.primary)
         }
-        .iconLabelGroupBoxStyle(.divider)
     }
     
     private var reviewsWidget: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "book.pages.fill",
-                title: "Reviews",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            ),
-            description:
-                Text("This is a summary of your reviews.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        ) {
-            VStack(alignment: .leading, spacing: 16) {
-                if viewModel.reviews.isEmpty {
-                    ContentUnavailableView(
-                        "No Reviews",
-                        systemImage: "book.pages.fill",
-                        description: Text("Tap the **+** button to create a review.")
-                    )
-                } else {
-                    ForEach(viewModel.reviews) { review in
-                        ReviewCell(review: review)
-                        if review != viewModel.reviews.last {
-                            Divider()
+        NavigationLink(value: Int()) {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "book.pages.fill",
+                    title: "Reviews",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                description:
+                    Text("This is a summary of your reviews.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            ) {
+                VStack(alignment: .leading, spacing: 16) {
+                    if viewModel.reviews.isEmpty {
+                        ContentUnavailableView(
+                            "No Reviews",
+                            systemImage: "book.pages.fill",
+                            description: Text("Tap the **+** button to create a review.")
+                        )
+                    } else {
+                        ForEach(viewModel.reviews) { review in
+                            ReviewCell(review: review)
+                            if review != viewModel.reviews.last {
+                                Divider()
+                            }
                         }
                     }
                 }
+            } accessoryIndicator: {
+                Icon(name: "chevron.right", color: .secondary)
+            } footer: {
+                Button {
+                    viewModel.presentSheet(.createReviewSheet)
+                } label: {
+                    IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
+                        .font(.subheadline.weight(.semibold))
+                }
             }
-        } button: {
-            Button {
-                
-            } label: {
-                Icon(name: "chevron.right.circle", variant: .fill)
-            }
-        } footer: {
-            Button {
-                viewModel.presentSheet(.createReviewSheet)
-            } label: {
-                IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
-                    .font(.subheadline.weight(.semibold))
-            }
+            .iconLabelGroupBoxStyle(.divider)
         }
-        .iconLabelGroupBoxStyle(.divider)
+        .foregroundStyle(.primary)
     }
     
     private var reviewRemindersWidget: some View {
@@ -165,7 +160,8 @@ struct HomeView: View {
             label: IconLabel(
                 icon: "bell.badge.fill",
                 title: "Review Reminders",
-                labelColor: Color("BrandPrimary")
+                labelColor: Color("BrandPrimary"),
+                background: true
             ),
             description:
                 Text("This is a summary of your review reminders.")
@@ -179,11 +175,14 @@ struct HomeView: View {
                     description: Text("Tap the **+** button to create a review reminder.")
                 )
             }
-        } button: {
+        } accessoryIndicator: {
+            Icon(name: "chevron.right", color: .secondary)
+        } footer: {
             Button {
                 viewModel.presentSheet(.createReviewReminderSheet)
             } label: {
-                Icon(name: "plus", variant: .circle)
+                IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
+                    .font(.subheadline.weight(.semibold))
             }
         }
         .iconLabelGroupBoxStyle(.divider)

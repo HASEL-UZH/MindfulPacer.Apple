@@ -18,7 +18,7 @@ struct IconLabelGroupBoxStyleConfiguration {
     let label: IconLabel
     let description: Text?
     let content: AnyView
-    let button: AnyView?
+    let accessoryIndicator: AnyView?
     let footer: AnyView?
 }
 
@@ -57,8 +57,8 @@ struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                     .lineLimit(1)
                     .layoutPriority(1)
                 
-                if let button = configuration.button {
-                    button
+                if let accessoryIndicator = configuration.accessoryIndicator {
+                    accessoryIndicator
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
@@ -95,8 +95,8 @@ struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                         .lineLimit(1)
                         .layoutPriority(1)
                     
-                    if let button = configuration.button {
-                        button
+                    if let accessoryIndicator = configuration.accessoryIndicator {
+                        accessoryIndicator
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
@@ -144,11 +144,11 @@ extension EnvironmentValues {
 
 // MARK: - IconLabelGroupBox
 
-struct IconLabelGroupBox<Content: View, Button: View, Footer: View>: View {
+struct IconLabelGroupBox<Content: View, AccessoryIndicator: View, Footer: View>: View {
     let label: IconLabel
     let description: Text?
     let content: Content
-    let button: Button?
+    let accessoryIndicator: AccessoryIndicator?
     let footer: Footer?
     @Environment(\.IconLabelGroupBoxStyle) private var style
     
@@ -156,13 +156,13 @@ struct IconLabelGroupBox<Content: View, Button: View, Footer: View>: View {
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button? = { nil },
+        @ViewBuilder accessoryIndicator: () -> AccessoryIndicator? = { nil },
         @ViewBuilder footer: () -> Footer? = { nil }
     ) {
         self.label = label
         self.description = description
         self.content = content()
-        self.button = button()
+        self.accessoryIndicator = accessoryIndicator()
         self.footer = footer()
     }
     
@@ -171,7 +171,7 @@ struct IconLabelGroupBox<Content: View, Button: View, Footer: View>: View {
             label: label,
             description: description,
             content: AnyView(content),
-            button: button.map { AnyView($0) },
+            accessoryIndicator: accessoryIndicator.map { AnyView($0) },
             footer: footer.map { AnyView($0) }
         ))
     }
@@ -198,56 +198,56 @@ extension View {
     }
 }
 
-// MARK: - Convenience Initializer for No Button or Footer
+// MARK: - Convenience Initializer for No Accessory Indicator or Footer
 
-extension IconLabelGroupBox where Button == EmptyView, Footer == EmptyView {
+extension IconLabelGroupBox where AccessoryIndicator == EmptyView, Footer == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button? = { nil },
+        @ViewBuilder accessoryIndicator: () -> AccessoryIndicator? = { nil },
         @ViewBuilder footer: () -> Footer? = { nil }
     ) {
         self.label = label
         self.description = description
         self.content = content()
-        self.button = button()
+        self.accessoryIndicator = accessoryIndicator()
         self.footer = footer()
     }
 }
 
-// MARK: - Convenience Initializer for Footer, No Button
+// MARK: - Convenience Initializer for Footer, No Accessory Indicator
 
-extension IconLabelGroupBox where Button == EmptyView {
+extension IconLabelGroupBox where AccessoryIndicator == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button? = { nil },
+        @ViewBuilder accessoryIndicator: () -> AccessoryIndicator? = { nil },
         @ViewBuilder footer: () -> Footer
     ) {
         self.label = label
         self.description = description
         self.content = content()
-        self.button = button()
+        self.accessoryIndicator = accessoryIndicator()
         self.footer = footer()
     }
 }
 
-// MARK: - Convenience Initializer for Button, No Footer
+// MARK: - Convenience Initializer for Accessory Indicator, No Footer
 
 extension IconLabelGroupBox where Footer == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button,
+        @ViewBuilder accessoryIndicator: () -> AccessoryIndicator,
         @ViewBuilder footer: () -> Footer? = { nil }
     ) {
         self.label = label
         self.description = description
         self.content = content()
-        self.button = button()
+        self.accessoryIndicator = accessoryIndicator()
         self.footer = footer()
     }
 }
@@ -268,7 +268,7 @@ extension IconLabelGroupBox where Footer == EmptyView {
                 description: Text("This is my description.").font(.subheadline.weight(.semibold))
             ) {
                 Text("Content with a default style")
-            } button: {
+            } accessoryIndicator: {
                 Button(action: {
                     isExpanded.toggle()
                 }) {
