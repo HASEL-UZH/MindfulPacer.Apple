@@ -55,20 +55,19 @@ extension ModelContainer {
         let fetchDescriptor = FetchDescriptor<Category>()
         
         do {
-            let categoriesCount = try container.mainContext.fetch(fetchDescriptor).count
-            
-            if categoriesCount == 0 {
-                let categories: [Category] = [
-                    Category(name: "Movement", icon: "figure.run", subcategories: []),
-                    Category(name: "Household", icon: "house"),
-                    Category(name: "Self-Care", icon: "shower"),
-                    Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
-                    Category(name: "Alarms", icon: "alarm"),
-                    Category(name: "Others", icon: "puzzlepiece")
-                ]
-                
-                categories.forEach { container.mainContext.insert($0) }
-                try! container.mainContext.save()
+            let categories = try container.mainContext.fetch(fetchDescriptor)
+            if categories.isEmpty {
+                DefaultCategoryData.initializeData()
+
+                for category in DefaultCategoryData.categories {
+                    container.mainContext.insert(category)
+                    
+                    if let subcategories = category.subcategories {
+                        for subcategory in subcategories {
+                            container.mainContext.insert(subcategory)
+                        }
+                    }
+                }
             }
         } catch {
             

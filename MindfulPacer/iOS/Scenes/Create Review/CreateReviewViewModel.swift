@@ -26,11 +26,10 @@ class CreateReviewViewModel {
     var alertItem: AlertItem? = nil
     
     var categories: [Category] = []
-    var moods: [String] = ["😁", "😭", "😓", "😡", "😴", "😆", "🥳", "🤢", "🤧", "😤"]
-    
+
     var date: Date = .now
     var selectedCategory: Category? = nil
-    var selectedMood: String? = nil
+    var selectedMood: Mood? = nil
     var selectedSubcategory: Subcategory? = nil
     var didTriggerCrash: Bool = false
     var additionalInformation: String = ""
@@ -109,6 +108,7 @@ class CreateReviewViewModel {
             date: date,
             category: selectedCategory,
             subcategory: selectedSubcategory,
+            mood: selectedMood?.emoji,
             didTriggerCrash: didTriggerCrash,
             perceivedEnergyLevelRating: ratings[.energyLevel]?.value,
             headachesRating: ratings[.headaches]?.value,

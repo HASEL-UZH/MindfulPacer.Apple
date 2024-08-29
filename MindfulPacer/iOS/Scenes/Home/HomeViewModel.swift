@@ -51,6 +51,10 @@ class HomeViewModel {
         activeSheet = sheet
     }
     
+    func updateReviews(with reviews: [Review]) {
+        self.reviews = reviews
+    }
+    
     // MARK: - Private Methods
     
     private func fetchReviews() {

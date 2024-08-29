@@ -1,5 +1,5 @@
 //
-//  SFSymbolLabel.swift
+//  IconLabel.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 15.08.2024.
@@ -7,8 +7,10 @@
 
 import SwiftUI
 
+// MARK: - IconLabel
+
 /// The default `Label` does not set a fixed frame on the image, so images with different widths cause stacked labels to be misaligned
-struct SFSymbolLabel: View {
+struct IconLabel: View {
     var icon: String
     var title: String
     var textColor: Color? = nil
@@ -27,28 +29,17 @@ struct SFSymbolLabel: View {
     }
     
     var body: some View {
-//        Label {
-//            Text(title)
-//                .foregroundStyle(resolvedTextColor)
-//        } icon: {
-//            SFSymbolIcon(
-//                name: icon,
-//                color: resolvedIconColor,
-//                variant: symbolVariant,
-//                renderingMode: symbolRenderingMode,
-//                background: background
-//            )
-//        }
-        HStack(spacing: 2) {
-            SFSymbolIcon(
+        Label {
+            Text(title)
+                .foregroundStyle(resolvedTextColor)
+        } icon: {
+            Icon(
                 name: icon,
                 color: resolvedIconColor,
                 variant: symbolVariant,
                 renderingMode: symbolRenderingMode,
                 background: background
             )
-            Text(title)
-                .foregroundStyle(resolvedTextColor)
         }
     }
 }
@@ -57,7 +48,7 @@ struct SFSymbolLabel: View {
 
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
-        SFSymbolLabel(icon: "figure.walk", title: "Walking", textColor: .blue, iconColor: .pink, background: true)
-        SFSymbolLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .pink, background: false)
+        IconLabel(icon: "figure.walk", title: "Walking", textColor: .blue, iconColor: .pink, background: true)
+        IconLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .pink, background: false)
     }
 }

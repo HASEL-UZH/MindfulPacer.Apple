@@ -20,7 +20,7 @@ extension SchemaV1 {
     final class ReviewReminder {
         var id: UUID = UUID()
         var measurementType: MeasurementType = MeasurementType.heartRate
-//        var alarmType: AlarmType = AlarmType.light
+        var alarmType: AlarmType = AlarmType.light
         var threshold: Int = 0
 //        var vibrationStrength: VibrationStrength = VibrationStrength.none
         var interval: Interval = Interval._10seconds
@@ -28,7 +28,7 @@ extension SchemaV1 {
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
-//            alarmType: AlarmType = AlarmType.light,
+            alarmType: AlarmType = AlarmType.light,
             threshold: Int = 0,
 //            vibrationStrength: VibrationStrength = VibrationStrength.none,
             interval: Interval = Interval._10seconds
@@ -78,11 +78,11 @@ extension ReviewReminder {
         var description: String {
             switch self {
             case .light:
-                "Coloured display, vibration"
+                "Shows a yellow color"
             case .medium:
-                "Vibration, confirmation required"
+                "Shows an orange color"
             case .strong:
-                "Blinking display, vibration, sound, confirmation required"
+                "Shows a red color"
             }
         }
     }

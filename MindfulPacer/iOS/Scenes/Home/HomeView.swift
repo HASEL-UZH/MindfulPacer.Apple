@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - Navigation Enums
 
@@ -22,6 +23,7 @@ enum HomeViewSheet: Identifiable {
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
+    @Query private var reviews: [Review]
     
     var body: some View {
         NavigationStack {
@@ -60,12 +62,13 @@ struct HomeView: View {
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
+            .onChange(of: reviews) { viewModel.updateReviews(with: reviews) }
         }
     }
     
     private var stepsWidget: some View {
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(
+        IconLabelGroupBox(
+            label: IconLabel(
                 icon: "figure.walk",
                 title: "Steps",
                 labelColor: Color("BrandPrimary")
@@ -78,16 +81,17 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
         } button: {
-            Button("View Graph", systemImage: "chevron.down.circle.fill") {
-                
+            Button {
+                // TODO: Show Steps analytics
+            } label: {
+                Icon(name: "chevron.right", variant: .circle)
             }
-            .labelStyle(.iconOnly)
         }
     }
     
     private var heartRateWidget: some View {
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(
+        IconLabelGroupBox(
+            label: IconLabel(
                 icon: "heart.fill",
                 title: "Heart Rate",
                 labelColor: Color("BrandPrimary")
@@ -100,16 +104,17 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
         } button: {
-            Button("View Graph", systemImage: "chevron.down.circle.fill") {
-                
+            Button {
+                // TODO: Show Heart Rate analytics
+            } label: {
+                Icon(name: "chevron.right", variant: .circle)
             }
-            .labelStyle(.iconOnly)
         }
     }
     
     private var reviewsWidget: some View {
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(
+        IconLabelGroupBox(
+            label: IconLabel(
                 icon: "book.pages.fill",
                 title: "Reviews",
                 labelColor: Color("BrandPrimary")
@@ -128,24 +133,32 @@ struct HomeView: View {
                     )
                 } else {
                     ForEach(viewModel.reviews) { review in
-                        if review.category != nil {
-                            ReviewCell(review: review)
+                        ReviewCell(review: review)
+                        if review != viewModel.reviews.last {
+                            Divider()
                         }
                     }
                 }
             }
         } button: {
-            Button("Add Review", systemImage: "plus.circle.fill") {
+            Button {
                 viewModel.presentSheet(.createReviewSheet)
+            } label: {
+                Icon(name: "chevron.right.circle", variant: .fill)
             }
-            .labelStyle(.iconOnly)
+        } footer: {
+            Button {
+                viewModel.presentSheet(.createReviewSheet)
+            } label: {
+                IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
+            }
         }
-        .symbolGroupBoxStyle(.divider)
+        .iconLabelGroupBoxStyle(.divider)
     }
     
     private var reviewRemindersWidget: some View {
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(
+        IconLabelGroupBox(
+            label: IconLabel(
                 icon: "bell.badge.fill",
                 title: "Review Reminders",
                 labelColor: Color("BrandPrimary")
@@ -157,18 +170,19 @@ struct HomeView: View {
         ) {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView(
-                    "No Reviews",
+                    "No Review Reminders",
                     systemImage: "bell.badge.slash.fill",
                     description: Text("Tap the **+** button to create a review reminder.")
                 )
             }
         } button: {
-            Button("Add Review", systemImage: "plus.circle.fill") {
+            Button {
                 viewModel.presentSheet(.createReviewReminderSheet)
+            } label: {
+                Icon(name: "plus", variant: .circle)
             }
-            .labelStyle(.iconOnly)
         }
-        .symbolGroupBoxStyle(.divider)
+        .iconLabelGroupBoxStyle(.divider)
     }
 }
 
@@ -181,7 +195,7 @@ private struct ReviewCell: View {
         NavigationLink(value: Int()) {
             HStack(spacing: 16) {
                 if let category = review.category {
-                    SFSymbolIcon(name: category.icon, color: Color("BrandPrimary"), background: true)
+                    Icon(name: category.icon, color: Color("BrandPrimary"), background: true)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(category.name)
                             .fontWeight(.semibold)
@@ -192,9 +206,40 @@ private struct ReviewCell: View {
                 }
                 
                 Spacer()
+                  
+                summaryIcons
             }
         }
         .foregroundStyle(.primary)
+    }
+    
+    private var summaryIcons: some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(spacing: 16), count: 4),
+            spacing: 16
+        ) {
+            if let mood = review.mood {
+                Text(mood)
+                    .frame(width: 24, height: 24)
+            }
+            
+            ratingIcon(for: .headaches, value: review.headachesRating)
+            ratingIcon(for: .energyLevel, value: review.perceivedEnergyLevelRating)
+            ratingIcon(for: .shortnessOfBreath, value: review.shortnessOfBreatheRating)
+            ratingIcon(for: .fever, value: review.feverRating)
+            ratingIcon(for: .painsAndNeedles, value: review.painsAndNeedlesRating)
+            ratingIcon(for: .muscleAches, value: review.muscleAchesRating)
+        }
+    }
+    
+    @ViewBuilder private func ratingIcon(for type: ReviewMetricRatingType, value: Int?) -> some View {
+        if value != nil {
+            let reviewMetricRating = ReviewMetricRating(type: type, value: value)
+            Icon(
+                name: reviewMetricRating.type.icon,
+                color: reviewMetricRating.color
+            )
+        }
     }
 }
 

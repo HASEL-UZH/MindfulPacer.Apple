@@ -11,7 +11,7 @@ import SwiftUI
 
 enum CreateReviewReminderNavigationDestination: Hashable {
     case measurementType
-//    case alarmType
+    case alarmType
     case threshold
 //    case vibrationStrength
     case interval
@@ -19,7 +19,7 @@ enum CreateReviewReminderNavigationDestination: Hashable {
 }
 
 enum CreateReviewReminderSheet: Identifiable {
-//    case alarmTypeInfo
+    case alarmTypeInfo
     case heartRateThresholdInfo
 //    case vibrationStrengthInfo
     case intervalInfo
@@ -47,10 +47,10 @@ struct CreateReviewReminderView: View {
             .alert(item: $viewModel.alertItem) { $0.alert }
             .sheet(item: $viewModel.activeSheet) { sheet in
                 switch sheet {
-//                case .alarmTypeInfo:
-//                    alarmTypeInfoView
-//                        .presentationDetents([.medium])
-//                        .presentationDragIndicator(.visible)
+                case .alarmTypeInfo:
+                    alarmTypeInfoView
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.visible)
                 case .heartRateThresholdInfo:
                     thresholdInfoView
                         .presentationDetents([.medium, .large])
@@ -70,8 +70,8 @@ struct CreateReviewReminderView: View {
                 switch destination {
                 case .measurementType:
                     MeasurementTypeView(viewModel: viewModel)
-//                case .alarmType:
-//                    AlarmTypeView(viewModel: viewModel)
+                case .alarmType:
+                    AlarmTypeView(viewModel: viewModel)
                 case .threshold:
                     ThresholdView(viewModel: viewModel)
 //                case .vibrationStrength:
@@ -130,21 +130,21 @@ struct CreateReviewReminderView: View {
         .padding()
     }
     
-//    private var alarmTypeInfoView: some View {
-//        InfoSheetView(
-//            title: "Alarm Type Information",
-//            info: "You can choose between three different alarm types.") {
-//                Text(
-//                    """
-//                    1. **Light**: coloured display, vibration.
-//                    2. **Medium**: vibration, confirmation required.
-//                    3. **Strong**: blinking display, vibration, sound, confirmation required.
-//                    """
-//                )
-//                .frame(maxWidth: .infinity, alignment: .leading)
-//                .font(.subheadline)
-//            }
-//    }
+    private var alarmTypeInfoView: some View {
+        InfoSheetView(
+            title: "Alarm Type Information",
+            info: "You can choose between three different alarm types.") {
+                Text(
+                    """
+                    1. **Light**: shows a yellow color 🟡.
+                    2. **Medium**: shows an orange color 🟠.
+                    3. **Strong**: shows a red color 🔴.
+                    """
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline)
+            }
+    }
     
     private var thresholdInfoView: some View {
         InfoSheetView(
@@ -152,15 +152,15 @@ struct CreateReviewReminderView: View {
             info: "Set a threshold that triggers a reminder when reached for a specified interval."
         ) {
             VStack(spacing: 16) {
-                SFSymbolGroupBox(
-                    label: SFSymbolLabel(icon: "figure.walk", title: "Steps", labelColor: .orange)
+                IconLabelGroupBox(
+                    label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
                     Text("The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.")
 
                 }
                             
-                SFSymbolGroupBox(
-                    label: SFSymbolLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
+                IconLabelGroupBox(
+                    label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
                     Text("The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.")
                 }
@@ -184,14 +184,14 @@ struct CreateReviewReminderView: View {
             info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered."
         ) {
             VStack(spacing: 16) {
-                SFSymbolGroupBox(
-                    label: SFSymbolLabel(icon: "figure.walk", title: "Steps", labelColor: .orange)
+                IconLabelGroupBox(
+                    label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
                     Text("The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer.")
                 }
                 
-                SFSymbolGroupBox(
-                    label: SFSymbolLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
+                IconLabelGroupBox(
+                    label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
                     Text("The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.")
                 }

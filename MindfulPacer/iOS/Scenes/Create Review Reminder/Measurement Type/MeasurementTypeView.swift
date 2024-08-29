@@ -29,10 +29,10 @@ extension CreateReviewReminderView {
                                 )
                             }) {
                                 HStack {
-                                    SFSymbolLabel(
+                                    IconLabel(
                                         icon: measurementType.icon,
                                         title: measurementType.rawValue,
-                                        iconColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
+                                        labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
                                     )
                                     Spacer()
                                     if viewModel.selectedMeasurementType == measurementType {
@@ -43,8 +43,10 @@ extension CreateReviewReminderView {
                     }
                     
                     Text("Select for which measurement type you want to receive reminders to do a review.")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
+                        .padding(.horizontal)
                     
                     Spacer()
                 }

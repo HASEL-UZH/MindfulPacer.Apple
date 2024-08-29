@@ -1,5 +1,5 @@
 //
-//  SFSymbolGroupBox.swift
+//  IconLabelGroupBox.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 22.08.2024.
@@ -7,47 +7,48 @@
 
 import SwiftUI
 
-// MARK: - SFSymbolGroupBoxStyle Protocol
+// MARK: - IconLabelGroupBoxStyle Protocol
 
-protocol SFSymbolGroupBoxStyle {
+protocol IconLabelGroupBoxStyle {
     associatedtype Body: View
-    func makeBody(configuration: SFSymbolGroupBoxStyleConfiguration) -> Body
+    func makeBody(configuration: IconLabelGroupBoxStyleConfiguration) -> Body
 }
 
-struct SFSymbolGroupBoxStyleConfiguration {
-    let label: SFSymbolLabel
+struct IconLabelGroupBoxStyleConfiguration {
+    let label: IconLabel
     let description: Text?
     let content: AnyView
     let button: AnyView?
+    let footer: AnyView?
 }
 
 // MARK: - Type-Erased Style Wrapper
 
-struct AnySFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
-    private let _makeBody: (SFSymbolGroupBoxStyleConfiguration) -> AnyView
+struct AnyIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
+    private let _makeBody: (IconLabelGroupBoxStyleConfiguration) -> AnyView
     
-    init<Style: SFSymbolGroupBoxStyle>(_ style: Style) {
+    init<Style: IconLabelGroupBoxStyle>(_ style: Style) {
         _makeBody = { configuration in
             AnyView(style.makeBody(configuration: configuration))
         }
     }
     
-    func makeBody(configuration: SFSymbolGroupBoxStyleConfiguration) -> some View {
+    func makeBody(configuration: IconLabelGroupBoxStyleConfiguration) -> some View {
         _makeBody(configuration)
     }
 }
 
 // MARK: - Styles Enum
 
-enum SFSymbolGroupBoxStyleType {
+enum IconLabelGroupBoxStyleType {
     case plain
     case divider
 }
 
 // MARK: - Plain Style
 
-struct PlainSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
-    func makeBody(configuration: SFSymbolGroupBoxStyleConfiguration) -> some View {
+struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
+    func makeBody(configuration: IconLabelGroupBoxStyleConfiguration) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 configuration.label
@@ -61,12 +62,16 @@ struct PlainSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
-
+            
             if let description = configuration.description {
                 description
             }
             
             configuration.content
+            
+            if let footer = configuration.footer {
+                footer
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -79,8 +84,8 @@ struct PlainSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
 
 // MARK: - Divider Style
 
-struct DividerSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
-    func makeBody(configuration: SFSymbolGroupBoxStyleConfiguration) -> some View {
+struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
+    func makeBody(configuration: IconLabelGroupBoxStyleConfiguration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
@@ -106,6 +111,13 @@ struct DividerSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
             
             configuration.content
                 .padding()
+            
+            if let footer = configuration.footer {
+                Divider()
+                
+                footer
+                    .padding()
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
@@ -117,38 +129,41 @@ struct DividerSFSymbolGroupBoxStyle: SFSymbolGroupBoxStyle {
 
 // MARK: - Environment Key for Style
 
-private struct SFSymbolGroupBoxStyleKey: EnvironmentKey {
-    static var defaultValue: AnySFSymbolGroupBoxStyle {
-        AnySFSymbolGroupBoxStyle(PlainSFSymbolGroupBoxStyle())
+private struct IconLabelGroupBoxStyleKey: EnvironmentKey {
+    static var defaultValue: AnyIconLabelGroupBoxStyle {
+        AnyIconLabelGroupBoxStyle(PlainIconLabelGroupBoxStyle())
     }
 }
 
 extension EnvironmentValues {
-    var sfSymbolGroupBoxStyle: AnySFSymbolGroupBoxStyle {
-        get { self[SFSymbolGroupBoxStyleKey.self] }
-        set { self[SFSymbolGroupBoxStyleKey.self] = newValue }
+    var IconLabelGroupBoxStyle: AnyIconLabelGroupBoxStyle {
+        get { self[IconLabelGroupBoxStyleKey.self] }
+        set { self[IconLabelGroupBoxStyleKey.self] = newValue }
     }
 }
 
-// MARK: - SFSymbolGroupBox
+// MARK: - IconLabelGroupBox
 
-struct SFSymbolGroupBox<Content: View, Button: View>: View {
-    let label: SFSymbolLabel
+struct IconLabelGroupBox<Content: View, Button: View, Footer: View>: View {
+    let label: IconLabel
     let description: Text?
     let content: Content
     let button: Button?
-    @Environment(\.sfSymbolGroupBoxStyle) private var style
+    let footer: Footer?
+    @Environment(\.IconLabelGroupBoxStyle) private var style
     
     init(
-        label: SFSymbolLabel,
+        label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button? = { nil }
+        @ViewBuilder button: () -> Button? = { nil },
+        @ViewBuilder footer: () -> Footer? = { nil }
     ) {
         self.label = label
         self.description = description
         self.content = content()
         self.button = button()
+        self.footer = footer()
     }
     
     var body: some View {
@@ -156,37 +171,38 @@ struct SFSymbolGroupBox<Content: View, Button: View>: View {
             label: label,
             description: description,
             content: AnyView(content),
-            button: button.map { AnyView($0) }
+            button: button.map { AnyView($0) },
+            footer: footer.map { AnyView($0) }
         ))
     }
 }
 
 // MARK: - Custom Style Modifiers
 
-struct SFSymbolGroupBoxStyleModifier: ViewModifier {
-    let style: AnySFSymbolGroupBoxStyle
+struct IconLabelGroupBoxStyleModifier: ViewModifier {
+    let style: AnyIconLabelGroupBoxStyle
     
     func body(content: Content) -> some View {
-        content.environment(\.sfSymbolGroupBoxStyle, style)
+        content.environment(\.IconLabelGroupBoxStyle, style)
     }
 }
 
 extension View {
-    func symbolGroupBoxStyle(_ style: SFSymbolGroupBoxStyleType) -> some View {
+    func iconLabelGroupBoxStyle(_ style: IconLabelGroupBoxStyleType) -> some View {
         switch style {
         case .plain:
-            return self.modifier(SFSymbolGroupBoxStyleModifier(style: AnySFSymbolGroupBoxStyle(PlainSFSymbolGroupBoxStyle())))
+            return self.modifier(IconLabelGroupBoxStyleModifier(style: AnyIconLabelGroupBoxStyle(PlainIconLabelGroupBoxStyle())))
         case .divider:
-            return self.modifier(SFSymbolGroupBoxStyleModifier(style: AnySFSymbolGroupBoxStyle(DividerSFSymbolGroupBoxStyle())))
+            return self.modifier(IconLabelGroupBoxStyleModifier(style: AnyIconLabelGroupBoxStyle(DividerIconLabelGroupBoxStyle())))
         }
     }
 }
 
-// MARK: - Convenience Initializer for No Button
+// MARK: - Convenience Initializer for No Button or Footer
 
-extension SFSymbolGroupBox where Button == EmptyView {
+extension IconLabelGroupBox where Button == EmptyView, Footer == EmptyView {
     init(
-        label: SFSymbolLabel,
+        label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content
     ) {
@@ -194,7 +210,46 @@ extension SFSymbolGroupBox where Button == EmptyView {
             label: label,
             description: description,
             content: content,
-            button: { EmptyView() }
+            button: { EmptyView() },
+            footer: { EmptyView() }
+        )
+    }
+}
+
+// MARK: - Convenience Initializer for No Button
+
+extension IconLabelGroupBox where Button == EmptyView {
+    init(
+        label: IconLabel,
+        description: Text? = nil,
+        @ViewBuilder content: () -> Content,
+        @ViewBuilder footer: () -> Footer
+    ) {
+        self.init(
+            label: label,
+            description: description,
+            content: content,
+            button: { EmptyView() },
+            footer: footer
+        )
+    }
+}
+
+// MARK: - Convenience Initializer for No Footer
+
+extension IconLabelGroupBox where Footer == EmptyView {
+    init(
+        label: IconLabel,
+        description: Text? = nil,
+        @ViewBuilder content: () -> Content,
+        @ViewBuilder button: () -> Button
+    ) {
+        self.init(
+            label: label,
+            description: description,
+            content: content,
+            button: button,
+            footer: { EmptyView() }
         )
     }
 }
@@ -209,8 +264,8 @@ extension SFSymbolGroupBox where Button == EmptyView {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(icon: "figure.walk", title: "Steps", labelColor: Color("BrandPrimary")),
+        IconLabelGroupBox(
+            label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: Color("BrandPrimary")),
             description: Text("This is my description.").font(.subheadline.weight(.semibold))
         ) {
             Text("Content with a default style")
@@ -218,10 +273,10 @@ extension SFSymbolGroupBox where Button == EmptyView {
             Button(action: {
                 isExpanded.toggle()
             }) {
-                SFSymbolIcon(name: "chevron.down", color: Color("BrandPrimary"), variant: .circle)
+                Icon(name: "chevron.down", color: Color("BrandPrimary"), variant: .circle)
             }
         }
-        .symbolGroupBoxStyle(.divider)
+        .iconLabelGroupBoxStyle(.divider)
         .padding()
     }
 }

@@ -35,9 +35,11 @@ extension CreateReviewReminderView {
                     }
                     
                     Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
-                    
+                        .padding(.horizontal)
+
                     Spacer()
                 }
                 .padding(.horizontal)

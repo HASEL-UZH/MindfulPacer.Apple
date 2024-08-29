@@ -19,15 +19,18 @@ extension CreateReviewView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 5),
                     spacing: 16
                 ) {
-                    ForEach(viewModel.moods, id: \.self) { mood in
+                    ForEach(DefaultMoodData.moods, id: \.id) { mood in
                         SelectableButton(
-                            shape: .circle,
+                            shape: .roundedRectangle(cornerRadius: 12),
                             isSelected: viewModel.selectedMood == mood,
                             action: {
                                 viewModel.toggleSelection(mood, selectedItem: &viewModel.selectedMood)
                             }) {
-                                Text(mood)
+                                Text(mood.emoji)
                                     .font(.title)
+                            }
+                            .contextMenu {
+                                Text(mood.description)
                             }
                     }
                 }

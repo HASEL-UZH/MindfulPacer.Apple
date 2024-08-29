@@ -69,6 +69,16 @@ struct ReviewMetricRating {
         default: return "Not Set"
         }
     }
+    
+    func color(for value: Int?) -> Color {
+        switch value {
+        case 0: .green
+        case 1: .yellow
+        case 2: .orange
+        case 3: .red
+        default: .gray
+        }
+    }
 }
 
 extension Array where Element == ReviewMetricRating {

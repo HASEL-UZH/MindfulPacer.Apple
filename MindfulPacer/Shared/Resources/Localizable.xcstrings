@@ -7,16 +7,19 @@
     "0" : {
 
     },
+    "1. **Light**: shows a yellow color 🟡.\n2. **Medium**: shows an orange color 🟠.\n3. **Strong**: shows a red color 🔴." : {
+
+    },
     "9,870" : {
 
     },
     "68" : {
 
     },
-    "Add Review" : {
+    "Additional information" : {
 
     },
-    "Additional information" : {
+    "Alarm Type" : {
 
     },
     "bpm" : {
@@ -28,6 +31,9 @@
     "Category" : {
 
     },
+    "Choose an alarm type, which will be reflected in the color of the Review Reminder notifications you receive." : {
+
+    },
     "Create Review" : {
 
     },
@@ -35,6 +41,9 @@
 
     },
     "Did this trigger a crash?" : {
+
+    },
+    "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered." : {
 
     },
     "Home" : {
@@ -49,10 +58,16 @@
     "Mood" : {
 
     },
+    "No Alarm Type Selected" : {
+
+    },
     "No Interval Selected" : {
 
     },
     "No Measurement Type Selected" : {
+
+    },
+    "No Review Reminders" : {
 
     },
     "No Reviews" : {
@@ -67,7 +82,16 @@
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
 
     },
+    "Review Reminder Triggered" : {
+
+    },
+    "Reviews" : {
+
+    },
     "Save Error" : {
+
+    },
+    "See how the notification will look." : {
 
     },
     "Select for which measurement type you want to receive reminders to do a review." : {
@@ -77,6 +101,9 @@
 
     },
     "steps" : {
+
+    },
+    "Subcategory" : {
 
     },
     "Summary" : {
@@ -122,9 +149,6 @@
 
     },
     "Unable to Trigger Vibration" : {
-
-    },
-    "View Graph" : {
 
     }
   },

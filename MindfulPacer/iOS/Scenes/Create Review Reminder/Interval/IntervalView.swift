@@ -29,10 +29,10 @@ extension CreateReviewReminderView {
                                 )
                             }) {
                                 HStack {
-                                    SFSymbolLabel(
+                                    IconLabel(
                                         icon: interval.icon,
                                         title: interval.rawValue,
-                                        iconColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+                                        labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
                                     )
                                     Spacer()
                                     if viewModel.selectedInterval == interval {
@@ -41,6 +41,12 @@ extension CreateReviewReminderView {
                                 }
                             }
                     }
+                    
+                    Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered.")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
                     
                     Spacer()
                 }

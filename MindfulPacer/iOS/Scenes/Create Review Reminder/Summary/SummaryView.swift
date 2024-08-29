@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - SummaryView
+// MARK: - Create Review Reminder Summary View
 
 extension CreateReviewReminderView {
     struct SummaryView: View {
@@ -22,36 +22,17 @@ extension CreateReviewReminderView {
                 ScrollView {
                     VStack(spacing: 16) {
                         measurementType
-//                        alarmType
+                        alarmType
                         threshold
-//                        vibrationStrength
+                        //                        vibrationStrength
                         interval
-                        notificationPreviewButton
-                            .padding(.top)
-                        
+                        notificationPreview
                         Spacer()
                     }
                     .padding(.horizontal)
                 }
             }
             .navigationTitle("Summary")
-        }
-        
-        private var notificationPreviewButton: some View {
-            Button {
-                viewModel.sendNotificationToWatch()
-            } label: {
-                SFSymbolLabel(
-                    icon: "bell.badge",
-                    title: "Test Notification on Apple Watch",
-                    iconColor: viewModel.isContinueButtonDisabled ? Color.primary : Color("BrandPrimary"),
-                    symbolRenderingMode: .hierarchical
-                )
-                .fontWeight(.semibold)
-            }
-            .buttonBorderShape(.capsule)
-            .buttonStyle(.bordered)
-            .disabled(viewModel.isContinueButtonDisabled)
         }
     }
 }
@@ -65,15 +46,15 @@ extension CreateReviewReminderView.SummaryView {
         destination: CreateReviewReminderNavigationDestination,
         @ViewBuilder label: @escaping () -> Content
     ) -> some View {
-        SFSymbolGroupBox(
-            label: SFSymbolLabel(icon: icon, title: title)
+        IconLabelGroupBox(
+            label: IconLabel(icon: icon, title: title, labelColor: Color("BrandPrimary"))
         ) {
             label()
         } button: {
             Button {
                 viewModel.navigationPath.append(destination)
             } label: {
-                Image(systemName: "pencil.circle.fill")
+                Icon(name: "pencil", variant: .circle)
             }
             
         }
@@ -100,21 +81,21 @@ extension CreateReviewReminderView.SummaryView {
 
 // MARK: - Alarm Type
 
-//extension CreateReviewReminderView.SummaryView {
-//    private var alarmType: some View {
-//        widgetView(
-//            icon: "alarm",
-//            title: "Alarm Type",
-//            destination: .alarmType) {
-//                if let alarmType = viewModel.selectedAlarmType {
-//                    Text(alarmType.rawValue)
-//                } else {
-//                    Text("No Alarm Type Selected")
-//                        .foregroundStyle(.red)
-//                }
-//            }
-//    }
-//}
+extension CreateReviewReminderView.SummaryView {
+    private var alarmType: some View {
+        widgetView(
+            icon: "alarm",
+            title: "Alarm Type",
+            destination: .alarmType) {
+                if let alarmType = viewModel.selectedAlarmType {
+                    Text(alarmType.rawValue)
+                } else {
+                    Text("No Alarm Type Selected")
+                        .foregroundStyle(.red)
+                }
+            }
+    }
+}
 
 // MARK: - Threshold
 
@@ -172,6 +153,65 @@ extension CreateReviewReminderView.SummaryView {
                         .foregroundStyle(.red)
                 }
             }
+    }
+}
+
+// MARK: - Notification Preview
+
+extension CreateReviewReminderView.SummaryView {
+    private var notificationPreview: some View {
+        IconLabelGroupBox(
+            label: IconLabel(icon: "eye", title: "Preview Notification", labelColor: Color("BrandPrimary")),
+            description:
+                Text("See how the notification will look.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        ) {
+            VStack(spacing: 16) {
+                HStack(spacing: 16) {
+                    Image("MindfulPacer Icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Review Reminder Triggered")
+                            .font(.subheadline.weight(.semibold))
+                        
+                        Text(viewModel.notificationPreviewBodyText)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundStyle(.thinMaterial)
+                }
+                
+//                notificationPreviewButton
+            }
+        } footer: {
+            notificationPreviewButton
+        }
+        .iconLabelGroupBoxStyle(.divider)
+    }
+    
+    private var notificationPreviewButton: some View {
+        Button {
+            viewModel.sendNotificationToWatch()
+        } label: {
+            IconLabel(
+                icon: "bell.badge",
+                title: "Test on Apple Watch",
+                labelColor: Color("BrandPrimary")
+            )
+            .font(.subheadline.weight(.semibold))
+        }
+        .buttonBorderShape(.capsule)
+        .buttonStyle(.bordered)
+        .disabled(viewModel.isContinueButtonDisabled)
     }
 }
 

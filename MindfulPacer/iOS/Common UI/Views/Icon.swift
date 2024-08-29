@@ -1,5 +1,5 @@
 //
-//  SFSymbolIcon.swift
+//  Icon.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 26.08.2024.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-// MARK: - SFSymbolIcon
+// MARK: - Icon
 
-struct SFSymbolIcon: View {
+struct Icon: View {
     var name: String
-    var color: Color = .primary
+    var color: Color = Color("BrandPrimary")
     var variant: SymbolVariants = .fill
     var renderingMode: SymbolRenderingMode = .monochrome
     var background: Bool = false
@@ -28,9 +28,8 @@ struct SFSymbolIcon: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 8)
                             .foregroundStyle(color.opacity(0.1))
-                        
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(color, lineWidth: 1.5)
+                            .stroke(color.opacity(0.1), lineWidth: 1.5)
                     }
                 }
             }
@@ -41,7 +40,7 @@ struct SFSymbolIcon: View {
 
 #Preview {
     VStack(spacing: 16) {
-        SFSymbolIcon(name: "heart")
-        SFSymbolIcon(name: "bell.badge", color: .green, variant: .fill, renderingMode: .hierarchical, background: true)
+        Icon(name: "heart")
+        Icon(name: "bell.badge", color: .green, variant: .fill, renderingMode: .hierarchical, background: true)
     }
 }

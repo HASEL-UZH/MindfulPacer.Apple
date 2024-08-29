@@ -98,7 +98,7 @@ struct CreateReviewView: View {
     private var date: some View {
         Section {
             DatePicker(selection: $viewModel.date) {
-                SFSymbolLabel(
+                IconLabel(
                     icon: "calendar",
                     title: "Date",
                     iconColor: Color("BrandPrimary")
@@ -111,7 +111,7 @@ struct CreateReviewView: View {
         Section {
             NavigationLink(value: CreateReviewNavigationDestination.category) {
                 HStack {
-                    SFSymbolLabel(
+                    IconLabel(
                         icon: "square.grid.2x2.fill",
                         title: "Category",
                         iconColor: Color("BrandPrimary")
@@ -127,7 +127,7 @@ struct CreateReviewView: View {
             if viewModel.selectedCategory.isNotNil {
                 NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
                     HStack {
-                        SFSymbolLabel(
+                        IconLabel(
                             icon: "rectangle.grid.3x3.fill",
                             title: "Subcategory",
                             iconColor: Color("BrandPrimary")
@@ -135,7 +135,7 @@ struct CreateReviewView: View {
                         Spacer()
                         if let selectedSubcategory = viewModel.selectedSubcategory {
                             Text(selectedSubcategory.name)
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(Color(.systemGray2))
                         }
                     }
                 }
@@ -147,14 +147,14 @@ struct CreateReviewView: View {
         Section {
             NavigationLink(value: CreateReviewNavigationDestination.mood) {
                 HStack {
-                    SFSymbolLabel(
+                    IconLabel(
                         icon: "face.smiling.inverse",
                         title: "Mood",
                         iconColor: Color("BrandPrimary")
                     )
                     Spacer()
                     if let selectedMood = viewModel.selectedMood {
-                        Text(selectedMood)
+                        Text(selectedMood.emoji)
                     }
                 }
             }
@@ -168,7 +168,7 @@ struct CreateReviewView: View {
                     viewModel.presentRatingSheet(for: rating.type)
                 } label: {
                     HStack {
-                        SFSymbolLabel(
+                        IconLabel(
                             icon: rating.type.icon,
                             title: rating.type.name,
                             iconColor: Color("BrandPrimary")

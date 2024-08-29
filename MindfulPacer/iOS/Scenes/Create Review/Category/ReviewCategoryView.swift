@@ -17,7 +17,7 @@ extension CreateReviewView {
         var body: some View {
             ScrollView {
                 LazyVGrid(
-                    columns: Array(repeating: GridItem(spacing: 16), count: 3),
+                    columns: Array(repeating: GridItem(spacing: 16), count: 2),
                     spacing: 16
                 ) {
                     ForEach(viewModel.categories) { category in
@@ -32,10 +32,10 @@ extension CreateReviewView {
                                         .resizable()
                                         .scaledToFit()
                                         .symbolVariant(.fill)
-                                        .frame(height: 32)
+                                        .frame(width: 32, height: 32)
                                     Text(category.name)
                                         .font(.subheadline)
-                                        .lineLimit(1)
+                                        .lineLimit(2)
                                 }
                             }
                     }

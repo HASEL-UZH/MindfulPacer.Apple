@@ -21,6 +21,7 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
         self.modelContext = modelContext
     }
     
+    // TODO: Categories seem to be duplicated, must not be fetching from CloudKit fast enough
     func execute() async {
         if await categoriesExist() {
             return
@@ -42,8 +43,16 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     
     @MainActor
     private func addDefaultCategories() async {
-        DefaultCategoryData.categories.forEach { category in
+        DefaultCategoryData.initializeData()
+
+        for category in DefaultCategoryData.categories {
             modelContext.insert(category)
+            
+            if let subcategories = category.subcategories {
+                for subcategory in subcategories {
+                    modelContext.insert(subcategory)
+                }
+            }
         }
         
         do {

@@ -26,18 +26,21 @@ extension CreateReviewView {
                                     VStack(spacing: 12) {
                                         SelectableButton(
                                             shape: .circle,
-                                            selectionColor: rating.color,
+                                            color: rating.color(for: index).opacity(0.1),
+                                            selectionColor: Color("BrandPrimary"),
                                             isSelected: rating.value == index,
                                             action: {
                                                 onRatingSelected(index)
                                             }) {
                                                 Text("\(index)")
                                                     .fontWeight(.semibold)
+                                                    .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
                                             }
                                             .buttonStyle(.plain)
                                         
                                         Text(rating.description(for: index))
-                                            .font(.footnote)
+                                            .font(.footnote.weight(.semibold))
+                                            .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
                                     }
                                 }
                             }

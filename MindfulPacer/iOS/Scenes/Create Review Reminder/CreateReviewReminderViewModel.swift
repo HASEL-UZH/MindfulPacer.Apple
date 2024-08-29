@@ -33,16 +33,16 @@ class CreateReviewReminderViewModel {
         switch lastDestination {
         case .measurementType:
             return selectedMeasurementType == nil
-//        case .alarmType:
-//            return selectedAlarmType == nil
+        case .alarmType:
+            return selectedAlarmType == nil
         case .threshold:
             return threshold == nil
-//        case .vibrationStrength:
-//            return selectedVibrationStrength == nil
+            //        case .vibrationStrength:
+            //            return selectedVibrationStrength == nil
         case .interval:
             return selectedInterval == nil
         case .summary:
-            return (selectedMeasurementType == nil /*|| selectedAlarmType == nil*/ || threshold == nil /*|| selectedVibrationStrength == nil*/ || selectedInterval == nil)
+            return (selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil /*|| selectedVibrationStrength == nil*/ || selectedInterval == nil)
         }
     }
     
@@ -79,12 +79,20 @@ class CreateReviewReminderViewModel {
     }
     
     var notificationPreviewBodyText: String {
-        String("A Review Reminder was triggered because your \(selectedMeasurementType?.rawValue ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText) over a period of \(selectedInterval?.rawValue ?? "<INTERBAL>").")
+        String("A review reminder was triggered because your \(selectedMeasurementType?.rawValue.lowercased() ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText.lowercased()) over a period of \(selectedInterval?.rawValue.lowercased() ?? "<INTERBAL>").")
     }
     
-    var selectedMeasurementType: ReviewReminder.MeasurementType? = nil
+    var selectedMeasurementType: ReviewReminder.MeasurementType? = nil {
+        didSet {
+            validateThreshold()
+        }
+    }
+    var threshold: Int? {
+        didSet {
+            validateThreshold()
+        }
+    }
     var selectedAlarmType: ReviewReminder.AlarmType? = nil
-    var threshold: Int? = nil
     var selectedVibrationStrength: ReviewReminder.VibrationStrength? = nil
     var selectedInterval: ReviewReminder.Interval? = nil
     
@@ -117,13 +125,13 @@ class CreateReviewReminderViewModel {
         
         switch currentDestination {
         case .measurementType:
+            navigationPath.append(CreateReviewReminderNavigationDestination.alarmType)
+        case .alarmType:
             navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
-//        case .alarmType:
-//            navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
         case .threshold:
             navigationPath.append(CreateReviewReminderNavigationDestination.interval)
-//        case .vibrationStrength:
-//            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
+            //        case .vibrationStrength:
+            //            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
         case .interval:
             navigationPath.append(CreateReviewReminderNavigationDestination.summary)
         case .summary:
@@ -164,21 +172,43 @@ class CreateReviewReminderViewModel {
     
     private func saveReviewReminder() {
         guard let measurementType = selectedMeasurementType,
-//              let alarmType = selectedAlarmType,
+              let alarmType = selectedAlarmType,
               let threshold,
-//              let vibrationStrength = selectedVibrationStrength,
+              //              let vibrationStrength = selectedVibrationStrength,
               let interval = selectedInterval else { return }
         
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
-//            alarmType: alarmType,
+            alarmType: alarmType,
             threshold: threshold,
-//            vibrationStrength: vibrationStrength,
+            //            vibrationStrength: vibrationStrength,
             interval: interval
         )
         
         if case .failure(_) = result {
             alertItem = AlertContext.unableToSaveReviewReminder
+        }
+    }
+    
+    private func validateThreshold() {
+        guard let threshold = threshold else { return }
+        
+        if let measurementType = selectedMeasurementType {
+            switch measurementType {
+            case .steps:
+                if threshold < 0 {
+                    self.threshold = 0
+                } else if threshold > 100_000 {
+                    self.threshold = 100_000
+                }
+                
+            case .heartRate:
+                if threshold < 0 {
+                    self.threshold = 0
+                } else if threshold > 250 {
+                    self.threshold = 250
+                }
+            }
         }
     }
 }
