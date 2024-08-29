@@ -46,6 +46,9 @@
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered." : {
 
     },
+    "Hey" : {
+
+    },
     "Home" : {
 
     },
@@ -83,6 +86,9 @@
 
     },
     "Review Reminder Triggered" : {
+
+    },
+    "Review Reminders List View" : {
 
     },
     "Reviews" : {

@@ -14,7 +14,8 @@ struct SelectableButton<Content: View>: View {
     }
     
     var shape: ButtonShape
-    var color: Color = Color(.secondarySystemGroupedBackground)
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
+    var foregroundColor: Color = Color.secondary
     var selectionColor: Color = Color("BrandPrimary")
     var isSelected: Bool
     var action: () -> Void
@@ -29,7 +30,7 @@ struct SelectableButton<Content: View>: View {
                     backgroundShape()
                         .foregroundStyle(
                             isSelected ? selectionColor
-                                .opacity(0.1) : color
+                                .opacity(0.1) : backgroundColor
                         )
                 }
                 .overlay {
@@ -38,7 +39,7 @@ struct SelectableButton<Content: View>: View {
                     }
                 }
         }
-        .foregroundStyle(isSelected ? selectionColor : Color.primary)
+        .foregroundStyle(isSelected ? selectionColor : foregroundColor)
     }
     
     @ViewBuilder

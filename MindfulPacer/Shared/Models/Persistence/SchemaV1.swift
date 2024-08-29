@@ -61,10 +61,12 @@ extension ModelContainer {
 
                 for category in DefaultCategoryData.categories {
                     container.mainContext.insert(category)
+                    try container.mainContext.save()
                     
                     if let subcategories = category.subcategories {
                         for subcategory in subcategories {
                             container.mainContext.insert(subcategory)
+                            try container.mainContext.save()
                         }
                     }
                 }

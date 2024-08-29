@@ -10,6 +10,11 @@ import SwiftData
 
 // MARK: - Navigation Enums
 
+enum HomeViewNavigationDestination: Hashable {
+    case reviewsList
+    case reviewRemindersList
+}
+
 enum HomeViewSheet: Identifiable {
     case createReviewSheet
     case createReviewReminderSheet
@@ -26,12 +31,14 @@ struct HomeView: View {
     @Query private var reviews: [Review]
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $viewModel.navigationPath) {
             ScrollView {
                 VStack {
                     VStack(spacing: 16) {
-                        stepsWidget
-                        heartRateWidget
+                        HStack(spacing: 16) {
+                            stepsWidget
+                            heartRateWidget
+                        }
                         reviewsWidget
                         reviewRemindersWidget
                     }
@@ -55,6 +62,15 @@ struct HomeView: View {
                 case .createReviewReminderSheet:
                     CreateReviewReminderView()
                         .interactiveDismissDisabled()
+                }
+            }
+            .navigationDestination(for: HomeViewNavigationDestination.self) { destination in
+                switch destination {
+                case .reviewsList:
+//                    ReviewsListView(viewModel: viewModel)
+                    Text("Hey")
+                case .reviewRemindersList:
+                    Text("Review Reminders List View")
                 }
             }
             .onViewFirstAppear {
@@ -111,7 +127,7 @@ struct HomeView: View {
     }
     
     private var reviewsWidget: some View {
-        NavigationLink(value: Int()) {
+        NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
             IconLabelGroupBox(
                 label: IconLabel(
                     icon: "book.pages.fill",
@@ -156,36 +172,39 @@ struct HomeView: View {
     }
     
     private var reviewRemindersWidget: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "bell.badge.fill",
-                title: "Review Reminders",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            ),
-            description:
-                Text("This is a summary of your review reminders.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        ) {
-            VStack(alignment: .leading, spacing: 16) {
-                ContentUnavailableView(
-                    "No Review Reminders",
-                    systemImage: "bell.badge.slash.fill",
-                    description: Text("Tap the **+** button to create a review reminder.")
-                )
+        NavigationLink(value: HomeViewNavigationDestination.reviewRemindersList) {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "bell.badge.fill",
+                    title: "Review Reminders",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                description:
+                    Text("This is a summary of your review reminders.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            ) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ContentUnavailableView(
+                        "No Review Reminders",
+                        systemImage: "bell.badge.slash.fill",
+                        description: Text("Tap the **+** button to create a review reminder.")
+                    )
+                }
+            } accessoryIndicator: {
+                Icon(name: "chevron.right", color: .secondary)
+            } footer: {
+                Button {
+                    viewModel.presentSheet(.createReviewReminderSheet)
+                } label: {
+                    IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
+                        .font(.subheadline.weight(.semibold))
+                }
             }
-        } accessoryIndicator: {
-            Icon(name: "chevron.right", color: .secondary)
-        } footer: {
-            Button {
-                viewModel.presentSheet(.createReviewReminderSheet)
-            } label: {
-                IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
-                    .font(.subheadline.weight(.semibold))
-            }
+            .iconLabelGroupBoxStyle(.divider)
         }
-        .iconLabelGroupBoxStyle(.divider)
+        .foregroundStyle(.primary)
     }
 }
 
@@ -195,25 +214,43 @@ private struct ReviewCell: View {
     var review: Review
     
     var body: some View {
-        NavigationLink(value: Int()) {
-            HStack(spacing: 16) {
-                if let category = review.category {
-                    Icon(name: category.icon, color: Color("BrandPrimary"), background: true)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(category.name)
-                            .fontWeight(.semibold)
-                        
-                        Text(review.date.formatted(.dateTime.day().month().hour().minute()))
-                            .font(.footnote)
-                    }
+//        Button {
+//            // TODO: Navigation to Review
+//        } label: {
+//            HStack(spacing: 16) {
+//                if let category = review.category {
+//                    Icon(name: category.icon, color: Color("BrandPrimary"), background: true)
+//                    VStack(alignment: .leading, spacing: 4) {
+//                        Text(category.name)
+//                            .fontWeight(.semibold)
+//                        
+//                        Text(review.date.formatted(.dateTime.day().month().hour().minute()))
+//                            .font(.footnote)
+//                    }
+//                }
+//                
+//                Spacer()
+//                  
+//                summaryIcons
+//            }
+//        }
+//        .foregroundStyle(.primary)
+        HStack(spacing: 16) {
+            if let category = review.category {
+                Icon(name: category.icon, color: Color("BrandPrimary"), background: true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(category.name)
+                        .fontWeight(.semibold)
+                    
+                    Text(review.date.formatted(.dateTime.day().month().hour().minute()))
+                        .font(.footnote)
                 }
-                
-                Spacer()
-                  
-                summaryIcons
             }
+            
+            Spacer()
+              
+            summaryIcons
         }
-        .foregroundStyle(.primary)
     }
     
     private var summaryIcons: some View {

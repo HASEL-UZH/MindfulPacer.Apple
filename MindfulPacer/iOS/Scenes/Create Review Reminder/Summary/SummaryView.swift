@@ -27,7 +27,7 @@ extension CreateReviewReminderView {
                         //                        vibrationStrength
                         interval
                         notificationPreview
-                        Spacer()
+                            .padding(.bottom, 64)
                     }
                     .padding(.horizontal)
                 }

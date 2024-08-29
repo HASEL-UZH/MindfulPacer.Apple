@@ -20,6 +20,7 @@ class HomeViewModel {
     
     // MARK: - Published Properties (State)
     
+    var navigationPath: [HomeViewNavigationDestination] = []
     var activeSheet: HomeViewSheet? = nil
     var alertItem: AlertItem? = nil
     

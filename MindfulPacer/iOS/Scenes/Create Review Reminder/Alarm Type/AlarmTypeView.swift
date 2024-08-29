@@ -30,9 +30,10 @@ extension CreateReviewReminderView {
                             }) {
                                 HStack {
                                     IconLabel(
-                                        icon: alarmType.icon,
+                                        icon: "circle.fill",
                                         title: alarmType.rawValue,
-                                        labelColor: viewModel.selectedAlarmType == alarmType ? Color("BrandPrimary") : Color.primary
+                                        textColor: viewModel.selectedAlarmType == alarmType ? Color("BrandPrimary") : Color.primary,
+                                        iconColor: viewModel.selectedAlarmType == alarmType ? Color("BrandPrimary") : alarmType.color
                                     )
                                     Spacer()
                                     if viewModel.selectedAlarmType == alarmType {

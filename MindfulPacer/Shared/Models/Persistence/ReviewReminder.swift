@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 #if os(watchOS)
 import WatchKit
 #endif
@@ -83,6 +84,14 @@ extension ReviewReminder {
                 "Shows an orange color"
             case .strong:
                 "Shows a red color"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .light: .yellow
+            case .medium: .orange
+            case .strong: .red
             }
         }
     }

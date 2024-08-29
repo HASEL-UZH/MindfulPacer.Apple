@@ -26,7 +26,7 @@ extension CreateReviewView {
                                     VStack(spacing: 12) {
                                         SelectableButton(
                                             shape: .circle,
-                                            color: rating.color(for: index).opacity(0.1),
+                                            backgroundColor: rating.color(for: index).opacity(0.1),
                                             selectionColor: Color("BrandPrimary"),
                                             isSelected: rating.value == index,
                                             action: {
