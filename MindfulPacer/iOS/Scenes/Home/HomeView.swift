@@ -71,7 +71,8 @@ struct HomeView: View {
             label: IconLabel(
                 icon: "figure.walk",
                 title: "Steps",
-                labelColor: Color("BrandPrimary")
+                labelColor: Color("BrandPrimary"),
+                background: true
             )
         ) {
             HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -84,7 +85,7 @@ struct HomeView: View {
             Button {
                 // TODO: Show Steps analytics
             } label: {
-                Icon(name: "chevron.right", variant: .circle)
+                Icon(name: "chevron.right.circle", variant: .fill)
             }
         }
     }
@@ -107,9 +108,10 @@ struct HomeView: View {
             Button {
                 // TODO: Show Heart Rate analytics
             } label: {
-                Icon(name: "chevron.right", variant: .circle)
+                Icon(name: "chevron.right", color: .secondary)
             }
         }
+        .iconLabelGroupBoxStyle(.divider)
     }
     
     private var reviewsWidget: some View {
@@ -117,7 +119,8 @@ struct HomeView: View {
             label: IconLabel(
                 icon: "book.pages.fill",
                 title: "Reviews",
-                labelColor: Color("BrandPrimary")
+                labelColor: Color("BrandPrimary"),
+                background: true
             ),
             description:
                 Text("This is a summary of your reviews.")
@@ -142,7 +145,7 @@ struct HomeView: View {
             }
         } button: {
             Button {
-                viewModel.presentSheet(.createReviewSheet)
+                
             } label: {
                 Icon(name: "chevron.right.circle", variant: .fill)
             }
@@ -151,6 +154,7 @@ struct HomeView: View {
                 viewModel.presentSheet(.createReviewSheet)
             } label: {
                 IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
+                    .font(.subheadline.weight(.semibold))
             }
         }
         .iconLabelGroupBoxStyle(.divider)

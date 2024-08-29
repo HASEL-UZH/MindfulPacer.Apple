@@ -204,53 +204,51 @@ extension IconLabelGroupBox where Button == EmptyView, Footer == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> Content,
+        @ViewBuilder button: () -> Button? = { nil },
+        @ViewBuilder footer: () -> Footer? = { nil }
     ) {
-        self.init(
-            label: label,
-            description: description,
-            content: content,
-            button: { EmptyView() },
-            footer: { EmptyView() }
-        )
+        self.label = label
+        self.description = description
+        self.content = content()
+        self.button = button()
+        self.footer = footer()
     }
 }
 
-// MARK: - Convenience Initializer for No Button
+// MARK: - Convenience Initializer for Footer, No Button
 
 extension IconLabelGroupBox where Button == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
+        @ViewBuilder button: () -> Button? = { nil },
         @ViewBuilder footer: () -> Footer
     ) {
-        self.init(
-            label: label,
-            description: description,
-            content: content,
-            button: { EmptyView() },
-            footer: footer
-        )
+        self.label = label
+        self.description = description
+        self.content = content()
+        self.button = button()
+        self.footer = footer()
     }
 }
 
-// MARK: - Convenience Initializer for No Footer
+// MARK: - Convenience Initializer for Button, No Footer
 
 extension IconLabelGroupBox where Footer == EmptyView {
     init(
         label: IconLabel,
         description: Text? = nil,
         @ViewBuilder content: () -> Content,
-        @ViewBuilder button: () -> Button
+        @ViewBuilder button: () -> Button,
+        @ViewBuilder footer: () -> Footer? = { nil }
     ) {
-        self.init(
-            label: label,
-            description: description,
-            content: content,
-            button: button,
-            footer: { EmptyView() }
-        )
+        self.label = label
+        self.description = description
+        self.content = content()
+        self.button = button()
+        self.footer = footer()
     }
 }
 
@@ -264,19 +262,34 @@ extension IconLabelGroupBox where Footer == EmptyView {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
-        IconLabelGroupBox(
-            label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: Color("BrandPrimary")),
-            description: Text("This is my description.").font(.subheadline.weight(.semibold))
-        ) {
-            Text("Content with a default style")
-        } button: {
-            Button(action: {
-                isExpanded.toggle()
-            }) {
-                Icon(name: "chevron.down", color: Color("BrandPrimary"), variant: .circle)
+        VStack(spacing: 32) {
+            IconLabelGroupBox(
+                label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal),
+                description: Text("This is my description.").font(.subheadline.weight(.semibold))
+            ) {
+                Text("Content with a default style")
+            } button: {
+                Button(action: {
+                    isExpanded.toggle()
+                }) {
+                    Icon(name: "chevron.down", color: Color("BrandPrimary"), variant: .circle)
+                }
             }
+            .iconLabelGroupBoxStyle(.divider)
+            .padding()
+            
+            IconLabelGroupBox(
+                label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink),
+                description: Text("This is my description.").font(.subheadline.weight(.semibold))
+            ) {
+                Text("Content with a default style")
+            } footer: {
+                Text("This is my footer.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .iconLabelGroupBoxStyle(.divider)
+            .padding()
         }
-        .iconLabelGroupBoxStyle(.divider)
-        .padding()
     }
 }

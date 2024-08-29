@@ -209,8 +209,6 @@ extension CreateReviewReminderView.SummaryView {
             )
             .font(.subheadline.weight(.semibold))
         }
-        .buttonBorderShape(.capsule)
-        .buttonStyle(.bordered)
         .disabled(viewModel.isContinueButtonDisabled)
     }
 }
