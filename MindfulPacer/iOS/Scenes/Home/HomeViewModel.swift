@@ -20,7 +20,6 @@ class HomeViewModel {
     
     // MARK: - Published Properties (State)
     
-    var navigationPath: [HomeViewNavigationDestination] = []
     var activeSheet: HomeViewSheet? = nil
     var alertItem: AlertItem? = nil
     
@@ -54,6 +53,10 @@ class HomeViewModel {
     
     func updateReviews(with reviews: [Review]) {
         self.reviews = reviews
+    }
+    
+    func updateReviewReminders(with reviewReminders: [ReviewReminder]) {
+        self.reviewReminders = reviewReminders
     }
     
     // MARK: - Private Methods

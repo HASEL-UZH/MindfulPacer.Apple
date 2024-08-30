@@ -31,15 +31,34 @@ struct CreateReviewView: View {
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: CreateReviewViewModel = ScenesContainer.shared.createReviewViewModel()
     
+    // MARK: Body
+    
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
-            List {
-                date
-                category
-                mood
-                ratings
-                triggeredCrashView
-                additionalInformation
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: 16) {
+                        date
+                        category
+                        
+                        if viewModel.selectedCategory.isNotNil {
+                            subcategory
+                        }
+                        
+                        mood
+                        ratings(width: proxy.size.width / 2)
+                        triggerCrash
+                        additionalInformation
+                            .padding(.bottom)
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .foregroundStyle(Color.primary)
+            .scrollContentBackground(.hidden)
+            .background {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
             }
             .navigationTitle("Create Review")
             .safeAreaInset(edge: .bottom) {
@@ -76,6 +95,7 @@ struct CreateReviewView: View {
                         )
                         .presentationDetents([.height(220)])
                         .presentationDragIndicator(.visible)
+                        .presentationCornerRadius(16)
                     }
                 }
             }
@@ -95,106 +115,206 @@ struct CreateReviewView: View {
         }
     }
     
+    // MARK: Date
+    
     private var date: some View {
-        Section {
-            DatePicker(selection: $viewModel.date) {
-                IconLabel(
-                    icon: "calendar",
-                    title: "Date",
-                    iconColor: Color("BrandPrimary")
-                )
-            }
+        DatePicker(selection: $viewModel.date) {
+            IconLabel(
+                icon: "calendar",
+                title: "Date",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .layoutPriority(1)
+        }
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
     }
+    
+    // MARK: Category
     
     private var category: some View {
-        Section {
-            NavigationLink(value: CreateReviewNavigationDestination.category) {
-                HStack {
-                    IconLabel(
-                        icon: "square.grid.2x2.fill",
-                        title: "Category",
-                        iconColor: Color("BrandPrimary")
-                    )
-                    Spacer()
-                    if let selectedCategory = viewModel.selectedCategory {
-                        Text(selectedCategory.name)
+        NavigationLink(value: CreateReviewNavigationDestination.category) {
+            HStack {
+                IconLabel(
+                    icon: "rectangle.grid.2x2.fill",
+                    title: "Category",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    if let category = viewModel.selectedCategory {
+                        Text(category.name)
                             .foregroundStyle(Color(.systemGray2))
+                            .fixedSize(horizontal: true, vertical: false)
                     }
+                    
+                    Icon(name: "chevron.right", color: Color(.systemGray2))
+                        .font(.subheadline.weight(.semibold))
                 }
             }
-            
-            if viewModel.selectedCategory.isNotNil {
-                NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
-                    HStack {
-                        IconLabel(
-                            icon: "rectangle.grid.3x3.fill",
-                            title: "Subcategory",
-                            iconColor: Color("BrandPrimary")
-                        )
-                        Spacer()
-                        if let selectedSubcategory = viewModel.selectedSubcategory {
-                            Text(selectedSubcategory.name)
-                                .foregroundStyle(Color(.systemGray2))
-                        }
-                    }
-                }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
     }
+    
+    // MARK: Subcategory
+    
+    private var subcategory: some View {
+        NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
+            HStack {
+                IconLabel(
+                    icon: "rectangle.grid.3x3.fill",
+                    title: "Subcategory",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    if let subcategory = viewModel.selectedSubcategory {
+                        Text(subcategory.name)
+                            .foregroundStyle(Color(.systemGray2))
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    
+                    Icon(name: "chevron.right", color: Color(.systemGray2))
+                        .font(.subheadline.weight(.semibold))
+                }
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+            }
+        }
+    }
+    
+    // MARK: Mood
     
     private var mood: some View {
-        Section {
-            NavigationLink(value: CreateReviewNavigationDestination.mood) {
-                HStack {
-                    IconLabel(
-                        icon: "face.smiling.inverse",
-                        title: "Mood",
-                        iconColor: Color("BrandPrimary")
-                    )
-                    Spacer()
-                    if let selectedMood = viewModel.selectedMood {
-                        Text(selectedMood.emoji)
+        NavigationLink(value: CreateReviewNavigationDestination.mood) {
+            HStack {
+                IconLabel(
+                    icon: "face.smiling.fill",
+                    title: "Mood",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    if let mood = viewModel.selectedMood {
+                        Text(mood.emoji)
+                            .frame(width: 24, height: 24)
                     }
+                    
+                    Icon(name: "chevron.right", color: Color(.systemGray2))
+                        .font(.subheadline.weight(.semibold))
                 }
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
     }
     
-    private var ratings: some View {
-        Section {
+    // MARK: Ratings
+    
+    @ViewBuilder private func ratings(width: CGFloat) -> some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(spacing: 16), count: 2),
+            spacing: 16
+        ) {
             ForEach(viewModel.ratings, id: \.type) { rating in
                 Button {
                     viewModel.presentRatingSheet(for: rating.type)
                 } label: {
-                    HStack {
-                        IconLabel(
+                    IconLabelGroupBox(
+                        label: IconLabel(
                             icon: rating.type.icon,
                             title: rating.type.name,
-                            iconColor: Color("BrandPrimary")
+                            labelColor: Color("BrandPrimary"),
+                            background: true,
+                            axis: .vertical
                         )
-                        Spacer()
+                    ) {
                         Text(rating.description)
-                            // FIXME: Workaround for suspected bug `Type 'UIColor' has no member 'systemGray2'`
-                            .foregroundColor(rating.description == "Not Set" ? Color(.systemGray2) : rating.color)
+                            .foregroundColor(rating.description == "Not Set" ? .secondary : rating.color)
                     }
                 }
+                .frame(maxWidth: width)
             }
         }
     }
     
-    private var triggeredCrashView: some View {
-        Section {
-            Toggle(isOn: $viewModel.didTriggerCrash) {
-                Label("Did this trigger a crash?", systemImage: "bandage.fill")
-            }
-            .tint(.accentColor)
+    // MARK: Trigger Crash
+    
+    private var triggerCrash: some View {
+        Toggle(isOn: $viewModel.didTriggerCrash) {
+            IconLabel(
+                icon: "bandage.fill",
+                title: "Did this trigger a crash?",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .layoutPriority(1)
+        }
+        .tint(.accentColor)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
     }
+    
+    // MARK: Additional Information
     
     private var additionalInformation: some View {
-        TextField("Additional information", text: $viewModel.additionalInformation, axis: .vertical)
+        IconLabelGroupBox(
+            label: IconLabel(
+                icon: "pencil.line",
+                title: "Additional Information",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+        ) {
+            TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
+        }
     }
+    
+    // MARK: Create Button
     
     private var createButton: some View {
         PrimaryButton(title: "Create") {
@@ -208,6 +328,8 @@ struct CreateReviewView: View {
             Divider()
         }
     }
+    
+    // MARK: Hide Keyboard Button
     
     private var hideKeyboardButton: some View {
         Button {

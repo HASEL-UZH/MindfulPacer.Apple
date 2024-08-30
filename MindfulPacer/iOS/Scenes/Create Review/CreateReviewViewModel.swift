@@ -28,7 +28,11 @@ class CreateReviewViewModel {
     var categories: [Category] = []
 
     var date: Date = .now
-    var selectedCategory: Category? = nil
+    var selectedCategory: Category? = nil { 
+        didSet {
+            selectedSubcategory = nil
+        }
+    }
     var selectedMood: Mood? = nil
     var selectedSubcategory: Subcategory? = nil
     var didTriggerCrash: Bool = false

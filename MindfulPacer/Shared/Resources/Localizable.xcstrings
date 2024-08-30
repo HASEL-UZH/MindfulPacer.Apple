@@ -16,8 +16,15 @@
     "68" : {
 
     },
-    "Additional information" : {
-
+    "Above %lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Above %1$lld %2$@"
+          }
+        }
+      }
     },
     "Alarm Type" : {
 
@@ -40,13 +47,7 @@
     "Create Review Reminder" : {
 
     },
-    "Did this trigger a crash?" : {
-
-    },
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered." : {
-
-    },
-    "Hey" : {
 
     },
     "Home" : {
@@ -136,10 +137,19 @@
     "This allows you to add a new Review Reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
+    "This is a long sentence to take up the screen." : {
+
+    },
+    "This is a summary of your most recent reviews." : {
+
+    },
     "This is a summary of your review reminders." : {
 
     },
-    "This is a summary of your reviews." : {
+    "This is another element" : {
+
+    },
+    "This is one element." : {
 
     },
     "Threshold" : {
@@ -155,6 +165,9 @@
 
     },
     "Unable to Trigger Vibration" : {
+
+    },
+    "You can write anything here" : {
 
     }
   },

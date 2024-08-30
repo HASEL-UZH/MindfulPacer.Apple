@@ -13,7 +13,6 @@ import WatchKit
 
 protocol ConnectivityServiceProtocol: Sendable {
     func initializeSession(completion: @escaping (Result<Void, Error>) -> Void)
-    func triggerHapticFeedback(with vibrationStrength: ReviewReminder.VibrationStrength)
 }
 
 // MARK: - ConnectivityService
@@ -40,12 +39,6 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             completion(.failure(SessionError.notSupported))
         }
     }
-    
-    func triggerHapticFeedback(with vibrationStrength: ReviewReminder.VibrationStrength) {
-        if let hapticType = vibrationStrength.hapticType() {
-            WKInterfaceDevice.current().play(hapticType)
-        }
-    }
 }
 
 // MARK: - WCSessionDelegate
@@ -62,13 +55,6 @@ extension ConnectivityService {
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         if let command = message[MessageKeys.command] as? String, let messageCommand = MessageCommand(rawValue: command) {
             switch messageCommand {
-            case .hapticFeedback:
-                if let data = message[MessageKeys.data] as? [String: Any],
-                   let vibrationStrengthString = data["vibrationStrength"] as? String,
-                   let vibrationStrength = ReviewReminder.VibrationStrength(rawValue: vibrationStrengthString) {
-                    print("DEBUGY: Triggering haptic feedback with strength: \(vibrationStrength)")
-                    triggerHapticFeedback(with: vibrationStrength)
-                }
             case .triggerLocalNotification:
                 if let data = message[MessageKeys.data] as? [String: String],
                    let title = data["title"], let body = data["body"] {

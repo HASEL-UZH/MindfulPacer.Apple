@@ -15,24 +15,25 @@ extension CreateReviewReminderView {
         @Bindable var viewModel: CreateReviewReminderViewModel
         
         var body: some View {
-            ZStack(alignment: .top) {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        measurementType
-                        alarmType
-                        threshold
-                        //                        vibrationStrength
-                        interval
-                        notificationPreview
-                            .padding(.bottom, 64)
+            GeometryReader { proxy in
+                ZStack(alignment: .top) {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            measurementType
+                            alarmType
+                            threshold
+                            interval
+                            notificationPreview
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, proxy.safeAreaInsets.bottom + 48)
                     }
-                    .padding(.horizontal)
                 }
+                .navigationTitle("Summary")
             }
-            .navigationTitle("Summary")
         }
     }
 }
@@ -124,24 +125,6 @@ extension CreateReviewReminderView.SummaryView {
     }
 }
 
-// MARK: - Vibration Strength
-
-//extension CreateReviewReminderView.SummaryView {
-//    private var vibrationStrength: some View {
-//        widgetView(
-//            icon: "hammer",
-//            title: "Vibration Strength",
-//            destination: .vibrationStrength) {
-//                if let vibrationStrength = viewModel.selectedVibrationStrength {
-//                    Text(vibrationStrength.rawValue)
-//                } else {
-//                    Text("No Vibration Strength Selected")
-//                        .foregroundStyle(.red)
-//                }
-//            }
-//    }
-//}
-
 // MARK: - Interval
 
 extension CreateReviewReminderView.SummaryView {
@@ -198,8 +181,6 @@ extension CreateReviewReminderView.SummaryView {
                     RoundedRectangle(cornerRadius: 8)
                         .foregroundStyle(.thinMaterial)
                 }
-                
-//                notificationPreviewButton
             }
         } footer: {
             notificationPreviewButton
@@ -214,7 +195,7 @@ extension CreateReviewReminderView.SummaryView {
             IconLabel(
                 icon: "bell.badge",
                 title: "Test on Apple Watch",
-                labelColor: Color("BrandPrimary")
+                labelColor: viewModel.isContinueButtonDisabled ? Color.secondary : Color("BrandPrimary")
             )
             .font(.subheadline.weight(.semibold))
         }

@@ -23,7 +23,6 @@ extension SchemaV1 {
         var measurementType: MeasurementType = MeasurementType.heartRate
         var alarmType: AlarmType = AlarmType.light
         var threshold: Int = 0
-//        var vibrationStrength: VibrationStrength = VibrationStrength.none
         var interval: Interval = Interval._10seconds
         
         init(
@@ -31,14 +30,12 @@ extension SchemaV1 {
             measurementType: MeasurementType = MeasurementType.heartRate,
             alarmType: AlarmType = AlarmType.light,
             threshold: Int = 0,
-//            vibrationStrength: VibrationStrength = VibrationStrength.none,
             interval: Interval = Interval._10seconds
         ) {
             self.id = id
             self.measurementType = measurementType
-//            self.alarmType = alarmType
+            self.alarmType = alarmType
             self.threshold = threshold
-//            self.vibrationStrength = vibrationStrength
             self.interval = interval
         }
     }
@@ -94,33 +91,6 @@ extension ReviewReminder {
             case .strong: .red
             }
         }
-    }
-}
-
-// MARK: - Vibration Strength
-
-extension ReviewReminder {
-    enum VibrationStrength: String, Codable, CaseIterable {
-        case none = "None"
-        case light = "Light"
-        case medium = "Medium"
-        case strong = "Strong"
-        
-        #if os(watchOS)
-        /// Since there is no direct mapping to the concept of 'strength' with haptic feedback on the Apple Watch, we are using default types to mimic a scale from 'light' to 'strong'
-        func hapticType() -> WKHapticType? {
-            switch self {
-            case .none:
-                return nil
-            case .light:
-                return .start
-            case .medium:
-                return .success
-            case .strong:
-                return .failure
-            }
-        }
-        #endif
     }
 }
 

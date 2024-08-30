@@ -16,7 +16,6 @@ class CreateReviewReminderViewModel {
     
     private let modelContext: ModelContext
     private let createReviewReminderUseCase: CreateReviewReminderUseCase
-    private let triggerHapticFeedbackUseCase: TriggerHapticFeedbackUseCase
     private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     
     // MARK: - Published Properties (State)
@@ -37,12 +36,10 @@ class CreateReviewReminderViewModel {
             return selectedAlarmType == nil
         case .threshold:
             return threshold == nil
-            //        case .vibrationStrength:
-            //            return selectedVibrationStrength == nil
         case .interval:
             return selectedInterval == nil
         case .summary:
-            return (selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil /*|| selectedVibrationStrength == nil*/ || selectedInterval == nil)
+            return (selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil || selectedInterval == nil)
         }
     }
     
@@ -93,7 +90,6 @@ class CreateReviewReminderViewModel {
         }
     }
     var selectedAlarmType: ReviewReminder.AlarmType? = nil
-    var selectedVibrationStrength: ReviewReminder.VibrationStrength? = nil
     var selectedInterval: ReviewReminder.Interval? = nil
     
     // MARK: - Initialization
@@ -101,12 +97,10 @@ class CreateReviewReminderViewModel {
     init(
         modelContext: ModelContext,
         createReviewReminderUseCase: CreateReviewReminderUseCase,
-        triggerHapticFeedbackUseCase: TriggerHapticFeedbackUseCase,
         triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewReminderUseCase = createReviewReminderUseCase
-        self.triggerHapticFeedbackUseCase = triggerHapticFeedbackUseCase
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
     
@@ -130,21 +124,10 @@ class CreateReviewReminderViewModel {
             navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
         case .threshold:
             navigationPath.append(CreateReviewReminderNavigationDestination.interval)
-            //        case .vibrationStrength:
-            //            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
         case .interval:
             navigationPath.append(CreateReviewReminderNavigationDestination.summary)
         case .summary:
             saveReviewReminder()
-        }
-    }
-    
-    func testVibrationStrengthTapped() {
-        guard let selectedVibrationStrength else { return }
-        triggerHapticFeedbackUseCase.execute(vibrationStrength: selectedVibrationStrength) { result in
-            if case .failure(_) = result {
-                self.alertItem = AlertContext.unableToTriggerVibration
-            }
         }
     }
     
@@ -174,14 +157,12 @@ class CreateReviewReminderViewModel {
         guard let measurementType = selectedMeasurementType,
               let alarmType = selectedAlarmType,
               let threshold,
-              //              let vibrationStrength = selectedVibrationStrength,
               let interval = selectedInterval else { return }
         
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
             alarmType: alarmType,
             threshold: threshold,
-            //            vibrationStrength: vibrationStrength,
             interval: interval
         )
         

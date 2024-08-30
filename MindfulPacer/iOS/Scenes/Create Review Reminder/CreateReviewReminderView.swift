@@ -13,7 +13,6 @@ enum CreateReviewReminderNavigationDestination: Hashable {
     case measurementType
     case alarmType
     case threshold
-//    case vibrationStrength
     case interval
     case summary
 }
@@ -21,7 +20,6 @@ enum CreateReviewReminderNavigationDestination: Hashable {
 enum CreateReviewReminderSheet: Identifiable {
     case alarmTypeInfo
     case heartRateThresholdInfo
-//    case vibrationStrengthInfo
     case intervalInfo
     
     var id: Int {
@@ -51,18 +49,17 @@ struct CreateReviewReminderView: View {
                     alarmTypeInfoView
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
+                        .presentationCornerRadius(16)
                 case .heartRateThresholdInfo:
                     thresholdInfoView
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.visible)
-//                case .vibrationStrengthInfo:
-//                    vibrationStrengthInfoView
-//                        .presentationDetents([.medium])
-//                        .presentationDragIndicator(.visible)
+                        .presentationCornerRadius(16)
                 case .intervalInfo:
                     intervalInfoView
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.visible)
+                        .presentationCornerRadius(16)
                 }
             }
             .navigationBarTitleDisplayMode(.large)
@@ -74,8 +71,6 @@ struct CreateReviewReminderView: View {
                     AlarmTypeView(viewModel: viewModel)
                 case .threshold:
                     ThresholdView(viewModel: viewModel)
-//                case .vibrationStrength:
-//                    VibrationStrengthView(viewModel: viewModel)
                 case .interval:
                     IntervalView(viewModel: viewModel)
                 case .summary:
@@ -168,15 +163,6 @@ struct CreateReviewReminderView: View {
             .font(.subheadline)
         }
     }
-    
-    //    private var vibrationStrengthInfoView: some View {
-    //        InfoSheetView(
-//            title: "Vibration Strength Information",
-//            info: "The vibration strength allows you to adjust how strong the smartwatch should vibrate when this alarm is triggered."
-//        ) {
-//            Text("You can test how the selected vibration strength feels by tapping on the '**Test**' button. Please ensure you are wearing your Apple Watch to be able to test this functionality.")
-//        }
-//    }
     
     private var intervalInfoView: some View {
         InfoSheetView(

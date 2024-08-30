@@ -13,7 +13,6 @@ protocol CreateReviewReminderUseCase {
         measurementType: ReviewReminder.MeasurementType,
         alarmType: ReviewReminder.AlarmType,
         threshold: Int,
-//        vibrationStrength: ReviewReminder.VibrationStrength,
         interval: ReviewReminder.Interval
     ) -> Result<ReviewReminder, Error>
 }
@@ -31,14 +30,12 @@ class DefaultCreateReviewReminderUseCase: CreateReviewReminderUseCase {
         measurementType: ReviewReminder.MeasurementType,
         alarmType: ReviewReminder.AlarmType,
         threshold: Int,
-//        vibrationStrength: ReviewReminder.VibrationStrength,
         interval: ReviewReminder.Interval
     ) -> Result<ReviewReminder, any Error> {
         let reviewReminder = ReviewReminder(
             measurementType: measurementType,
             alarmType: alarmType,
             threshold: threshold,
-//            vibrationStrength: vibrationStrength,
             interval: interval
         )
         

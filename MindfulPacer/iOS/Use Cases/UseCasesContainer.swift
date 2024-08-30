@@ -50,11 +50,6 @@ extension UseCasesContainer {
     // MARK: - Watch Communication
     
     @MainActor
-    var triggerHapticFeedbackUseCase: Factory<DefaultTriggerHapticFeedbackUseCase> {
-        self { DefaultTriggerHapticFeedbackUseCase(connectivityService: ConnectivityService.shared) }
-    }
-    
-    @MainActor
     var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
         self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
     }
