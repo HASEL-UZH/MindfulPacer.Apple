@@ -1,5 +1,5 @@
 //
-//  CreateReviewView.swift
+//  EditReviewView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 06.08.2024.
@@ -8,15 +8,15 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Navigation Enums
+// MARK: - Presentation Enums
 
-enum CreateReviewNavigationDestination: Hashable {
+enum EditReviewNavigationDestination: Hashable {
     case category
     case subcategory(Category?)
     case mood
 }
 
-enum CreateReviewSheet: Identifiable {
+enum EditReviewSheet: Identifiable {
     case ratingSheet
     
     var id: Int {
@@ -24,12 +24,22 @@ enum CreateReviewSheet: Identifiable {
     }
 }
 
-// MARK: - CreateReviewView
+enum EditReviewAlert: Identifiable {
+    case deleteConfirmation
+    case unableToSaveReview
+    
+    var id: Int {
+        hashValue
+    }
+}
 
-struct CreateReviewView: View {
+// MARK: - EditReviewView
+
+struct EditReviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
-    @State var viewModel: CreateReviewViewModel = ScenesContainer.shared.createReviewViewModel()
+    @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
+    var review: Review?
     
     // MARK: Body
     
@@ -49,10 +59,14 @@ struct CreateReviewView: View {
                         ratings(width: proxy.size.width / 2)
                         triggerCrash
                         additionalInformation
-                            .padding(.bottom)
+                        
+                        if viewModel.mode == .edit {
+                            deleteButton
+                        }
                     }
                     .padding(.horizontal)
                 }
+                .safeAreaPadding(.bottom)
             }
             .foregroundStyle(Color.primary)
             .scrollContentBackground(.hidden)
@@ -60,9 +74,11 @@ struct CreateReviewView: View {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
             }
-            .navigationTitle("Create Review")
+            .navigationTitle(viewModel.navigationTitle)
             .safeAreaInset(edge: .bottom) {
-                createButton
+                if viewModel.mode == .create {
+                    createButton
+                }
             }
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
@@ -74,13 +90,28 @@ struct CreateReviewView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Save") {
+                        viewModel.saveReview(review)
+                        dismiss()
+                    }
                     .fontWeight(.semibold)
                 }
             }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
+                viewModel.configureMode(with: review)
             }
-            .alert(item: $viewModel.alertItem) { $0.alert }
+            .alert(item: $viewModel.activeAlert) { alert in
+                switch alert {
+                case .deleteConfirmation:
+                    reviewDeletionConfirmationAlert
+                case .unableToSaveReview:
+                    unableToSaveReviewAlert
+                }
+            }
             .sheet(item: $viewModel.activeSheet) { sheet in
                 switch sheet {
                 case .ratingSheet:
@@ -99,14 +130,14 @@ struct CreateReviewView: View {
                     }
                 }
             }
-            .navigationDestination(for: CreateReviewNavigationDestination.self) { destination in
+            .navigationDestination(for: EditReviewNavigationDestination.self) { destination in
                 switch destination {
                 case .category:
                     ReviewCategoryView(viewModel: viewModel)
                 case .subcategory(let category):
                     ReviewSubcategoryView(
-                        viewModel: viewModel,
-                        category: category.unsafelyUnwrapped
+                        category: category.unsafelyUnwrapped,
+                        viewModel: viewModel
                     )
                 case .mood:
                     ReviewMoodView(viewModel: viewModel)
@@ -140,7 +171,7 @@ struct CreateReviewView: View {
     // MARK: Category
     
     private var category: some View {
-        NavigationLink(value: CreateReviewNavigationDestination.category) {
+        NavigationLink(value: EditReviewNavigationDestination.category) {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.2x2.fill",
@@ -153,7 +184,7 @@ struct CreateReviewView: View {
                 .lineLimit(1)
                 .layoutPriority(1)
                 
-                Spacer()
+                Spacer(minLength: 16)
                 
                 HStack(spacing: 4) {
                     if let category = viewModel.selectedCategory {
@@ -177,7 +208,7 @@ struct CreateReviewView: View {
     // MARK: Subcategory
     
     private var subcategory: some View {
-        NavigationLink(value: CreateReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
+        NavigationLink(value: EditReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.3x3.fill",
@@ -190,7 +221,7 @@ struct CreateReviewView: View {
                 .lineLimit(1)
                 .layoutPriority(1)
                 
-                Spacer()
+                Spacer(minLength: 16)
                 
                 HStack(spacing: 4) {
                     if let subcategory = viewModel.selectedSubcategory {
@@ -214,7 +245,7 @@ struct CreateReviewView: View {
     // MARK: Mood
     
     private var mood: some View {
-        NavigationLink(value: CreateReviewNavigationDestination.mood) {
+        NavigationLink(value: EditReviewNavigationDestination.mood) {
             HStack {
                 IconLabel(
                     icon: "face.smiling.fill",
@@ -318,14 +349,27 @@ struct CreateReviewView: View {
     
     private var createButton: some View {
         PrimaryButton(title: "Create") {
-            viewModel.saveReview()
+            viewModel.createReview()
             dismiss()
+            // TODO: Show a toast when a Review is successfully created
         }
         .padding(keyboardShowing ? [.all] : [.horizontal, .top])
         .background(.ultraThinMaterial)
-        .disabled(viewModel.isCreateButtonDisabled)
+        .disabled(viewModel.isActionButtonDisabled)
         .overlay(alignment: .top) {
             Divider()
+        }
+    }
+    
+    // MARK: Delete Button
+    
+    private var deleteButton: some View {
+        PrimaryButton(
+            title: "Delete Review",
+            icon: "trash",
+            color: .red
+        ) {
+            viewModel.presentAlert(.deleteConfirmation)
         }
     }
     
@@ -339,15 +383,40 @@ struct CreateReviewView: View {
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
+    
+    // MARK: Review Deletion Confirmation Alert
+    
+    private var reviewDeletionConfirmationAlert: Alert {
+        Alert(
+            title: Text("Delete Review"),
+            message: Text("Are you sure you want to delete this review? This action cannot be undone."),
+            primaryButton: .destructive(Text("Delete")) {
+                viewModel.deleteReview(review)
+                dismiss()
+            },
+            secondaryButton: .cancel()
+        )
+    }
+    
+    // MARK: - Unable to Save Review Alert
+    
+    private var unableToSaveReviewAlert: Alert {
+        Alert(
+            title: Text("Save Error"),
+            message: Text("Unable to save your Review.\nPlease try again.\nIf this problem persists, please contact us."),
+            dismissButton: .default(Text("Ok"))
+        )
+    }
+    
 }
 
 // MARK: - Preview
 
 #Preview {
     let container = ModelContainer.preview
-    let viewModel = ScenesContainer.shared.createReviewViewModel()
+    let viewModel = ScenesContainer.shared.editReviewViewModel()
     
-    return CreateReviewView(viewModel: viewModel)
+    return EditReviewView(viewModel: viewModel)
         .modelContainer(container)
         .tint(Color("BrandPrimary"))
 }

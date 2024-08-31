@@ -25,14 +25,14 @@ extension SchemaV1 {
         var category: Category?
         var subcategory: Subcategory?
         var mood: String? = ""
-        var didTriggerCrash: Bool?
+        var didTriggerCrash: Bool = false
         var perceivedEnergyLevelRating: Int?
         var headachesRating: Int?
         var shortnessOfBreatheRating: Int?
         var feverRating: Int?
         var painsAndNeedlesRating: Int?
         var muscleAchesRating: Int?
-        var additionalInformation: String?
+        var additionalInformation: String = ""
         
         init(
             id: UUID = UUID(),
@@ -40,14 +40,14 @@ extension SchemaV1 {
             category: Category? = nil,
             subcategory: Subcategory? = nil,
             mood: String? = "",
-            didTriggerCrash: Bool? = false,
+            didTriggerCrash: Bool = false,
             perceivedEnergyLevelRating: Int? = 0,
             headachesRating: Int? = 0,
             shortnessOfBreatheRating: Int? = 0,
             feverRating: Int? = 0,
             painsAndNeedlesRating: Int? = 0,
             muscleAchesRating: Int? = 0,
-            additionalInformation: String? = ""
+            additionalInformation: String = ""
         ) {
             self.id = id
             self.date = date
@@ -311,6 +311,11 @@ struct Mood: Equatable {
     let id = UUID()
     let emoji: String
     let description: String
+    
+    @MainActor
+    static func mood(for emoji: String?) -> Mood? {
+        DefaultMoodData.moods.first { $0.emoji == emoji }
+    }
 }
 
 @MainActor

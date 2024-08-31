@@ -24,20 +24,22 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    // MARK: - Create Review
+    // MARK: - Review
     
     @MainActor
-    var createReviewViewModel: Factory<CreateReviewViewModel> {
+    var editReviewViewModel: Factory<EditReviewViewModel> {
         self {
-            CreateReviewViewModel(
+            EditReviewViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
-                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
+                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
+                saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
             )
         }
     }
-    
-    // MARK: - Create Review Reminder
+
+    // MARK: - Review Reminder
     
     @MainActor
     var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {

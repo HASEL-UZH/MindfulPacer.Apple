@@ -10,9 +10,9 @@ import SwiftData
 
 // MARK: - ReviewCategoryView
 
-extension CreateReviewView {
+extension EditReviewView {
     struct ReviewCategoryView: View {
-        @Bindable var viewModel: CreateReviewViewModel
+        @Bindable var viewModel: EditReviewViewModel
         
         var body: some View {
             ScrollView {
@@ -54,11 +54,11 @@ extension CreateReviewView {
 // MARK: - Preview
 
 #Preview {
+    let viewModel = ScenesContainer.shared.editReviewViewModel()
     let container = ModelContainer.preview
-    let viewModel = ScenesContainer.shared.createReviewViewModel()
     
     NavigationStack {
-        CreateReviewView.ReviewCategoryView(viewModel: viewModel)
+        EditReviewView.ReviewCategoryView(viewModel: viewModel)
             .navigationTitle("Category")
             .modelContainer(container)
             .tint(Color("BrandPrimary"))

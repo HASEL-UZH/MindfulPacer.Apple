@@ -195,11 +195,11 @@ extension CreateReviewReminderView.SummaryView {
             IconLabel(
                 icon: "bell.badge",
                 title: "Test on Apple Watch",
-                labelColor: viewModel.isContinueButtonDisabled ? Color.secondary : Color("BrandPrimary")
+                labelColor: viewModel.isActionButtonDisabled ? Color.secondary : Color("BrandPrimary")
             )
             .font(.subheadline.weight(.semibold))
         }
-        .disabled(viewModel.isContinueButtonDisabled)
+        .disabled(viewModel.isActionButtonDisabled)
     }
 }
 

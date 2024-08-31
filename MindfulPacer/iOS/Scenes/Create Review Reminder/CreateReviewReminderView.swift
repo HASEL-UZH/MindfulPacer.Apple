@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Navigation Enums
+// MARK: - Presentation Enums
 
 enum CreateReviewReminderNavigationDestination: Hashable {
     case measurementType
@@ -27,12 +27,23 @@ enum CreateReviewReminderSheet: Identifiable {
     }
 }
 
+enum CreateReviewReminderAlert: Identifiable {
+    case unableToSaveReviewReminder
+    case unableToSendTestNotification
+    
+    var id: Int {
+        hashValue
+    }
+}
+
 // MARK: - CreateReviewReminderView
 
 struct CreateReviewReminderView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
+    
+    // MARK: Body
     
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
@@ -42,24 +53,22 @@ struct CreateReviewReminderView: View {
                 
                 intro
             }
-            .alert(item: $viewModel.alertItem) { $0.alert }
+            .alert(item: $viewModel.activeAlert) { alert in
+                switch alert {
+                case .unableToSaveReviewReminder:
+                    unableToSaveReviewReminderAlert
+                case .unableToSendTestNotification:
+                    unableToSendTestNotificationAlert
+                }
+            }
             .sheet(item: $viewModel.activeSheet) { sheet in
                 switch sheet {
                 case .alarmTypeInfo:
-                    alarmTypeInfoView
-                        .presentationDetents([.medium])
-                        .presentationDragIndicator(.visible)
-                        .presentationCornerRadius(16)
+                    alarmTypeInfoSheet
                 case .heartRateThresholdInfo:
-                    thresholdInfoView
-                        .presentationDetents([.medium, .large])
-                        .presentationDragIndicator(.visible)
-                        .presentationCornerRadius(16)
+                    thresholdInfoSheet
                 case .intervalInfo:
-                    intervalInfoView
-                        .presentationDetents([.medium, .large])
-                        .presentationDragIndicator(.visible)
-                        .presentationCornerRadius(16)
+                    intervalInfoSheet
                 }
             }
             .navigationBarTitleDisplayMode(.large)
@@ -79,30 +88,33 @@ struct CreateReviewReminderView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if viewModel.showContinueButton {
-                continueButton
+            if viewModel.showActionButton {
+                actionButton
             }
         }
     }
     
-    private var continueButton: some View {
-        PrimaryButton(title: viewModel.continueButtonTitle) {
-            viewModel.continueButtonTapped()
+    // MARK: Action Button
+    
+    private var actionButton: some View {
+        PrimaryButton(title: viewModel.actionButtonTitle) {
+            viewModel.actionButtonTapped()
         }
         .padding(keyboardShowing ? [.all] : [.horizontal, .top])
-        .disabled(viewModel.isContinueButtonDisabled)
+        .disabled(viewModel.isActionButtonDisabled)
         .background(.ultraThinMaterial)
         .overlay(alignment: .top) {
             Divider()
         }
     }
     
+    // MARK: Intro
+    
     private var intro: some View {
         VStack {
             Button("Cancel") {
                 dismiss()
             }
-            .fontWeight(.semibold)
             .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: 32) {
@@ -125,8 +137,10 @@ struct CreateReviewReminderView: View {
         .padding()
     }
     
-    private var alarmTypeInfoView: some View {
-        InfoSheetView(
+    // MARK: Alarm Type Info Sheet
+    
+    private var alarmTypeInfoSheet: some View {
+        InfoSheet(
             title: "Alarm Type Information",
             info: "You can choose between three different alarm types.") {
                 Text(
@@ -139,10 +153,15 @@ struct CreateReviewReminderView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.subheadline)
             }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(16)
     }
     
-    private var thresholdInfoView: some View {
-        InfoSheetView(
+    // MARK: Threshold Info Sheet
+    
+    private var thresholdInfoSheet: some View {
+        InfoSheet(
             title: "Threshold Information",
             info: "Set a threshold that triggers a reminder when reached for a specified interval."
         ) {
@@ -162,10 +181,15 @@ struct CreateReviewReminderView: View {
             }
             .font(.subheadline)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationCornerRadius(16)
     }
     
-    private var intervalInfoView: some View {
-        InfoSheetView(
+    // MARK: Interval Info Sheet
+    
+    private var intervalInfoSheet: some View {
+        InfoSheet(
             title: "Interval Information",
             info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered."
         ) {
@@ -184,6 +208,29 @@ struct CreateReviewReminderView: View {
             }
             .font(.subheadline)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationCornerRadius(16)
+    }
+    
+    // MARK: Unable to Save Review Reminder Alert
+    
+    private var unableToSaveReviewReminderAlert: Alert {
+        Alert(
+            title: Text("Error Saving Review Reminder"),
+            message: Text("Unable to save your Review Reminder.\nPlease try again.\nIf this problem persists, please contact us."),
+            dismissButton: .default(Text("Ok"))
+        )
+    }
+    
+    // MARK: Unable to Send Test Notification Alert
+    
+    private var unableToSendTestNotificationAlert: Alert {
+        Alert(
+            title: Text("Unable to Send Notification"),
+            message: Text("Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again."),
+            dismissButton: .default(Text("Ok"))
+        )
     }
 }
 

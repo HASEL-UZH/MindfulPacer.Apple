@@ -14,14 +14,14 @@ protocol CreateReviewUseCase {
         category: Category?,
         subcategory: Subcategory?,
         mood: String?,
-        didTriggerCrash: Bool?,
+        didTriggerCrash: Bool,
         perceivedEnergyLevelRating: Int?,
         headachesRating: Int?,
         shortnessOfBreatheRating: Int?,
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String?
+        additionalInformation: String
     ) -> Result<Review, Error>
 }
 
@@ -39,14 +39,14 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         category: Category?,
         subcategory: Subcategory?,
         mood: String?,
-        didTriggerCrash: Bool?,
+        didTriggerCrash: Bool,
         perceivedEnergyLevelRating: Int?,
         headachesRating: Int?,
         shortnessOfBreatheRating: Int?,
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String?
+        additionalInformation: String
     ) -> Result<Review, Error> {
         let review = Review(
             date: date,

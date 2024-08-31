@@ -12,6 +12,7 @@ import SwiftUI
 @MainActor
 @Observable
 class CreateReviewReminderViewModel {
+    
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
@@ -22,9 +23,9 @@ class CreateReviewReminderViewModel {
     
     var navigationPath: [CreateReviewReminderNavigationDestination] = []
     var activeSheet: CreateReviewReminderSheet? = nil
-    var alertItem: AlertItem? = nil
+    var activeAlert: CreateReviewReminderAlert? = nil
     
-    var isContinueButtonDisabled: Bool {
+    var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
@@ -43,7 +44,7 @@ class CreateReviewReminderViewModel {
         }
     }
     
-    var showContinueButton: Bool {
+    var showActionButton: Bool {
         /// Check if the second-to-last element in the navigationPath is .summary
         if navigationPath.dropLast().last == .summary {
             return false
@@ -51,7 +52,7 @@ class CreateReviewReminderViewModel {
         return true
     }
     
-    var continueButtonTitle: String {
+    var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
             return "Continue"
         }
@@ -110,7 +111,7 @@ class CreateReviewReminderViewModel {
     
     // MARK: - User Actions
     
-    func continueButtonTapped() {
+    func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigationPath.append(CreateReviewReminderNavigationDestination.measurementType)
@@ -137,18 +138,24 @@ class CreateReviewReminderViewModel {
             case .success:
                 print("DEBUGY: Notification sent successfully.")
             case .failure(let error):
-                self.alertItem = AlertContext.unableToSendTestNotification
+                self.presentAlert(.unableToSendTestNotification)
                 print("DEBUGY: Failed to send notification: \(error.localizedDescription)")
             }
         }
     }
     
+    func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
+        selectedItem = (selectedItem == item) ? nil : item
+    }
+    
+    // MARK: - Presentation
+    
     func presentSheet(_ sheet: CreateReviewReminderSheet) {
         activeSheet = sheet
     }
     
-    func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
-        selectedItem = (selectedItem == item) ? nil : item
+    func presentAlert(_ alert: CreateReviewReminderAlert) {
+        activeAlert = alert
     }
     
     // MARK: - Private Methods
@@ -167,7 +174,7 @@ class CreateReviewReminderViewModel {
         )
         
         if case .failure(_) = result {
-            alertItem = AlertContext.unableToSaveReviewReminder
+            self.presentAlert(.unableToSaveReviewReminder)
         }
     }
     

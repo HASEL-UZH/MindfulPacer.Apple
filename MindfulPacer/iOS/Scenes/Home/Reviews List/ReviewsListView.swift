@@ -12,51 +12,63 @@ import SwiftUI
 struct ReviewsListView: View {
     @Bindable var viewModel: HomeViewModel
     
+    // MARK: Body
+    
     var body: some View {
-        List {
-            Section {
-                ForEach(0..<3) { index in
-                    Button {
-                        // Handle button action
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16)
-                                .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                            
-                            HStack {
-                                Text("This is a long sentence to take up the screen.")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .frame(maxHeight: .infinity)
-                                
-                                Spacer()
-                                
-                                Icon(name: "chevron.right", color: Color(.systemGray2))
-                            }
-                            .padding()
-                        }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                // Handle swipe action
-                            } label: {
-                                Image(systemName: "trash")
-                            }
-                        }
+        ScrollView {
+            VStack(spacing: 16) {
+                ForEach(viewModel.reviews) { review in
+                    ReviewCell(review: review) {
+                        viewModel.presentSheet(.editReviewSheet(review))
                     }
                 }
-                .contentShape(Rectangle())
-                .listRowInsets(.init())
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
             }
-            
-            Section {
-                Text("This is one element.")
-                Text("This is another element")
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+        }
+        .background(Color(.systemGroupedBackground))
+        .listStyle(.grouped)
+        .navigationTitle("Reviews")
+    }
+}
+
+// MARK: - ReviewCell
+
+extension ReviewsListView {
+    struct ReviewCell: View {
+        var review: Review
+        var onTap: () -> Void
+        
+        var body: some View {
+            Button {
+                onTap()
+            } label: {
+                HStack(spacing: 16) {
+                    if let category = review.category {
+                        VStack(alignment: .leading, spacing: 8) {
+                            IconLabel(icon: category.icon, title: category.name)
+                                .font(.subheadline.weight(.semibold))                            
+                            Text(review.date.formatted(.dateTime.day().month().hour().minute()))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                                        
+                    Spacer()
+                    
+                    if let mood = review.mood {
+                        Text(mood)
+                            .frame(width: 24, height: 24)
+                    }
+                }
+                .padding()
+                .foregroundStyle(Color.primary)
+                .background {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
+                }
             }
         }
-        .buttonStyle(.plain)
-        .listRowSpacing(16)
-        .navigationTitle("Reviews")
     }
 }
 

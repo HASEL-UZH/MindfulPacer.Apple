@@ -21,7 +21,6 @@ class HomeViewModel {
     // MARK: - Published Properties (State)
     
     var activeSheet: HomeViewSheet? = nil
-    var alertItem: AlertItem? = nil
     
     var reviews: [Review] = []
     var reviewReminders: [ReviewReminder] = []
@@ -41,6 +40,11 @@ class HomeViewModel {
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
+        fetchReviews()
+        fetchReviewReminders()
+    }
+    
+    func onSheetDismissed() {
         fetchReviews()
         fetchReviewReminders()
     }

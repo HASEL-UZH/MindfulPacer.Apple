@@ -9,9 +9,9 @@ import SwiftUI
 
 // MARK: - ReviewMoodView
 
-extension CreateReviewView {
+extension EditReviewView {
     struct ReviewMoodView: View {
-        @Bindable var viewModel: CreateReviewViewModel
+        @Bindable var viewModel: EditReviewViewModel
         
         var body: some View {
             ScrollView {
@@ -48,10 +48,10 @@ extension CreateReviewView {
 // MARK: - Preview
 
 #Preview {
-    let viewModel = ScenesContainer.shared.createReviewViewModel()
+    let viewModel = ScenesContainer.shared.editReviewViewModel()
     
     NavigationStack {
-        CreateReviewView.ReviewMoodView(viewModel: viewModel)
+        EditReviewView.ReviewMoodView(viewModel: viewModel)
             .navigationTitle("Mood")
             .tint(Color("BrandPrimary"))
     }

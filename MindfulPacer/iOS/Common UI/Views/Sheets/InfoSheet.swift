@@ -1,5 +1,5 @@
 //
-//  InfoSheetView.swift
+//  InfoSheet.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 18.08.2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InfoSheetView<Content: View>: View {
+struct InfoSheet<Content: View>: View {
     var title: String
     var info: String? = nil
     var content: () -> Content
@@ -57,7 +57,7 @@ struct InfoSheetView<Content: View>: View {
     }
 }
 
-extension InfoSheetView where Content == EmptyView {
+extension InfoSheet where Content == EmptyView {
     init(title: String, info: String? = nil) {
         self.title = title
         self.info = info
@@ -68,7 +68,7 @@ extension InfoSheetView where Content == EmptyView {
 // MARK: - Preview
 
 #Preview {
-    InfoSheetView(title: "Information", info: "This is some information.") {
+    InfoSheet(title: "Information", info: "This is some information.") {
         Text("This is some text.")
             .frame(maxWidth: .infinity, alignment: .leading)
     }

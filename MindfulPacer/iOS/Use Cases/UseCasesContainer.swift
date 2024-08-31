@@ -14,22 +14,22 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
-    // MARK: - Reviews
+
+    // MARK: - Review
     
     @MainActor
     var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
         self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
-    
     @MainActor
     var createReviewUseCase: Factory<CreateReviewUseCase> {
         self { DefaulCreateReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-    
+   
     @MainActor
-    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
-        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var deleteReviewUseCase: Factory<DeleteReviewUseCase> {
+        self { DefaultDeleteReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     @MainActor
@@ -40,6 +40,18 @@ extension UseCasesContainer {
     @MainActor
     var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
         self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var saveReviewUseCase: Factory<DefaulSaveReviewUseCase> {
+        self { DefaulSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    // MARK: - Review Reminder
+    
+    @MainActor
+    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
+        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     @MainActor
