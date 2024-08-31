@@ -39,6 +39,7 @@ struct EditReviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
+    
     var review: Review?
     
     // MARK: Body
@@ -93,11 +94,13 @@ struct EditReviewView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        viewModel.saveReview(review)
-                        dismiss()
+                    if viewModel.mode == .edit {
+                        Button("Save") {
+                            viewModel.saveReview(review)
+                            dismiss()
+                        }
+                        .fontWeight(.semibold)
                     }
-                    .fontWeight(.semibold)
                 }
             }
             .onViewFirstAppear {

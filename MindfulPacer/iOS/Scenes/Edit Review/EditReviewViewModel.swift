@@ -162,12 +162,7 @@ class EditReviewViewModel {
     
     func deleteReview(_ review: Review?) {
         guard let review else { return }
-        
-        let result = deleteReviewUseCase.execute(review: review)
-        
-        if case .failure(_) = result {
-            print("DEBUG: Could not delete review")
-        }
+        deleteReviewUseCase.execute(review: review)
     }
     
     // MARK: - Presentation

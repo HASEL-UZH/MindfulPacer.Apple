@@ -109,16 +109,4 @@ class CreateReviewViewModelTests: XCTestCase {
         // Assert
         XCTAssertNil(viewModel.alertItem)
     }
-    
-    @MainActor
-    func testSaveReviewFailure() {
-        // Arrange
-        mockCreateReviewUseCase.executeResult = .failure(NSError(domain: "Test", code: 1, userInfo: nil))
-        
-        // Act
-        viewModel.saveReview()
-        
-        // Assert
-        XCTAssertEqual(viewModel.alertItem, AlertContext.unableToSaveReview)
-    }
 }

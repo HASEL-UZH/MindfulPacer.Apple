@@ -15,20 +15,56 @@ struct ReviewsListView: View {
     // MARK: Body
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                ForEach(viewModel.reviews) { review in
-                    ReviewCell(review: review) {
-                        viewModel.presentSheet(.editReviewSheet(review))
+        VStack {
+            if viewModel.reviews.isEmpty {
+                reviewsEmptyState
+                    .frame(maxHeight: .infinity, alignment: .center)
+            } else {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach(viewModel.reviews) { review in
+                            ReviewCell(review: review) {
+                                viewModel.presentSheet(.editReviewSheet(review))
+                            }
+                        }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal)
         }
         .background(Color(.systemGroupedBackground))
         .listStyle(.grouped)
         .navigationTitle("Reviews")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    viewModel.presentSheet(.editReviewSheet(nil))
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+    }
+    
+    // MARK: Reviews Empty State
+    
+    var reviewsEmptyState: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ContentUnavailableView {
+                Label("No Reviews", systemImage: "book.pages.fill")
+            } description: {
+                Text("You have not created any reviews.")
+            } actions: {
+                Button {
+                    viewModel.presentSheet(.editReviewSheet(nil))
+                } label: {
+                    Text("Create Review")
+                }
+                .buttonBorderShape(.capsule)
+                .buttonStyle(.borderedProminent)
+            }
+        }
     }
 }
 
@@ -47,13 +83,13 @@ extension ReviewsListView {
                     if let category = review.category {
                         VStack(alignment: .leading, spacing: 8) {
                             IconLabel(icon: category.icon, title: category.name)
-                                .font(.subheadline.weight(.semibold))                            
+                                .font(.subheadline.weight(.semibold))
                             Text(review.date.formatted(.dateTime.day().month().hour().minute()))
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
                     }
-                                        
+                    
                     Spacer()
                     
                     if let mood = review.mood {

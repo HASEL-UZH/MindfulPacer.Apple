@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 protocol DeleteReviewUseCase {
-    func execute(review: Review) -> Result<Review, Error>
+    func execute(review: Review)
 }
 
 // MARK: - Use Case Implementation
@@ -21,14 +21,7 @@ class DefaultDeleteReviewUseCase: DeleteReviewUseCase {
         self.modelContext = modelContext
     }
     
-    func execute(review: Review) -> Result<Review, any Error> {
+    func execute(review: Review) {
         modelContext.delete(review)
-        
-        do {
-            try modelContext.save()
-            return .success(review)
-        } catch {
-            return .failure(error)
-        }
     }
 }

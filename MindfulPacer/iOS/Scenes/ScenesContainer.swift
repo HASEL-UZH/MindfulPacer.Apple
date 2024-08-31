@@ -12,6 +12,20 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
     
+    // MARK: - Home
+    
+    @MainActor
+    var homeViewModel: Factory<HomeViewModel> {
+        self {
+            HomeViewModel(
+                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                modelContext: ModelContainer.prod.mainContext
+            )
+        }
+    }
+    
     // MARK: - Root
     
     @MainActor
@@ -24,6 +38,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
+    
     // MARK: - Review
     
     @MainActor
@@ -48,19 +63,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
-            )
-        }
-    }
-    
-    // MARK: - Home
-    
-    @MainActor
-    var homeViewModel: Factory<HomeViewModel> {
-        self {
-            HomeViewModel(
-                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
-                modelContext: ModelContainer.prod.mainContext
             )
         }
     }

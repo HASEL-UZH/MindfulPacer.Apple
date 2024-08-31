@@ -14,6 +14,7 @@ class HomeViewModel {
     
     // MARK: - Dependencies
     
+    private let deleteReviewUseCase: DeleteReviewUseCase
     private let fetchReviewsUseCase: FetchReviewsUseCase
     private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
     private let modelContext: ModelContext
@@ -28,10 +29,12 @@ class HomeViewModel {
     // MARK: - Initialization
     
     init(
+        deleteReviewUseCase: DeleteReviewUseCase,
         fetchReviewsUseCase: FetchReviewsUseCase,
         fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
         modelContext: ModelContext
     ) {
+        self.deleteReviewUseCase = deleteReviewUseCase
         self.fetchReviewsUseCase = fetchReviewsUseCase
         self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
         self.modelContext = modelContext
@@ -51,16 +54,10 @@ class HomeViewModel {
     
     // MARK: - User Actions
     
+    // MARK: - Presentation
+    
     func presentSheet(_ sheet: HomeViewSheet) {
         activeSheet = sheet
-    }
-    
-    func updateReviews(with reviews: [Review]) {
-        self.reviews = reviews
-    }
-    
-    func updateReviewReminders(with reviewReminders: [ReviewReminder]) {
-        self.reviewReminders = reviewReminders
     }
     
     // MARK: - Private Methods
