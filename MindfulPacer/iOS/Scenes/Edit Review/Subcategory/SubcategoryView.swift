@@ -1,5 +1,5 @@
 //
-//  ReviewSubcategoryView.swift
+//  SubcategoryView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 20.08.2024.
@@ -8,10 +8,10 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - ReviewSubcategoryView
+// MARK: - SubcategoryView
 
 extension EditReviewView {
-    struct ReviewSubcategoryView: View {
+    struct SubcategoryView: View {
         var category: Category
         @Bindable var viewModel: EditReviewViewModel
         
@@ -58,7 +58,7 @@ extension EditReviewView {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
     let container = ModelContainer.preview
     
-    EditReviewView.ReviewSubcategoryView(category: Category(), viewModel: viewModel)
+    EditReviewView.SubcategoryView(category: Category(), viewModel: viewModel)
         .modelContainer(container)
         .tint(Color("BrandPrimary"))
 }

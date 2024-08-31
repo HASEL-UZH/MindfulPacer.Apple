@@ -8,9 +8,13 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - ThresholdView
+
 extension CreateReviewReminderView {
     struct ThresholdView: View {
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {
@@ -39,7 +43,7 @@ extension CreateReviewReminderView {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
-
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -59,19 +63,17 @@ extension CreateReviewReminderView {
                 }
             }
         }
-    }
-}
-
-// MARK: - Hide Keyboard Button
-
-extension CreateReviewReminderView.ThresholdView {
-    private var hideKeyboardButton: some View {
-        Button {
-            hideKeyboard()
-        } label: {
-            Image(systemName: "keyboard.chevron.compact.down.fill")
+        
+        // MARK: Hide Keyboard Button
+        
+        private var hideKeyboardButton: some View {
+            Button {
+                hideKeyboard()
+            } label: {
+                Image(systemName: "keyboard.chevron.compact.down.fill")
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 

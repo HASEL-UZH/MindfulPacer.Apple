@@ -136,14 +136,14 @@ struct EditReviewView: View {
             .navigationDestination(for: EditReviewNavigationDestination.self) { destination in
                 switch destination {
                 case .category:
-                    ReviewCategoryView(viewModel: viewModel)
+                    CategoryView(viewModel: viewModel)
                 case .subcategory(let category):
-                    ReviewSubcategoryView(
+                    SubcategoryView(
                         category: category.unsafelyUnwrapped,
                         viewModel: viewModel
                     )
                 case .mood:
-                    ReviewMoodView(viewModel: viewModel)
+                    MoodView(viewModel: viewModel)
                 }
             }
         }
@@ -302,7 +302,7 @@ struct EditReviewView: View {
                         )
                     ) {
                         Text(rating.description)
-                            .foregroundColor(rating.description == "Not Set" ? .secondary : rating.color)
+                            .foregroundColor(rating.description == "Not Set" ? Color(.systemGray2) : rating.color)
                     }
                 }
                 .frame(maxWidth: width)

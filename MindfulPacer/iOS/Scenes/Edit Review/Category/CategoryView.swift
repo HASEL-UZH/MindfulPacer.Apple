@@ -1,5 +1,5 @@
 //
-//  ReviewCategoryView.swift
+//  CategoryView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 20.08.2024.
@@ -8,10 +8,10 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - ReviewCategoryView
+// MARK: - CategoryView
 
 extension EditReviewView {
-    struct ReviewCategoryView: View {
+    struct CategoryView: View {
         @Bindable var viewModel: EditReviewViewModel
         
         var body: some View {
@@ -58,7 +58,7 @@ extension EditReviewView {
     let container = ModelContainer.preview
     
     NavigationStack {
-        EditReviewView.ReviewCategoryView(viewModel: viewModel)
+        EditReviewView.CategoryView(viewModel: viewModel)
             .navigationTitle("Category")
             .modelContainer(container)
             .tint(Color("BrandPrimary"))

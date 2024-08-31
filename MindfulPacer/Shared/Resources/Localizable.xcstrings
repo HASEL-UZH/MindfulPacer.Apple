@@ -16,12 +16,12 @@
     "68" : {
 
     },
-    "Above %lld %@" : {
+    "Above %lld %@ for %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Above %1$lld %2$@"
+            "value" : "Above %1$lld %2$@ for %3$@"
           }
         }
       }

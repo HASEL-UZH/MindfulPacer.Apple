@@ -8,9 +8,13 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - AlarmTypeView
+
 extension CreateReviewReminderView {
     struct AlarmTypeView: View {
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {

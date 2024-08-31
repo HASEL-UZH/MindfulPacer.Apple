@@ -1,5 +1,5 @@
 //
-//  ReviewMoodView.swift
+//  MoodView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 20.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - ReviewMoodView
+// MARK: - MoodView
 
 extension EditReviewView {
-    struct ReviewMoodView: View {
+    struct MoodView: View {
         @Bindable var viewModel: EditReviewViewModel
         
         var body: some View {
@@ -51,7 +51,7 @@ extension EditReviewView {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
     
     NavigationStack {
-        EditReviewView.ReviewMoodView(viewModel: viewModel)
+        EditReviewView.MoodView(viewModel: viewModel)
             .navigationTitle("Mood")
             .tint(Color("BrandPrimary"))
     }

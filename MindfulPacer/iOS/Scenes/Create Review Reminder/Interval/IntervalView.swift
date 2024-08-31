@@ -8,9 +8,13 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - IntervalView
+
 extension CreateReviewReminderView {
     struct IntervalView: View {
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {

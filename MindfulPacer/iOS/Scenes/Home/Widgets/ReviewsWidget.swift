@@ -13,6 +13,8 @@ extension HomeView {
     struct ReviewsWidget: View {
         @Bindable var viewModel: HomeViewModel
         
+        // MARK: Body
+        
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
                 IconLabelGroupBox(
@@ -34,60 +36,70 @@ extension HomeView {
                             description: Text("Tap the **+** button to create a review.")
                         )
                     } else {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(viewModel.reviews.prefix(3)) { review in
-                                reviewCell(for: review)
-                                if review != viewModel.reviews.prefix(3).last {
-                                    Divider()
-                                }
-                            }
-                        }
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 16)
-                                .foregroundStyle(Color(.tertiarySystemGroupedBackground))
-                        }
+                        recentReviewsSummary
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 } footer: {
-                    Button {
-                        viewModel.presentSheet(.editReviewSheet(nil))
-                    } label: {
-                        IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
-                            .font(.subheadline.weight(.semibold))
-                    }
+                    createReviewButton
                 }
             }
             .foregroundStyle(.primary)
         }
-    }
-}
-
-// MARK: - Review Cell
-
-extension HomeView.ReviewsWidget {
-    @ViewBuilder private func reviewCell(for review: Review) -> some View {
-        Button {
-            viewModel.presentSheet(.editReviewSheet(review))
-        } label: {
-            HStack(spacing: 16) {
-                if let category = review.category {
-                    VStack(alignment: .leading, spacing: 8) {
-                        IconLabel(icon: category.icon, title: category.name)
-                            .font(.subheadline.weight(.semibold))
-                        Text(review.date.formatted(.dateTime.day().month().hour().minute()))
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+        
+        // MARK: Create Review Button
+        
+        private var createReviewButton: some View {
+            Button {
+                viewModel.presentSheet(.editReviewSheet(nil))
+            } label: {
+                IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
+                    .font(.subheadline.weight(.semibold))
+            }
+        }
+        
+        // MARK:  Recent Reviews Summary
+        
+        private var recentReviewsSummary: some View {
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(viewModel.reviews.prefix(3)) { review in
+                    reviewCell(for: review)
+                    if review != viewModel.reviews.prefix(3).last {
+                        Divider()
                     }
                 }
-                                    
-                Spacer()
-                
-                if let mood = review.mood {
-                    Text(mood)
-                        .frame(width: 24, height: 24)
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.tertiarySystemGroupedBackground))
+            }
+        }
+        
+        // MARK: Review Cell
+        
+        @ViewBuilder private func reviewCell(for review: Review) -> some View {
+            Button {
+                viewModel.presentSheet(.editReviewSheet(review))
+            } label: {
+                HStack(spacing: 16) {
+                    if let category = review.category {
+                        VStack(alignment: .leading, spacing: 8) {
+                            IconLabel(icon: category.icon, title: category.name)
+                                .font(.subheadline.weight(.semibold))
+                            Text(review.date.formatted(.dateTime.day().month().hour().minute()))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    if let mood = review.mood {
+                        Text(mood)
+                            .frame(width: 24, height: 24)
+                    }
                 }
             }
         }

@@ -40,15 +40,16 @@
 		0D500FCA2C7376A700395AEB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC92C7376A700395AEB /* Message.swift */; };
 		0D500FCB2C7376A700395AEB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC92C7376A700395AEB /* Message.swift */; };
 		0D500FD82C7492F700395AEB /* SystemNotification in Frameworks */ = {isa = PBXBuildFile; productRef = 0D500FD72C7492F700395AEB /* SystemNotification */; };
-		0D500FE32C7498E300395AEB /* ReviewCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FE22C7498E300395AEB /* ReviewCategoryView.swift */; };
-		0D500FE52C749A3000395AEB /* ReviewSubcategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FE42C749A3000395AEB /* ReviewSubcategoryView.swift */; };
+		0D500FE32C7498E300395AEB /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FE22C7498E300395AEB /* CategoryView.swift */; };
+		0D500FE52C749A3000395AEB /* SubcategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FE42C749A3000395AEB /* SubcategoryView.swift */; };
 		0D500FE82C749AA300395AEB /* RatingSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FE72C749AA300395AEB /* RatingSelectionView.swift */; };
-		0D500FEB2C749B2700395AEB /* ReviewMoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEA2C749B2700395AEB /* ReviewMoodView.swift */; };
+		0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEA2C749B2700395AEB /* MoodView.swift */; };
 		0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FF62C75242A00395AEB /* CreateReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */; };
 		0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
 		0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
+		0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */; };
 		0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B52C6EA3D20023EE2D /* InfoBox.swift */; };
 		0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* iOSApp.swift */; };
@@ -180,13 +181,14 @@
 		0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerWatchNotificationUseCase.swift; sourceTree = "<group>"; };
 		0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeNotificationsUseCase.swift; sourceTree = "<group>"; };
 		0D500FC92C7376A700395AEB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		0D500FE22C7498E300395AEB /* ReviewCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCategoryView.swift; sourceTree = "<group>"; };
-		0D500FE42C749A3000395AEB /* ReviewSubcategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSubcategoryView.swift; sourceTree = "<group>"; };
+		0D500FE22C7498E300395AEB /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
+		0D500FE42C749A3000395AEB /* SubcategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubcategoryView.swift; sourceTree = "<group>"; };
 		0D500FE72C749AA300395AEB /* RatingSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingSelectionView.swift; sourceTree = "<group>"; };
-		0D500FEA2C749B2700395AEB /* ReviewMoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewMoodView.swift; sourceTree = "<group>"; };
+		0D500FEA2C749B2700395AEB /* MoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodView.swift; sourceTree = "<group>"; };
 		0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extensions.swift"; sourceTree = "<group>"; };
 		0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewReminderUseCase.swift; sourceTree = "<group>"; };
 		0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
+		0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersWidget.swift; sourceTree = "<group>"; };
 		0D8203B32C6E9D680023EE2D /* IconLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabel.swift; sourceTree = "<group>"; };
 		0D8203B52C6EA3D20023EE2D /* InfoBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBox.swift; sourceTree = "<group>"; };
 		0D8C66302C2DA96000853EDE /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -312,10 +314,10 @@
 		0D34C44C2C822F4800928C53 /* Edit Review */ = {
 			isa = PBXGroup;
 			children = (
-				0D34C4582C83626200928C53 /* Review Category */,
-				0D34C4592C83626800928C53 /* Review Mood */,
+				0D34C4582C83626200928C53 /* Category */,
+				0D34C4592C83626800928C53 /* Mood */,
 				0D34C45A2C83626D00928C53 /* Rating Selection */,
-				0D34C45B2C83627200928C53 /* Review Subcategory */,
+				0D34C45B2C83627200928C53 /* Subcategory */,
 				0DFCA1CF2C623FAC0000C87C /* EditReviewView.swift */,
 				0DFCA1D12C623FB40000C87C /* EditReviewViewModel.swift */,
 			);
@@ -330,20 +332,20 @@
 			path = Sheets;
 			sourceTree = "<group>";
 		};
-		0D34C4582C83626200928C53 /* Review Category */ = {
+		0D34C4582C83626200928C53 /* Category */ = {
 			isa = PBXGroup;
 			children = (
-				0D500FE22C7498E300395AEB /* ReviewCategoryView.swift */,
+				0D500FE22C7498E300395AEB /* CategoryView.swift */,
 			);
-			path = "Review Category";
+			path = Category;
 			sourceTree = "<group>";
 		};
-		0D34C4592C83626800928C53 /* Review Mood */ = {
+		0D34C4592C83626800928C53 /* Mood */ = {
 			isa = PBXGroup;
 			children = (
-				0D500FEA2C749B2700395AEB /* ReviewMoodView.swift */,
+				0D500FEA2C749B2700395AEB /* MoodView.swift */,
 			);
-			path = "Review Mood";
+			path = Mood;
 			sourceTree = "<group>";
 		};
 		0D34C45A2C83626D00928C53 /* Rating Selection */ = {
@@ -354,12 +356,12 @@
 			path = "Rating Selection";
 			sourceTree = "<group>";
 		};
-		0D34C45B2C83627200928C53 /* Review Subcategory */ = {
+		0D34C45B2C83627200928C53 /* Subcategory */ = {
 			isa = PBXGroup;
 			children = (
-				0D500FE42C749A3000395AEB /* ReviewSubcategoryView.swift */,
+				0D500FE42C749A3000395AEB /* SubcategoryView.swift */,
 			);
-			path = "Review Subcategory";
+			path = Subcategory;
 			sourceTree = "<group>";
 		};
 		0D34C45C2C83681700928C53 /* Review Reminder */ = {
@@ -377,6 +379,7 @@
 				0D34C4662C838BD700928C53 /* AlarmTypeWidget.swift */,
 				0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */,
 				0D34C4642C837FE100928C53 /* ReviewsWidget.swift */,
+				0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */,
 				0D34C4602C837F4400928C53 /* StepsWidget.swift */,
 			);
 			path = Widgets;
@@ -1088,10 +1091,11 @@
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReviewUseCase.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
-				0D500FE32C7498E300395AEB /* ReviewCategoryView.swift in Sources */,
+				0D500FE32C7498E300395AEB /* CategoryView.swift in Sources */,
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
 				0D456AB02C7D07460014CD81 /* FetchReviewsUseCase.swift in Sources */,
 				0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */,
+				0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */,
 				0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */,
 				0D4EBE462C727F8900C1865D /* IntervalView.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
@@ -1115,7 +1119,7 @@
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* AlarmTypeWidget.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
-				0D500FEB2C749B2700395AEB /* ReviewMoodView.swift in Sources */,
+				0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */,
 				0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */,
 				0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DFCA1D22C623FB40000C87C /* EditReviewViewModel.swift in Sources */,
@@ -1131,7 +1135,7 @@
 				0DFCA1D02C623FAC0000C87C /* EditReviewView.swift in Sources */,
 				0D34C45E2C83683200928C53 /* SaveReviewUseCase.swift in Sources */,
 				0D9AB09A2C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift in Sources */,
-				0D500FE52C749A3000395AEB /* ReviewSubcategoryView.swift in Sources */,
+				0D500FE52C749A3000395AEB /* SubcategoryView.swift in Sources */,
 				0D500FF62C75242A00395AEB /* CreateReviewReminderUseCase.swift in Sources */,
 				0D9AB0CC2C6E403000BB773F /* CloseButton.swift in Sources */,
 				0D500FC42C73560A00395AEB /* NotificationService.swift in Sources */,
