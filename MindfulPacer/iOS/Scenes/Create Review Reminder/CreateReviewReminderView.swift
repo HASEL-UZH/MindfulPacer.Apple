@@ -28,6 +28,7 @@ enum CreateReviewReminderSheet: Identifiable {
 }
 
 enum CreateReviewReminderAlert: Identifiable {
+    case deleteConfirmation
     case unableToSaveReviewReminder
     case unableToSendTestNotification
     
@@ -83,6 +84,8 @@ struct CreateReviewReminderView: View {
             }
             .alert(item: $viewModel.activeAlert) { alert in
                 switch alert {
+                case .deleteConfirmation:
+                    reviewReminderDeletionConfirmationAlert
                 case .unableToSaveReviewReminder:
                     unableToSaveReviewReminderAlert
                 case .unableToSendTestNotification:
@@ -260,6 +263,20 @@ struct CreateReviewReminderView: View {
             title: Text("Unable to Send Notification"),
             message: Text("Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again."),
             dismissButton: .default(Text("Ok"))
+        )
+    }
+    
+    // MARK: Review Deletion Confirmation Alert
+    
+    private var reviewReminderDeletionConfirmationAlert: Alert {
+        Alert(
+            title: Text("Delete Review Reminder"),
+            message: Text("Are you sure you want to delete this review reminder? This action cannot be undone."),
+            primaryButton: .destructive(Text("Delete")) {
+                viewModel.deleteReviewReminder(reviewReminder)
+                dismiss()
+            },
+            secondaryButton: .cancel()
         )
     }
 }

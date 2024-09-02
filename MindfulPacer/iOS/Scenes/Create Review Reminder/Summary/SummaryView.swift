@@ -28,9 +28,13 @@ extension CreateReviewReminderView {
                             threshold
                             interval
                             notificationPreview
+                            
+                            if viewModel.mode == .edit {
+                                deleteButton
+                            }
                         }
                         .padding(.horizontal)
-                        .padding(.bottom, proxy.safeAreaInsets.bottom + 48)
+                        .padding(.bottom, viewModel.mode == .create ? proxy.safeAreaInsets.bottom + 48 : 0)
                     }
                 }
                 .navigationTitle(viewModel.summaryViewTitle)
@@ -190,6 +194,18 @@ extension CreateReviewReminderView {
                 .font(.subheadline.weight(.semibold))
             }
             .disabled(viewModel.isActionButtonDisabled)
+        }
+        
+        // MARK: - Delete Button
+        
+        private var deleteButton: some View {
+            PrimaryButton(
+                title: "Delete Review Reminder",
+                icon: "trash",
+                color: .red
+            ) {
+                viewModel.presentAlert(.deleteConfirmation)
+            }
         }
     }
 }

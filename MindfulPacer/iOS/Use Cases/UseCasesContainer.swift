@@ -14,7 +14,7 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
-
+    
     // MARK: - Health
     
     @MainActor
@@ -33,7 +33,7 @@ extension UseCasesContainer {
     var createReviewUseCase: Factory<CreateReviewUseCase> {
         self { DefaulCreateReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-   
+    
     @MainActor
     var deleteReviewUseCase: Factory<DeleteReviewUseCase> {
         self { DefaultDeleteReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
@@ -59,6 +59,11 @@ extension UseCasesContainer {
     @MainActor
     var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
         self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var deleteReviewReminderUseCase: Factory<DeleteReviewReminderUseCase> {
+        self { DefaultDeleteReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     @MainActor

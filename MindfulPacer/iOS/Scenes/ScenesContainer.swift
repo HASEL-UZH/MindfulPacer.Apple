@@ -64,6 +64,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             CreateReviewReminderViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
+                deleteReviewReminderUseCase: UseCasesContainer.shared.deleteReviewReminderUseCase(),
                 saveReviewReminderUseCase: UseCasesContainer.shared.saveReviewReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )

@@ -18,6 +18,7 @@ class CreateReviewReminderViewModel {
     
     private let modelContext: ModelContext
     private let createReviewReminderUseCase: CreateReviewReminderUseCase
+    private let deleteReviewReminderUseCase: DeleteReviewReminderUseCase
     private let saveReviewReminderUseCase: SaveReviewReminderUseCase
     private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     
@@ -114,11 +115,13 @@ class CreateReviewReminderViewModel {
     init(
         modelContext: ModelContext,
         createReviewReminderUseCase: CreateReviewReminderUseCase,
+        deleteReviewReminderUseCase: DeleteReviewReminderUseCase,
         saveReviewReminderUseCase: SaveReviewReminderUseCase,
         triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewReminderUseCase = createReviewReminderUseCase
+        self.deleteReviewReminderUseCase = deleteReviewReminderUseCase
         self.saveReviewReminderUseCase = saveReviewReminderUseCase
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
@@ -169,6 +172,11 @@ class CreateReviewReminderViewModel {
         if case .failure(_) = result {
             presentAlert(.unableToSaveReviewReminder)
         }
+    }
+    
+    func deleteReviewReminder(_ reviewReminder: ReviewReminder?) {
+        guard let reviewReminder else { return }
+        deleteReviewReminderUseCase.execute(reviewReminder: reviewReminder)
     }
     
     func sendNotificationToWatch() {
