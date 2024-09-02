@@ -5,6 +5,7 @@
 //  Created by Grigor Dochev on 15.08.2024.
 //
 
+import Combine
 import Foundation
 import SwiftData
 import SwiftUI
@@ -28,6 +29,13 @@ class CreateReviewReminderViewModel {
     var navigationPath: [CreateReviewReminderNavigationDestination] = []
     var activeSheet: CreateReviewReminderSheet? = nil
     var activeAlert: CreateReviewReminderAlert? = nil
+    
+    var viewDismissalPublisher = PassthroughSubject<Bool, Never>()
+    private var shouldDismiss = false {
+        didSet {
+            viewDismissalPublisher.send(shouldDismiss)
+        }
+    }
     
     var summaryViewTitle: String {
         switch mode {
@@ -156,7 +164,7 @@ class CreateReviewReminderViewModel {
         case .interval:
             navigationPath.append(CreateReviewReminderNavigationDestination.summary)
         case .summary:
-            saveReviewReminder()
+            createReviewReminder()
         }
     }
     
@@ -172,11 +180,14 @@ class CreateReviewReminderViewModel {
         if case .failure(_) = result {
             presentAlert(.unableToSaveReviewReminder)
         }
+        
+        shouldDismiss = true
     }
     
     func deleteReviewReminder(_ reviewReminder: ReviewReminder?) {
         guard let reviewReminder else { return }
         deleteReviewReminderUseCase.execute(reviewReminder: reviewReminder)
+        shouldDismiss = true
     }
     
     func sendNotificationToWatch() {
@@ -214,7 +225,7 @@ class CreateReviewReminderViewModel {
         selectedInterval = reviewReminder.interval
     }
     
-    private func saveReviewReminder() {
+    private func createReviewReminder() {
         guard let measurementType = selectedMeasurementType,
               let alarmType = selectedAlarmType,
               let threshold,
@@ -230,6 +241,8 @@ class CreateReviewReminderViewModel {
         if case .failure(_) = result {
             self.presentAlert(.unableToSaveReviewReminder)
         }
+        
+        shouldDismiss = true
     }
     
     private func validateThreshold() {

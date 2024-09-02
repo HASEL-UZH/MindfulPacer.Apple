@@ -21,11 +21,20 @@ extension HomeView {
                         background: true
                     )
                 ) {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text("68")
-                            .font(.title.weight(.semibold))
-                        Text("bpm")
-                            .foregroundStyle(.secondary)
+                    if false { // TODO: Show actual heart rate
+                        HStack(alignment: .lastTextBaseline, spacing: 4) {
+                            Text("80")
+                                .font(.title.weight(.semibold))
+                            Text("bpm")
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("--")
+                                .font(.title.weight(.semibold))
+                            Text("bpm")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))

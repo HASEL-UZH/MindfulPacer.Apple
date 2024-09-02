@@ -72,7 +72,6 @@ struct CreateReviewReminderView: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Save") {
                             viewModel.saveReviewReminder(reviewReminder)
-                            dismiss()
                         }
                         .fontWeight(.semibold)
                         .disabled(viewModel.isSaveButtonDisabled)
@@ -115,6 +114,11 @@ struct CreateReviewReminderView: View {
                     IntervalView(viewModel: viewModel)
                 case .summary:
                     SummaryView(viewModel: viewModel)
+                }
+            }
+            .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
+                if shouldDismiss {
+                    dismiss()
                 }
             }
         }
