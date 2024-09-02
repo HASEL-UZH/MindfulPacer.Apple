@@ -12,18 +12,30 @@ import SwiftUI
 @MainActor
 @Observable
 class CreateReviewReminderViewModel {
-    
+    enum Mode { case create, edit }
+
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
     private let createReviewReminderUseCase: CreateReviewReminderUseCase
+    private let saveReviewReminderUseCase: SaveReviewReminderUseCase
     private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     
     // MARK: - Published Properties (State)
     
+    var mode: Mode = .create
     var navigationPath: [CreateReviewReminderNavigationDestination] = []
     var activeSheet: CreateReviewReminderSheet? = nil
     var activeAlert: CreateReviewReminderAlert? = nil
+    
+    var summaryViewTitle: String {
+        switch mode {
+        case .create:
+            "Review Reminder Summary"
+        case .edit:
+            "Edit Review Reminder"
+        }
+    }
     
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
@@ -42,6 +54,10 @@ class CreateReviewReminderViewModel {
         case .summary:
             return (selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil || selectedInterval == nil)
         }
+    }
+    
+    var isSaveButtonDisabled: Bool {
+        selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil || selectedInterval == nil
     }
     
     var showActionButton: Bool {
@@ -98,16 +114,25 @@ class CreateReviewReminderViewModel {
     init(
         modelContext: ModelContext,
         createReviewReminderUseCase: CreateReviewReminderUseCase,
+        saveReviewReminderUseCase: SaveReviewReminderUseCase,
         triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewReminderUseCase = createReviewReminderUseCase
+        self.saveReviewReminderUseCase = saveReviewReminderUseCase
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {}
+    
+    func configureMode(with reviewReminder: ReviewReminder?) {
+        if let reviewReminder {
+            mode = .edit
+            loadReviewReminder(reviewReminder)
+        }
+    }
     
     // MARK: - User Actions
     
@@ -129,6 +154,20 @@ class CreateReviewReminderViewModel {
             navigationPath.append(CreateReviewReminderNavigationDestination.summary)
         case .summary:
             saveReviewReminder()
+        }
+    }
+    
+    func saveReviewReminder(_ reviewReminder: ReviewReminder?) {
+        let result = saveReviewReminderUseCase.execute(
+            existingReviewReminder: reviewReminder.unsafelyUnwrapped,
+            newMeasurementType: selectedMeasurementType.unsafelyUnwrapped,
+            newAlarmType: selectedAlarmType.unsafelyUnwrapped,
+            newThreshold: threshold.unsafelyUnwrapped,
+            newInterval: selectedInterval.unsafelyUnwrapped
+        )
+        
+        if case .failure(_) = result {
+            presentAlert(.unableToSaveReviewReminder)
         }
     }
     
@@ -159,6 +198,13 @@ class CreateReviewReminderViewModel {
     }
     
     // MARK: - Private Methods
+    
+    private func loadReviewReminder(_ reviewReminder: ReviewReminder) {
+        selectedMeasurementType = reviewReminder.measurementType
+        selectedAlarmType = reviewReminder.alarmType
+        threshold = reviewReminder.threshold
+        selectedInterval = reviewReminder.interval
+    }
     
     private func saveReviewReminder() {
         guard let measurementType = selectedMeasurementType,

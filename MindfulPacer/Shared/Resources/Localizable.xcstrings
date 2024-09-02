@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "--" : {
+
+    },
     "%lld" : {
 
     },
@@ -8,9 +11,6 @@
 
     },
     "1. **Light**: shows a yellow color 🟡.\n2. **Medium**: shows an orange color 🟠.\n3. **Strong**: shows a red color 🔴." : {
-
-    },
-    "9,870" : {
 
     },
     "68" : {
@@ -101,7 +101,7 @@
     "Review Reminder Triggered" : {
 
     },
-    "Review Reminders List View" : {
+    "Review Reminders" : {
 
     },
     "Reviews" : {
@@ -126,9 +126,6 @@
 
     },
     "Subcategory" : {
-
-    },
-    "Summary" : {
 
     },
     "Summary of number of review reminders triggered, by alarm type." : {
@@ -174,6 +171,9 @@
 
     },
     "You can write anything here" : {
+
+    },
+    "You have not created any review reminders." : {
 
     },
     "You have not created any reviews." : {

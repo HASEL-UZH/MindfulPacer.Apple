@@ -15,6 +15,13 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 
 extension UseCasesContainer {
 
+    // MARK: - Health
+    
+    @MainActor
+    var fetchCurrentStepsUseCase: Factory<DefaultFetchCurrentStepsUseCase> {
+        self { DefaultFetchCurrentStepsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
     // MARK: - Review
     
     @MainActor
@@ -43,8 +50,8 @@ extension UseCasesContainer {
     }
     
     @MainActor
-    var saveReviewUseCase: Factory<DefaulSaveReviewUseCase> {
-        self { DefaulSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var saveReviewUseCase: Factory<DefaultSaveReviewUseCase> {
+        self { DefaultSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     // MARK: - Review Reminder
@@ -57,6 +64,11 @@ extension UseCasesContainer {
     @MainActor
     var fetchReviewRemindersUseCase: Factory<DefaultFetchReviewRemindersUseCase> {
         self { DefaultFetchReviewRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var saveReviewReminderUseCase: Factory<DefaultSaveReviewReminderUseCase> {
+        self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     // MARK: - Watch Communication

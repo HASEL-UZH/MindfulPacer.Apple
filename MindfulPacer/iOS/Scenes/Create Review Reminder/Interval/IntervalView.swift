@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - IntervalView
 
@@ -73,7 +72,6 @@ extension CreateReviewReminderView {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

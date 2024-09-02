@@ -5,6 +5,7 @@
 //  Created by Grigor Dochev on 01.07.2024.
 //
 
+import Foundation
 import Factory
 import SwiftData
 
@@ -18,10 +19,11 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var homeViewModel: Factory<HomeViewModel> {
         self {
             HomeViewModel(
+                modelContext: ModelContainer.prod.mainContext,
                 deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
-                modelContext: ModelContainer.prod.mainContext
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase()
             )
         }
     }
@@ -45,7 +47,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var editReviewViewModel: Factory<EditReviewViewModel> {
         self {
             EditReviewViewModel(
-                modelContext: ModelContainer.prod.mainContext,
+                modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext,
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
                 deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
@@ -62,6 +64,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             CreateReviewReminderViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
+                saveReviewReminderUseCase: UseCasesContainer.shared.saveReviewReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )
         }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - ThresholdView
 
@@ -80,7 +79,6 @@ extension CreateReviewReminderView {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - SubcategoryView
 
@@ -56,9 +55,7 @@ extension EditReviewView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    let container = ModelContainer.preview
     
     EditReviewView.SubcategoryView(category: Category(), viewModel: viewModel)
-        .modelContainer(container)
         .tint(Color("BrandPrimary"))
 }

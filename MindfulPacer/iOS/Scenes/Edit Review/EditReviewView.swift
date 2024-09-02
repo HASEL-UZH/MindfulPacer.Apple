@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - Presentation Enums
 
@@ -41,7 +40,7 @@ struct EditReviewView: View {
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
     
     var review: Review?
-    
+        
     // MARK: Body
     
     var body: some View {
@@ -50,10 +49,13 @@ struct EditReviewView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         date
-                        category
                         
-                        if viewModel.selectedCategory.isNotNil {
-                            subcategory
+                        VStack(spacing: 0) {
+                            category
+                            if viewModel.selectedCategory.isNotNil {
+                                Divider()
+                                subcategory
+                            }
                         }
                         
                         mood
@@ -202,8 +204,13 @@ struct EditReviewView: View {
             }
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+                if viewModel.selectedCategory.isNil {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
+                } else {
+                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, topTrailing: 16))
+                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
+                }
             }
         }
     }
@@ -239,7 +246,7 @@ struct EditReviewView: View {
             }
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 16)
+                UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 16, bottomTrailing: 16))
                     .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
@@ -416,10 +423,8 @@ struct EditReviewView: View {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.editReviewViewModel()
     
     return EditReviewView(viewModel: viewModel)
-        .modelContainer(container)
         .tint(Color("BrandPrimary"))
 }

@@ -27,7 +27,6 @@ extension HomeView {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
-                    // TODO: Implement ReviewReminderSummaryCell
                     if viewModel.reviewReminders.isEmpty {
                         VStack(alignment: .leading, spacing: 16) {
                             ContentUnavailableView(
@@ -38,9 +37,11 @@ extension HomeView {
                         }
                     } else {
                         VStack(alignment: .leading, spacing: 16) {
-                            ForEach(viewModel.reviewReminders.prefix(3), id: \.self) { reviewReminder in
-                                reviewReminderCell(for: reviewReminder)
-                                if viewModel.reviewReminders.last != reviewReminder {
+                            ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
+                                ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
+                                    viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
+                                }
+                                if viewModel.recentReviewReminders.last != reviewReminder {
                                     Divider()
                                 }
                             }
@@ -56,7 +57,7 @@ extension HomeView {
                         .font(.subheadline.weight(.semibold))
                 } footer: {
                     Button {
-                        viewModel.presentSheet(.createReviewReminderSheet)
+                        viewModel.presentSheet(.createReviewReminderSheet(nil))
                     } label: {
                         IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
                             .font(.subheadline.weight(.semibold))
@@ -64,36 +65,6 @@ extension HomeView {
                 }
             }
             .foregroundStyle(.primary)
-        }
-    }
-}
-
-// MARK: - Review Reminder Cell
-
-extension HomeView.ReviewRemindersWidget {
-    @ViewBuilder private func reviewReminderCell(for reviewReminder: ReviewReminder) -> some View {
-        NavigationLink(value: Int()) {
-            HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    IconLabel(
-                        icon: reviewReminder.measurementType.icon,
-                        title: reviewReminder.measurementType.rawValue,
-                        labelColor: reviewReminder.measurementType == .heartRate ? .pink : .teal
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    
-                    Text("Above \(reviewReminder.threshold) \(reviewReminder.measurementType == .heartRate ? "bpm" : "steps") for \(reviewReminder.interval.rawValue)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Spacer()
-                
-                Icon(
-                    name: "alarm.waves.left.and.right",
-                    color: reviewReminder.alarmType.color
-                )
-            }
         }
     }
 }

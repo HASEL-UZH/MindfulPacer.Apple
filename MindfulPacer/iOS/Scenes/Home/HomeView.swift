@@ -17,12 +17,12 @@ enum HomeViewNavigationDestination: Hashable {
 
 enum HomeViewSheet: Identifiable {
     case editReviewSheet(Review?)
-    case createReviewReminderSheet
+    case createReviewReminderSheet(ReviewReminder?)
     
     var id: Int {
         switch self {
         case .editReviewSheet(_): 0
-        case .createReviewReminderSheet: 1
+        case .createReviewReminderSheet(_): 1
         }
     }
 }
@@ -38,7 +38,7 @@ struct HomeView: View {
                 VStack {
                     VStack(spacing: 16) {
                         HStack(spacing: 16) {
-                            StepsWidget()
+                            StepsWidget(viewModel: viewModel)
                             HeartRateWidget()
                         }
                         ReviewsWidget(viewModel: viewModel)
@@ -61,7 +61,7 @@ struct HomeView: View {
                 case .reviewsList:
                     ReviewsListView(viewModel: viewModel)
                 case .reviewRemindersList:
-                    Text("Review Reminders List View")
+                    ReviewRemindersListView(viewModel: viewModel)
                 }
             }
             .sheet(item: $viewModel.activeSheet, onDismiss: {
@@ -75,10 +75,11 @@ struct HomeView: View {
                         .interactiveDismissDisabled(review.isNil)
                         .presentationCornerRadius(16)
                         .presentationDragIndicator(review.isNil ? .hidden : .visible)
-                case .createReviewReminderSheet:
-                    CreateReviewReminderView()
-                        .interactiveDismissDisabled()
+                case .createReviewReminderSheet(let reviewReminder):
+                    CreateReviewReminderView(reviewReminder: reviewReminder)
+                        .interactiveDismissDisabled(reviewReminder.isNil)
                         .presentationCornerRadius(16)
+                        .presentationDragIndicator(reviewReminder.isNil ? .hidden : .visible)
                 }
             }
             .onViewFirstAppear {

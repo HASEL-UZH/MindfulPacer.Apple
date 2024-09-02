@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - CategoryView
 
@@ -55,12 +54,10 @@ extension EditReviewView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    let container = ModelContainer.preview
     
     NavigationStack {
         EditReviewView.CategoryView(viewModel: viewModel)
             .navigationTitle("Category")
-            .modelContainer(container)
             .tint(Color("BrandPrimary"))
             .onAppear {
                 viewModel.onViewFirstAppear()

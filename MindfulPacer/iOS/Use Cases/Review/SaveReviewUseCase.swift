@@ -28,7 +28,7 @@ protocol SaveReviewUseCase {
 
 // MARK: - Use Case Implementation
 
-class DefaulSaveReviewUseCase: SaveReviewUseCase {
+class DefaultSaveReviewUseCase: SaveReviewUseCase {
     private let modelContext: ModelContext
     
     init(modelContext: ModelContext) {

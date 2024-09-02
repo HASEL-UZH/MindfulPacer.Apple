@@ -63,9 +63,11 @@ extension HomeView {
         
         private var recentReviewsSummary: some View {
             VStack(alignment: .leading, spacing: 16) {
-                ForEach(viewModel.reviews.prefix(3)) { review in
-                    reviewCell(for: review)
-                    if review != viewModel.reviews.prefix(3).last {
+                ForEach(viewModel.recentReviews) { review in
+                    ReviewCell(review: review, withBackground: false) {
+                        viewModel.presentSheet(.editReviewSheet(review))
+                    }
+                    if review != viewModel.recentReviews.last {
                         Divider()
                     }
                 }
@@ -74,33 +76,6 @@ extension HomeView {
             .background {
                 RoundedRectangle(cornerRadius: 16)
                     .foregroundStyle(Color(.tertiarySystemGroupedBackground))
-            }
-        }
-        
-        // MARK: Review Cell
-        
-        @ViewBuilder private func reviewCell(for review: Review) -> some View {
-            Button {
-                viewModel.presentSheet(.editReviewSheet(review))
-            } label: {
-                HStack(spacing: 16) {
-                    if let category = review.category {
-                        VStack(alignment: .leading, spacing: 8) {
-                            IconLabel(icon: category.icon, title: category.name)
-                                .font(.subheadline.weight(.semibold))
-                            Text(review.date.formatted(.dateTime.day().month().hour().minute()))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    if let mood = review.mood {
-                        Text(mood)
-                            .frame(width: 24, height: 24)
-                    }
-                }
             }
         }
     }

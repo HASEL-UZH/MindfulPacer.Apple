@@ -43,6 +43,8 @@ struct CreateReviewReminderView: View {
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
+    var reviewReminder: ReviewReminder?
+
     // MARK: Body
     
     var body: some View {
@@ -51,7 +53,33 @@ struct CreateReviewReminderView: View {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
                 
-                intro
+                switch viewModel.mode {
+                case .create:
+                    intro
+                case .edit:
+                    SummaryView(viewModel: viewModel)
+                }
+            }
+            .toolbar {
+                if viewModel.mode == .edit {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Save") {
+                            viewModel.saveReviewReminder(reviewReminder)
+                            dismiss()
+                        }
+                        .fontWeight(.semibold)
+                        .disabled(viewModel.isSaveButtonDisabled)
+                    }
+                }
+            }
+            .onViewFirstAppear {
+                viewModel.configureMode(with: reviewReminder)
             }
             .alert(item: $viewModel.activeAlert) { alert in
                 switch alert {
@@ -88,8 +116,10 @@ struct CreateReviewReminderView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if viewModel.showActionButton {
-                actionButton
+            if viewModel.mode == .create {
+                if viewModel.showActionButton {
+                    actionButton
+                }
             }
         }
     }

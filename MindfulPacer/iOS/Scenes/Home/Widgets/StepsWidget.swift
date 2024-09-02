@@ -11,6 +11,8 @@ import SwiftUI
 
 extension HomeView {
     struct StepsWidget: View {
+        @Bindable var viewModel: HomeViewModel
+        
         var body: some View {
             NavigationLink(value: Int()) {
                 IconLabelGroupBox(
@@ -21,11 +23,20 @@ extension HomeView {
                         background: true
                     )
                 ) {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text("9,870")
-                            .font(.title.weight(.semibold))
-                        Text("steps")
-                            .foregroundStyle(.secondary)
+                    if let currentSteps = viewModel.currentSteps {
+                        HStack(alignment: .lastTextBaseline, spacing: 4) {
+                            Text("\(currentSteps)")
+                                .font(.title.weight(.semibold))
+                            Text("steps")
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("--")
+                                .font(.title.weight(.semibold))
+                            Text("steps")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
@@ -40,5 +51,7 @@ extension HomeView {
 // MARK: - Preview
 
 #Preview {
-    HomeView.StepsWidget()
+    let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
+    
+    HomeView.StepsWidget(viewModel: viewModel)
 }

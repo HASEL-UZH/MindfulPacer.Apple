@@ -1,30 +1,30 @@
 //
-//  ReviewsListView.swift
+//  ReviewRemindersListView.swift
 //  iOS
 //
-//  Created by Grigor Dochev on 29.08.2024.
+//  Created by Grigor Dochev on 02.09.2024.
 //
 
 import SwiftUI
 
-// MARK: - ReviewsListView
+// MARK: - ReviewRemindersListView
 
-struct ReviewsListView: View {
+struct ReviewRemindersListView: View {
     @Bindable var viewModel: HomeViewModel
     
     // MARK: Body
     
     var body: some View {
         VStack {
-            if viewModel.reviews.isEmpty {
-                reviewsEmptyState
+            if viewModel.reviewReminders.isEmpty {
+                reviewRemindersEmptyState
                     .frame(maxHeight: .infinity, alignment: .center)
             } else {
                 ScrollView {
                     VStack(spacing: 16) {
-                        ForEach(viewModel.reviews) { review in
-                            ReviewCell(review: review) {
-                                viewModel.presentSheet(.editReviewSheet(review))
+                        ForEach(viewModel.reviewReminders) { reviewReminder in
+                            ReviewReminderCell(reviewReminder: reviewReminder) {
+                                viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
                             }
                         }
                     }
@@ -35,11 +35,11 @@ struct ReviewsListView: View {
         }
         .background(Color(.systemGroupedBackground))
         .listStyle(.grouped)
-        .navigationTitle("Reviews")
+        .navigationTitle("Review Reminders")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    viewModel.presentSheet(.editReviewSheet(nil))
+                    viewModel.presentSheet(.createReviewReminderSheet(nil))
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -47,14 +47,14 @@ struct ReviewsListView: View {
         }
     }
     
-    // MARK: Reviews Empty State
+    // MARK: Review Reminders Empty State
     
-    var reviewsEmptyState: some View {
+    var reviewRemindersEmptyState: some View {
         VStack(alignment: .leading, spacing: 16) {
             ContentUnavailableView {
-                Label("No Reviews", systemImage: "book.pages.fill")
+                Label("No Review Reminders", systemImage: "bell.badge.fill")
             } description: {
-                Text("You have not created any reviews.")
+                Text("You have not created any review reminders.")
             } actions: {
                 Button {
                     viewModel.presentSheet(.editReviewSheet(nil))
@@ -74,6 +74,6 @@ struct ReviewsListView: View {
     let viewModel = ScenesContainer.shared.homeViewModel()
     
     NavigationStack {
-        ReviewsListView(viewModel: viewModel)
+        ReviewRemindersListView(viewModel: viewModel)
     }
 }

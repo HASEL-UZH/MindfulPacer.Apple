@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - SummaryView
 
@@ -34,7 +33,7 @@ extension CreateReviewReminderView {
                         .padding(.bottom, proxy.safeAreaInsets.bottom + 48)
                     }
                 }
-                .navigationTitle("Summary")
+                .navigationTitle(viewModel.summaryViewTitle)
             }
         }
         
@@ -198,7 +197,6 @@ extension CreateReviewReminderView {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {
