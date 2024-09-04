@@ -41,6 +41,9 @@
     "Cancel" : {
 
     },
+    "Categories" : {
+
+    },
     "Category" : {
 
     },
@@ -68,6 +71,9 @@
     "Error Saving Review Reminder" : {
 
     },
+    "Filter Reviews" : {
+
+    },
     "Home" : {
 
     },
@@ -78,6 +84,9 @@
 
     },
     "Mood" : {
+
+    },
+    "New Review" : {
 
     },
     "No Alarm Type Selected" : {
@@ -102,6 +111,9 @@
 
     },
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
+
+    },
+    "Reset" : {
 
     },
     "Review Reminder Triggered" : {

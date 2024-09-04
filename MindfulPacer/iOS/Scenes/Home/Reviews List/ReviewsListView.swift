@@ -38,10 +38,20 @@ struct ReviewsListView: View {
         .navigationTitle("Reviews")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    viewModel.presentSheet(.editReviewSheet(nil))
+                Menu {
+                    Button {
+                        viewModel.presentSheet(.editReviewSheet(nil))
+                    } label: {
+                        Label("New Review", systemImage: "plus")
+                    }
+                    
+                    Button {
+                        viewModel.presentSheet(.reviewsFilterView)
+                    } label: {
+                        Label("Filter Reviews", systemImage: "line.3.horizontal.decrease")
+                    }
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "ellipsis.circle")
                 }
             }
         }

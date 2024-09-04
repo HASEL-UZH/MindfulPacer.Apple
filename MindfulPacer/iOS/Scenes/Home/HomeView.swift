@@ -18,11 +18,13 @@ enum HomeViewNavigationDestination: Hashable {
 enum HomeViewSheet: Identifiable {
     case editReviewSheet(Review?)
     case createReviewReminderSheet(ReviewReminder?)
+    case reviewsFilterView
     
     var id: Int {
         switch self {
         case .editReviewSheet(_): 0
         case .createReviewReminderSheet(_): 1
+        case .reviewsFilterView: 2
         }
     }
 }
@@ -80,6 +82,11 @@ struct HomeView: View {
                         .interactiveDismissDisabled(reviewReminder.isNil)
                         .presentationCornerRadius(16)
                         .presentationDragIndicator(reviewReminder.isNil ? .hidden : .visible)
+                case .reviewsFilterView:
+                    ReviewsFilterView(viewModel: viewModel)
+                        .presentationDetents([.medium, .large])
+                        .presentationCornerRadius(16)
+                        .presentationDragIndicator(.visible)
                 }
             }
             .onViewFirstAppear {

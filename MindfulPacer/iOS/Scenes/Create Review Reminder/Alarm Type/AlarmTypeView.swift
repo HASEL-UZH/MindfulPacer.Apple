@@ -8,7 +8,7 @@
 import SwiftUI
 
 // MARK: - AlarmTypeView
-
+// TODO: Rename AlarmType to ReviewReminderType everywhere
 extension CreateReviewReminderView {
     struct AlarmTypeView: View {
         @Bindable var viewModel: CreateReviewReminderViewModel

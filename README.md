@@ -9,6 +9,30 @@
     <img src="https://img.shields.io/badge/WatchOS-11.0-blue.svg" alt="WatchOS 11.0" />
 </p>
 
+# Contents
+
+1. [Architecture Overview](#architecture-overview)
+    - [Application Layer](#application-layer)
+    - [Common UI](#common-ui)
+    - [Extensions](#extensions)
+    - [Models](#models)
+    - [Services](#services)
+    - [Repositories](#repositories)
+    - [Use Cases](#use-cases)
+    - [Scenes](#scenes)
+    - [Navigation and Presentation Management](#navigation-and-presentation-management)
+2. [Dependency Injection](#dependency-injection)
+    - [Benefits of Dependency Injection](#benefits-of-dependency-injection)
+    - [Implementation in the Project](#implementation-in-the-project)
+3. [Project Structure](#project-structure)
+    - [🍏 Shared](#shared)
+    - [📱 iOS](#ios)
+    - [⌚️ WatchOS](#watchos)
+4. [Benefits of This Structure](#benefits-of-this-structure)
+5. [Best Practices](#best-practices)
+	- [Best Practices for Ordering SwiftUI Modifiers](#best-practices-for-ordering-swiftui-modifiers)
+
+
 # Architecture Overview
 
 This project follows a clean architecture approach combined with MVVM (Model-View-ViewModel) principles. The architecture is designed to ensure a clear separation of concerns, making the codebase scalable, maintainable, and testable. Below is an in-depth explanation of each aspect of the architecture.
@@ -215,33 +239,109 @@ class YourViewModelName {
 }
 ```
 
-### Best Practices for Ordering SwiftUI Modifiers
+## Navigation and Presentation Management
 
-When applying modifiers in SwiftUI, following a logical order can enhance readability and maintainability. Here’s a recommended sequence:
+This project follows a consistent, extensible approach to managing navigation, sheets, and alerts within SwiftUI views. The pattern leverages enums and SwiftUI's state-driven architecture to keep the code clean, modular, and easy to maintain.
 
-1. **Basic View Modifiers**: Start with fundamental properties like `frame`, `padding`, and `background`.
-2. **Content Modifiers**: Apply modifiers that change the content, such as `font`, `foregroundColor`, and `multilineTextAlignment`.
-3. **Layout Modifiers**: Adjust the view's layout with modifiers like `alignment`, `padding`, and `frame`.
-4. **Style Modifiers**: Style the view using modifiers like `background`, `cornerRadius`, `shadow`, and `border`.
-5. **State/Behavior Modifiers**: Handle user interactions and behaviors with modifiers like `onTapGesture`, `onAppear`, and `animation`.
-6. **Accessibility Modifiers**: Enhance accessibility using `accessibilityLabel`, `accessibilityHint`, etc.
-7. **Environment Modifiers**: Apply environment-related modifiers such as `environmentObject` and `environment`.
+### Navigation
 
-**Example**:
+Navigation is handled using a `NavigationStack` in combination with an enum that represents different destinations within a view. Each view defines its own enum for navigation destinations. This enum ensures type safety and makes it easy to navigate between different screens without relying on string identifiers.
+
+Example:
+
 ```swift
-Text("Hello, World!")
-    .frame(width: 64)                   // Basic view modifier
-    .font(.headline)                    // Content modifier
-    .foregroundColor(.primary)          // Content modifier
-    .padding()                          // Layout modifier
-    .background(Color.blue)             // Style modifier
-    .cornerRadius(10)                   // Style modifier
-    .shadow(radius: 5)                  // Style modifier
-    .onTapGesture {                     // State/Behavior modifier
-        print("Tapped!")
+enum MyViewNavigationDestination: Hashable {
+    case firstDestination
+    case secondDestination(SomeModel?)
+}
+```
+
+This enum is used within the view to manage navigation destinations. The destinations are linked using `.navigationDestination`, ensuring that SwiftUI knows where to navigate based on the value of the enum.
+
+Usage:
+
+```swift
+.navigationDestination(for: MyViewNavigationDestination.self) { destination in
+    switch destination {
+    case .firstDestination:
+        FirstView()
+    case .secondDestination(let model):
+        SecondView(model: model)
     }
-    .accessibilityLabel("Greeting")     // Accessibility modifier
-    .environment(\.locale, .current)    // Environment modifier
+}
+```
+
+This structure allows the view to navigate based on programmatically set state, ensuring that navigation is both flexible and type-safe.
+
+### Sheets
+
+Sheets are handled similarly to navigation by defining an enum that conforms to Identifiable. This enum specifies the different sheets that can be presented by a view. Each sheet can be presented based on the active state in the ViewModel.
+
+Example:
+
+```swift
+enum MyViewSheet: Identifiable {
+    case firstSheet
+    case secondSheet
+    
+    var id: Int {
+        hashValue
+    }
+}
+```
+
+The ViewModel controls the active sheet, and the view observes this state to present the appropriate sheet using `.sheet`.
+
+Usage:
+
+```swift
+.sheet(item: $viewModel.activeSheet) { sheet in
+    switch sheet {
+    case .firstSheet:
+        FirstSheetView()
+    case .secondSheet:
+        SecondSheetView()
+    }
+}
+```
+
+This pattern allows for easily adding new sheets to a view without modifying much of the existing code. The ViewModel manages which sheet is currently active by setting the `activeSheet` property.
+
+### Alerts
+
+Alerts follow a similar pattern to sheets. An enum representing different alert types is defined, and the view presents an alert based on the active state in the ViewModel.
+
+Example:
+
+```swift
+enum MyViewAlert: Identifiable {
+    case errorAlert
+    case confirmationAlert
+    
+    var id: Int {
+        hashValue
+    }
+}
+```
+
+The ViewModel triggers alerts by setting the activeAlert property, and the view observes this state to display the correct alert using `.alert`.
+
+Usage:
+
+```swift
+.alert(item: $viewModel.activeAlert) { alert in
+    switch alert {
+    case .errorAlert:
+        Alert(title: Text("Error"), message: Text("Something went wrong."))
+    case .confirmationAlert:
+        Alert(
+            title: Text("Confirm"),
+            message: Text("Are you sure?"),
+            primaryButton: .destructive(Text("Yes")),
+            secondaryButton: .cancel()
+        )
+    }
+}
 ```
 
 ## Dependency Injection
@@ -357,3 +457,32 @@ Contains WatchOS-specific components and configurations.
 - **Modularize Code**: Create separate modules or frameworks for shared code to manage dependencies and updates.
 - **Consistent Naming Conventions**: Use consistent naming conventions across both platforms.
 - **Documentation**: Document the architecture and project structure clearly to help new developers understand the structure and conventions used.
+
+### Best Practices for Ordering SwiftUI Modifiers
+
+When applying modifiers in SwiftUI, following a logical order can enhance readability and maintainability. Here’s a recommended sequence:
+
+1. **Basic View Modifiers**: Start with fundamental properties like `frame`, `padding`, and `background`.
+2. **Content Modifiers**: Apply modifiers that change the content, such as `font`, `foregroundColor`, and `multilineTextAlignment`.
+3. **Layout Modifiers**: Adjust the view's layout with modifiers like `alignment`, `padding`, and `frame`.
+4. **Style Modifiers**: Style the view using modifiers like `background`, `cornerRadius`, `shadow`, and `border`.
+5. **State/Behavior Modifiers**: Handle user interactions and behaviors with modifiers like `onTapGesture`, `onAppear`, and `animation`.
+6. **Accessibility Modifiers**: Enhance accessibility using `accessibilityLabel`, `accessibilityHint`, etc.
+7. **Environment Modifiers**: Apply environment-related modifiers such as `environmentObject` and `environment`.
+
+**Example**:
+```swift
+Text("Hello, World!")
+    .frame(width: 64)                   // Basic view modifier
+    .font(.headline)                    // Content modifier
+    .foregroundColor(.primary)          // Content modifier
+    .padding()                          // Layout modifier
+    .background(Color.blue)             // Style modifier
+    .cornerRadius(10)                   // Style modifier
+    .shadow(radius: 5)                  // Style modifier
+    .onTapGesture {                     // State/Behavior modifier
+        print("Tapped!")
+    }
+    .accessibilityLabel("Greeting")     // Accessibility modifier
+    .environment(\.locale, .current)    // Environment modifier
+```

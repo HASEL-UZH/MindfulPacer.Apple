@@ -26,6 +26,7 @@
 		0D4E11862C85ECC80023E0A0 /* ReviewRemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */; };
 		0D4E11882C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11872C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift */; };
 		0D4E118A2C864B450023E0A0 /* DeleteReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11892C864B450023E0A0 /* DeleteReviewReminderUseCase.swift */; };
+		0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */; };
 		0D4EBE342C72784A00C1865D /* AlarmTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE332C72784A00C1865D /* AlarmTypeView.swift */; };
 		0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE352C727B6200C1865D /* InfoSheet.swift */; };
 		0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */; };
@@ -174,6 +175,7 @@
 		0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersListView.swift; sourceTree = "<group>"; };
 		0D4E11872C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReviewReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E11892C864B450023E0A0 /* DeleteReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteReviewReminderUseCase.swift; sourceTree = "<group>"; };
+		0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterView.swift; sourceTree = "<group>"; };
 		0D4EBE332C72784A00C1865D /* AlarmTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmTypeView.swift; sourceTree = "<group>"; };
 		0D4EBE352C727B6200C1865D /* InfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoSheet.swift; sourceTree = "<group>"; };
 		0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementTypeView.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 		0D456ABB2C808F9B0014CD81 /* Reviews List */ = {
 			isa = PBXGroup;
 			children = (
+				0D4E118B2C871F8F0023E0A0 /* Reviews Filter */,
 				0D456ABC2C808FA40014CD81 /* ReviewsListView.swift */,
 			);
 			path = "Reviews List";
@@ -408,6 +411,14 @@
 				0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */,
 			);
 			path = "Review Reminders List";
+			sourceTree = "<group>";
+		};
+		0D4E118B2C871F8F0023E0A0 /* Reviews Filter */ = {
+			isa = PBXGroup;
+			children = (
+				0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */,
+			);
+			path = "Reviews Filter";
 			sourceTree = "<group>";
 		};
 		0D4EBE322C72783D00C1865D /* Alarm Type */ = {
@@ -1171,6 +1182,7 @@
 				0D9AB0CF2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 				0DD858942C71468700061F63 /* ConnectivityError.swift in Sources */,
+				0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */,
 				0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */,
 				0DFCA1D02C623FAC0000C87C /* EditReviewView.swift in Sources */,
 				0D34C45E2C83683200928C53 /* SaveReviewUseCase.swift in Sources */,
