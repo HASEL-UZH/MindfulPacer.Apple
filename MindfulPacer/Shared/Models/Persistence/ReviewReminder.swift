@@ -21,20 +21,20 @@ extension SchemaV1 {
     final class ReviewReminder {
         var id: UUID = UUID()
         var measurementType: MeasurementType = MeasurementType.heartRate
-        var alarmType: AlarmType = AlarmType.light
+        var reviewReminderType: ReviewReminderType = ReviewReminderType.light
         var threshold: Int = 0
         var interval: Interval = Interval._10seconds
         
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
-            alarmType: AlarmType = AlarmType.light,
+            reviewReminderType: ReviewReminderType = ReviewReminderType.light,
             threshold: Int = 0,
             interval: Interval = Interval._10seconds
         ) {
             self.id = id
             self.measurementType = measurementType
-            self.alarmType = alarmType
+            self.reviewReminderType = reviewReminderType
             self.threshold = threshold
             self.interval = interval
         }
@@ -57,10 +57,10 @@ extension ReviewReminder {
     }
 }
 
-// MARK: - Alarm Type
+// MARK: - Review Reminder Type
 
 extension ReviewReminder {
-    enum AlarmType: String, Codable, CaseIterable {
+    enum ReviewReminderType: String, Codable, CaseIterable {
         case light = "Light"
         case medium = "Medium"
         case strong = "Strong"

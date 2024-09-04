@@ -36,7 +36,7 @@ struct ReviewReminderCell: View {
                 
                 Icon(
                     name: "alarm",
-                    color: reviewReminder.alarmType.color,
+                    color: reviewReminder.reviewReminderType.color,
                     background: true
                 )
             }

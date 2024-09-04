@@ -11,14 +11,14 @@ import SwiftUI
 
 enum CreateReviewReminderNavigationDestination: Hashable {
     case measurementType
-    case alarmType
+    case reviewReminderType
     case threshold
     case interval
     case summary
 }
 
 enum CreateReviewReminderSheet: Identifiable {
-    case alarmTypeInfo
+    case reviewReminderTypeInfo
     case heartRateThresholdInfo
     case intervalInfo
     
@@ -93,8 +93,8 @@ struct CreateReviewReminderView: View {
             }
             .sheet(item: $viewModel.activeSheet) { sheet in
                 switch sheet {
-                case .alarmTypeInfo:
-                    alarmTypeInfoSheet
+                case .reviewReminderTypeInfo:
+                    reviewReminderTypeInfoSheet
                 case .heartRateThresholdInfo:
                     thresholdInfoSheet
                 case .intervalInfo:
@@ -106,8 +106,8 @@ struct CreateReviewReminderView: View {
                 switch destination {
                 case .measurementType:
                     MeasurementTypeView(viewModel: viewModel)
-                case .alarmType:
-                    AlarmTypeView(viewModel: viewModel)
+                case .reviewReminderType:
+                    ReviewReminderTypeView(viewModel: viewModel)
                 case .threshold:
                     ThresholdView(viewModel: viewModel)
                 case .interval:
@@ -174,12 +174,12 @@ struct CreateReviewReminderView: View {
         .padding()
     }
     
-    // MARK: Alarm Type Info Sheet
+    // MARK: Review Reminder Type Info Sheet
     
-    private var alarmTypeInfoSheet: some View {
+    private var reviewReminderTypeInfoSheet: some View {
         InfoSheet(
-            title: "Alarm Type Information",
-            info: "You can choose between three different alarm types.") {
+            title: "Review Reminder Type Information",
+            info: "You can choose between three different review reminder types.") {
                 Text(
                     """
                     1. **Light**: shows a yellow color 🟡.

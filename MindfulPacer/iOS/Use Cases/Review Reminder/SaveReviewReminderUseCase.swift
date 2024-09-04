@@ -12,7 +12,7 @@ protocol SaveReviewReminderUseCase {
     func execute(
         existingReviewReminder: ReviewReminder,
         newMeasurementType: ReviewReminder.MeasurementType,
-        newAlarmType: ReviewReminder.AlarmType,
+        newReviewReminderType: ReviewReminder.ReviewReminderType,
         newThreshold: Int,
         newInterval: ReviewReminder.Interval
         
@@ -31,12 +31,12 @@ class DefaultSaveReviewReminderUseCase: SaveReviewReminderUseCase {
     func execute(
         existingReviewReminder: ReviewReminder,
         newMeasurementType: ReviewReminder.MeasurementType,
-        newAlarmType: ReviewReminder.AlarmType,
+        newReviewReminderType: ReviewReminder.ReviewReminderType,
         newThreshold: Int,
         newInterval: ReviewReminder.Interval
     ) -> Result<ReviewReminder, any Error> {
         existingReviewReminder.measurementType = newMeasurementType
-        existingReviewReminder.alarmType = newAlarmType
+        existingReviewReminder.reviewReminderType = newReviewReminderType
         existingReviewReminder.threshold = newThreshold
         existingReviewReminder.interval = newInterval
         

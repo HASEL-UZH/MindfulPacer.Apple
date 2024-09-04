@@ -54,19 +54,19 @@ class CreateReviewReminderViewModel {
         switch lastDestination {
         case .measurementType:
             return selectedMeasurementType == nil
-        case .alarmType:
-            return selectedAlarmType == nil
+        case .reviewReminderType:
+            return selectedReviewReminderType == nil
         case .threshold:
             return threshold == nil
         case .interval:
             return selectedInterval == nil
         case .summary:
-            return (selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil || selectedInterval == nil)
+            return (selectedMeasurementType == nil || selectedReviewReminderType == nil || threshold == nil || selectedInterval == nil)
         }
     }
     
     var isSaveButtonDisabled: Bool {
-        selectedMeasurementType == nil || selectedAlarmType == nil || threshold == nil || selectedInterval == nil
+        selectedMeasurementType == nil || selectedReviewReminderType == nil || threshold == nil || selectedInterval == nil
     }
     
     var showActionButton: Bool {
@@ -115,7 +115,7 @@ class CreateReviewReminderViewModel {
             validateThreshold()
         }
     }
-    var selectedAlarmType: ReviewReminder.AlarmType? = nil
+    var selectedReviewReminderType: ReviewReminder.ReviewReminderType? = nil
     var selectedInterval: ReviewReminder.Interval? = nil
     
     // MARK: - Initialization
@@ -156,8 +156,8 @@ class CreateReviewReminderViewModel {
         
         switch currentDestination {
         case .measurementType:
-            navigationPath.append(CreateReviewReminderNavigationDestination.alarmType)
-        case .alarmType:
+            navigationPath.append(CreateReviewReminderNavigationDestination.reviewReminderType)
+        case .reviewReminderType:
             navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
         case .threshold:
             navigationPath.append(CreateReviewReminderNavigationDestination.interval)
@@ -172,7 +172,7 @@ class CreateReviewReminderViewModel {
         let result = saveReviewReminderUseCase.execute(
             existingReviewReminder: reviewReminder.unsafelyUnwrapped,
             newMeasurementType: selectedMeasurementType.unsafelyUnwrapped,
-            newAlarmType: selectedAlarmType.unsafelyUnwrapped,
+            newReviewReminderType: selectedReviewReminderType.unsafelyUnwrapped,
             newThreshold: threshold.unsafelyUnwrapped,
             newInterval: selectedInterval.unsafelyUnwrapped
         )
@@ -220,20 +220,20 @@ class CreateReviewReminderViewModel {
     
     private func loadReviewReminder(_ reviewReminder: ReviewReminder) {
         selectedMeasurementType = reviewReminder.measurementType
-        selectedAlarmType = reviewReminder.alarmType
+        selectedReviewReminderType = reviewReminder.reviewReminderType
         threshold = reviewReminder.threshold
         selectedInterval = reviewReminder.interval
     }
     
     private func createReviewReminder() {
         guard let measurementType = selectedMeasurementType,
-              let alarmType = selectedAlarmType,
+              let reviewReminderType = selectedReviewReminderType,
               let threshold,
               let interval = selectedInterval else { return }
         
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
-            alarmType: alarmType,
+            reviewReminderType: reviewReminderType,
             threshold: threshold,
             interval: interval
         )

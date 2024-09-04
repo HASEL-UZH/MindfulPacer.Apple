@@ -24,7 +24,7 @@ extension CreateReviewReminderView {
                     ScrollView {
                         VStack(spacing: 16) {
                             measurementType
-                            alarmType
+                            reviewReminderType
                             threshold
                             interval
                             notificationPreview
@@ -83,17 +83,17 @@ extension CreateReviewReminderView {
                 }
         }
         
-        // MARK: Alarm Type
+        // MARK: Review Reminder Type
         
-        private var alarmType: some View {
+        private var reviewReminderType: some View {
             summaryWidget(
                 icon: "alarm",
-                title: "Alarm Type",
-                destination: .alarmType) {
-                    if let alarmType = viewModel.selectedAlarmType {
-                        Text(alarmType.rawValue)
+                title: "Review Reminder Type",
+                destination: .reviewReminderType) {
+                    if let reviewReminderType = viewModel.selectedReviewReminderType {
+                        Text(reviewReminderType.rawValue)
                     } else {
-                        Text("No Alarm Type Selected")
+                        Text("No Review Reminder Type Selected")
                             .foregroundStyle(.red)
                     }
                 }

@@ -26,9 +26,6 @@
         }
       }
     },
-    "Alarm Type" : {
-
-    },
     "Are you sure you want to delete this review reminder? This action cannot be undone." : {
 
     },
@@ -47,7 +44,7 @@
     "Category" : {
 
     },
-    "Choose an alarm type, which will be reflected in the color of the Review Reminder notifications you receive." : {
+    "Choose an review reminder type, which will be reflected in the color of the Review Reminder notifications you receive." : {
 
     },
     "Create Review" : {
@@ -89,13 +86,13 @@
     "New Review" : {
 
     },
-    "No Alarm Type Selected" : {
-
-    },
     "No Interval Selected" : {
 
     },
     "No Measurement Type Selected" : {
+
+    },
+    "No Review Reminder Type Selected" : {
 
     },
     "No Review Reminders" : {
@@ -117,6 +114,9 @@
 
     },
     "Review Reminder Triggered" : {
+
+    },
+    "Review Reminder Type" : {
 
     },
     "Review Reminders" : {
@@ -146,7 +146,7 @@
     "Subcategory" : {
 
     },
-    "Summary of number of review reminders triggered, by alarm type." : {
+    "Summary of number of review reminders triggered, by review reminder type." : {
 
     },
     "Summary of your most recent reviews." : {

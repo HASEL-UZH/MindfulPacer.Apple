@@ -1,5 +1,5 @@
 //
-//  AlarmTypeWidget.swift
+//  ReviewReminderTypeWidget.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 31.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - AlarmTypeWidget
+// MARK: - ReviewReminderTypeWidget
 
 extension HomeView {
-    struct AlarmTypeWidget: View {
+    struct ReviewReminderTypeWidget: View {
         var body: some View {
             IconLabelGroupBox(
                 label:
@@ -21,19 +21,19 @@ extension HomeView {
                         background: true
                     ),
                 description:
-                    Text("Summary of number of review reminders triggered, by alarm type.")
+                    Text("Summary of number of review reminders triggered, by review reminder type.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             ) {
                 HStack(spacing: 16) {
-                    ForEach(ReviewReminder.AlarmType.allCases, id: \.self) { alarmType in
+                    ForEach(ReviewReminder.ReviewReminderType.allCases, id: \.self) { reviewReminderType in
                         HStack(spacing: 16) {
                             HStack(alignment: .lastTextBaseline, spacing: 4) {
                                 Text("0")
                                     .font(.title.weight(.semibold))
                                 
-                                Text(alarmType.rawValue.lowercased())
-                                    .foregroundStyle(alarmType.color)
+                                Text(reviewReminderType.rawValue.lowercased())
+                                    .foregroundStyle(reviewReminderType.color)
                             }
                         }
                     }
@@ -50,7 +50,7 @@ extension HomeView {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
-        HomeView.AlarmTypeWidget()
+        HomeView.ReviewReminderTypeWidget()
             .padding()
     }
 }

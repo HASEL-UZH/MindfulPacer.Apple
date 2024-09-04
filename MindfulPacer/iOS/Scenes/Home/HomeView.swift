@@ -45,7 +45,7 @@ struct HomeView: View {
                         }
                         ReviewsWidget(viewModel: viewModel)
                         ReviewRemindersWidget(viewModel: viewModel)
-                        AlarmTypeWidget()
+                        ReviewReminderTypeWidget()
                     }
                     .padding(.horizontal)
                     

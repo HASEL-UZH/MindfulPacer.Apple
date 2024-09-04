@@ -18,7 +18,7 @@
 		0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4602C837F4400928C53 /* StepsWidget.swift */; };
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
 		0D34C4652C837FE100928C53 /* ReviewsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4642C837FE100928C53 /* ReviewsWidget.swift */; };
-		0D34C4672C838BD700928C53 /* AlarmTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* AlarmTypeWidget.swift */; };
+		0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */; };
 		0D456AB02C7D07460014CD81 /* FetchReviewsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AAF2C7D07460014CD81 /* FetchReviewsUseCase.swift */; };
 		0D456AB22C7D077C0014CD81 /* FetchReviewRemindersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB12C7D077C0014CD81 /* FetchReviewRemindersUseCase.swift */; };
 		0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
@@ -27,7 +27,7 @@
 		0D4E11882C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11872C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift */; };
 		0D4E118A2C864B450023E0A0 /* DeleteReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11892C864B450023E0A0 /* DeleteReviewReminderUseCase.swift */; };
 		0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */; };
-		0D4EBE342C72784A00C1865D /* AlarmTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE332C72784A00C1865D /* AlarmTypeView.swift */; };
+		0D4EBE342C72784A00C1865D /* ReviewReminderTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE332C72784A00C1865D /* ReviewReminderTypeView.swift */; };
 		0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE352C727B6200C1865D /* InfoSheet.swift */; };
 		0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */; };
 		0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */; };
@@ -167,7 +167,7 @@
 		0D34C4602C837F4400928C53 /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
 		0D34C4642C837FE100928C53 /* ReviewsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsWidget.swift; sourceTree = "<group>"; };
-		0D34C4662C838BD700928C53 /* AlarmTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmTypeWidget.swift; sourceTree = "<group>"; };
+		0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReminderTypeWidget.swift; sourceTree = "<group>"; };
 		0D456AAF2C7D07460014CD81 /* FetchReviewsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReviewsUseCase.swift; sourceTree = "<group>"; };
 		0D456AB12C7D077C0014CD81 /* FetchReviewRemindersUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReviewRemindersUseCase.swift; sourceTree = "<group>"; };
 		0D456AB52C7D0F2B0014CD81 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
@@ -176,7 +176,7 @@
 		0D4E11872C85EFB80023E0A0 /* SaveReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReviewReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E11892C864B450023E0A0 /* DeleteReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteReviewReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterView.swift; sourceTree = "<group>"; };
-		0D4EBE332C72784A00C1865D /* AlarmTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmTypeView.swift; sourceTree = "<group>"; };
+		0D4EBE332C72784A00C1865D /* ReviewReminderTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReminderTypeView.swift; sourceTree = "<group>"; };
 		0D4EBE352C727B6200C1865D /* InfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoSheet.swift; sourceTree = "<group>"; };
 		0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementTypeView.swift; sourceTree = "<group>"; };
 		0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdView.swift; sourceTree = "<group>"; };
@@ -387,9 +387,9 @@
 		0D34C45F2C837F2900928C53 /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
-				0D34C4662C838BD700928C53 /* AlarmTypeWidget.swift */,
 				0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */,
 				0D34C4642C837FE100928C53 /* ReviewsWidget.swift */,
+				0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */,
 				0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */,
 				0D34C4602C837F4400928C53 /* StepsWidget.swift */,
 			);
@@ -421,12 +421,12 @@
 			path = "Reviews Filter";
 			sourceTree = "<group>";
 		};
-		0D4EBE322C72783D00C1865D /* Alarm Type */ = {
+		0D4EBE322C72783D00C1865D /* Review Reminder Type */ = {
 			isa = PBXGroup;
 			children = (
-				0D4EBE332C72784A00C1865D /* AlarmTypeView.swift */,
+				0D4EBE332C72784A00C1865D /* ReviewReminderTypeView.swift */,
 			);
-			path = "Alarm Type";
+			path = "Review Reminder Type";
 			sourceTree = "<group>";
 		};
 		0D4EBE372C727C7100C1865D /* Measurement Type */ = {
@@ -573,9 +573,9 @@
 		0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */ = {
 			isa = PBXGroup;
 			children = (
-				0D4EBE322C72783D00C1865D /* Alarm Type */,
 				0D4EBE442C727F8100C1865D /* Interval */,
 				0D4EBE372C727C7100C1865D /* Measurement Type */,
+				0D4EBE322C72783D00C1865D /* Review Reminder Type */,
 				0D4EBE4A2C72865300C1865D /* Summary */,
 				0D4EBE3E2C727E9800C1865D /* Threshold */,
 				0D9AB0D02C6E8B3D00BB773F /* CreateReviewReminderView.swift */,
@@ -1167,7 +1167,7 @@
 				0DDD33662C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
-				0D34C4672C838BD700928C53 /* AlarmTypeWidget.swift in Sources */,
+				0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
 				0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */,
 				0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */,
@@ -1195,7 +1195,7 @@
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
 				0D4E11862C85ECC80023E0A0 /* ReviewRemindersListView.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
-				0D4EBE342C72784A00C1865D /* AlarmTypeView.swift in Sources */,
+				0D4EBE342C72784A00C1865D /* ReviewReminderTypeView.swift in Sources */,
 				0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */,
 				0DD858922C71465A00061F63 /* SessionError.swift in Sources */,
 				0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */,
