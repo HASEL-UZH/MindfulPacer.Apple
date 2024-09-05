@@ -154,22 +154,19 @@ struct EditReviewView: View {
     // MARK: Date
     
     private var date: some View {
-        DatePicker(selection: $viewModel.date) {
-            IconLabel(
-                icon: "calendar",
-                title: "Date",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .layoutPriority(1)
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
+        Card {
+            DatePicker(selection: $viewModel.date) {
+                IconLabel(
+                    icon: "calendar",
+                    title: "Date",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+            }
         }
     }
     
@@ -256,34 +253,31 @@ struct EditReviewView: View {
     
     private var mood: some View {
         NavigationLink(value: EditReviewNavigationDestination.mood) {
-            HStack {
-                IconLabel(
-                    icon: "face.smiling.fill",
-                    title: "Mood",
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-                
-                Spacer()
-                
-                HStack(spacing: 4) {
-                    if let mood = viewModel.selectedMood {
-                        Text(mood.emoji)
-                            .frame(width: 24, height: 24)
-                    }
+            Card {
+                HStack {
+                    IconLabel(
+                        icon: "face.smiling.fill",
+                        title: "Mood",
+                        labelColor: Color("BrandPrimary"),
+                        background: true
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .layoutPriority(1)
                     
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    
+                    HStack(spacing: 4) {
+                        if let mood = viewModel.selectedMood {
+                            Text(mood.emoji)
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Icon(name: "chevron.right", color: Color(.systemGray2))
+                            .font(.subheadline.weight(.semibold))
+                    }
                 }
-            }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
     }
@@ -320,23 +314,20 @@ struct EditReviewView: View {
     // MARK: Trigger Crash
     
     private var triggerCrash: some View {
-        Toggle(isOn: $viewModel.didTriggerCrash) {
-            IconLabel(
-                icon: "bandage.fill",
-                title: "Did this trigger a crash?",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .layoutPriority(1)
-        }
-        .tint(.accentColor)
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
+        Card {
+            Toggle(isOn: $viewModel.didTriggerCrash) {
+                IconLabel(
+                    icon: "bandage.fill",
+                    title: "Did this trigger a crash?",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+            }
+            .tint(.accentColor)
         }
     }
     

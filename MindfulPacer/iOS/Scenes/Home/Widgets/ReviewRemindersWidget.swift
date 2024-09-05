@@ -36,20 +36,17 @@ extension HomeView {
                             )
                         }
                     } else {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
-                                ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
-                                    viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
-                                }
-                                if viewModel.recentReviewReminders.last != reviewReminder {
-                                    Divider()
+                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
+                                    ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
+                                        viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
+                                    }
+                                    if viewModel.recentReviewReminders.last != reviewReminder {
+                                        Divider()
+                                    }
                                 }
                             }
-                        }
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 16)
-                                .foregroundStyle(Color(.tertiarySystemGroupedBackground))
                         }
                     }
                 } accessoryIndicator: {

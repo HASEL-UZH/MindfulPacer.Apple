@@ -46,7 +46,7 @@ extension CreateReviewReminderView {
                             }
                     }
                     
-                    Text("Choose an review reminder type, which will be reflected in the color of the Review Reminder notifications you receive.")
+                    Text("Choose a review reminder type, which will be reflected in the color of the review reminder notifications you receive.")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.footnote)
                         .foregroundStyle(.secondary)

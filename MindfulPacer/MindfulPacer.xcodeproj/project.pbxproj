@@ -92,6 +92,8 @@
 		0DBA37452C32087400209681 /* WatchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0DBA37382C32087300209681 /* WatchOS.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0DC2D7E92C7C7DD7008122CC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */; };
 		0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */; };
+		0DD3FDAB2C89BE8400859A1C /* FilterReviewsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */; };
+		0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDAC2C8A3ED100859A1C /* Card.swift */; };
 		0DD858912C71465A00061F63 /* SessionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD858902C71465A00061F63 /* SessionError.swift */; };
 		0DD858922C71465A00061F63 /* SessionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD858902C71465A00061F63 /* SessionError.swift */; };
 		0DD858942C71468700061F63 /* ConnectivityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD858932C71468700061F63 /* ConnectivityError.swift */; };
@@ -238,6 +240,8 @@
 		0DBA37412C32087400209681 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterReviewsUseCase.swift; sourceTree = "<group>"; };
+		0DD3FDAC2C8A3ED100859A1C /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		0DD858902C71465A00061F63 /* SessionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionError.swift; sourceTree = "<group>"; };
 		0DD858932C71468700061F63 /* ConnectivityError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityError.swift; sourceTree = "<group>"; };
 		0DDD33622C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnViewFirstAppearModifier.swift; sourceTree = "<group>"; };
@@ -592,6 +596,7 @@
 				0D9D8A812C83A3DE00DFFF00 /* DeleteReviewUseCase.swift */,
 				0D9AB0992C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift */,
 				0D456AAF2C7D07460014CD81 /* FetchReviewsUseCase.swift */,
+				0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */,
 				0D34C45D2C83683200928C53 /* SaveReviewUseCase.swift */,
 			);
 			path = Review;
@@ -802,6 +807,7 @@
 				0D500FCF2C74920000395AEB /* Buttons */,
 				0D6A45072C84E014002807D3 /* Cells */,
 				0D34C4532C82643B00928C53 /* Sheets */,
+				0DD3FDAC2C8A3ED100859A1C /* Card.swift */,
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0D456AB52C7D0F2B0014CD81 /* Icon.swift */,
 				0D8203B32C6E9D680023EE2D /* IconLabel.swift */,
@@ -1132,6 +1138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DD3FDAB2C89BE8400859A1C /* FilterReviewsUseCase.swift in Sources */,
 				0D9AB0D12C6E8B3D00BB773F /* CreateReviewReminderView.swift in Sources */,
 				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
 				0D4E118A2C864B450023E0A0 /* DeleteReviewReminderUseCase.swift in Sources */,
@@ -1195,6 +1202,7 @@
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
 				0D4E11862C85ECC80023E0A0 /* ReviewRemindersListView.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
+				0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */,
 				0D4EBE342C72784A00C1865D /* ReviewReminderTypeView.swift in Sources */,
 				0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */,
 				0DD858922C71465A00061F63 /* SessionError.swift in Sources */,

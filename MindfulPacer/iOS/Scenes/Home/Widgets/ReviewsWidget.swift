@@ -62,20 +62,17 @@ extension HomeView {
         // MARK:  Recent Reviews Summary
         
         private var recentReviewsSummary: some View {
-            VStack(alignment: .leading, spacing: 16) {
-                ForEach(viewModel.recentReviews) { review in
-                    ReviewCell(review: review, withBackground: false) {
-                        viewModel.presentSheet(.editReviewSheet(review))
-                    }
-                    if review != viewModel.recentReviews.last {
-                        Divider()
+            Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(viewModel.recentReviews) { review in
+                        ReviewCell(review: review, withBackground: false) {
+                            viewModel.presentSheet(.editReviewSheet(review))
+                        }
+                        if review != viewModel.recentReviews.last {
+                            Divider()
+                        }
                     }
                 }
-            }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.tertiarySystemGroupedBackground))
             }
         }
     }

@@ -45,7 +45,7 @@ extension CreateReviewReminderView {
                             }
                     }
                     
-                    Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered.")
+                    Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.footnote)
                         .foregroundStyle(.secondary)

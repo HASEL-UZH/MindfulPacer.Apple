@@ -50,6 +50,11 @@ extension UseCasesContainer {
     }
     
     @MainActor
+    var filterReviewsUseCase: Factory<DefaultFilterReviewsUseCase> {
+        self { DefaultFilterReviewsUseCase() }
+    }
+    
+    @MainActor
     var saveReviewUseCase: Factory<DefaultSaveReviewUseCase> {
         self { DefaultSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }

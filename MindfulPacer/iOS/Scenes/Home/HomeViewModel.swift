@@ -12,43 +12,6 @@ import SwiftUI
 @MainActor
 @Observable
 class HomeViewModel {
-    // MARK: - Review Filter
-
-    struct ReviewFilterOptions: Equatable {
-        var selectedCategories: [Category] = []
-        var selectedSubcategories: [Subcategory] = []
-        var selectedMoods: [Mood] = []
-        var triggeredCrash: Bool = false
-        
-        var activeFilterCount: Int {
-            var count = 0
-            if !selectedCategories.isEmpty {
-                count += 1
-            }
-            if !selectedSubcategories.isEmpty {
-                count += 1
-            }
-            if !selectedMoods.isEmpty {
-                count += 1
-            }
-            if triggeredCrash {
-                count += 1
-            }
-            return count
-        }
-    }
-
-    enum ReviewSorting {
-        case dateAscending
-        case dateDescending
-
-        var comparator: (Review, Review) -> Bool {
-            switch self {
-            case .dateAscending: return { $0.date < $1.date }
-            case .dateDescending: return { $0.date > $1.date }
-            }
-        }
-    }
     
     // MARK: - Dependencies
     
@@ -58,24 +21,41 @@ class HomeViewModel {
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
     private let fetchReviewsUseCase: FetchReviewsUseCase
     private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
+    private let filterReviewsUseCase: FilterReviewsUseCase
     
     // MARK: - Published Properties (State)
     
     var activeSheet: HomeViewSheet? = nil
     
-    var reviews: [Review] = []
-    var reviewReminders: [ReviewReminder] = []
+    var reviewFilter: ReviewFilter = ReviewFilter() {
+        didSet { applyCurrentFilters() }
+    }
+    var reviewSorting: ReviewSorting = .dateDescending {
+        didSet { applyCurrentFilters() }
+    }
+    
     var categories: [Category] = []
+    
+    var reviews: [Review] = []
+    var filteredReviews: [Review] = []
     var recentReviews: [Review] {
         Array(reviews.prefix(3))
     }
+    
+    var reviewReminders: [ReviewReminder] = []
     var recentReviewReminders: [ReviewReminder] {
         Array(reviewReminders.prefix(3))
     }
+    
     var currentSteps: (stepCount: Double, timestamp: Date)? = nil
-
-    var reviewFilterOptions: ReviewFilterOptions = ReviewFilterOptions()
-    var reviewSorting: ReviewSorting = .dateAscending
+    
+    var selectedFilterCategoriesSummary: String {
+        reviewFilter.selectedCategories.map { $0.name }.joined(separator: ", ")
+    }
+    
+    var selectedFilterMoodsSummary: String {
+        reviewFilter.selectedMoods.map { $0.description }.joined(separator: ", ")
+    }
     
     // MARK: - Initialization
     
@@ -85,7 +65,8 @@ class HomeViewModel {
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase,
         fetchReviewsUseCase: FetchReviewsUseCase,
-        fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
+        fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
+        filterReviewsUseCase: FilterReviewsUseCase
     ) {
         self.modelContext = modelContext
         self.deleteReviewUseCase = deleteReviewUseCase
@@ -93,13 +74,14 @@ class HomeViewModel {
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
         self.fetchReviewsUseCase = fetchReviewsUseCase
         self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
+        self.filterReviewsUseCase = filterReviewsUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
         fetchCurrentSteps()
-        fetchDefaultCategories()
+        fetchDefaultReviewCategories()
         fetchReviews()
         fetchReviewReminders()
     }
@@ -111,12 +93,35 @@ class HomeViewModel {
     
     // MARK: - User Actions
     
-    func updateReviewFilterOptions(with category: Category) {
-        if reviewFilterOptions.selectedCategories.contains(category) {
-            reviewFilterOptions.selectedCategories.removeAll { $0 == category }
+    func applyFilters(_ filters: ReviewFilter, sorting: ReviewSorting) {
+        reviewFilter = filters
+        reviewSorting = sorting
+        filteredReviews = filterReviewsUseCase.execute(reviews: reviews, filters: reviewFilter, sorting: reviewSorting)
+    }
+    
+    func resetFilters() {
+        reviewFilter = ReviewFilter()
+        reviewSorting = .dateDescending
+    }
+    
+    func toggleFilterCategory(_ category: Category) {
+        if reviewFilter.selectedCategories.contains(category) {
+            reviewFilter.selectedCategories.removeAll { $0 == category }
         } else {
-            reviewFilterOptions.selectedCategories.append(category)
+            reviewFilter.selectedCategories.append(category)
         }
+    }
+    
+    func toggleFilterMood(_ mood: Mood) {
+        if reviewFilter.selectedMoods.contains(mood) {
+            reviewFilter.selectedMoods.removeAll { $0 == mood }
+        } else {
+            reviewFilter.selectedMoods.append(mood)
+        }
+    }
+    
+    func toggleTriggeredCrash() {
+        reviewFilter.triggeredCrash.toggle()
     }
     
     // MARK: - Presentation
@@ -141,17 +146,65 @@ class HomeViewModel {
         }
     }
     
-    private func fetchDefaultCategories() {
-        if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
-            categories = fetchedCategories
-        }
+    private func fetchDefaultReviewCategories() {
+        self.categories = fetchDefaultCategoriesUseCase.execute() ?? []
     }
     
     private func fetchReviews() {
-        reviews = fetchReviewsUseCase.execute() ?? []
+        let reviews = fetchReviewsUseCase.execute() ?? []
+        self.reviews = reviews
+        applyCurrentFilters()
     }
     
     private func fetchReviewReminders() {
         reviewReminders = fetchReviewRemindersUseCase.execute() ?? []
+    }
+    
+    private func applyCurrentFilters() {
+        if reviewFilter.activeFilterCount == 0 {
+            filteredReviews = reviews
+        } else {
+            filteredReviews = filterReviewsUseCase.execute(reviews: reviews, filters: reviewFilter, sorting: reviewSorting)
+        }
+    }
+}
+
+// MARK: - Review Filter & Sorting
+
+extension HomeViewModel {
+    struct ReviewFilter: Equatable {
+        var selectedCategories: [Category] = []
+        var selectedSubcategories: [Subcategory] = []
+        var selectedMoods: [Mood] = []
+        var triggeredCrash: Bool = false
+        
+        var activeFilterCount: Int {
+            var count = 0
+            if !selectedCategories.isEmpty {
+                count += 1
+            }
+            if !selectedSubcategories.isEmpty {
+                count += 1
+            }
+            if !selectedMoods.isEmpty {
+                count += 1
+            }
+            if triggeredCrash {
+                count += 1
+            }
+            return count
+        }
+    }
+    
+    enum ReviewSorting {
+        case dateAscending
+        case dateDescending
+        
+        var comparator: (Review, Review) -> Bool {
+            switch self {
+            case .dateAscending: return { $0.date < $1.date }
+            case .dateDescending: return { $0.date > $1.date }
+            }
+        }
     }
 }

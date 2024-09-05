@@ -165,7 +165,7 @@ struct CreateReviewReminderView: View {
                     .resizable()
                     .scaledToFit()
                 
-                Text("This allows you to add a new Review Reminder which can be triggered on your Apple Watch or iPhone.")
+                Text("This allows you to add a new review reminder which can be triggered on your Apple Watch or iPhone.")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
@@ -206,14 +206,14 @@ struct CreateReviewReminderView: View {
                 IconLabelGroupBox(
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
-                    Text("The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.")
+                    Text("The current step count, as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.")
 
                 }
                             
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
-                    Text("The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Review Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.")
+                    Text("The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.")
                 }
             }
             .font(.subheadline)
@@ -228,19 +228,19 @@ struct CreateReviewReminderView: View {
     private var intervalInfoSheet: some View {
         InfoSheet(
             title: "Interval Information",
-            info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Review Reminder to be triggered."
+            info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered."
         ) {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
-                    Text("The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer.")
+                    Text("The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the review reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer.")
                 }
                 
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
-                    Text("The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Review Reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.")
+                    Text("The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the review reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.")
                 }
             }
             .font(.subheadline)
@@ -255,7 +255,7 @@ struct CreateReviewReminderView: View {
     private var unableToSaveReviewReminderAlert: Alert {
         Alert(
             title: Text("Error Saving Review Reminder"),
-            message: Text("Unable to save your Review Reminder.\nPlease try again.\nIf this problem persists, please contact us."),
+            message: Text("Unable to save your review reminder.\nPlease try again.\nIf this problem persists, please contact us."),
             dismissButton: .default(Text("Ok"))
         )
     }

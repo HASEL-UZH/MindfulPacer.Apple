@@ -24,7 +24,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
                 fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase()
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                filterReviewsUseCase: UseCasesContainer.shared.filterReviewsUseCase()
             )
         }
     }
@@ -56,7 +57,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Review Reminder
     
     @MainActor

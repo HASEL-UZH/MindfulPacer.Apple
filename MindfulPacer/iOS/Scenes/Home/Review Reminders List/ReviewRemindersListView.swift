@@ -59,7 +59,7 @@ struct ReviewRemindersListView: View {
                 Button {
                     viewModel.presentSheet(.editReviewSheet(nil))
                 } label: {
-                    Text("Create Review")
+                    Text("Create Review Reminder")
                 }
                 .buttonBorderShape(.capsule)
                 .buttonStyle(.borderedProminent)

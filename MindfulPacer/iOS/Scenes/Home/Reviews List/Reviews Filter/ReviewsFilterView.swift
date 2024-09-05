@@ -11,15 +11,48 @@ import SwiftUI
 
 struct ReviewsFilterView: View {
     @Bindable var viewModel: HomeViewModel
-    
+
     // MARK: Body
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    categories
+                    categoriesLink
+                    moodLink
                     triggerCrash
+                    
+//                    HStack {
+//                        IconLabel(
+//                            icon: "calendar",
+//                            title: "Date",
+//                            labelColor: Color("BrandPrimary"),
+//                            background: true
+//                        )
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .font(.subheadline.weight(.semibold))
+//                        .lineLimit(1)
+//                        .layoutPriority(1)
+//                        
+//                        Spacer()
+//
+//                        Menu {
+//                            Button("Date Ascending", systemImage: "arrow.up") {
+//                                viewModel.reviewSorting = .dateAscending
+//                            }
+//                            
+//                            Button("Date Descending", systemImage: "arrow.down") {
+//                                viewModel.reviewSorting = .dateDescending
+//                            }
+//                        } label: {
+//                            
+//                        }
+//                    }
+//                    .padding()
+//                    .background {
+//                        RoundedRectangle(cornerRadius: 16)
+//                            .foregroundStyle(Color(.secondarySystemGroupedBackground))
+//                    }
                 }
                 .padding(.horizontal)
             }
@@ -38,56 +71,91 @@ struct ReviewsFilterView: View {
     // MARK: Reset Button
     
     private var resetButton: some View {
-        Button {
-            // TODO: Reset active filters
-        } label: {
-            HStack {
-                Image(systemName: "arrow.uturn.backward")
-                Text("Reset")
-            }
-            .fontWeight(.semibold)
+        Button("Reset") {
+            viewModel.resetFilters()
         }
+        .fontWeight(.semibold)
     }
     
-    // MARK: - Categories
+    // MARK: - Categories Link
     
-    private var categories: some View {
+    private var categoriesLink: some View {
         NavigationLink {
             categoriesFilterView
         } label: {
-            HStack {
-                Label {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Categories")
-                            .font(.subheadline.weight(.semibold))
-                        
-                        if !viewModel.reviewFilterOptions.selectedCategories.isEmpty {
-                            Text(viewModel.reviewFilterOptions.selectedCategories.map { $0.name }.joined(separator: ", "))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
+            Card {
+                HStack {
+                    Label {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Categories")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.accent)
+                            
+                            if !viewModel.reviewFilter.selectedCategories.isEmpty {
+                                Text(viewModel.selectedFilterCategoriesSummary)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
                         }
+                    } icon: {
+                        Icon(name: "rectangle.grid.2x2.fill", background: true)
+                        
                     }
-                } icon: {
-                    Icon(name: "rectangle.grid.2x2.fill", background: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                HStack(spacing: 4) {
-                    if !viewModel.reviewFilterOptions.selectedCategories.isEmpty {
-                        Text("\(viewModel.reviewFilterOptions.selectedCategories.count)")
-                            .foregroundStyle(Color(.systemGray2))
+                    HStack(spacing: 4) {
+                        if !viewModel.reviewFilter.selectedCategories.isEmpty {
+                            Text("\(viewModel.reviewFilter.selectedCategories.count)")
+                                .foregroundStyle(Color(.systemGray2))
+                        }
+                        
+                        Icon(name: "chevron.right", color: Color(.systemGray2))
+                            .font(.subheadline.weight(.semibold))
                     }
-                    
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
                 }
             }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+        }
+        .foregroundStyle(.primary)
+    }
+    
+    // MARK: - Mood Link
+    
+    private var moodLink: some View {
+        NavigationLink {
+            moodFilterView
+        } label: {
+            Card {
+                HStack {
+                    Label {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Mood")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.accent)
+                            
+                            if !viewModel.reviewFilter.selectedMoods.isEmpty {
+                                Text(viewModel.selectedFilterMoodsSummary)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    } icon: {
+                        Icon(name: "face.smiling.fill", background: true)
+                        
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    HStack(spacing: 4) {
+                        if !viewModel.reviewFilter.selectedMoods.isEmpty {
+                            Text("\(viewModel.reviewFilter.selectedMoods.count)")
+                                .foregroundStyle(Color(.systemGray2))
+                        }
+                        
+                        Icon(name: "chevron.right", color: Color(.systemGray2))
+                            .font(.subheadline.weight(.semibold))
+                    }
+                }
             }
         }
         .foregroundStyle(.primary)
@@ -104,9 +172,9 @@ struct ReviewsFilterView: View {
                 ForEach(viewModel.categories) { category in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilterOptions.selectedCategories.contains(category),
+                        isSelected: viewModel.reviewFilter.selectedCategories.contains(category),
                         action: {
-                            viewModel.updateReviewFilterOptions(with: category)
+                            viewModel.toggleFilterCategory(category)
                         }) {
                             VStack(spacing: 16) {
                                 Image(systemName: category.icon)
@@ -131,33 +199,62 @@ struct ReviewsFilterView: View {
         }
     }
     
+    // MARK: Mood Filter View
+    
+    private var moodFilterView: some View {
+        ScrollView {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(spacing: 16), count: 5),
+                spacing: 16
+            ) {
+                ForEach(DefaultMoodData.moods, id: \.id) { mood in
+                    SelectableButton(
+                        shape: .roundedRectangle(cornerRadius: 12),
+                        isSelected: viewModel.reviewFilter.selectedMoods.contains(mood) ,
+                        action: {
+                            viewModel.toggleFilterMood(mood)
+                        }) {
+                            Text(mood.emoji)
+                                .font(.title)
+                        }
+                        .contextMenu {
+                            Text(mood.description)
+                        }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .navigationTitle("Mood")
+        .background {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+        }
+    }
+    
     // MARK: Trigger Crash
     
     private var triggerCrash: some View {
-        Toggle(isOn: $viewModel.reviewFilterOptions.triggeredCrash) {
-            IconLabel(
-                icon: "bandage.fill",
-                title: "Triggered Crash",
-                iconColor: Color("BrandPrimary"),
-                background: true
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .layoutPriority(1)
-        }
-        .tint(.accentColor)
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
+        Card {
+            Toggle(isOn: $viewModel.reviewFilter.triggeredCrash) {
+                IconLabel(
+                    icon: "bandage.fill",
+                    title: "Triggered Crash",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+            }
+            .tint(.accentColor)
         }
     }
 }
 
 // MARK: - Preview
 
-#Preview {
+#Preview {    
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     
     ReviewsFilterView(viewModel: viewModel)
