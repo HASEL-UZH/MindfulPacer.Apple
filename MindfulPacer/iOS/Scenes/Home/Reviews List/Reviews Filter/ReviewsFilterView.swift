@@ -22,37 +22,27 @@ struct ReviewsFilterView: View {
                     moodLink
                     triggerCrash
                     
-//                    HStack {
-//                        IconLabel(
-//                            icon: "calendar",
-//                            title: "Date",
-//                            labelColor: Color("BrandPrimary"),
-//                            background: true
-//                        )
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .font(.subheadline.weight(.semibold))
-//                        .lineLimit(1)
-//                        .layoutPriority(1)
-//                        
-//                        Spacer()
-//
-//                        Menu {
-//                            Button("Date Ascending", systemImage: "arrow.up") {
-//                                viewModel.reviewSorting = .dateAscending
-//                            }
-//                            
-//                            Button("Date Descending", systemImage: "arrow.down") {
-//                                viewModel.reviewSorting = .dateDescending
-//                            }
-//                        } label: {
-//                            
-//                        }
-//                    }
-//                    .padding()
-//                    .background {
-//                        RoundedRectangle(cornerRadius: 16)
-//                            .foregroundStyle(Color(.secondarySystemGroupedBackground))
-//                    }
+                    Card {
+                        Picker(selection: $viewModel.reviewSorting) {
+                            Label("Date Ascending", systemImage: "arrow.up")
+                                .tag(HomeViewModel.ReviewSorting.dateAscending)
+                            
+                            Label("Date Descending", systemImage: "arrow.down")
+                                .tag(HomeViewModel.ReviewSorting.dateDescending)
+                        } label: {
+                            IconLabel(
+                                icon: "calendar",
+                                title: "Date",
+                                labelColor: Color("BrandPrimary"),
+                                background: true
+                            )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .layoutPriority(1)
+                        }
+                        .pickerStyle(.menu)
+                    }
                 }
                 .padding(.horizontal)
             }

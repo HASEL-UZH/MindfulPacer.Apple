@@ -50,7 +50,7 @@ extension CreateReviewReminderView {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
-                    
+         
                     Spacer()
                 }
                 .padding(.horizontal)
