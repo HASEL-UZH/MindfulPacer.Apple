@@ -6,10 +6,11 @@
 //
 
 import Foundation
-import UserNotifications
+
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
+    
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     

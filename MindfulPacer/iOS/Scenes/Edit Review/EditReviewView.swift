@@ -110,44 +110,66 @@ struct EditReviewView: View {
                 viewModel.configureMode(with: review)
             }
             .alert(item: $viewModel.activeAlert) { alert in
-                switch alert {
-                case .deleteConfirmation:
-                    reviewDeletionConfirmationAlert
-                case .unableToSaveReview:
-                    unableToSaveReviewAlert
-                }
+                alertContent(for: alert)
             }
             .sheet(item: $viewModel.activeSheet) { sheet in
-                switch sheet {
-                case .ratingSheet:
-                    if let ratingType = viewModel.currentRatingType,
-                       let rating = viewModel.ratings.first(where: { $0.type == ratingType }
-                       ) {
-                        RatingSelectionView(
-                            rating: rating,
-                            onRatingSelected: { value in
-                                viewModel.setRating(for: ratingType, with: value)
-                            }
-                        )
-                        .presentationDetents([.height(220)])
-                        .presentationDragIndicator(.visible)
-                        .presentationCornerRadius(16)
-                    }
-                }
+                sheetContent(for: sheet)
             }
             .navigationDestination(for: EditReviewNavigationDestination.self) { destination in
-                switch destination {
-                case .category:
-                    CategoryView(viewModel: viewModel)
-                case .subcategory(let category):
-                    SubcategoryView(
-                        category: category.unsafelyUnwrapped,
-                        viewModel: viewModel
-                    )
-                case .mood:
-                    MoodView(viewModel: viewModel)
-                }
+                navigationDestination(for: destination)
             }
+        }
+    }
+    
+    // MARK: Alert Content
+    
+    private func alertContent(for alert: EditReviewAlert) -> Alert {
+        switch alert {
+        case .deleteConfirmation:
+            return reviewDeletionConfirmationAlert
+        case .unableToSaveReview:
+            return unableToSaveReviewAlert
+        }
+    }
+    
+    // MARK: Sheet Content
+    
+    @ViewBuilder
+    private func sheetContent(for sheet: EditReviewSheet) -> some View {
+        switch sheet {
+        case .ratingSheet:
+            if let ratingType = viewModel.currentRatingType,
+               let rating = viewModel.ratings.first(where: { $0.type == ratingType }) {
+                
+                RatingSelectionView(
+                    rating: rating,
+                    onRatingSelected: { value in
+                        viewModel.setRating(for: ratingType, with: value)
+                    }
+                )
+                .presentationDetents([.height(220)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
+            } else {
+                AnyView(EmptyView())
+            }
+        }
+    }
+    
+    // MARK: Navigation Destination
+    
+    @ViewBuilder
+    private func navigationDestination(for destination: EditReviewNavigationDestination) -> some View {
+        switch destination {
+        case .category:
+            CategoryView(viewModel: viewModel)
+        case .subcategory(let category):
+            SubcategoryView(
+                category: category.unsafelyUnwrapped,
+                viewModel: viewModel
+            )
+        case .mood:
+            MoodView(viewModel: viewModel)
         }
     }
     
@@ -317,7 +339,7 @@ struct EditReviewView: View {
         Card {
             Toggle(isOn: $viewModel.didTriggerCrash) {
                 IconLabel(
-                    icon: "bandage.fill",
+                    icon: "exclamationmark.triangle.fill",
                     title: "Did this trigger a crash?",
                     labelColor: Color("BrandPrimary"),
                     background: true
@@ -408,7 +430,6 @@ struct EditReviewView: View {
             dismissButton: .default(Text("Ok"))
         )
     }
-    
 }
 
 // MARK: - Preview

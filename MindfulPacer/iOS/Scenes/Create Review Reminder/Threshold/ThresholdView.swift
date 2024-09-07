@@ -11,6 +11,8 @@ import SwiftUI
 
 extension CreateReviewReminderView {
     struct ThresholdView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
         
         // MARK: Body
@@ -21,28 +23,8 @@ extension CreateReviewReminderView {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 16) {
-                    HStack(alignment: .lastTextBaseline) {
-                        TextField("0", value: $viewModel.threshold, format: .number)
-                            .font(.largeTitle.weight(.semibold))
-                            .foregroundStyle(Color("BrandPrimary"))
-                            .multilineTextAlignment(.trailing)
-                            .keyboardType(.numberPad)
-                        
-                        Text(viewModel.thresholdUnitText)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                    }
-                    
-                    Text("Set a threshold that triggers a reminder when reached for a specified interval.")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal)
-                    
+                    thresholdInput
+                    descriptionText
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -50,16 +32,52 @@ extension CreateReviewReminderView {
             .navigationTitle("Threshold")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.heartRateThresholdInfo)
-                    } label: {
-                        Image(systemName: "info.circle.fill")
-                    }
+                    infoButton
                 }
                 
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
                 }
+            }
+        }
+        
+        // MARK: Threshold Input
+        
+        private var thresholdInput: some View {
+            HStack(alignment: .lastTextBaseline) {
+                TextField("0", value: $viewModel.threshold, format: .number)
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(Color("BrandPrimary"))
+                    .multilineTextAlignment(.trailing)
+                    .keyboardType(.numberPad)
+                
+                Text(viewModel.thresholdUnitText)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+            }
+        }
+        
+        // MARK: Description Text
+        
+        private var descriptionText: some View {
+            Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+        }
+        
+        // MARK: Info Button
+        
+        private var infoButton: some View {
+            Button {
+                viewModel.presentSheet(.heartRateThresholdInfo)
+            } label: {
+                Image(systemName: "info.circle.fill")
             }
         }
         

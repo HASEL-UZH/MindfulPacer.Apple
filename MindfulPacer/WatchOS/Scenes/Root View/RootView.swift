@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+// MARK: - RootView
+
 struct RootView: View {
+    // MARK: Properties
+    
     @State private var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
+    
+    // MARK: Body
     
     var body: some View {
         Image(systemName: "heart.fill")

@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - ConnectivityError
+
 enum ConnectivityError: Error {
     case messageSendingFailed(Error)
     case sessionActivationFailed(Error)

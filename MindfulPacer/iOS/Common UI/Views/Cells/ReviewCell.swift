@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - ReviewCell
 
 struct ReviewCell: View {
+    // MARK: Properties
+    
     var review: Review
     var withBackground: Bool = true
     var onTap: () -> Void
@@ -21,9 +23,9 @@ struct ReviewCell: View {
             onTap()
         } label: {
             if withBackground {
-                Card(backgroundColor: review.didTriggerCrash ? .red.opacity(0.1) : Color(.secondarySystemGroupedBackground)) {
-                    cellContent
-                }
+                cellContent
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
             } else {
                 cellContent
             }
@@ -36,16 +38,16 @@ struct ReviewCell: View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 if let subcategory = review.subcategory {
-                    IconLabel(icon: subcategory.icon, title: subcategory.name, labelColor: review.didTriggerCrash ? .red : .primary)
+                    IconLabel(icon: subcategory.icon, title: subcategory.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
                 } else if let category = review.category {
-                    IconLabel(icon: category.icon, title: category.name, labelColor: review.didTriggerCrash ? .red : .primary)
+                    IconLabel(icon: category.icon, title: category.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
                 }
                 
                 Text(review.date.formatted(.dateTime.day().month().hour().minute()))
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             
             Spacer()
@@ -64,7 +66,6 @@ struct ReviewCell: View {
                     }
             }
         }
-        .foregroundStyle(review.didTriggerCrash ? Color.red : Color.primary)
     }
 }
 

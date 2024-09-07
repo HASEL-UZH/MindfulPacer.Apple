@@ -7,21 +7,17 @@
 
 import SwiftUI
 
+// MARK: - InfoSheet
+
 struct InfoSheet<Content: View>: View {
+    // MARK: Properties
+    
     var title: String
     var info: String? = nil
     var content: () -> Content
 
-    init(
-        title: String,
-        info: String?,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.title = title
-        self.info = info
-        self.content = content
-    }
-
+    // MARK: Body
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -56,6 +52,8 @@ struct InfoSheet<Content: View>: View {
         }
     }
 }
+
+// MARK: - EmptyView Extension
 
 extension InfoSheet where Content == EmptyView {
     init(title: String, info: String? = nil) {

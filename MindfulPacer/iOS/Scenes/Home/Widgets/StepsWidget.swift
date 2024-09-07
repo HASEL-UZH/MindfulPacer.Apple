@@ -11,10 +11,14 @@ import SwiftUI
 
 extension HomeView {
     struct StepsWidget: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: HomeViewModel
         
+        // MARK: Body
+        
         var body: some View {
-            NavigationLink(value: Int()) {
+            NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "figure.walk",
@@ -23,26 +27,32 @@ extension HomeView {
                         background: true
                     )
                 ) {
-                    if let currentSteps = viewModel.currentSteps {
-                        HStack(alignment: .lastTextBaseline, spacing: 4) {
-                            Text("\(currentSteps)")
-                                .font(.title.weight(.semibold))
-                            Text("steps")
-                                .foregroundStyle(.secondary)
-                        }
-                    } else {
-                        HStack(alignment: .center, spacing: 4) {
-                            Text("--")
-                                .font(.title.weight(.semibold))
-                            Text("steps")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    stepsSummary
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 }
-                .foregroundColor(.primary)
+            }
+            .foregroundStyle(.primary)
+        }
+        
+        // MARK: Steps Summary
+        
+        private var stepsSummary: some View {
+            if let currentSteps = viewModel.currentSteps {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("\(Int(currentSteps.stepCount))")
+                        .font(.title.weight(.semibold))
+                    Text("steps")
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                HStack(alignment: .center, spacing: 4) {
+                    Text("--")
+                        .font(.title.weight(.semibold))
+                    Text("steps")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }

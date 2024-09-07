@@ -10,6 +10,9 @@ import SwiftUI
 // MARK: - Card
 
 struct Card<Content: View>: View {
+    // MARK: Properties
+    
+    var cornerRadius: CGFloat = 16.0
     var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var content: () -> Content
 
@@ -20,7 +23,7 @@ struct Card<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .foregroundStyle(backgroundColor)
             }
     }

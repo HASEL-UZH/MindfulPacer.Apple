@@ -11,7 +11,11 @@ import SwiftUI
 
 extension EditReviewView {
     struct MoodView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: EditReviewViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ScrollView {

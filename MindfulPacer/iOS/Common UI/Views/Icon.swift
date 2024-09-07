@@ -10,11 +10,15 @@ import SwiftUI
 // MARK: - Icon
 
 struct Icon: View {
+    // MARK: Properties
+    
     var name: String
     var color: Color = Color("BrandPrimary")
     var variant: SymbolVariants = .fill
     var renderingMode: SymbolRenderingMode = .monochrome
     var background: Bool = false
+    
+    // MARK: Body
     
     var body: some View {
         Image(systemName: name)

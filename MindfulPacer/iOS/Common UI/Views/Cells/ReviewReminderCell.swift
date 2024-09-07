@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - ReviewReminderCell
 
 struct ReviewReminderCell: View {
+    // MARK: Properties
+    
     var reviewReminder: ReviewReminder
     var withBackground: Bool = true
     var onTap: () -> Void
@@ -21,18 +23,18 @@ struct ReviewReminderCell: View {
             onTap()
         } label: {
             if withBackground {
-                Card {
-                    cardContent
-                }
+                cellContent
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
             } else {
-                cardContent
+                cellContent
             }
         }
     }
     
-    // MARK: Card Content
+    // MARK: Cell Content
     
-    private var cardContent: some View {
+    private var cellContent: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 IconLabel(

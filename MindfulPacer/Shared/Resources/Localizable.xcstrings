@@ -13,9 +13,6 @@
     "1. **Light**: shows a yellow color 🟡.\n2. **Medium**: shows an orange color 🟠.\n3. **Strong**: shows a red color 🔴." : {
 
     },
-    "80" : {
-
-    },
     "Above %lld %@ for %@" : {
       "localizations" : {
         "en" : {
@@ -30,6 +27,9 @@
 
     },
     "Are you sure you want to delete this review? This action cannot be undone." : {
+
+    },
+    "Ascending" : {
 
     },
     "bpm" : {
@@ -53,12 +53,6 @@
     "Create Review Reminder" : {
 
     },
-    "Date Ascending" : {
-
-    },
-    "Date Descending" : {
-
-    },
     "Delete" : {
 
     },
@@ -66,6 +60,9 @@
 
     },
     "Delete Review Reminder" : {
+
+    },
+    "Descending" : {
 
     },
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered." : {
@@ -162,7 +159,13 @@
     "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
+    "Sorting" : {
+
+    },
     "steps" : {
+
+    },
+    "Subcategories" : {
 
     },
     "Subcategory" : {

@@ -11,7 +11,11 @@ import SwiftUI
 
 extension EditReviewView {
     struct CategoryView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: EditReviewViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ScrollView {

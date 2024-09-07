@@ -29,9 +29,7 @@
     - [📱 iOS](#ios)
     - [⌚️ WatchOS](#watchos)
 4. [Benefits of This Structure](#benefits-of-this-structure)
-5. [Best Practices](#best-practices)
-	- [Best Practices for Ordering SwiftUI Modifiers](#best-practices-for-ordering-swiftui-modifiers)
-
+5. [Best Practices for Structuring SwiftUI Views](#best-practices-for-structuring-swiftui-views)
 
 # Architecture Overview
 
@@ -262,12 +260,17 @@ Usage:
 
 ```swift
 .navigationDestination(for: MyViewNavigationDestination.self) { destination in
-    switch destination {
-    case .firstDestination:
-        FirstView()
-    case .secondDestination(let model):
+	navigationDestination(for: destination)
+}
+
+@ViewBuilder
+private func navigationDestination(for destination: MyViewNavigationDestination.self) -> some View {
+	switch destination {
+	case . firstDestination:
+		FirstView()
+	case .secondDestination(let model):
         SecondView(model: model)
-    }
+	}
 }
 ```
 
@@ -451,38 +454,155 @@ Contains WatchOS-specific components and configurations.
 - **Maintainability**: A clear separation of concerns makes the codebase easier to manage and maintain.
 - **Scalability**: This structure can easily accommodate new features and components as the app grows.
 
-## Best Practices
+## Best Practices for Structuring SwiftUI Views
 
-- **Use Conditional Compilation**: Handle platform-specific code within shared components using conditional compilation.
-- **Modularize Code**: Create separate modules or frameworks for shared code to manage dependencies and updates.
-- **Consistent Naming Conventions**: Use consistent naming conventions across both platforms.
-- **Documentation**: Document the architecture and project structure clearly to help new developers understand the structure and conventions used.
+When structuring SwiftUI views, it's important to focus on clarity, readability, and reusability. By following certain conventions and keeping code organized, you can ensure a clean, maintainable project structure. Below are best practices for structuring your SwiftUI views, along with a skeleton structure for reference.
 
-### Best Practices for Ordering SwiftUI Modifiers
+### 1. Naming Conventions
 
-When applying modifiers in SwiftUI, following a logical order can enhance readability and maintainability. Here’s a recommended sequence:
+- **Consistency**: Name your views without the `View` suffix, following SwiftUI's convention (e.g., `Button` instead of `ButtonView`).
+- **Clarity**: Use descriptive names that clearly convey the intent of the view. For example, prefer `submitButton` over something generic like `button1`.
 
-1. **Basic View Modifiers**: Start with fundamental properties like `frame`, `padding`, and `background`.
-2. **Content Modifiers**: Apply modifiers that change the content, such as `font`, `foregroundColor`, and `multilineTextAlignment`.
-3. **Layout Modifiers**: Adjust the view's layout with modifiers like `alignment`, `padding`, and `frame`.
-4. **Style Modifiers**: Style the view using modifiers like `background`, `cornerRadius`, `shadow`, and `border`.
-5. **State/Behavior Modifiers**: Handle user interactions and behaviors with modifiers like `onTapGesture`, `onAppear`, and `animation`.
-6. **Accessibility Modifiers**: Enhance accessibility using `accessibilityLabel`, `accessibilityHint`, etc.
-7. **Environment Modifiers**: Apply environment-related modifiers such as `environmentObject` and `environment`.
+### 2. Logical Grouping with `MARK`
 
-**Example**:
+- **Properties**: Group properties like state variables, bindings, and other dependencies at the top under `// MARK: Properties`.
+- **Body**: The main body of the view should be defined under `// MARK: - Body`.
+- **Private Subviews**: Use `@ViewBuilder` or private `var` declarations for subviews, keeping related subviews grouped and consistently named under appropriate `MARK` labels, like `// MARK: Header`, `// MARK: Buttons`, etc. Use `// MARK:` rather than `// MARK: -` for anything inside the actual view.
+
+### 3. Use of `@ViewBuilder`
+
+- For complex or reusable subviews, define them using `@ViewBuilder` to enhance readability and promote modularity.
+- Name these builder methods descriptively, such as `header`, `footer`, `actionButton`, to clarify their role within the view.
+
+### 4. Order of Modifiers
+
+When applying modifiers in SwiftUI, use a logical order for better readability and maintainability:
+1. **Basic View Modifiers**: `frame`, `padding`, `background`.
+2. **Content Modifiers**: `font`, `foregroundColor`, `multilineTextAlignment`.
+3. **Layout Modifiers**: `alignment`, `padding`, `frame`.
+4. **Style Modifiers**: `background`, `cornerRadius`, `shadow`.
+5. **State/Behavior Modifiers**: `onTapGesture`, `onAppear`, `animation`.
+6. **Accessibility Modifiers**: `accessibilityLabel`, `accessibilityHint`.
+7. **Environment Modifiers**: `environmentObject`, `environment`.
+
+### 5. Avoid Overloading the `body` Property
+
+Avoid packing too much code into the main `body` property of your view. Break down subviews into smaller private views or `@ViewBuilder` functions to keep the `body` clean and focused.
+
+### 6. Use of Previews
+
+Ensure that each view has a SwiftUI preview for testing and visualizing the UI. Use sample data or view models to provide meaningful content for the preview.
+
+### Skeleton Structure for SwiftUI Views
+
 ```swift
-Text("Hello, World!")
-    .frame(width: 64)                   // Basic view modifier
-    .font(.headline)                    // Content modifier
-    .foregroundColor(.primary)          // Content modifier
-    .padding()                          // Layout modifier
-    .background(Color.blue)             // Style modifier
-    .cornerRadius(10)                   // Style modifier
-    .shadow(radius: 5)                  // Style modifier
-    .onTapGesture {                     // State/Behavior modifier
-        print("Tapped!")
+import SwiftUI
+
+// MARK: - ExampleView
+
+struct ExampleView: View {
+    // MARK: Properties
+    
+    @Bindable var viewModel: ExampleViewModel
+
+    // MARK: Body
+
+    var body: some View {
+        VStack {
+            header
+            itemsList
+            actionButton
+        }
+        .padding()
+        .navigationTitle("Example View")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                backButton
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                settingsButton
+            }
+        }
     }
-    .accessibilityLabel("Greeting")     // Accessibility modifier
-    .environment(\.locale, .current)    // Environment modifier
-```
+
+    // MARK: Header
+
+    @ViewBuilder
+    private var header: some View {
+        HStack {
+            Text("Welcome, \(viewModel.userName)")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+            Spacer()
+        }
+        .padding(.vertical)
+    }
+
+    // MARK: Items List
+
+    @ViewBuilder
+    private var itemsList: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                ForEach(viewModel.items, id: \.id) { item in
+                    itemRow(for: item)
+                }
+            }
+        }
+    }
+
+    // MARK: Action Button
+
+    @ViewBuilder
+    private var actionButton: some View {
+        Button(action: viewModel.didTapSubmit) {
+            Text("Submit")
+                .font(.headline)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+        }
+    }
+
+    // MARK: Item Row
+
+    @ViewBuilder
+    private func itemRow(for item: Item) -> some View {
+        HStack {
+            Text(item.name)
+                .font(.headline)
+            Spacer()
+            Text(item.value)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+
+    // MARK: Navigation Buttons
+
+    private var backButton: some View {
+        Button(action: viewModel.didTapBack) {
+            Image(systemName: "arrow.left")
+        }
+    }
+
+    private var settingsButton: some View {
+        Button(action: viewModel.didTapSettings) {
+            Image(systemName: "gearshape.fill")
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    static var previews: some View {
+        ExampleView(viewModel: ExampleViewModel())
+    }
+}

@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+// MARK: - InfoBox
+
 struct InfoBox: View {
+    // MARK: Properties
+    
     var text: String
+    
+    // MARK: Body
     
     var body: some View {
         Card(backgroundColor: Color(.tertiarySystemFill)) {

@@ -11,7 +11,11 @@ import SwiftUI
 
 extension HomeView {
     struct ReviewRemindersWidget: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: HomeViewModel
+        
+        // MARK: Body
         
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewRemindersList) {
@@ -28,40 +32,50 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reviewReminders.isEmpty {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ContentUnavailableView(
-                                "No Review Reminders",
-                                systemImage: "bell.badge.slash.fill",
-                                description: Text("Tap the **+** button to create a review reminder.")
-                            )
-                        }
+                        ContentUnavailableView(
+                            "No Review Reminders",
+                            systemImage: "bell.badge.slash.fill",
+                            description: Text("Tap the **+** button to create a review reminder.")
+                        )
                     } else {
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            VStack(alignment: .leading, spacing: 16) {
-                                ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
-                                    ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
-                                        viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
-                                    }
-                                    if viewModel.recentReviewReminders.last != reviewReminder {
-                                        Divider()
-                                    }
-                                }
-                            }
-                        }
+                        recentReviewRemindersSummary
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 } footer: {
-                    Button {
-                        viewModel.presentSheet(.createReviewReminderSheet(nil))
-                    } label: {
-                        IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
-                            .font(.subheadline.weight(.semibold))
-                    }
+                    createReviewReminderButton
                 }
             }
             .foregroundStyle(.primary)
+        }
+        
+        // MARK: Recent Review Reminders Summary
+        
+        private var recentReviewRemindersSummary: some View {
+            Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
+                        ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
+                            viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
+                        }
+                        if viewModel.recentReviewReminders.last != reviewReminder {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+        
+        // MARK: Create Review Reminder Button
+        
+        private var createReviewReminderButton: some View {
+            Button {
+                viewModel.presentSheet(.createReviewReminderSheet(nil))
+            } label: {
+                IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
+                    .font(.subheadline.weight(.semibold))
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - ReviewRemindersListView
 
 struct ReviewRemindersListView: View {
+    // MARK: Properties
+    
     @Bindable var viewModel: HomeViewModel
     
     // MARK: Body
@@ -20,16 +22,14 @@ struct ReviewRemindersListView: View {
                 reviewRemindersEmptyState
                     .frame(maxHeight: .infinity, alignment: .center)
             } else {
-                ScrollView {
-                    VStack(spacing: 16) {
+                RoundedList {
+                    Section {
                         ForEach(viewModel.reviewReminders) { reviewReminder in
                             ReviewReminderCell(reviewReminder: reviewReminder) {
                                 viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
                 }
             }
         }

@@ -7,13 +7,19 @@
 
 import SwiftUI
 
+// MARK: - PrimaryButton
+
 struct PrimaryButton: View {
+    // MARK: Properties
+    
     @Environment(\.isEnabled) private var isEnabled: Bool
     
     var title: String
     var icon: String? = nil
     var color: Color = Color("BrandPrimary")
     var action: () -> Void
+    
+    // MARK: Body
     
     var body: some View {
         Button {

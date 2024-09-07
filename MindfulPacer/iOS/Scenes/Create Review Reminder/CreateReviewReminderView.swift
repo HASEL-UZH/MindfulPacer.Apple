@@ -40,12 +40,14 @@ enum CreateReviewReminderAlert: Identifiable {
 // MARK: - CreateReviewReminderView
 
 struct CreateReviewReminderView: View {
+    // MARK: Properties
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     var reviewReminder: ReviewReminder?
-
+    
     // MARK: Body
     
     var body: some View {
@@ -62,59 +64,20 @@ struct CreateReviewReminderView: View {
                 }
             }
             .toolbar {
-                if viewModel.mode == .edit {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Save") {
-                            viewModel.saveReviewReminder(reviewReminder)
-                        }
-                        .fontWeight(.semibold)
-                        .disabled(viewModel.isSaveButtonDisabled)
-                    }
-                }
+                editModeToolbar
             }
             .onViewFirstAppear {
                 viewModel.configureMode(with: reviewReminder)
             }
+            .navigationBarTitleDisplayMode(.large)
             .alert(item: $viewModel.activeAlert) { alert in
-                switch alert {
-                case .deleteConfirmation:
-                    reviewReminderDeletionConfirmationAlert
-                case .unableToSaveReviewReminder:
-                    unableToSaveReviewReminderAlert
-                case .unableToSendTestNotification:
-                    unableToSendTestNotificationAlert
-                }
+                alertContent(for: alert)
             }
             .sheet(item: $viewModel.activeSheet) { sheet in
-                switch sheet {
-                case .reviewReminderTypeInfo:
-                    reviewReminderTypeInfoSheet
-                case .heartRateThresholdInfo:
-                    thresholdInfoSheet
-                case .intervalInfo:
-                    intervalInfoSheet
-                }
+                sheetContent(for: sheet)
             }
-            .navigationBarTitleDisplayMode(.large)
             .navigationDestination(for: CreateReviewReminderNavigationDestination.self) { destination in
-                switch destination {
-                case .measurementType:
-                    MeasurementTypeView(viewModel: viewModel)
-                case .reviewReminderType:
-                    ReviewReminderTypeView(viewModel: viewModel)
-                case .threshold:
-                    ThresholdView(viewModel: viewModel)
-                case .interval:
-                    IntervalView(viewModel: viewModel)
-                case .summary:
-                    SummaryView(viewModel: viewModel)
-                }
+                navigationDestination(for: destination)
             }
             .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
                 if shouldDismiss {
@@ -126,6 +89,72 @@ struct CreateReviewReminderView: View {
             if viewModel.mode == .create {
                 if viewModel.showActionButton {
                     actionButton
+                }
+            }
+        }
+    }
+    
+    // MARK: Alerts
+    
+    private func alertContent(for alert: CreateReviewReminderAlert) -> Alert {
+        switch alert {
+        case .deleteConfirmation:
+            return reviewReminderDeletionConfirmationAlert
+        case .unableToSaveReviewReminder:
+            return unableToSaveReviewReminderAlert
+        case .unableToSendTestNotification:
+            return unableToSendTestNotificationAlert
+        }
+    }
+    
+    // MARK: Sheets
+    
+    @ViewBuilder
+    private func sheetContent(for sheet: CreateReviewReminderSheet) -> some View {
+        switch sheet {
+        case .reviewReminderTypeInfo:
+            reviewReminderTypeInfoSheet
+        case .heartRateThresholdInfo:
+            thresholdInfoSheet
+        case .intervalInfo:
+            intervalInfoSheet
+        }
+    }
+    
+    // MARK: Navigation Destination
+    
+    @ViewBuilder
+    private func navigationDestination(for destination: CreateReviewReminderNavigationDestination) -> some View {
+        switch destination {
+        case .measurementType:
+            MeasurementTypeView(viewModel: viewModel)
+        case .reviewReminderType:
+            ReviewReminderTypeView(viewModel: viewModel)
+        case .threshold:
+            ThresholdView(viewModel: viewModel)
+        case .interval:
+            IntervalView(viewModel: viewModel)
+        case .summary:
+            SummaryView(viewModel: viewModel)
+        }
+    }
+    
+    // MARK: Edit Mode Toolbar
+    
+    private var editModeToolbar: some ToolbarContent {
+        Group {
+            if viewModel.mode == .edit {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Save") {
+                        viewModel.saveReviewReminder(reviewReminder)
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(viewModel.isSaveButtonDisabled)
                 }
             }
         }
@@ -160,7 +189,6 @@ struct CreateReviewReminderView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
                 
-                // TODO: Change to literal using . notation
                 Image("Create Review Reminder")
                     .resizable()
                     .scaledToFit()
@@ -173,7 +201,7 @@ struct CreateReviewReminderView: View {
         }
         .padding()
     }
-    
+ 
     // MARK: Review Reminder Type Info Sheet
     
     private var reviewReminderTypeInfoSheet: some View {
@@ -207,9 +235,9 @@ struct CreateReviewReminderView: View {
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
                     Text("The current step count, as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.")
-
+                    
                 }
-                            
+                
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {

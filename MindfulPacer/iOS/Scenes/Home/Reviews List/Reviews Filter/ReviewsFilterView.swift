@@ -10,44 +10,24 @@ import SwiftUI
 // MARK: - ReviewsFilterView
 
 struct ReviewsFilterView: View {
+    // MARK: Properties
+    
     @Bindable var viewModel: HomeViewModel
-
+    
     // MARK: Body
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    categoriesLink
-                    moodLink
-                    triggerCrash
-                    
-                    Card {
-                        Picker(selection: $viewModel.reviewSorting) {
-                            Label("Date Ascending", systemImage: "arrow.up")
-                                .tag(HomeViewModel.ReviewSorting.dateAscending)
-                            
-                            Label("Date Descending", systemImage: "arrow.down")
-                                .tag(HomeViewModel.ReviewSorting.dateDescending)
-                        } label: {
-                            IconLabel(
-                                icon: "calendar",
-                                title: "Date",
-                                labelColor: Color("BrandPrimary"),
-                                background: true
-                            )
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.subheadline.weight(.semibold))
-                            .lineLimit(1)
-                            .layoutPriority(1)
-                        }
-                        .pickerStyle(.menu)
-                    }
+            RoundedList {
+                Section {
+                    categories
+                    subcategories
+                    moods
+                    triggeredCrashToggle
                 }
-                .padding(.horizontal)
+                
+                dateSorting
             }
-            .cornerRadius(30)
-            .background(Color(.systemGroupedBackground))
             .navigationTitle("Filter Reviews")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -67,87 +47,91 @@ struct ReviewsFilterView: View {
         .fontWeight(.semibold)
     }
     
-    // MARK: - Categories Link
+    // MARK: Categories
     
-    private var categoriesLink: some View {
+    private var categories: some View {
         NavigationLink {
             categoriesFilterView
         } label: {
-            Card {
-                HStack {
-                    Label {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Categories")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.accent)
-                            
-                            if !viewModel.reviewFilter.selectedCategories.isEmpty {
-                                Text(viewModel.selectedFilterCategoriesSummary)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                            }
-                        }
-                    } icon: {
-                        Icon(name: "rectangle.grid.2x2.fill", background: true)
-                        
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    HStack(spacing: 4) {
-                        if !viewModel.reviewFilter.selectedCategories.isEmpty {
-                            Text("\(viewModel.reviewFilter.selectedCategories.count)")
-                                .foregroundStyle(Color(.systemGray2))
-                        }
-                        
-                        Icon(name: "chevron.right", color: Color(.systemGray2))
-                            .font(.subheadline.weight(.semibold))
-                    }
-                }
-            }
+            filterItem(
+                label: "Categories",
+                icon: "rectangle.grid.2x2.fill",
+                selectedCount: viewModel.reviewFilter.selectedCategories.count,
+                selectedSummary: viewModel.selectedFilterCategoriesSummary
+            )
         }
-        .foregroundStyle(.primary)
     }
     
-    // MARK: - Mood Link
+    // MARK: Subcategories
     
-    private var moodLink: some View {
+    private var subcategories: some View {
+        NavigationLink {
+            subcategoriesFilterView
+        } label: {
+            filterItem(
+                label: "Subategories",
+                icon: "rectangle.grid.3x3.fill",
+                selectedCount: viewModel.reviewFilter.selectedSubcategories.count,
+                selectedSummary: viewModel.selectedFilterSubcategoriesSummary
+            )
+        }
+    }
+    
+    // MARK: Moods
+    
+    private var moods: some View {
         NavigationLink {
             moodFilterView
         } label: {
-            Card {
-                HStack {
-                    Label {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Mood")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.accent)
-                            
-                            if !viewModel.reviewFilter.selectedMoods.isEmpty {
-                                Text(viewModel.selectedFilterMoodsSummary)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                            }
-                        }
-                    } icon: {
-                        Icon(name: "face.smiling.fill", background: true)
-                        
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            filterItem(
+                label: "Mood",
+                icon: "face.smiling.fill",
+                selectedCount: viewModel.reviewFilter.selectedMoods.count,
+                selectedSummary: viewModel.selectedFilterMoodsSummary
+            )
+        }
+    }
+    
+    // MARK: Filter Item
+    
+    @ViewBuilder
+    private func filterItem(
+        label: String,
+        icon: String,
+        selectedCount: Int,
+        selectedSummary: String
+    ) -> some View {
+        HStack {
+            Label {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(label)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.accent)
                     
-                    HStack(spacing: 4) {
-                        if !viewModel.reviewFilter.selectedMoods.isEmpty {
-                            Text("\(viewModel.reviewFilter.selectedMoods.count)")
-                                .foregroundStyle(Color(.systemGray2))
-                        }
-                        
-                        Icon(name: "chevron.right", color: Color(.systemGray2))
-                            .font(.subheadline.weight(.semibold))
+                    if !selectedSummary.isEmpty {
+                        Text(selectedSummary)
+                            .font(.footnote)
+                            .foregroundStyle(Color.secondary)
+                            .lineLimit(1)
                     }
                 }
+            } icon: {
+                Icon(name: icon, background: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            HStack(spacing: 4) {
+                if selectedCount > 0 {
+                    Text("\(selectedCount)")
+                        .foregroundStyle(Color(.systemGray2))
+                }
+                
+                Icon(name: "chevron.right", color: Color(.systemGray2))
+                    .font(.subheadline.weight(.semibold))
             }
         }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
         .foregroundStyle(.primary)
     }
     
@@ -183,10 +167,42 @@ struct ReviewsFilterView: View {
             .padding(.horizontal)
         }
         .navigationTitle("Categories")
-        .background {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+    }
+    
+    // MARK: Subcategories Filter View
+    
+    private var subcategoriesFilterView: some View {
+        ScrollView {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(spacing: 16), count: 3),
+                spacing: 16
+            ) {
+                ForEach(viewModel.subcategories) { subcategory in
+                    SelectableButton(
+                        shape: .roundedRectangle(cornerRadius: 16),
+                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subcategory),
+                        action: {
+                            viewModel.toggleFilterSubcategory(subcategory)
+                        }) {
+                            VStack(spacing: 16) {
+                                Image(systemName: subcategory.icon)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .symbolVariant(.fill)
+                                    .frame(width: 24, height: 24)
+                                Text(subcategory.name)
+                                    .font(.footnote)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                            }
+                        }
+                }
+            }
+            .padding(.horizontal)
         }
+        .navigationTitle("Subcategories")
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
     
     // MARK: Mood Filter View
@@ -200,7 +216,7 @@ struct ReviewsFilterView: View {
                 ForEach(DefaultMoodData.moods, id: \.id) { mood in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 12),
-                        isSelected: viewModel.reviewFilter.selectedMoods.contains(mood) ,
+                        isSelected: viewModel.reviewFilter.selectedMoods.contains(mood),
                         action: {
                             viewModel.toggleFilterMood(mood)
                         }) {
@@ -215,36 +231,66 @@ struct ReviewsFilterView: View {
             .padding(.horizontal)
         }
         .navigationTitle("Mood")
-        .background {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
     
-    // MARK: Trigger Crash
+    // MARK: Triggered Crash Toggle
     
-    private var triggerCrash: some View {
-        Card {
-            Toggle(isOn: $viewModel.reviewFilter.triggeredCrash) {
+    private var triggeredCrashToggle: some View {
+        Toggle(isOn: $viewModel.reviewFilter.triggeredCrash) {
+            IconLabel(
+                icon: "exclamationmark.triangle.fill",
+                title: "Triggered Crash",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .layoutPriority(1)
+        }
+        .tint(.accentColor)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+    }
+    
+    // MARK: Date Sorting
+    
+    // TODO: This isn't working, when you change to ascending, nothing happens
+    private var dateSorting: some View {
+        Section {
+            HStack {
                 IconLabel(
-                    icon: "bandage.fill",
-                    title: "Triggered Crash",
+                    icon: "arrow.up.arrow.down",
+                    title: "Date",
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
+                
+                Spacer(minLength: 32)
+                
+                Picker(String(), selection: $viewModel.reviewSorting) {
+                    Label("Descending", systemImage: "arrow.down")
+                        .tag(HomeViewModel.ReviewSorting.dateDescending)
+                    Label("Ascending", systemImage: "arrow.up")
+                        .tag(HomeViewModel.ReviewSorting.dateAscending)
+                }
+                .pickerStyle(.segmented)
             }
-            .tint(.accentColor)
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+        } header: {
+            Text("Sorting")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
         }
     }
 }
 
 // MARK: - Preview
 
-#Preview {    
+#Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     
     ReviewsFilterView(viewModel: viewModel)

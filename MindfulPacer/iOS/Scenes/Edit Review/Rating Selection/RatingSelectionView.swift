@@ -11,8 +11,12 @@ import SwiftUI
 
 extension EditReviewView {
     struct RatingSelectionView: View {
+        // MARK: Properties
+        
         let rating: ReviewMetricRating
         let onRatingSelected: (Int?) -> Void
+        
+        // MARK: Body
         
         var body: some View {
             NavigationStack {

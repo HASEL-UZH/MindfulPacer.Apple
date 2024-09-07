@@ -11,6 +11,8 @@ import SwiftUI
 
 extension HomeView {
     struct ReviewsListView: View {
+        // MARK: - Properties
+        
         @Bindable var viewModel: HomeViewModel
         
         // MARK: Body
@@ -33,31 +35,18 @@ extension HomeView {
                             .frame(maxHeight: .infinity, alignment: .center)
                     }
                 } else {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            ForEach(viewModel.filteredReviews) { review in
-                                ReviewCell(review: review) {
-                                    viewModel.presentSheet(.editReviewSheet(review))
-                                }
+                    RoundedList {
+                        ForEach(viewModel.filteredReviews) { review in
+                            ReviewCell(review: review) {
+                                viewModel.presentSheet(.editReviewSheet(review))
                             }
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal)
                     }
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .listStyle(.grouped)
             .navigationTitle("Reviews")
             .toolbar {
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    Button {
-//                        viewModel.presentSheet(.reviewsFilterView)
-//                    } label: {
-//                        Label("Filter Reviews", systemImage: "line.3.horizontal.decrease")
-//                    }
-//                }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         viewModel.presentSheet(.editReviewSheet(nil))
@@ -79,13 +68,17 @@ extension HomeView {
             Button {
                 viewModel.presentSheet(.reviewsFilterView)
             } label: {
-                Image(systemName: "line.3.horizontal.decrease")
-                    .fontWeight(.semibold)
-                    .padding()
+                IconLabel(
+                    icon: "line.3.horizontal.decrease",
+                    title: viewModel.filterButtonTitle,
+                    labelColor: Color("BrandPrimary")
+                )
+                    .font(.footnote.weight(.semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
                     .background {
-                        Circle()
-                            .foregroundStyle(Color.accent.opacity(0.1))
-                            .shadow(color: Color.primary.opacity(0.1), radius: 10)
+                        Capsule()
+                            .foregroundStyle(Color("BrandPrimary").opacity(0.1))
                     }
             }
             .padding([.bottom, .trailing])
@@ -133,7 +126,7 @@ extension HomeView {
     }
 }
 
-// TODO: REFACTOR
+// MARK: Review Filter Sorting Summary
 
 extension HomeView.ReviewsListView {
     var reviewFilterSortingSummary: some View {

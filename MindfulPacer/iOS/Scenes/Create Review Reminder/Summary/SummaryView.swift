@@ -11,6 +11,8 @@ import SwiftUI
 
 extension CreateReviewReminderView {
     struct SummaryView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
         
         // MARK: Body
@@ -43,7 +45,8 @@ extension CreateReviewReminderView {
         
         // MARK: Summary Widget
         
-        @ViewBuilder private func summaryWidget<Content: View>(
+        @ViewBuilder
+        private func summaryWidget<Content: View>(
             icon: String,
             title: String,
             destination: CreateReviewReminderNavigationDestination,
@@ -196,7 +199,7 @@ extension CreateReviewReminderView {
             .disabled(viewModel.isActionButtonDisabled)
         }
         
-        // MARK: - Delete Button
+        // MARK: Delete Button
         
         private var deleteButton: some View {
             PrimaryButton(

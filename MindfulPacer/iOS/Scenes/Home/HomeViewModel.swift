@@ -35,6 +35,9 @@ class HomeViewModel {
     }
     
     var categories: [Category] = []
+    var subcategories: [Subcategory] {
+        categories.flatMap { $0.subcategories ?? [] }
+    }
     
     var reviews: [Review] = []
     var filteredReviews: [Review] = []
@@ -49,8 +52,16 @@ class HomeViewModel {
     
     var currentSteps: (stepCount: Double, timestamp: Date)? = nil
     
+    var filterButtonTitle: String {
+        reviewFilter.activeFilterCount == 0 ? "Filters" : "Filters (\(reviewFilter.activeFilterCount))"
+    }
+    
     var selectedFilterCategoriesSummary: String {
         reviewFilter.selectedCategories.map { $0.name }.joined(separator: ", ")
+    }
+    
+    var selectedFilterSubcategoriesSummary: String {
+        reviewFilter.selectedSubcategories.map { $0.name }.joined(separator: ", ")
     }
     
     var selectedFilterMoodsSummary: String {
@@ -109,6 +120,14 @@ class HomeViewModel {
             reviewFilter.selectedCategories.removeAll { $0 == category }
         } else {
             reviewFilter.selectedCategories.append(category)
+        }
+    }
+    
+    func toggleFilterSubcategory(_ subcategory: Subcategory) {
+        if reviewFilter.selectedSubcategories.contains(subcategory) {
+            reviewFilter.selectedSubcategories.removeAll { $0 == subcategory }
+        } else {
+            reviewFilter.selectedSubcategories.append(subcategory)
         }
     }
     
