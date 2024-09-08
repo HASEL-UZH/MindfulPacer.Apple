@@ -123,70 +123,99 @@ extension HomeView {
                 }
             }
         }
-    }
-}
-
-// MARK: Review Filter Sorting Summary
-
-extension HomeView.ReviewsListView {
-    var reviewFilterSortingSummary: some View {
-        HStack(spacing: 8) {
+        
+        // MARK: Review Filter Sorting Summary
+        
+        private var reviewFilterSortingSummary: some View {
+            HStack(spacing: 8) {
+                categoryFilterSummary
+                subcategoryFilterSummary
+                moodFilterSummary
+                crashFilterSummary
+            }
+        }
+        
+        // MARK: Category Filter Summary
+        
+        private var categoryFilterSummary: some View {
             ForEach(viewModel.reviewFilter.selectedCategories) { category in
-                HStack(spacing: 4) {
-                    Icon(name: category.icon, color: .secondary)
-                    Text(category.name)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Button {
-                        viewModel.toggleFilterCategory(category)
-                    } label: {
-                        Icon(name: "xmark.circle", renderingMode: .hierarchical)
-                    }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    Capsule()
-                        .foregroundStyle(Color(.systemGray5))
-                }
+                filterItem(
+                    icon: category.icon,
+                    label: category.name,
+                    removeAction: { viewModel.toggleFilterCategory(category) }
+                )
             }
-            
+        }
+        
+        // MARK: Subcategory Filter Summary
+        
+        private var subcategoryFilterSummary: some View {
+            ForEach(viewModel.reviewFilter.selectedSubcategories) { subcategory in
+                filterItem(
+                    icon: subcategory.icon,
+                    label: subcategory.name,
+                    removeAction: { viewModel.toggleFilterSubcategory(subcategory) }
+                )
+            }
+        }
+        
+        // MARK: Mood Filter Summary
+        
+        private var moodFilterSummary: some View {
             ForEach(viewModel.reviewFilter.selectedMoods, id: \.description) { mood in
-                HStack(spacing: 4) {
-                    Text(mood.emoji)
-                        .frame(width: 24, height: 24)
-                    Button {
-                        viewModel.toggleFilterMood(mood)
-                    } label: {
-                        Icon(name: "xmark.circle", renderingMode: .hierarchical)
-                    }
+                filterItem(
+                    emoji: mood.emoji,
+                    removeAction: { viewModel.toggleFilterMood(mood) }
+                )
+            }
+        }
+        
+        // MARK: Crash Filter Summary
+        
+        @ViewBuilder
+        private var crashFilterSummary: some View {
+            if viewModel.reviewFilter.triggeredCrash {
+                filterItem(
+                    icon: "pill",
+                    label: "Triggered Crash",
+                    removeAction: { viewModel.toggleTriggeredCrash() }
+                )
+            }
+        }
+        
+        // MARK: Filter Item
+        
+        @ViewBuilder
+        private func filterItem(
+            icon: String? = nil,
+            emoji: String? = nil,
+            label: String? = nil,
+            removeAction: @escaping () -> Void
+        ) -> some View {
+            HStack(spacing: 4) {
+                if let icon = icon {
+                    Icon(name: icon)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    Capsule()
-                        .foregroundStyle(Color(.systemGray5))
+                if let emoji = emoji {
+                    Text(emoji)
+                        .frame(width: 24, height: 24)
+                }
+                if let label = label {
+                    Text(label)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.accent)
+                }
+                Button {
+                    removeAction()
+                } label: {
+                    Icon(name: "xmark.circle", renderingMode: .hierarchical)
                 }
             }
-            
-            if viewModel.reviewFilter.triggeredCrash {
-                HStack(spacing: 4) {
-                    Icon(name: "pill", color: .secondary)
-                    Text("Triggered Crash")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Button {
-                        viewModel.toggleTriggeredCrash()
-                    } label: {
-                        Icon(name: "xmark.circle", renderingMode: .hierarchical)
-                    }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    Capsule()
-                        .foregroundStyle(Color(.systemGray5))
-                }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background {
+                Capsule()
+                    .foregroundStyle(Color("BrandPrimary").opacity(0.1))
             }
         }
     }

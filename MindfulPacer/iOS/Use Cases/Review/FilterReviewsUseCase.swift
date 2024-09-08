@@ -10,13 +10,13 @@ import Foundation
 import Foundation
 
 protocol FilterReviewsUseCase {
-    func execute(reviews: [Review], filters: HomeViewModel.ReviewFilter, sorting: HomeViewModel.ReviewSorting) -> [Review]
+    func execute(reviews: [Review], filters: ReviewFilter, sorting: ReviewSorting) -> [Review]
 }
 
 // MARK: - Use Case Implementation
 
 class DefaultFilterReviewsUseCase: FilterReviewsUseCase {
-    func execute(reviews: [Review], filters: HomeViewModel.ReviewFilter, sorting: HomeViewModel.ReviewSorting) -> [Review] {
+    func execute(reviews: [Review], filters: ReviewFilter, sorting: ReviewSorting) -> [Review] {
         
         // Apply filtering with safety checks for optional properties
         let filteredReviews = reviews.filter { review in

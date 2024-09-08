@@ -5,6 +5,7 @@
 //  Created by Grigor Dochev on 03.09.2024.
 //
 
+import Combine
 import SwiftUI
 
 // MARK: - ReviewsFilterView
@@ -12,7 +13,9 @@ import SwiftUI
 struct ReviewsFilterView: View {
     // MARK: Properties
     
-    @Bindable var viewModel: HomeViewModel
+    @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
+    
+    let filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
     
     // MARK: Body
     
@@ -23,10 +26,11 @@ struct ReviewsFilterView: View {
                     categories
                     subcategories
                     moods
-                    triggeredCrashToggle
+                    triggeredCrash
                 }
                 
                 dateSorting
+                
             }
             .navigationTitle("Filter Reviews")
             .navigationBarTitleDisplayMode(.inline)
@@ -34,6 +38,10 @@ struct ReviewsFilterView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     resetButton
                 }
+            }
+            .onViewFirstAppear {
+                viewModel.onViewFirstAppear()
+                viewModel.setPublisher(filterAndSortingPublisher)
             }
         }
     }
@@ -234,10 +242,10 @@ struct ReviewsFilterView: View {
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
     
-    // MARK: Triggered Crash Toggle
+    // MARK: Triggered Crash
     
-    private var triggeredCrashToggle: some View {
-        Toggle(isOn: $viewModel.reviewFilter.triggeredCrash) {
+    private var triggeredCrash: some View {
+        Toggle(isOn: viewModel.triggeredCrashBinding) {
             IconLabel(
                 icon: "exclamationmark.triangle.fill",
                 title: "Triggered Crash",
@@ -256,7 +264,6 @@ struct ReviewsFilterView: View {
     
     // MARK: Date Sorting
     
-    // TODO: This isn't working, when you change to ascending, nothing happens
     private var dateSorting: some View {
         Section {
             HStack {
@@ -270,11 +277,11 @@ struct ReviewsFilterView: View {
                 
                 Spacer(minLength: 32)
                 
-                Picker(String(), selection: $viewModel.reviewSorting) {
+                Picker(String(), selection: viewModel.reviewSortingBinding) {
                     Label("Descending", systemImage: "arrow.down")
-                        .tag(HomeViewModel.ReviewSorting.dateDescending)
+                        .tag(ReviewSorting.dateDescending)
                     Label("Ascending", systemImage: "arrow.up")
-                        .tag(HomeViewModel.ReviewSorting.dateAscending)
+                        .tag(ReviewSorting.dateAscending)
                 }
                 .pickerStyle(.segmented)
             }
@@ -291,8 +298,8 @@ struct ReviewsFilterView: View {
 // MARK: - Preview
 
 #Preview {
-    let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
+    let viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
     
-    ReviewsFilterView(viewModel: viewModel)
+    ReviewsFilterView(filterAndSortingPublisher: nil)
         .tint(Color("BrandPrimary"))
 }

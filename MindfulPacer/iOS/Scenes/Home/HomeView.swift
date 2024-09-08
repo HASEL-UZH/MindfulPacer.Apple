@@ -104,10 +104,10 @@ struct HomeView: View {
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(reviewReminder.isNil ? .hidden : .visible)
         case .reviewsFilterView:
-            ReviewsFilterView(viewModel: viewModel)
-                .presentationDetents([.medium, .large])
-                .presentationCornerRadius(16)
-                .presentationDragIndicator(.visible)
+            ReviewsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
+            .presentationDetents([.medium, .large])
+            .presentationCornerRadius(16)
+            .presentationDragIndicator(.visible)
         }
     }
 }
