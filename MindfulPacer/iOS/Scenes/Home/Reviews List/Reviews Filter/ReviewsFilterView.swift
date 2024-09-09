@@ -22,6 +22,8 @@ struct ReviewsFilterView: View {
     var body: some View {
         NavigationStack {
             RoundedList {
+                dateRange
+                
                 Section {
                     categories
                     subcategories
@@ -55,6 +57,45 @@ struct ReviewsFilterView: View {
         .fontWeight(.semibold)
     }
     
+    // MARK: Date Range
+
+    private var dateRange: some View {
+        Section {
+            VStack(spacing: 16) {
+                IconLabel(
+                    icon: "calendar",
+                    title: "Date",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
+                
+                Group {
+                    DatePicker(
+                        "From",
+                        selection: viewModel.fromDateBinding,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.compact)
+                    
+                    
+                    DatePicker(
+                        "To",
+                        selection: viewModel.toDateBinding,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.compact)
+                }
+                .font(.subheadline.weight(.semibold))
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+        }
+    }
+
     // MARK: Categories
     
     private var categories: some View {

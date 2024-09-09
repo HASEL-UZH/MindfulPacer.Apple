@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 protocol FilterReviewsUseCase {
     func execute(reviews: [Review], filters: ReviewFilter, sorting: ReviewSorting) -> [Review]
 }
@@ -18,10 +16,19 @@ protocol FilterReviewsUseCase {
 class DefaultFilterReviewsUseCase: FilterReviewsUseCase {
     func execute(reviews: [Review], filters: ReviewFilter, sorting: ReviewSorting) -> [Review] {
         
+        let adjustedToDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: filters.toDate) ?? filters.toDate
+
         // Apply filtering with safety checks for optional properties
         let filteredReviews = reviews.filter { review in
             
             var matches = false
+            
+            // Filter by Date Range (if fromDate and toDate are provided)
+            if review.date >= filters.fromDate && review.date <= adjustedToDate {
+                matches = true
+            } else {
+                return false // If review is outside the date range, exclude it
+            }
             
             // Filter by Category (match any category)
             if !filters.selectedCategories.isEmpty {

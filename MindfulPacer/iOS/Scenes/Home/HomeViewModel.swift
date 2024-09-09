@@ -150,7 +150,7 @@ class HomeViewModel {
     }
     
     private func updateFilter(_ updateBlock: () -> Void) {
-        updateBlock()  // Perform the changes
+        updateBlock()
         filterAndSortingPublisher.send((reviewFilter, reviewSorting))
     }
     
