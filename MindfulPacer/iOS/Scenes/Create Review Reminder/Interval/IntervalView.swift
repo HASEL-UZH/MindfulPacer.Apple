@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
-import SwiftData
+
+// MARK: - IntervalView
 
 extension CreateReviewReminderView {
     struct IntervalView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {
@@ -18,29 +23,8 @@ extension CreateReviewReminderView {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 16) {
-                    ForEach(ReviewReminder.Interval.allCases, id: \.self) { interval in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedInterval == interval,
-                            action: {
-                                viewModel.toggleSelection(
-                                    interval,
-                                    selectedItem: &viewModel.selectedInterval
-                                )
-                            }) {
-                                HStack {
-                                    SFSymbolLabel(
-                                        icon: interval.icon,
-                                        title: interval.rawValue
-                                    )
-                                    Spacer()
-                                    if viewModel.selectedInterval == interval {
-                                        Image(systemName: "checkmark.circle.fill")
-                                    }
-                                }
-                            }
-                    }
-                    
+                    intervalSelectionList
+                    descriptionText
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -48,12 +32,57 @@ extension CreateReviewReminderView {
             .navigationTitle("Interval")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.intervalInfo)
-                    } label: {
-                        Image(systemName: "info.circle.fill")
-                    }
+                    infoButton
                 }
+            }
+        }
+
+        // MARK: Interval Selection List
+
+        @ViewBuilder
+        private var intervalSelectionList: some View {
+            ForEach(ReviewReminder.Interval.allCases, id: \.self) { interval in
+                SelectableButton(
+                    shape: .roundedRectangle(cornerRadius: 16),
+                    isSelected: viewModel.selectedInterval == interval,
+                    action: {
+                        viewModel.toggleSelection(
+                            interval,
+                            selectedItem: &viewModel.selectedInterval
+                        )
+                    }) {
+                        HStack {
+                            IconLabel(
+                                icon: interval.icon,
+                                title: interval.rawValue,
+                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+                            )
+                            Spacer()
+                            if viewModel.selectedInterval == interval {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
+                        }
+                    }
+            }
+        }
+        
+        // MARK: Description Text
+
+        private var descriptionText: some View {
+            Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+        }
+
+        // MARK: Info Button
+
+        private var infoButton: some View {
+            Button {
+                viewModel.presentSheet(.intervalInfo)
+            } label: {
+                Image(systemName: "info.circle.fill")
             }
         }
     }
@@ -62,7 +91,6 @@ extension CreateReviewReminderView {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
-import SwiftData
+
+// MARK: - ThresholdView
 
 extension CreateReviewReminderView {
     struct ThresholdView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {
@@ -18,25 +23,8 @@ extension CreateReviewReminderView {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 16) {
-                    HStack(alignment: .lastTextBaseline) {
-                        TextField("0", value: $viewModel.threshold, format: .number)
-                            .font(.largeTitle)
-                            .multilineTextAlignment(.trailing)
-                            .keyboardType(.numberPad)
-                        
-                        Text(viewModel.thresholdUnitText)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                    }
-                    
-                    Text("Set a threshold that triggers a reminder when reached for a specified interval.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    
+                    thresholdInput
+                    descriptionText
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -44,11 +32,7 @@ extension CreateReviewReminderView {
             .navigationTitle("Threshold")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.heartRateThresholdInfo)
-                    } label: {
-                        Image(systemName: "info.circle.fill")
-                    }
+                    infoButton
                 }
                 
                 ToolbarItem(placement: .keyboard) {
@@ -56,26 +40,63 @@ extension CreateReviewReminderView {
                 }
             }
         }
-    }
-}
-
-// MARK: - Hide Keyboard Button
-
-extension CreateReviewReminderView.ThresholdView {
-    private var hideKeyboardButton: some View {
-        Button {
-            hideKeyboard()
-        } label: {
-            Image(systemName: "keyboard.chevron.compact.down.fill")
+        
+        // MARK: Threshold Input
+        
+        private var thresholdInput: some View {
+            HStack(alignment: .lastTextBaseline) {
+                TextField("0", value: $viewModel.threshold, format: .number)
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(Color("BrandPrimary"))
+                    .multilineTextAlignment(.trailing)
+                    .keyboardType(.numberPad)
+                
+                Text(viewModel.thresholdUnitText)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .trailing)
+        
+        // MARK: Description Text
+        
+        private var descriptionText: some View {
+            Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+        }
+        
+        // MARK: Info Button
+        
+        private var infoButton: some View {
+            Button {
+                viewModel.presentSheet(.heartRateThresholdInfo)
+            } label: {
+                Image(systemName: "info.circle.fill")
+            }
+        }
+        
+        // MARK: Hide Keyboard Button
+        
+        private var hideKeyboardButton: some View {
+            Button {
+                hideKeyboard()
+            } label: {
+                Image(systemName: "keyboard.chevron.compact.down.fill")
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        }
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

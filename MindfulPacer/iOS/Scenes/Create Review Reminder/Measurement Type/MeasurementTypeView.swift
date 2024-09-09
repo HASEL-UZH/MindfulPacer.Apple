@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
-import SwiftData
+
+// MARK: - MeasurementTypeView
 
 extension CreateReviewReminderView {
     struct MeasurementTypeView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
+        
+        // MARK: Body
         
         var body: some View {
             ZStack {
@@ -18,38 +23,52 @@ extension CreateReviewReminderView {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 16) {
-                    ForEach(ReviewReminder.MeasurementType.allCases, id: \.self) { measurementType in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedMeasurementType == measurementType,
-                            action: {
-                                viewModel.toggleSelection(
-                                    measurementType,
-                                    selectedItem: &viewModel.selectedMeasurementType
-                                )
-                            }) {
-                                HStack {
-                                    SFSymbolLabel(
-                                        icon: measurementType.icon,
-                                        title: measurementType.rawValue
-                                    )
-                                    Spacer()
-                                    if viewModel.selectedMeasurementType == measurementType {
-                                        Image(systemName: "checkmark.circle.fill")
-                                    }
-                                }
-                            }
-                    }
-                    
-                    Text("Select for which measurement type you want to receive reminders to do a review.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    
+                    measurementTypeSelectionList
+                    descriptionText
                     Spacer()
                 }
                 .padding(.horizontal)
             }
             .navigationTitle("Measurement Type")
+        }
+        
+        // MARK: Measurement Type Selection List
+        
+        @ViewBuilder
+        private var measurementTypeSelectionList: some View {
+            ForEach(ReviewReminder.MeasurementType.allCases, id: \.self) { measurementType in
+                SelectableButton(
+                    shape: .roundedRectangle(cornerRadius: 16),
+                    isSelected: viewModel.selectedMeasurementType == measurementType,
+                    action: {
+                        viewModel.toggleSelection(
+                            measurementType,
+                            selectedItem: &viewModel.selectedMeasurementType
+                        )
+                    }) {
+                        HStack {
+                            IconLabel(
+                                icon: measurementType.icon,
+                                title: measurementType.rawValue,
+                                labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
+                            )
+                            Spacer()
+                            if viewModel.selectedMeasurementType == measurementType {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
+                        }
+                    }
+            }
+        }
+        
+        // MARK: Description Text
+        
+        private var descriptionText: some View {
+            Text("Select for which measurement type you want to receive reminders to do a review.")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
         }
     }
 }
@@ -57,7 +76,6 @@ extension CreateReviewReminderView {
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

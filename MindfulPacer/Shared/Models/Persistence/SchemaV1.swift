@@ -30,7 +30,6 @@ enum SchemaV1: VersionedSchema {
 // MARK: - Container
 
 extension ModelContainer {
-    
     /// Container used in production
     @MainActor
     static let prod: ModelContainer = {
@@ -45,97 +44,50 @@ extension ModelContainer {
         }
     }()
     
-    /// Container used to provide data for the Previews
+    /// Container used for previews
     @MainActor
     static let preview: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: schema, configurations: [modelConfiguration])
-        
-        let fetchDescriptor = FetchDescriptor<Category>()
         
         do {
-            let categoriesCount = try container.mainContext.fetch(fetchDescriptor).count
-            
-            if categoriesCount == 0 {
-                let categories: [Category] = [
-                    Category(name: "Movement", icon: "figure.run", subcategories: []),
-                    Category(name: "Household", icon: "house"),
-                    Category(name: "Self-Care", icon: "shower"),
-                    Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
-                    Category(name: "Alarms", icon: "alarm"),
-                    Category(name: "Others", icon: "puzzlepiece")
-                ]
-                
-                categories.forEach { container.mainContext.insert($0) }
-                try! container.mainContext.save()
-            }
+            //            DefaultCategoryData.initializeData()
+//
+//            for category in DefaultCategoryData.categories {
+//                preview.mainContext.insert(category)
+//                
+//                if let subcategories = category.subcategories {
+//                    for subcategory in subcategories {
+//                        preview.mainContext.insert(subcategory)
+//                    }
+//                }
+//            }
+//            
+//            do {
+//                try preview.mainContext.save()
+//            } catch {
+//                print("Error saving default categories: \(error)")
+//            }
+//            
+//            let review = Review(
+//                date: .now,
+////                category: DefaultCategoryData.categories[0],
+////                subcategory: DefaultCategoryData.categories[0].subcategories![0],
+//                mood: "😭",
+//                perceivedEnergyLevelRating: 2,
+//                headachesRating: 1,
+//                shortnessOfBreatheRating: 1,
+//                feverRating: 0,
+//                painsAndNeedlesRating: 3,
+//                muscleAchesRating: 2,
+//                additionalInformation: "This was super tiring!"
+//            )
+//            
+//            preview.mainContext.insert(review)
+                        
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            
+            fatalError("DEBUG: Failed to initialize ModelContainer.")
         }
-        
-        return container
     }()
-    
-    @MainActor
-    static let testing: ModelContainer = {
-        let schema = Schema(CurrentScheme.models)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: schema, configurations: [modelConfiguration])
-        
-        let fetchDescriptor = FetchDescriptor<Category>()
-        
-        do {
-            let categoriesCount = try container.mainContext.fetch(fetchDescriptor).count
-            
-            if categoriesCount == 0 {
-                let categories: [Category] = [
-                    Category(name: "Movement", icon: "figure.run", subcategories: []),
-                    Category(name: "Household", icon: "house"),
-                    Category(name: "Self-Care", icon: "shower"),
-                    Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
-                    Category(name: "Alarms", icon: "alarm"),
-                    Category(name: "Others", icon: "puzzlepiece")
-                ]
-                
-                categories.forEach { container.mainContext.insert($0) }
-                try! container.mainContext.save()
-            }
-        } catch {
-            
-        }
-        
-        return container
-    }()
-}
-
-// MARK: - Preview
-
-struct SampleData: PreviewModifier {
-    static func makeSharedContext() throws -> ModelContainer {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: Category.self, configurations: config)
-        
-        let categories: [Category] = [
-            Category(name: "Movement", icon: "figure.run", subcategories: []),
-            Category(name: "Household", icon: "house"),
-            Category(name: "Self-Care", icon: "shower"),
-            Category(name: "Interaction", icon: "bubble.left.and.text.bubble.right"),
-            Category(name: "Alarms", icon: "alarm"),
-            Category(name: "Others", icon: "puzzlepiece")
-        ]
-        
-        categories.forEach { container.mainContext.insert($0) }
-        try container.mainContext.save()
-        
-        return container
-    }
-    
-    func body(content: Content, context: ModelContainer) -> some View {
-        content.modelContainer(context)
-    }
-}
-
-extension PreviewTrait where T == Preview.ViewTraits {
-    @MainActor static var sampleData: Self = .modifier(SampleData())
 }

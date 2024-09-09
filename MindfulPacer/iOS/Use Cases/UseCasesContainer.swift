@@ -14,13 +14,20 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension UseCasesContainer {
-    // MARK: - Reviews
+    
+    // MARK: - Health
+    
+    @MainActor
+    var fetchCurrentStepsUseCase: Factory<DefaultFetchCurrentStepsUseCase> {
+        self { DefaultFetchCurrentStepsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    // MARK: - Review
     
     @MainActor
     var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
         self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-    
     
     @MainActor
     var createReviewUseCase: Factory<CreateReviewUseCase> {
@@ -28,8 +35,8 @@ extension UseCasesContainer {
     }
     
     @MainActor
-    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
-        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var deleteReviewUseCase: Factory<DeleteReviewUseCase> {
+        self { DefaultDeleteReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     @MainActor
@@ -37,12 +44,44 @@ extension UseCasesContainer {
         self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
-    // MARK: - Watch Communication
+    @MainActor
+    var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
+        self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
     
     @MainActor
-    var triggerHapticFeedbackUseCase: Factory<DefaultTriggerHapticFeedbackUseCase> {
-        self { DefaultTriggerHapticFeedbackUseCase(connectivityService: ConnectivityService.shared) }
+    var filterReviewsUseCase: Factory<DefaultFilterReviewsUseCase> {
+        self { DefaultFilterReviewsUseCase() }
     }
+    
+    @MainActor
+    var saveReviewUseCase: Factory<DefaultSaveReviewUseCase> {
+        self { DefaultSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    // MARK: - Review Reminder
+    
+    @MainActor
+    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
+        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var deleteReviewReminderUseCase: Factory<DeleteReviewReminderUseCase> {
+        self { DefaultDeleteReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var fetchReviewRemindersUseCase: Factory<DefaultFetchReviewRemindersUseCase> {
+        self { DefaultFetchReviewRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var saveReviewReminderUseCase: Factory<DefaultSaveReviewReminderUseCase> {
+        self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    // MARK: - Watch Communication
     
     @MainActor
     var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {

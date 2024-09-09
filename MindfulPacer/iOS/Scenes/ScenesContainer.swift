@@ -5,12 +5,29 @@
 //  Created by Grigor Dochev on 01.07.2024.
 //
 
+import Foundation
 import Factory
 import SwiftData
 
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
+    
+    // MARK: - Home
+    
+    @MainActor
+    var homeViewModel: Factory<HomeViewModel> {
+        self {
+            HomeViewModel(
+                modelContext: ModelContainer.prod.mainContext,
+                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
+                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                filterReviewsUseCase: UseCasesContainer.shared.filterReviewsUseCase()
+            )
+        }
+    }
     
     // MARK: - Root
     
@@ -24,20 +41,30 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    // MARK: - Create Review
+    
+    // MARK: - Review
     
     @MainActor
-    var createReviewViewModel: Factory<CreateReviewViewModel> {
+    var editReviewViewModel: Factory<EditReviewViewModel> {
         self {
-            CreateReviewViewModel(
-                modelContext: ModelContainer.prod.mainContext,
+            EditReviewViewModel(
+                modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext,
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
-                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase()
+                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
+                saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
             )
         }
     }
     
-    // MARK: - Create Review Reminder
+    @MainActor
+    var reviewsFilterViewModel: Factory<ReviewsFilterViewModel> {
+        self {
+            ReviewsFilterViewModel(fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase())
+        }
+    }
+    
+    // MARK: - Review Reminder
     
     @MainActor
     var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {
@@ -45,7 +72,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             CreateReviewReminderViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
-                triggerHapticFeedbackUseCase: UseCasesContainer.shared.triggerHapticFeedbackUseCase(),
+                deleteReviewReminderUseCase: UseCasesContainer.shared.deleteReviewReminderUseCase(),
+                saveReviewReminderUseCase: UseCasesContainer.shared.saveReviewReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )
         }

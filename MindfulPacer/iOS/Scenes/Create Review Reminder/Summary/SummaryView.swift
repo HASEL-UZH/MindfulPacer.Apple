@@ -6,187 +6,216 @@
 //
 
 import SwiftUI
-import SwiftData
 
 // MARK: - SummaryView
 
 extension CreateReviewReminderView {
     struct SummaryView: View {
+        // MARK: Properties
+        
         @Bindable var viewModel: CreateReviewReminderViewModel
         
+        // MARK: Body
+        
         var body: some View {
-            ZStack(alignment: .top) {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        measurementType
-//                        alarmType
-                        threshold
-//                        vibrationStrength
-                        interval
-                        notificationPreviewButton
-                            .padding(.top)
-                        
-                        Spacer()
+            GeometryReader { proxy in
+                ZStack(alignment: .top) {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            measurementType
+                            reviewReminderType
+                            threshold
+                            interval
+                            notificationPreview
+                            
+                            if viewModel.mode == .edit {
+                                deleteButton
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, viewModel.mode == .create ? proxy.safeAreaInsets.bottom + 48 : 0)
                     }
-                    .padding(.horizontal)
+                }
+                .navigationTitle(viewModel.summaryViewTitle)
+            }
+        }
+        
+        // MARK: Summary Widget
+        
+        @ViewBuilder
+        private func summaryWidget<Content: View>(
+            icon: String,
+            title: String,
+            destination: CreateReviewReminderNavigationDestination,
+            @ViewBuilder label: @escaping () -> Content
+        ) -> some View {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: icon,
+                    title: title,
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+            ) {
+                label()
+            } accessoryIndicator: {
+                Button {
+                    viewModel.navigationPath.append(destination)
+                } label: {
+                    Icon(name: "pencil.circle", variant: .fill)
                 }
             }
-            .navigationTitle("Summary")
         }
+        
+        // MARK: Measurement Type
+        
+        private var measurementType: some View {
+            summaryWidget(
+                icon: "ruler",
+                title: "Measurement Type",
+                destination: .measurementType) {
+                    if let measurementType = viewModel.selectedMeasurementType {
+                        Text(measurementType.rawValue)
+                    } else {
+                        Text("No Measurement Type Selected")
+                            .foregroundStyle(.red)
+                    }
+                }
+        }
+        
+        // MARK: Review Reminder Type
+        
+        private var reviewReminderType: some View {
+            summaryWidget(
+                icon: "alarm",
+                title: "Review Reminder Type",
+                destination: .reviewReminderType) {
+                    if let reviewReminderType = viewModel.selectedReviewReminderType {
+                        Text(reviewReminderType.rawValue)
+                    } else {
+                        Text("No Review Reminder Type Selected")
+                            .foregroundStyle(.red)
+                    }
+                }
+        }
+        
+        // MARK: Threshold
+        
+        private var threshold: some View {
+            summaryWidget(
+                icon: "chart.line.flattrend.xyaxis",
+                title: "Threshold",
+                destination: .threshold) {
+                    if let threshold = viewModel.threshold {
+                        HStack(alignment: .bottom, spacing: 4) {
+                            Text("\(threshold)")
+                            Text(viewModel.thresholdUnitText)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text("No Threshold Set")
+                            .foregroundStyle(.red)
+                    }
+                }
+        }
+        
+        // MARK: Interval
+        
+        private var interval: some View {
+            summaryWidget(
+                icon: "timer",
+                title: "Interval",
+                destination: .interval) {
+                    if let interval = viewModel.selectedInterval {
+                        Text(interval.rawValue)
+                    } else {
+                        Text("No Interval Selected")
+                            .foregroundStyle(.red)
+                    }
+                }
+        }
+        
+        // MARK: Notification Preview
+        
+        private var notificationPreview: some View {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "eye",
+                    title: "Preview Notification",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                description:
+                    Text("See how the notification will look.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            ) {
+                VStack(spacing: 16) {
+                    HStack(spacing: 16) {
+                        Image("MindfulPacer Icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 32, height: 32)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Review Reminder Triggered")
+                                .font(.subheadline.weight(.semibold))
+                            
+                            Text(viewModel.notificationPreviewBodyText)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(.thinMaterial)
+                    }
+                }
+            } footer: {
+                notificationPreviewButton
+            }
+            .iconLabelGroupBoxStyle(.divider)
+        }
+        
+        // MARK: Notification Preview Button
         
         private var notificationPreviewButton: some View {
             Button {
                 viewModel.sendNotificationToWatch()
             } label: {
-                SFSymbolLabel(
+                IconLabel(
                     icon: "bell.badge",
-                    title: "Test Notification on Apple Watch",
-                    symbolRenderingMode: .hierarchical
+                    title: "Test on Apple Watch",
+                    labelColor: viewModel.isActionButtonDisabled ? Color.secondary : Color("BrandPrimary")
                 )
-                .fontWeight(.semibold)
+                .font(.subheadline.weight(.semibold))
             }
-            .buttonBorderShape(.capsule)
-            .buttonStyle(.bordered)
-            .disabled(viewModel.isContinueButtonDisabled)
+            .disabled(viewModel.isActionButtonDisabled)
         }
-    }
-}
-
-// MARK: - Widget View
-
-extension CreateReviewReminderView.SummaryView {
-    @ViewBuilder private func widgetView<Content: View>(
-        icon: String,
-        title: String,
-        destination: CreateReviewReminderNavigationDestination,
-        @ViewBuilder label: @escaping () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                SFSymbolLabel(icon: icon, title: title)
-                    .foregroundStyle(.secondary)
-                    .font(.subheadline.weight(.semibold))
-                Spacer()
-                Button {
-                    viewModel.navigationPath.append(destination)
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                }
+        
+        // MARK: Delete Button
+        
+        private var deleteButton: some View {
+            PrimaryButton(
+                title: "Delete Review Reminder",
+                icon: "trash",
+                color: .red
+            ) {
+                viewModel.presentAlert(.deleteConfirmation)
             }
-            
-            label()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.secondarySystemGroupedBackground))
-        }
-    }
-}
-
-// MARK: - Measurement Type
-
-extension CreateReviewReminderView.SummaryView {
-    private var measurementType: some View {
-        widgetView(
-            icon: "ruler",
-            title: "Measurement Type",
-            destination: .measurementType) {
-                if let measurementType = viewModel.selectedMeasurementType {
-                    Text(measurementType.rawValue)
-                } else {
-                    Text("No Measurement Type Selected")
-                        .foregroundStyle(.red)
-                }
-            }
-    }
-}
-
-// MARK: - Alarm Type
-
-//extension CreateReviewReminderView.SummaryView {
-//    private var alarmType: some View {
-//        widgetView(
-//            icon: "alarm",
-//            title: "Alarm Type",
-//            destination: .alarmType) {
-//                if let alarmType = viewModel.selectedAlarmType {
-//                    Text(alarmType.rawValue)
-//                } else {
-//                    Text("No Alarm Type Selected")
-//                        .foregroundStyle(.red)
-//                }
-//            }
-//    }
-//}
-
-// MARK: - Threshold
-
-extension CreateReviewReminderView.SummaryView {
-    private var threshold: some View {
-        widgetView(
-            icon: "chart.line.flattrend.xyaxis",
-            title: "Threshold",
-            destination: .threshold) {
-                if let threshold = viewModel.threshold {
-                    HStack(alignment: .bottom, spacing: 4) {
-                        Text("\(threshold)")
-                        Text(viewModel.thresholdUnitText)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Text("No Threshold Set")
-                        .foregroundStyle(.red)
-                }
-            }
-    }
-}
-
-// MARK: - Vibration Strength
-
-//extension CreateReviewReminderView.SummaryView {
-//    private var vibrationStrength: some View {
-//        widgetView(
-//            icon: "hammer",
-//            title: "Vibration Strength",
-//            destination: .vibrationStrength) {
-//                if let vibrationStrength = viewModel.selectedVibrationStrength {
-//                    Text(vibrationStrength.rawValue)
-//                } else {
-//                    Text("No Vibration Strength Selected")
-//                        .foregroundStyle(.red)
-//                }
-//            }
-//    }
-//}
-
-// MARK: - Interval
-
-extension CreateReviewReminderView.SummaryView {
-    private var interval: some View {
-        widgetView(
-            icon: "timer",
-            title: "Interval",
-            destination: .interval) {
-                if let interval = viewModel.selectedInterval {
-                    Text(interval.rawValue)
-                } else {
-                    Text("No Interval Selected")
-                        .foregroundStyle(.red)
-                }
-            }
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    let container = ModelContainer.preview
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     NavigationStack {

@@ -11,7 +11,6 @@ import Foundation
 
 /// Manages the types of commands you send, ensuring type safety and reducing hardcoding.
 enum MessageCommand: String {
-    case hapticFeedback
     case triggerLocalNotification
 }
 

@@ -7,22 +7,33 @@
 
 import SwiftUI
 
-struct PrimaryButton: View {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+// MARK: - PrimaryButton
 
+struct PrimaryButton: View {
+    // MARK: Properties
+    
+    @Environment(\.isEnabled) private var isEnabled: Bool
+    
     var title: String
     var icon: String? = nil
+    var color: Color = Color("BrandPrimary")
     var action: () -> Void
+    
+    // MARK: Body
     
     var body: some View {
         Button {
             action()
         } label: {
             if let icon {
-                Label(title, systemImage: icon)
-                    .frame(height: 40)
-                    .frame(maxWidth: .infinity)
-                    .fontWeight(.semibold)
+                IconLabel(
+                    icon: icon,
+                    title: title,
+                    labelColor: isEnabled ? .white : Color(.systemGray2)
+                )
+                .frame(height: 40)
+                .frame(maxWidth: .infinity)
+                .fontWeight(.semibold)
             } else {
                 Text(title)
                     .frame(height: 40)
@@ -30,7 +41,7 @@ struct PrimaryButton: View {
                     .fontWeight(.semibold)
             }
         }
-        .tint(Color("BrandPrimary"))
+        .tint(color)
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.roundedRectangle(radius: 16))
     }
@@ -40,6 +51,8 @@ struct PrimaryButton: View {
 
 #Preview {
     VStack(spacing: 32) {
+        PrimaryButton(title: "Delete", icon: "trash", color: .red) {}
+        
         PrimaryButton(title: "Done", icon: "checkmark") {}
         
         PrimaryButton(title: "Continue") {}

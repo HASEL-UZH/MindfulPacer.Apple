@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 #if os(watchOS)
 import WatchKit
 #endif
@@ -20,24 +21,21 @@ extension SchemaV1 {
     final class ReviewReminder {
         var id: UUID = UUID()
         var measurementType: MeasurementType = MeasurementType.heartRate
-//        var alarmType: AlarmType = AlarmType.light
+        var reviewReminderType: ReviewReminderType = ReviewReminderType.light
         var threshold: Int = 0
-//        var vibrationStrength: VibrationStrength = VibrationStrength.none
         var interval: Interval = Interval._10seconds
         
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
-//            alarmType: AlarmType = AlarmType.light,
+            reviewReminderType: ReviewReminderType = ReviewReminderType.light,
             threshold: Int = 0,
-//            vibrationStrength: VibrationStrength = VibrationStrength.none,
             interval: Interval = Interval._10seconds
         ) {
             self.id = id
             self.measurementType = measurementType
-//            self.alarmType = alarmType
+            self.reviewReminderType = reviewReminderType
             self.threshold = threshold
-//            self.vibrationStrength = vibrationStrength
             self.interval = interval
         }
     }
@@ -59,10 +57,10 @@ extension ReviewReminder {
     }
 }
 
-// MARK: - Alarm Type
+// MARK: - Review Reminder Type
 
 extension ReviewReminder {
-    enum AlarmType: String, Codable, CaseIterable {
+    enum ReviewReminderType: String, Codable, CaseIterable {
         case light = "Light"
         case medium = "Medium"
         case strong = "Strong"
@@ -78,40 +76,21 @@ extension ReviewReminder {
         var description: String {
             switch self {
             case .light:
-                "Coloured display, vibration"
+                "Shows a yellow color"
             case .medium:
-                "Vibration, confirmation required"
+                "Shows an orange color"
             case .strong:
-                "Blinking display, vibration, sound, confirmation required"
+                "Shows a red color"
             }
         }
-    }
-}
-
-// MARK: - Vibration Strength
-
-extension ReviewReminder {
-    enum VibrationStrength: String, Codable, CaseIterable {
-        case none = "None"
-        case light = "Light"
-        case medium = "Medium"
-        case strong = "Strong"
         
-        #if os(watchOS)
-        /// Since there is no direct mapping to the concept of 'strength' with haptic feedback on the Apple Watch, we are using default types to mimic a scale from 'light' to 'strong'
-        func hapticType() -> WKHapticType? {
+        var color: Color {
             switch self {
-            case .none:
-                return nil
-            case .light:
-                return .start
-            case .medium:
-                return .success
-            case .strong:
-                return .failure
+            case .light: .yellow
+            case .medium: .orange
+            case .strong: .red
             }
         }
-        #endif
     }
 }
 

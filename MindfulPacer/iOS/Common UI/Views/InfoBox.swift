@@ -7,25 +7,28 @@
 
 import SwiftUI
 
+// MARK: - InfoBox
+
 struct InfoBox: View {
+    // MARK: Properties
+    
     var text: String
     
+    // MARK: Body
+    
     var body: some View {
-        ZStack {
-            Label {
-                Text(text)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline)
-            } icon: {
-                Image(systemName: "info.circle.fill")
-                    .frame(width: 24)
-                    .foregroundStyle(.secondary)
+        Card(backgroundColor: Color(.tertiarySystemFill)) {
+            ZStack {
+                Label {
+                    Text(text)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.subheadline)
+                } icon: {
+                    Image(systemName: "info.circle.fill")
+                        .frame(width: 24)
+                        .foregroundStyle(.secondary)
+                }
             }
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(Color(.systemGray5))
         }
     }
 }

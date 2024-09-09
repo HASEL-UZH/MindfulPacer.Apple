@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - SessionError
+
 enum SessionError: Error {
     case notReachable
     case notSupported

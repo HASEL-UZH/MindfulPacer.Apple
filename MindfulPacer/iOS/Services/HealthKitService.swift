@@ -13,7 +13,7 @@ enum Period {
     case week
     case month
     case sixMonths
-
+    
     var startDate: Date {
         switch self {
         case .day:
@@ -33,38 +33,40 @@ enum Period {
 protocol HealthKitServiceProtocol {
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void)
     func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], Error>) -> Void)
+    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, Error>) -> Void)
 }
 
 // MARK: - HealthKitService
 
-class HealthKitService: HealthKitServiceProtocol,  @unchecked Sendable {
+class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     static let shared = HealthKitService()
     private var healthStore: HKHealthStore?
-
+    
     init() {
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
         }
     }
-
+    
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
-        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
-            completion(false, NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Heart rate type is unavailable."]))
+        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
+              let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            completion(false, NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Health data types are unavailable."]))
             return
         }
-
+        
         let typesToShare: Set = [HKObjectType.workoutType()]
-        let typesToRead: Set = [heartRateType]
-
+        let typesToRead: Set = [heartRateType, stepType]
+        
         healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead, completion: completion)
     }
-
+    
     func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], Error>) -> Void) {
         guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
             completion(.failure(NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Heart rate type is unavailable."])))
             return
         }
-
+        
         let predicate = HKQuery.predicateForSamples(withStart: period.startDate, end: Date(), options: .strictEndDate)
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { query, results, error in
@@ -74,17 +76,48 @@ class HealthKitService: HealthKitServiceProtocol,  @unchecked Sendable {
                 }
                 return
             }
-
+            
             guard let samples = results as? [HKQuantitySample] else {
                 Task { @MainActor in
                     completion(.failure(NSError(domain: "HealthKitService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch heart rate samples."])))
                 }
                 return
             }
-
+            
             completion(.success(samples))
         }
-
+        
+        healthStore?.execute(query)
+    }
+    
+    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, Error>) -> Void) {
+        guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            completion(.failure(NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Step count type is unavailable."])))
+            return
+        }
+        
+        // Start of today
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictEndDate)
+        let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+            if let error = error {
+                Task { @MainActor in
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let result = result, let sum = result.sumQuantity() else {
+                Task { @MainActor in
+                    completion(.failure(NSError(domain: "HealthKitService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch current step count."])))
+                }
+                return
+            }
+            
+            let stepCount = sum.doubleValue(for: HKUnit.count())
+            completion(.success(stepCount))
+        }
+        
         healthStore?.execute(query)
     }
 }

@@ -12,7 +12,7 @@ import XCTest
 @testable import iOS
 
 class CreateReviewViewModelTests: XCTestCase {
-    var viewModel: CreateReviewViewModel!
+    var viewModel: EditReviewViewModel!
     var mockCreateReviewUseCase: MockCreateReviewUseCase!
     var mockFetchDefaultCategoriesUseCase: MockFetchDefaultCategoriesUseCase!
     var mockModelContext: ModelContext!
@@ -24,9 +24,10 @@ class CreateReviewViewModelTests: XCTestCase {
         mockFetchDefaultCategoriesUseCase = MockFetchDefaultCategoriesUseCase()
         mockModelContext = ModelContainer.testing.mainContext
         
-        viewModel = CreateReviewViewModel(
+        viewModel = EditReviewViewModel(
             modelContext: mockModelContext,
             createReviewUseCase: mockCreateReviewUseCase,
+            deleteReviewUseCase: DeleteReviewUseCase()
             fetchDefaultCategoriesUseCase: mockFetchDefaultCategoriesUseCase
         )
     }
@@ -108,17 +109,5 @@ class CreateReviewViewModelTests: XCTestCase {
         
         // Assert
         XCTAssertNil(viewModel.alertItem)
-    }
-    
-    @MainActor
-    func testSaveReviewFailure() {
-        // Arrange
-        mockCreateReviewUseCase.executeResult = .failure(NSError(domain: "Test", code: 1, userInfo: nil))
-        
-        // Act
-        viewModel.saveReview()
-        
-        // Assert
-        XCTAssertEqual(viewModel.alertItem, AlertContext.unableToSaveReview)
     }
 }

@@ -7,17 +7,27 @@
 
 import SwiftUI
 
+// MARK: - SelectableButton
+
 struct SelectableButton<Content: View>: View {
+    // MARK: ButtonShape Enum
+    
     enum ButtonShape {
         case roundedRectangle(cornerRadius: CGFloat)
         case circle
     }
+
+    // MARK: Properties
     
     var shape: ButtonShape
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
+    var foregroundColor: Color = Color.secondary
     var selectionColor: Color = Color("BrandPrimary")
     var isSelected: Bool
     var action: () -> Void
     @ViewBuilder let content: () -> Content
+
+    // MARK: Body
     
     var body: some View {
         Button(action: action) {
@@ -28,9 +38,7 @@ struct SelectableButton<Content: View>: View {
                     backgroundShape()
                         .foregroundStyle(
                             isSelected ? selectionColor
-                                .opacity(0.1) : Color(
-                                    .secondarySystemGroupedBackground
-                                )
+                                .opacity(0.1) : backgroundColor
                         )
                 }
                 .overlay {
@@ -39,8 +47,10 @@ struct SelectableButton<Content: View>: View {
                     }
                 }
         }
-        .foregroundStyle(isSelected ? selectionColor : Color.primary)
+        .foregroundStyle(isSelected ? selectionColor : foregroundColor)
     }
+
+    // MARK: Background Shape
     
     @ViewBuilder
     private func backgroundShape() -> some View {
@@ -51,6 +61,8 @@ struct SelectableButton<Content: View>: View {
             Circle()
         }
     }
+
+    // MARK: Overlay Shape
     
     @ViewBuilder
     private func overlayShape() -> some View {
