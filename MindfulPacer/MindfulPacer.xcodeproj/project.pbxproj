@@ -298,6 +298,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D189B342C8F21F5008BF03D /* Styling */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Styling;
+			sourceTree = "<group>";
+		};
+		0D189B352C8F220B008BF03D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		0D27BFC32C32DA8B007F4CFA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -407,7 +421,6 @@
 		0D456ABB2C808F9B0014CD81 /* Reviews List */ = {
 			isa = PBXGroup;
 			children = (
-				0D4E118B2C871F8F0023E0A0 /* Reviews Filter */,
 				0D456ABC2C808FA40014CD81 /* ReviewsListView.swift */,
 			);
 			path = "Reviews List";
@@ -484,13 +497,6 @@
 			isa = PBXGroup;
 			children = (
 				0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */,
-			);
-			path = System;
-			sourceTree = "<group>";
-		};
-		0D500FF02C74B87700395AEB /* System */ = {
-			isa = PBXGroup;
-			children = (
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -626,13 +632,6 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		0DA6CB112C382DC500FE1E61 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		0DBA37192C31EF5B00209681 /* Root View */ = {
 			isa = PBXGroup;
 			children = (
@@ -648,8 +647,7 @@
 				0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */,
 				0DA6CB1B2C38374500FE1E61 /* Info.plist */,
 				0DBA374B2C320AD800209681 /* Application */,
-				0DBA374A2C320AD200209681 /* Common UI */,
-				0DA6CB112C382DC500FE1E61 /* Extensions */,
+				0D189B352C8F220B008BF03D /* Extensions */,
 				0DBA37402C32087400209681 /* Preview Content */,
 				0DBA374E2C320B1500209681 /* Resources */,
 				0DBA37492C320ACB00209681 /* Scenes */,
@@ -676,35 +674,12 @@
 			path = Scenes;
 			sourceTree = "<group>";
 		};
-		0DBA374A2C320AD200209681 /* Common UI */ = {
-			isa = PBXGroup;
-			children = (
-				0DBA374C2C320AF900209681 /* View Modifiers */,
-				0DBA374D2C320B0000209681 /* Views */,
-			);
-			path = "Common UI";
-			sourceTree = "<group>";
-		};
 		0DBA374B2C320AD800209681 /* Application */ = {
 			isa = PBXGroup;
 			children = (
 				0DBA373A2C32087300209681 /* WatchOSApp.swift */,
 			);
 			path = Application;
-			sourceTree = "<group>";
-		};
-		0DBA374C2C320AF900209681 /* View Modifiers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "View Modifiers";
-			sourceTree = "<group>";
-		};
-		0DBA374D2C320B0000209681 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		0DBA374E2C320B1500209681 /* Resources */ = {
@@ -733,7 +708,6 @@
 				0D6A45042C84CBCF002807D3 /* Health */,
 				0D9E5F5E2C64C7A6005BA46C /* Review */,
 				0D34C45C2C83681700928C53 /* Review Reminder */,
-				0D500FF02C74B87700395AEB /* System */,
 				0DD8588C2C7140C600061F63 /* Watch Communication */,
 				0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */,
 			);
@@ -746,6 +720,7 @@
 				0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */,
 				0D34C44C2C822F4800928C53 /* Edit Review */,
 				0DC2D7E72C7C7DCC008122CC /* Home */,
+				0D4E118B2C871F8F0023E0A0 /* Reviews Filter */,
 				0DBA37192C31EF5B00209681 /* Root View */,
 				0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */,
 			);
@@ -790,8 +765,6 @@
 		0DC3FDD02C2EDCB400335543 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
-				0DC3FDD52C2EDCE700335543 /* Formatters */,
-				0DC3FDD42C2EDCE100335543 /* Styling */,
 				0DC3FDD32C2EDCDC00335543 /* View Modifiers */,
 				0DC3FDD22C2EDCD800335543 /* Views */,
 			);
@@ -828,20 +801,6 @@
 				0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */,
 			);
 			path = "View Modifiers";
-			sourceTree = "<group>";
-		};
-		0DC3FDD42C2EDCE100335543 /* Styling */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Styling;
-			sourceTree = "<group>";
-		};
-		0DC3FDD52C2EDCE700335543 /* Formatters */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Formatters;
 			sourceTree = "<group>";
 		};
 		0DD8588C2C7140C600061F63 /* Watch Communication */ = {
@@ -941,17 +900,10 @@
 		0DDD339A2C7BB6EF00A0B091 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
-				0DDD339B2C7BB6F400A0B091 /* Styling */,
+				0D189B342C8F21F5008BF03D /* Styling */,
 				0DDD339C2C7BB6FA00A0B091 /* View Modifiers */,
 			);
 			path = "Common UI";
-			sourceTree = "<group>";
-		};
-		0DDD339B2C7BB6F400A0B091 /* Styling */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Styling;
 			sourceTree = "<group>";
 		};
 		0DDD339C2C7BB6FA00A0B091 /* View Modifiers */ = {

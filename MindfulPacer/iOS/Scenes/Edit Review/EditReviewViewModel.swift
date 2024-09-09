@@ -63,6 +63,8 @@ class EditReviewViewModel {
         selectedCategory == nil
     }
     
+    var isReviewDeleted = false
+    
     // MARK: - Initialization
     
     init(
@@ -161,6 +163,8 @@ class EditReviewViewModel {
     }
     
     func deleteReview(_ review: Review?) {
+        /// Fix for crash that occurs when you try to access reviewReminder property when the review is deleted
+        isReviewDeleted = true
         guard let review else { return }
         deleteReviewUseCase.execute(review: review)
     }

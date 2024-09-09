@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+// FIXME: Not working, deletion does not persist
 protocol DeleteReviewUseCase {
     func execute(review: Review)
 }
@@ -23,5 +24,6 @@ class DefaultDeleteReviewUseCase: DeleteReviewUseCase {
     
     func execute(review: Review) {
         modelContext.delete(review)
+        try! modelContext.save()
     }
 }

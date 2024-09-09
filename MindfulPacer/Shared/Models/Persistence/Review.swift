@@ -22,8 +22,8 @@ extension SchemaV1 {
     final class Review {
         var id: UUID = UUID()
         var date: Date = Date.now
-        var category: Category?
-        var subcategory: Subcategory?
+        @Relationship(inverse: \Category.review) var category: Category?
+        @Relationship(inverse: \Subcategory.review) var subcategory: Subcategory?
         var mood: String? = ""
         var didTriggerCrash: Bool = false
         var perceivedEnergyLevelRating: Int?
@@ -33,7 +33,8 @@ extension SchemaV1 {
         var painsAndNeedlesRating: Int?
         var muscleAchesRating: Int?
         var additionalInformation: String = ""
-        
+        @Relationship(inverse: \ReviewReminder.reviews) var reviewReminder: ReviewReminder?
+
         init(
             id: UUID = UUID(),
             date: Date = .now,
@@ -47,7 +48,8 @@ extension SchemaV1 {
             feverRating: Int? = 0,
             painsAndNeedlesRating: Int? = 0,
             muscleAchesRating: Int? = 0,
-            additionalInformation: String = ""
+            additionalInformation: String = "",
+            reviewReminder: ReviewReminder? = nil
         ) {
             self.id = id
             self.date = date
@@ -62,6 +64,7 @@ extension SchemaV1 {
             self.painsAndNeedlesRating = painsAndNeedlesRating
             self.muscleAchesRating = muscleAchesRating
             self.additionalInformation = additionalInformation
+            self.reviewReminder = reviewReminder
         }
     }
 }

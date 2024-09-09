@@ -17,7 +17,6 @@ class HomeViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let deleteReviewUseCase: DeleteReviewUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
     private let fetchReviewsUseCase: FetchReviewsUseCase
     private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
@@ -56,19 +55,16 @@ class HomeViewModel {
     
     init(
         modelContext: ModelContext,
-        deleteReviewUseCase: DeleteReviewUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchReviewsUseCase: FetchReviewsUseCase,
         fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
         filterReviewsUseCase: FilterReviewsUseCase
     ) {
         self.modelContext = modelContext
-        self.deleteReviewUseCase = deleteReviewUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
         self.fetchReviewsUseCase = fetchReviewsUseCase
         self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
         self.filterReviewsUseCase = filterReviewsUseCase
-        setupBindings()
     }
     
     // MARK: - View Lifecycle
@@ -77,6 +73,7 @@ class HomeViewModel {
         fetchCurrentSteps()
         fetchReviews()
         fetchReviewReminders()
+        setupBindings()
     }
     
     func onSheetDismissed() {

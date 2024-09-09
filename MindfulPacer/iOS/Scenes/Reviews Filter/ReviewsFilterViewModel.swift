@@ -182,7 +182,7 @@ extension ReviewsFilterViewModel {
         var selectedMoods: [Mood] = []
         var triggeredCrash: Bool = false
         
-        var fromDate: Date = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+        var fromDate: Date = Calendar.current.date(byAdding: .weekOfMonth, value: -2, to: Date()) ?? Date()
         var toDate: Date = Date()
         
         var activeFilterCount: Int {

@@ -9,6 +9,29 @@ import SwiftUI
 
 // MARK: - ReviewReminderCell
 
+struct TopRightCornerShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        // Start at the top-leading corner
+        path.move(to: CGPoint(x: 0, y: 0))
+        
+        // Draw a line to the top-right corner
+        path.addLine(to: CGPoint(x: rect.width, y: 0))
+        
+        // Draw a line to the bottom-trailing corner
+        path.addLine(to: CGPoint(x: rect.width, y: 0))
+        
+        // Draw a line along the diagonal from bottom-trailing to top-leading
+        path.addLine(to: CGPoint(x: 0, y: rect.height))
+        
+        // Close the path
+        path.closeSubpath()
+        
+        return path
+    }
+}
+
 struct ReviewReminderCell: View {
     // MARK: Properties
     
@@ -64,5 +87,7 @@ struct ReviewReminderCell: View {
 // MARK: - Preview
 
 #Preview {
-    ReviewReminderCell(reviewReminder: ReviewReminder()) {}
+    RoundedList {
+        ReviewReminderCell(reviewReminder: ReviewReminder()) {}
+    }
 }

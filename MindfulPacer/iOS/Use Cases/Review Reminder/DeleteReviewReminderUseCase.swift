@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+// FIXME: Not working, deletion does not persist
 protocol DeleteReviewReminderUseCase {
     func execute(reviewReminder: ReviewReminder)
 }
@@ -23,5 +24,6 @@ class DefaultDeleteReviewReminderUseCase: DeleteReviewReminderUseCase {
     
     func execute(reviewReminder: ReviewReminder) {
         modelContext.delete(reviewReminder)
+        try! modelContext.save()
     }
 }

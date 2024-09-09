@@ -31,7 +31,7 @@ enum SchemaV1: VersionedSchema {
 
 extension ModelContainer {
     /// Container used in production
-    @MainActor
+    
     static let prod: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
