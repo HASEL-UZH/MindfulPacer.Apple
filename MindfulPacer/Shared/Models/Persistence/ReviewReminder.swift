@@ -24,19 +24,26 @@ extension SchemaV1 {
         var reviewReminderType: ReviewReminderType = ReviewReminderType.light
         var threshold: Int = 0
         var interval: Interval = Interval._10seconds
-        
+        var reviews: [Review]?
+
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
             reviewReminderType: ReviewReminderType = ReviewReminderType.light,
             threshold: Int = 0,
-            interval: Interval = Interval._10seconds
+            interval: Interval = Interval._10seconds,
+            reviews: [Review]? = []
         ) {
             self.id = id
             self.measurementType = measurementType
             self.reviewReminderType = reviewReminderType
             self.threshold = threshold
             self.interval = interval
+            self.reviews = reviews
+        }
+        
+        var triggerSummary: String {
+            "Above \(threshold) \(measurementType == .heartRate ? "bpm" : "steps") for \(interval.rawValue.lowercased())"
         }
     }
 }

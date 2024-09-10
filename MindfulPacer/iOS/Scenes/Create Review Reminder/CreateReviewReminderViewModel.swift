@@ -117,7 +117,7 @@ class CreateReviewReminderViewModel {
     }
     var selectedReviewReminderType: ReviewReminder.ReviewReminderType? = nil
     var selectedInterval: ReviewReminder.Interval? = nil
-    
+        
     // MARK: - Initialization
     
     init(

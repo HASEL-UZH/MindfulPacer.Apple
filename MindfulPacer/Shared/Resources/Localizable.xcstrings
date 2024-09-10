@@ -201,6 +201,9 @@
     "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the review reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes." : {
 
     },
+    "The review reminder that triggered this review." : {
+
+    },
     "This allows you to add a new review reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },

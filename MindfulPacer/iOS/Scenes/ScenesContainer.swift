@@ -20,7 +20,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
                 fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),

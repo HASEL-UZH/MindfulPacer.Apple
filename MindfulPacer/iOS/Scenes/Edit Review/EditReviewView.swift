@@ -49,7 +49,7 @@ struct EditReviewView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         date
-                        
+                                                
                         VStack(spacing: 0) {
                             category
                             if viewModel.selectedCategory.isNotNil {
@@ -62,6 +62,10 @@ struct EditReviewView: View {
                         ratings(width: proxy.size.width / 2)
                         triggerCrash
                         additionalInformation
+                        
+                        if !viewModel.isReviewDeleted {
+                            reviewReminder
+                        }
                         
                         if viewModel.mode == .edit {
                             deleteButton
@@ -365,6 +369,78 @@ struct EditReviewView: View {
             )
         ) {
             TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
+        }
+    }
+    
+    // MARK: - Review Reminder
+    
+    @ViewBuilder
+    private var reviewReminder: some View {
+        if let review = review {
+            if let reviewReminder = review.reviewReminder {
+                IconLabelGroupBox(
+                    label: IconLabel(
+                        icon: "alarm",
+                        title: "Review Reminder",
+                        labelColor: Color("BrandPrimary"),
+                        background: true
+                    ),
+                    description: Text("The review reminder that triggered this review.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                ) {
+                    HStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            IconLabel(
+                                icon: reviewReminder.measurementType.icon,
+                                title: reviewReminder.measurementType.rawValue,
+                                labelColor: reviewReminder.measurementType == .heartRate ? .pink : .teal
+                            )
+                            .font(.subheadline.weight(.semibold))
+                            
+                            Text(reviewReminder.triggerSummary)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Icon(
+                            name: "alarm",
+                            color: reviewReminder.reviewReminderType.color,
+                            background: true
+                        )
+                    }
+                    .foregroundStyle(Color.primary)
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 16)
+                            .foregroundStyle(Color(.tertiarySystemGroupedBackground))
+                    }
+                }
+                .iconLabelGroupBoxStyle(.divider)
+            } else {
+                manualReview
+            }
+        } else {
+            manualReview
+        }
+    }
+    
+    // MARK: Manual Review
+    
+    private var manualReview: some View {
+        Card(backgroundColor: Color(.tertiarySystemFill)) {
+            IconLabel(
+                icon: "person",
+                title: "Manually Created Review",
+                labelColor: .secondary,
+                background: true
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .layoutPriority(1)
         }
     }
     

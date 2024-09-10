@@ -52,6 +52,10 @@ struct ReviewCell: View {
             
             Spacer()
                             
+            if review.didTriggerCrash {
+                Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
+            }
+            
             if let mood = review.mood, !mood.isEmpty {
                 Text(mood)
                     .frame(width: 24, height: 24)
