@@ -420,23 +420,27 @@ struct EditReviewView: View {
                 }
                 .iconLabelGroupBoxStyle(.divider)
             } else {
-                // If review is present but no reviewReminder, show this:
-                Card(backgroundColor: Color(.tertiarySystemFill)) {
-                    IconLabel(
-                        icon: "person",
-                        title: "Manually Created Review",
-                        labelColor: .secondary,
-                        background: true
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .layoutPriority(1)
-                }
+                manualReview
             }
         } else {
-            // Safe fallback for when review is nil
-            EmptyView()
+            manualReview
+        }
+    }
+    
+    // MARK: Manual Review
+    
+    private var manualReview: some View {
+        Card(backgroundColor: Color(.tertiarySystemFill)) {
+            IconLabel(
+                icon: "person",
+                title: "Manually Created Review",
+                labelColor: .secondary,
+                background: true
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .layoutPriority(1)
         }
     }
     
