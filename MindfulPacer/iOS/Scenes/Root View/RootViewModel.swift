@@ -16,21 +16,24 @@ class RootViewModel {
     
     private let modelContext: ModelContext
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
+    private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
-    
+
     // MARK: - Published Properties
     
     var activeSheet: RootSheet? = nil
-    
+        
     // MARK: - Initialization
     
     init(
         modelContext: ModelContext,
         addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
+        checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase,
         initializeConnectivityUseCase: InitializeConnectivityUseCase
     ) {
         self.modelContext = modelContext
         self.addDefaultCategoriesUseCase = addDefaultCategoriesUseCase
+        self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
@@ -42,12 +45,22 @@ class RootViewModel {
             await addDefaultCategoriesUseCase.execute()
             initializeConnectivityUseCase.execute()
         }
-        presentSheet(.onboardingView)
+        checkIfUserHasSeenOnboarding()
     }
     
     // MARK: - Presentation
     
     func presentSheet(_ sheet: RootSheet) {
         activeSheet = sheet
+    }
+    
+    // MARK: - Private Methods
+    
+    private func checkIfUserHasSeenOnboarding() {
+        let hasSeenOnboarding = checkUserHasSeenOnboardingUseCase.execute()
+        
+        if !hasSeenOnboarding {
+            presentSheet(.onboardingView)
+        }
     }
 }

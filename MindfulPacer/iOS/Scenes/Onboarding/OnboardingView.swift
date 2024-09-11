@@ -39,7 +39,7 @@ struct OnboardingView: View {
             .navigationDestination(for: OnboardingNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
             }
-            .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
+            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
                 if shouldDismiss {
                     dismiss()
                 }

@@ -31,12 +31,7 @@ class CreateReviewReminderViewModel {
     var activeSheet: CreateReviewReminderSheet? = nil
     var activeAlert: CreateReviewReminderAlert? = nil
     
-    var viewDismissalPublisher = PassthroughSubject<Bool, Never>()
-    private var shouldDismiss = false {
-        didSet {
-            viewDismissalPublisher.send(shouldDismiss)
-        }
-    }
+    var shouldDismiss: Bool = false
     
     var summaryViewTitle: String {
         switch mode {
@@ -151,19 +146,19 @@ class CreateReviewReminderViewModel {
     func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
-            navigationPath.append(CreateReviewReminderNavigationDestination.measurementType)
+            navigateTo(destination: .measurementType)
             return
         }
         
         switch currentDestination {
         case .measurementType:
-            navigationPath.append(CreateReviewReminderNavigationDestination.reviewReminderType)
+            navigateTo(destination: .reviewReminderType)
         case .reviewReminderType:
-            navigationPath.append(CreateReviewReminderNavigationDestination.threshold)
+            navigateTo(destination: .threshold)
         case .threshold:
-            navigationPath.append(CreateReviewReminderNavigationDestination.interval)
+            navigateTo(destination: .interval)
         case .interval:
-            navigationPath.append(CreateReviewReminderNavigationDestination.summary)
+            navigateTo(destination: .summary)
         case .summary:
             createReviewReminder()
         }
@@ -208,6 +203,10 @@ class CreateReviewReminderViewModel {
     }
     
     // MARK: - Presentation
+    
+    func navigateTo(destination: CreateReviewReminderNavigationDestination) {
+        navigationPath.append(destination)
+    }
     
     func presentSheet(_ sheet: CreateReviewReminderSheet) {
         activeSheet = sheet

@@ -172,6 +172,10 @@ class EditReviewViewModel {
     
     // MARK: - Presentation
     
+    func navigateTo(destination: EditReviewNavigationDestination) {
+        navigationPath.append(destination)
+    }
+    
     func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type
         presentSheet(.ratingSheet)

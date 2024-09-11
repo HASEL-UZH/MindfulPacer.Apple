@@ -41,7 +41,6 @@ struct RootView: View {
         }
     }
     
-    
     // MARK: Sheets
     
     @ViewBuilder

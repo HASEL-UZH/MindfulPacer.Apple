@@ -8,6 +8,8 @@
 import Foundation
 import HealthKit
 
+// MARK: - Period
+
 enum Period {
     case day
     case week
@@ -31,9 +33,9 @@ enum Period {
 // MARK: - HealthKitServiceProtocol
 
 protocol HealthKitServiceProtocol {
-    func requestAuthorization(completion: @escaping (Bool, Error?) -> Void)
-    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], Error>) -> Void)
-    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, Error>) -> Void)
+    func requestAuthorization(completion: @escaping (Bool, HealthKitError?) -> Void)
+    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void)
+    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void)
 }
 
 // MARK: - HealthKitService
@@ -48,22 +50,37 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
     }
     
-    func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
+    // MARK: - Request HealthKit Authorization
+
+    func requestAuthorization(completion: @escaping (Bool, HealthKitError?) -> Void) {
         guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
               let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            completion(false, NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Health data types are unavailable."]))
+            let error = HealthKitError(type: .healthDataUnavailable)
+            completion(false, error)
             return
         }
         
         let typesToShare: Set = [HKObjectType.workoutType()]
         let typesToRead: Set = [heartRateType, stepType]
         
-        healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead, completion: completion)
+        healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
+            if let error = error {
+                let customError = HealthKitError(type: .unknownError, underlyingError: error)
+                completion(false, customError)
+            } else if !success {
+                let deniedError = HealthKitError(type: .permissionDenied)
+                completion(false, deniedError)
+            } else {
+                completion(true, nil)
+            }
+        }
     }
-    
-    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], Error>) -> Void) {
+
+    // MARK: - Fetch Heart Rate Data
+
+    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
         guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
-            completion(.failure(NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Heart rate type is unavailable."])))
+            completion(.failure(HealthKitError(type: .heartRateTypeUnavailable)))
             return
         }
         
@@ -72,14 +89,14 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { query, results, error in
             if let error = error {
                 Task { @MainActor in
-                    completion(.failure(error))
+                    completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
             
             guard let samples = results as? [HKQuantitySample] else {
                 Task { @MainActor in
-                    completion(.failure(NSError(domain: "HealthKitService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch heart rate samples."])))
+                    completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
@@ -89,27 +106,28 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         
         healthStore?.execute(query)
     }
-    
-    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, Error>) -> Void) {
+
+    // MARK: - Fetch Current Step Count
+
+    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void) {
         guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            completion(.failure(NSError(domain: "HealthKitService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Step count type is unavailable."])))
+            completion(.failure(HealthKitError(type: .stepCountTypeUnavailable)))
             return
         }
         
-        // Start of today
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictEndDate)
         let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
             if let error = error {
                 Task { @MainActor in
-                    completion(.failure(error))
+                    completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
             
             guard let result = result, let sum = result.sumQuantity() else {
                 Task { @MainActor in
-                    completion(.failure(NSError(domain: "HealthKitService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch current step count."])))
+                    completion(.failure(HealthKitError(type: .failedToFetchStepCount)))
                 }
                 return
             }

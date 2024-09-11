@@ -41,18 +41,14 @@ class OnboardingViewModel {
     // MARK: - Dependencies
     
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
+    private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
+    private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
     
     // MARK: - Published Properties
     
     var navigationPath: [OnboardingNavigationDestination] = []
     
-    var viewDismissalPublisher = PassthroughSubject<Bool, Never>()
-    private var shouldDismiss = false {
-        didSet {
-            viewDismissalPublisher.send(shouldDismiss)
-        }
-    }
-    
+    var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
     
     var actionButtonTitle: String {
@@ -64,9 +60,9 @@ class OnboardingViewModel {
         case .appleWatchConnection:
             return "Continue"
         case .notifications:
-            return "Allow Notifications"
+            return didCompleteNotificationsRequest ? "Continue" : "Allow Notifications"
         case .appleHealth:
-            return "Allow Health Access"
+            return didCompleteHealthAuthorization ? "Continue" : "Allow Health Access"
         case .mainFeatures:
             return "Continue"
         case .activityPromotingFeatures:
@@ -97,6 +93,9 @@ class OnboardingViewModel {
         return lastDestination == .disclaimer
     }
     var didAcceptTerms: Bool = false
+    
+    var didCompleteNotificationsRequest: Bool = false
+    var didCompleteHealthAuthorization: Bool = false
     
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
@@ -210,16 +209,18 @@ class OnboardingViewModel {
     // MARK: - Initialization
     
     init(
-        initializeNotificationsUseCase: InitializeNotificationsUseCase
+        initializeNotificationsUseCase: InitializeNotificationsUseCase,
+        requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
+        toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
     ) {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
+        self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
+        self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
     }
     
     // MARK: - View Lifecycle
     
-    func onViewFirstAppear() {
-        
-    }
+    func onViewFirstAppear() {}
     
     // MARK: - User Actions
     
@@ -234,21 +235,15 @@ class OnboardingViewModel {
         case .appleWatchConnection:
             navigationPath.append(OnboardingNavigationDestination.notifications)
         case .notifications:
-            initializeNotificationsUseCase.execute { result in
-                switch result {
-                case .success(_):
-                    self.navigationPath.append(OnboardingNavigationDestination.appleHealth)
-                case .failure(let failure):
-                    print("DEBUG: Notifications not authorized \(String(describing: failure.failureReason))")
-                }
-            }
+            requestNotificationPermission()
         case .appleHealth:
-            navigationPath.append(OnboardingNavigationDestination.mainFeatures)
+            requestHealthAuthorization()
         case .mainFeatures:
             navigationPath.append(OnboardingNavigationDestination.activityPromotingFeatures)
         case .activityPromotingFeatures:
             navigationPath.append(OnboardingNavigationDestination.disclaimer)
         case .disclaimer:
+            toggleUserHasSeenOnboardingUseCase.execute()
             shouldDismiss = true
         }
     }
@@ -256,21 +251,21 @@ class OnboardingViewModel {
     func skipButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
-            navigationPath.append(OnboardingNavigationDestination.appleWatchConnection)
+            navigateTo(destination: .appleWatchConnection)
             return
         }
         
         switch currentDestination {
         case .appleWatchConnection:
-            navigationPath.append(OnboardingNavigationDestination.notifications)
+            navigateTo(destination: .notifications)
         case .notifications:
-            navigationPath.append(OnboardingNavigationDestination.appleHealth)
+            navigateTo(destination: .appleHealth)
         case .appleHealth:
-            navigationPath.append(OnboardingNavigationDestination.mainFeatures)
+            navigateTo(destination: .mainFeatures)
         case .mainFeatures:
-            navigationPath.append(OnboardingNavigationDestination.activityPromotingFeatures)
+            navigateTo(destination: .activityPromotingFeatures)
         case .activityPromotingFeatures:
-            navigationPath.append(OnboardingNavigationDestination.disclaimer)
+            navigateTo(destination: .disclaimer)
         default:
             break
         }
@@ -278,6 +273,34 @@ class OnboardingViewModel {
     
     // MARK: - Presentation
     
+    func navigateTo(destination: OnboardingNavigationDestination) {
+        navigationPath.append(destination)
+    }
     
     // MARK: - Private Methods
+    
+    private func requestNotificationPermission() {
+        initializeNotificationsUseCase.execute { result in
+            switch result {
+            case .success(_):
+                print("DEBUG: Notifications are now authorized")
+            case .failure(let failure):
+                print("DEBUG: Notifications not authorized \(String(describing: failure.failureReason))")
+            }
+            self.navigateTo(destination: .appleHealth)
+            self.didCompleteNotificationsRequest = true
+        }
+    }
+    
+    private func requestHealthAuthorization() {
+        requestHealthAuthorisationUseCase.execute { success, error in
+            if let error = error {
+                print(error.errorDescription ?? "An error occurred.")
+                print(error.recoverySuggestion ?? "")
+            } else if success {
+                self.navigateTo(destination: .mainFeatures)
+            }
+            self.didCompleteHealthAuthorization = true
+        }
+    }
 }

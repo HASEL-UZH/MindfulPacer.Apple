@@ -79,7 +79,7 @@ struct CreateReviewReminderView: View {
             .navigationDestination(for: CreateReviewReminderNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
             }
-            .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
+            onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
                 if shouldDismiss {
                     dismiss()
                 }

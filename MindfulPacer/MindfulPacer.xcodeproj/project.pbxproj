@@ -60,6 +60,11 @@
 		0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4352C91933B000F6114 /* NotificationError.swift */; };
 		0D67F4372C91933B000F6114 /* NotificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4352C91933B000F6114 /* NotificationError.swift */; };
 		0D67F43A2C91936D000F6114 /* InitializeNotificationsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4392C91936D000F6114 /* InitializeNotificationsUseCase.swift */; };
+		0D67F43D2C91DBDA000F6114 /* ToggleUserHasSeenOnboardingUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F43C2C91DBDA000F6114 /* ToggleUserHasSeenOnboardingUseCase.swift */; };
+		0D67F43F2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F43E2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift */; };
+		0D67F4412C92155F000F6114 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4402C92155F000F6114 /* HealthKitError.swift */; };
+		0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4402C92155F000F6114 /* HealthKitError.swift */; };
+		0D67F4442C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4432C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift */; };
 		0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */; };
 		0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */; };
 		0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A450A2C84E022002807D3 /* ReviewCell.swift */; };
@@ -220,6 +225,10 @@
 		0D67F4332C90E255000F6114 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		0D67F4352C91933B000F6114 /* NotificationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationError.swift; sourceTree = "<group>"; };
 		0D67F4392C91936D000F6114 /* InitializeNotificationsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeNotificationsUseCase.swift; sourceTree = "<group>"; };
+		0D67F43C2C91DBDA000F6114 /* ToggleUserHasSeenOnboardingUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleUserHasSeenOnboardingUseCase.swift; sourceTree = "<group>"; };
+		0D67F43E2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckUserHasSeenOnboardingUseCase.swift; sourceTree = "<group>"; };
+		0D67F4402C92155F000F6114 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
+		0D67F4432C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHealthAuthorisationUseCase.swift; sourceTree = "<group>"; };
 		0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersWidget.swift; sourceTree = "<group>"; };
 		0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentStepsUseCase.swift; sourceTree = "<group>"; };
 		0D6A450A2C84E022002807D3 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
@@ -588,10 +597,20 @@
 			path = System;
 			sourceTree = "<group>";
 		};
+		0D67F43B2C91DBB8000F6114 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F43C2C91DBDA000F6114 /* ToggleUserHasSeenOnboardingUseCase.swift */,
+				0D67F43E2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		0D6A45042C84CBCF002807D3 /* Health */ = {
 			isa = PBXGroup;
 			children = (
 				0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */,
+				0D67F4432C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift */,
 			);
 			path = Health;
 			sourceTree = "<group>";
@@ -809,6 +828,7 @@
 			isa = PBXGroup;
 			children = (
 				0D6A45042C84CBCF002807D3 /* Health */,
+				0D67F43B2C91DBB8000F6114 /* Onboarding */,
 				0D9E5F5E2C64C7A6005BA46C /* Review */,
 				0D34C45C2C83681700928C53 /* Review Reminder */,
 				0D67F4382C919363000F6114 /* System */,
@@ -929,6 +949,7 @@
 			isa = PBXGroup;
 			children = (
 				0DD858932C71468700061F63 /* ConnectivityError.swift */,
+				0D67F4402C92155F000F6114 /* HealthKitError.swift */,
 				0D67F4352C91933B000F6114 /* NotificationError.swift */,
 				0DD858902C71465A00061F63 /* SessionError.swift */,
 			);
@@ -1210,6 +1231,7 @@
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReviewUseCase.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
+				0D67F4442C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift in Sources */,
 				0D500FE32C7498E300395AEB /* CategoryView.swift in Sources */,
 				0D67F42B2C90E109000F6114 /* AppleHealthView.swift in Sources */,
 				0D67F43A2C91936D000F6114 /* InitializeNotificationsUseCase.swift in Sources */,
@@ -1219,6 +1241,7 @@
 				0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */,
 				0DD3FDC42C8CC73D00859A1C /* RoundedList.swift in Sources */,
 				0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */,
+				0D67F43D2C91DBDA000F6114 /* ToggleUserHasSeenOnboardingUseCase.swift in Sources */,
 				0D4EBE462C727F8900C1865D /* IntervalView.swift in Sources */,
 				0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */,
 				0D67F4372C91933B000F6114 /* NotificationError.swift in Sources */,
@@ -1255,6 +1278,7 @@
 				0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */,
 				0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */,
 				0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
+				0D67F4412C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0DFCA1D22C623FB40000C87C /* EditReviewViewModel.swift in Sources */,
 				0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 				0D909E292C9043CF00377589 /* OnboardingViewModel.swift in Sources */,
@@ -1263,6 +1287,7 @@
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
 				0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */,
 				0D9AB0CF2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift in Sources */,
+				0D67F43F2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift in Sources */,
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 				0DD858942C71468700061F63 /* ConnectivityError.swift in Sources */,
 				0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */,
@@ -1294,6 +1319,7 @@
 				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
 				0DD858952C71468700061F63 /* ConnectivityError.swift in Sources */,
 				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
+				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,

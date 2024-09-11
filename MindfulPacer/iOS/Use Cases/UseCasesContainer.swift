@@ -22,6 +22,23 @@ extension UseCasesContainer {
         self { DefaultFetchCurrentStepsUseCase(healthKitService: HealthKitService.shared) }
     }
     
+    @MainActor
+    var requestHealthAuthorisationUseCase: Factory<DefaultRequestHealthAuthorisationUseCase> {
+        self { DefaultRequestHealthAuthorisationUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    // MARK: - Onboarding
+    
+    @MainActor
+    var checkUserHasSeenOnboardingUseCase: Factory<DefaultCheckUserHasSeenOnboardingUseCase> {
+        self { DefaultCheckUserHasSeenOnboardingUseCase() }
+    }
+    
+    @MainActor
+    var toggleUserHasSeenOnboardingUseCase: Factory<DefaultToggleUserHasSeenOnboardingUseCase> {
+        self { DefaultToggleUserHasSeenOnboardingUseCase() }
+    }
+    
     // MARK: - Review
     
     @MainActor
