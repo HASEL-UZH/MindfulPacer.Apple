@@ -28,6 +28,19 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         }
     }
     
+    // MARK: - Onboarding
+    
+    @MainActor
+    var onboardingViewModel: Factory<OnboardingViewModel> {
+        self {
+            OnboardingViewModel(
+                initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase(),
+                requestHealthAuthorisationUseCase: UseCasesContainer.shared.requestHealthAuthorisationUseCase(),
+                toggleUserHasSeenOnboardingUseCase: UseCasesContainer.shared.toggleUserHasSeenOnboardingUseCase()
+            )
+        }
+    }
+    
     // MARK: - Root
     
     @MainActor
@@ -36,6 +49,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             RootViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
+                checkUserHasSeenOnboardingUseCase: UseCasesContainer.shared.checkUserHasSeenOnboardingUseCase(),
                 initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
             )
         }

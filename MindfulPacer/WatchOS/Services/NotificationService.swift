@@ -38,13 +38,15 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error = error {
                 print("DEBUG: Notification authorization failed with error: \(error.localizedDescription)")
-                completion(.failure(error))
+                // Using custom error for authorization failure
+                completion(.failure(NotificationError(type: .unknownError, underlyingError: error)))
             } else if granted {
                 print("DEBUG: Notification authorization granted: \(granted)")
                 completion(.success(()))
             } else {
                 print("DEBUG: Notification authorization not granted.")
-                completion(.failure(NSError(domain: "com.yourapp.notification", code: 1, userInfo: [NSLocalizedDescriptionKey: "Notification authorization not granted."])))
+                // Using custom error for permission denied
+                completion(.failure(NotificationError(type: .permissionDenied)))
             }
         }
     }
@@ -52,7 +54,7 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
     // MARK: - Trigger Local Notification
     
     func triggerLocalNotification(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        print("DEBUGY: triggerLocalNotification called")
+        print("DEBUG: triggerLocalNotification called")
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -62,7 +64,8 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                completion(.failure(error))
+                // Using custom error for failure to send notification
+                completion(.failure(NotificationError(type: .failedToSendNotification, underlyingError: error)))
             } else {
                 completion(.success(()))
             }

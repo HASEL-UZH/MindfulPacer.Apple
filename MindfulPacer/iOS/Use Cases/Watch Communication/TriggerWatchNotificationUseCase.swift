@@ -7,10 +7,8 @@
 
 import Foundation
 
-import Foundation
-
 protocol TriggerWatchNotificationUseCase {
-    func execute(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void)
+    func execute(title: String, body: String, completion: @escaping (Result<Void, NotificationError>) -> Void)
 }
 
 // MARK: - Use Case Implementation
@@ -22,7 +20,7 @@ final class DefaultTriggerWatchNotificationUseCase: TriggerWatchNotificationUseC
         self.notificationService = notificationService
     }
     
-    func execute(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(title: String, body: String,completion: @escaping (Result<Void, NotificationError>) -> Void) {
         notificationService.triggerLocalNotification(title: title, body: body, completion: completion)
     }
 }

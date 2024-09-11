@@ -10,6 +10,41 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - Review Filter & Sorting
+
+struct ReviewFilter: Equatable {
+    var selectedCategories: [Category] = []
+    var selectedSubcategories: [Subcategory] = []
+    var selectedMoods: [Mood] = []
+    var triggeredCrash: Bool = false
+    
+    var fromDate: Date = Calendar.current.date(byAdding: .weekOfMonth, value: -2, to: Date()) ?? Date()
+    var toDate: Date = Date()
+    
+    var activeFilterCount: Int {
+        var count = 0
+        count += selectedCategories.count
+        count += selectedSubcategories.count
+        count += selectedMoods.count
+        count += triggeredCrash ? 1 : 0
+        return count
+    }
+}
+
+enum ReviewSorting {
+    case dateAscending
+    case dateDescending
+    
+    var comparator: (Review, Review) -> Bool {
+        switch self {
+        case .dateAscending: return { $0.date < $1.date }
+        case .dateDescending: return { $0.date > $1.date }
+        }
+    }
+}
+
+// MARK: - ReviewsFilterViewModel
+
 @MainActor
 @Observable
 class ReviewsFilterViewModel {
@@ -167,43 +202,5 @@ class ReviewsFilterViewModel {
     private func updateToDate(_ toDate: Date) {
         reviewFilter.toDate = toDate
         publishChanges()
-    }
-}
-
-// MARK: - Review Filter & Sorting
-
-typealias ReviewFilter = ReviewsFilterViewModel.ReviewFilter
-typealias ReviewSorting = ReviewsFilterViewModel.ReviewSorting
-
-extension ReviewsFilterViewModel {
-    struct ReviewFilter: Equatable {
-        var selectedCategories: [Category] = []
-        var selectedSubcategories: [Subcategory] = []
-        var selectedMoods: [Mood] = []
-        var triggeredCrash: Bool = false
-        
-        var fromDate: Date = Calendar.current.date(byAdding: .weekOfMonth, value: -2, to: Date()) ?? Date()
-        var toDate: Date = Date()
-        
-        var activeFilterCount: Int {
-            var count = 0
-            count += selectedCategories.count
-            count += selectedSubcategories.count
-            count += selectedMoods.count
-            count += triggeredCrash ? 1 : 0
-            return count
-        }
-    }
-    
-    enum ReviewSorting {
-        case dateAscending
-        case dateDescending
-        
-        var comparator: (Review, Review) -> Bool {
-            switch self {
-            case .dateAscending: return { $0.date < $1.date }
-            case .dateDescending: return { $0.date > $1.date }
-            }
-        }
     }
 }

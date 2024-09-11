@@ -7,7 +7,8 @@
 
 import Foundation
 import SwiftData
-import SwiftUI
+
+// MARK: - EditReviewViewModel
 
 @MainActor
 @Observable
@@ -170,6 +171,10 @@ class EditReviewViewModel {
     }
     
     // MARK: - Presentation
+    
+    func navigateTo(destination: EditReviewNavigationDestination) {
+        navigationPath.append(destination)
+    }
     
     func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type

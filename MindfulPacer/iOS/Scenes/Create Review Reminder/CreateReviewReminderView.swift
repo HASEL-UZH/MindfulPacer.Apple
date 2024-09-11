@@ -44,7 +44,7 @@ struct CreateReviewReminderView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
-    @State var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
+    @State private var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     var reviewReminder: ReviewReminder?
     
@@ -79,7 +79,7 @@ struct CreateReviewReminderView: View {
             .navigationDestination(for: CreateReviewReminderNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
             }
-            .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
+            onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
                 if shouldDismiss {
                     dismiss()
                 }

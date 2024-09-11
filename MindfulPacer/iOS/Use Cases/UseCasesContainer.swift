@@ -22,6 +22,23 @@ extension UseCasesContainer {
         self { DefaultFetchCurrentStepsUseCase(healthKitService: HealthKitService.shared) }
     }
     
+    @MainActor
+    var requestHealthAuthorisationUseCase: Factory<DefaultRequestHealthAuthorisationUseCase> {
+        self { DefaultRequestHealthAuthorisationUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    // MARK: - Onboarding
+    
+    @MainActor
+    var checkUserHasSeenOnboardingUseCase: Factory<DefaultCheckUserHasSeenOnboardingUseCase> {
+        self { DefaultCheckUserHasSeenOnboardingUseCase() }
+    }
+    
+    @MainActor
+    var toggleUserHasSeenOnboardingUseCase: Factory<DefaultToggleUserHasSeenOnboardingUseCase> {
+        self { DefaultToggleUserHasSeenOnboardingUseCase() }
+    }
+    
     // MARK: - Review
     
     @MainActor
@@ -79,6 +96,13 @@ extension UseCasesContainer {
     @MainActor
     var saveReviewReminderUseCase: Factory<DefaultSaveReviewReminderUseCase> {
         self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    // MARK: - System
+    
+    @MainActor
+    var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
+        self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }
     
     // MARK: - Watch Communication
