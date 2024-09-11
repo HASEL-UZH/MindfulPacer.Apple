@@ -44,7 +44,7 @@ struct CreateReviewReminderView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
-    @State var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
+    @State private var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
     
     var reviewReminder: ReviewReminder?
     

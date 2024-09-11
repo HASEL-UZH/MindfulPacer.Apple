@@ -8,13 +8,19 @@
 import Foundation
 import SwiftData
 
+// MARK: - RootViewModel
+
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-
+    
     private let modelContext: ModelContext
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
+    
+    // MARK: - Published Properties
+    
+    var activeSheet: RootSheet? = nil
     
     // MARK: - Initialization
     
@@ -28,7 +34,7 @@ class RootViewModel {
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
-    // MARK: View Events
+    // MARK: - View Events
     
     @MainActor
     func onViewFirstAppear() {
@@ -36,5 +42,12 @@ class RootViewModel {
             await addDefaultCategoriesUseCase.execute()
             initializeConnectivityUseCase.execute()
         }
+        presentSheet(.onboardingView)
+    }
+    
+    // MARK: - Presentation
+    
+    func presentSheet(_ sheet: RootSheet) {
+        activeSheet = sheet
     }
 }

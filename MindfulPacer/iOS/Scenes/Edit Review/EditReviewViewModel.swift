@@ -7,7 +7,8 @@
 
 import Foundation
 import SwiftData
-import SwiftUI
+
+// MARK: - EditReviewViewModel
 
 @MainActor
 @Observable

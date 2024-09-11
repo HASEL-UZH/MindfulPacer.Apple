@@ -28,6 +28,15 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         }
     }
     
+    // MARK: - Onboarding
+    
+    @MainActor
+    var onboardingViewModel: Factory<OnboardingViewModel> {
+        self {
+            OnboardingViewModel()
+        }
+    }
+    
     // MARK: - Root
     
     @MainActor

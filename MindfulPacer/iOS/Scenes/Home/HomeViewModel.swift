@@ -10,6 +10,8 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - HomeViewModel
+
 @MainActor
 @Observable
 class HomeViewModel {

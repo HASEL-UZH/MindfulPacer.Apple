@@ -50,6 +50,13 @@
 		0D500FF62C75242A00395AEB /* CreateReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */; };
 		0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
 		0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
+		0D67F4222C90CA26000F6114 /* KeyFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4212C90CA26000F6114 /* KeyFeaturesView.swift */; };
+		0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4242C90DF19000F6114 /* AppleWatchConnectionView.swift */; };
+		0D67F4282C90E0A3000F6114 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4272C90E0A3000F6114 /* NotificationsView.swift */; };
+		0D67F42B2C90E109000F6114 /* AppleHealthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F42A2C90E109000F6114 /* AppleHealthView.swift */; };
+		0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F42D2C90E181000F6114 /* MainFeaturesView.swift */; };
+		0D67F4312C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4302C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift */; };
+		0D67F4342C90E255000F6114 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4332C90E255000F6114 /* DisclaimerView.swift */; };
 		0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */; };
 		0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */; };
 		0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A450A2C84E022002807D3 /* ReviewCell.swift */; };
@@ -59,6 +66,8 @@
 		0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C66332C2DA96000853EDE /* iOSApp.swift */; };
 		0D8C66382C2DA96100853EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C66372C2DA96100853EDE /* Assets.xcassets */; };
 		0D8C663B2C2DA96100853EDE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */; };
+		0D909E272C9043B300377589 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D909E262C9043B300377589 /* OnboardingView.swift */; };
+		0D909E292C9043CF00377589 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D909E282C9043CF00377589 /* OnboardingViewModel.swift */; };
 		0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D96D7542C7130C700B62A4D /* InitializeConnectivityUseCase.swift */; };
 		0D96D7572C7130EB00B62A4D /* InitializeConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D96D7562C7130EB00B62A4D /* InitializeConnectivityUseCase.swift */; };
 		0D9AB09A2C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0992C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift */; };
@@ -199,6 +208,13 @@
 		0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extensions.swift"; sourceTree = "<group>"; };
 		0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewReminderUseCase.swift; sourceTree = "<group>"; };
 		0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
+		0D67F4212C90CA26000F6114 /* KeyFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFeaturesView.swift; sourceTree = "<group>"; };
+		0D67F4242C90DF19000F6114 /* AppleWatchConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchConnectionView.swift; sourceTree = "<group>"; };
+		0D67F4272C90E0A3000F6114 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		0D67F42A2C90E109000F6114 /* AppleHealthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHealthView.swift; sourceTree = "<group>"; };
+		0D67F42D2C90E181000F6114 /* MainFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFeaturesView.swift; sourceTree = "<group>"; };
+		0D67F4302C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPromotingFeaturesView.swift; sourceTree = "<group>"; };
+		0D67F4332C90E255000F6114 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersWidget.swift; sourceTree = "<group>"; };
 		0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentStepsUseCase.swift; sourceTree = "<group>"; };
 		0D6A450A2C84E022002807D3 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
@@ -209,6 +225,8 @@
 		0D8C66332C2DA96000853EDE /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		0D8C66372C2DA96100853EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0D909E262C9043B300377589 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		0D909E282C9043CF00377589 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		0D96D7542C7130C700B62A4D /* InitializeConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeConnectivityUseCase.swift; sourceTree = "<group>"; };
 		0D96D7562C7130EB00B62A4D /* InitializeConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeConnectivityUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0992C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDefaultCategoriesUseCase.swift; sourceTree = "<group>"; };
@@ -501,6 +519,62 @@
 			path = System;
 			sourceTree = "<group>";
 		};
+		0D67F4202C90CA16000F6114 /* Key Features */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F4212C90CA26000F6114 /* KeyFeaturesView.swift */,
+			);
+			path = "Key Features";
+			sourceTree = "<group>";
+		};
+		0D67F4232C90DF0F000F6114 /* Apple Watch Connection */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F4242C90DF19000F6114 /* AppleWatchConnectionView.swift */,
+			);
+			path = "Apple Watch Connection";
+			sourceTree = "<group>";
+		};
+		0D67F4262C90E095000F6114 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F4272C90E0A3000F6114 /* NotificationsView.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		0D67F4292C90E102000F6114 /* Apple Health */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F42A2C90E109000F6114 /* AppleHealthView.swift */,
+			);
+			path = "Apple Health";
+			sourceTree = "<group>";
+		};
+		0D67F42C2C90E167000F6114 /* Main Features */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F42D2C90E181000F6114 /* MainFeaturesView.swift */,
+			);
+			path = "Main Features";
+			sourceTree = "<group>";
+		};
+		0D67F42F2C90E1D7000F6114 /* Activity Promoting Features */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F4302C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift */,
+			);
+			path = "Activity Promoting Features";
+			sourceTree = "<group>";
+		};
+		0D67F4322C90E24B000F6114 /* Disclaimer */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F4332C90E255000F6114 /* DisclaimerView.swift */,
+			);
+			path = Disclaimer;
+			sourceTree = "<group>";
+		};
 		0D6A45042C84CBCF002807D3 /* Health */ = {
 			isa = PBXGroup;
 			children = (
@@ -564,6 +638,22 @@
 				0D8C663A2C2DA96100853EDE /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0D909E252C9043A700377589 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0D67F42F2C90E1D7000F6114 /* Activity Promoting Features */,
+				0D67F4292C90E102000F6114 /* Apple Health */,
+				0D67F4232C90DF0F000F6114 /* Apple Watch Connection */,
+				0D67F4322C90E24B000F6114 /* Disclaimer */,
+				0D67F4202C90CA16000F6114 /* Key Features */,
+				0D67F42C2C90E167000F6114 /* Main Features */,
+				0D67F4262C90E095000F6114 /* Notifications */,
+				0D909E262C9043B300377589 /* OnboardingView.swift */,
+				0D909E282C9043CF00377589 /* OnboardingViewModel.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		0D9AB0AA2C6B8BC100BB773F /* Extensions */ = {
@@ -720,6 +810,7 @@
 				0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */,
 				0D34C44C2C822F4800928C53 /* Edit Review */,
 				0DC2D7E72C7C7DCC008122CC /* Home */,
+				0D909E252C9043A700377589 /* Onboarding */,
 				0D4E118B2C871F8F0023E0A0 /* Reviews Filter */,
 				0DBA37192C31EF5B00209681 /* Root View */,
 				0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */,
@@ -1105,6 +1196,7 @@
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReviewUseCase.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
 				0D500FE32C7498E300395AEB /* CategoryView.swift in Sources */,
+				0D67F42B2C90E109000F6114 /* AppleHealthView.swift in Sources */,
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
 				0D456AB02C7D07460014CD81 /* FetchReviewsUseCase.swift in Sources */,
 				0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */,
@@ -1117,13 +1209,18 @@
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */,
+				0D909E272C9043B300377589 /* OnboardingView.swift in Sources */,
+				0D67F4342C90E255000F6114 /* DisclaimerView.swift in Sources */,
 				0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */,
+				0D67F4222C90CA26000F6114 /* KeyFeaturesView.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
 				0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */,
 				0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */,
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
+				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
+				0D67F4312C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift in Sources */,
 				0D456ABD2C808FA40014CD81 /* ReviewsListView.swift in Sources */,
 				0D6A450D2C84E5B1002807D3 /* ReviewReminderCell.swift in Sources */,
 				0D34C4652C837FE100928C53 /* ReviewsWidget.swift in Sources */,
@@ -1132,15 +1229,18 @@
 				0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0DDD33662C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
+				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
 				0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */,
+				0D67F4282C90E0A3000F6114 /* NotificationsView.swift in Sources */,
 				0D9E5F602C64C7B7005BA46C /* AddDefaultCategoriesUseCase.swift in Sources */,
 				0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */,
 				0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DFCA1D22C623FB40000C87C /* EditReviewViewModel.swift in Sources */,
 				0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
+				0D909E292C9043CF00377589 /* OnboardingViewModel.swift in Sources */,
 				0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */,
 				0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */,
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
