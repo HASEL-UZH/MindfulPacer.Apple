@@ -81,6 +81,13 @@ extension UseCasesContainer {
         self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
+    // MARK: - System
+    
+    @MainActor
+    var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
+        self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
+    }
+    
     // MARK: - Watch Communication
     
     @MainActor

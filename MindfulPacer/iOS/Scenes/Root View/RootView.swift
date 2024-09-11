@@ -50,7 +50,7 @@ struct RootView: View {
         case .onboardingView:
             OnboardingView()
                 .presentationCornerRadius(16)
-                .presentationDragIndicator(.hidden) // TODO: Remove this and disable interactive dismissal for prod
+                .interactiveDismissDisabled()
         }
     }
 }

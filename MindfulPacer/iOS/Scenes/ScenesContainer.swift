@@ -33,7 +33,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var onboardingViewModel: Factory<OnboardingViewModel> {
         self {
-            OnboardingViewModel()
+            OnboardingViewModel(
+                initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase()
+            )
         }
     }
     

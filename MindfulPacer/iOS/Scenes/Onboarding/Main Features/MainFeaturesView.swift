@@ -43,7 +43,6 @@ extension OnboardingView {
                                 .frame(maxWidth: .infinity, alignment: .center)
                             
                             Text(feature.points)
-                                .font(.subheadline)
                         }
                     }
                 }

@@ -44,7 +44,6 @@ extension OnboardingView {
                             Text("Do **NOT** solely rely on MindfulPacer for pacing and managing your activities and energy.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.subheadline)
                     }
                     
                     Text("When in doubt, please contact an experienced physician, personal trainer or other qualified professional.")
@@ -56,9 +55,10 @@ extension OnboardingView {
                                 Text("You can reach out to the following email address in case you have further questions: mindfulpacer@outlook.com")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .font(.subheadline)
+                                    .foregroundStyle(.secondary)
                                     .tint(Color("BrandPrimary"))
                             } icon: {
-                                Icon(name: "envelope.circle", color: .secondary)
+                                Icon(name: "envelope", color: .secondary)
                             }
                         }
                     }

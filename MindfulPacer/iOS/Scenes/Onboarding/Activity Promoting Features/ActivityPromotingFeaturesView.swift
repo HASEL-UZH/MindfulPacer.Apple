@@ -33,91 +33,17 @@ extension OnboardingView {
                     Text("Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these.")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "figure.stand",
-                                title: "Disabling Stand Reminders",
-                                labelColor: Color("BrandPrimary")
-                            )
-                    ) {
-                        Group {
-                            Text("1. Open the Watch app on your iPhone.")
-                            Text("2. Tap on 'My Watch' at the bottom.")
-                            Text("3. Scroll down and tap on 'Activity'.")
-                            Text("4. Toggle off 'Stand Reminders'.")
+                    ForEach(viewModel.activityPromotingFeatures, id: \.title) { feature in
+                        IconLabelGroupBox(
+                            label:
+                                IconLabel(
+                                    icon: feature.icon,
+                                    title: feature.title,
+                                    labelColor: Color("BrandPrimary")
+                                )
+                        ) {
+                            Text(feature.steps)
                         }
-                        .font(.subheadline)
-                    }
-                    
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "bell.badge",
-                                title: "Disabling Activity Reminders",
-                                labelColor: Color("BrandPrimary")
-                            )
-                    ) {
-                        Group {
-                            Text("1. Open the Watch app on your iPhone.")
-                            Text("2. Tap on 'My Watch'.")
-                            Text("3. Tap on 'Notifications'.")
-                            Text("4. Select 'Activity'.")
-                            Text("5. Toggle off 'Activity Reminders'.")
-                        }
-                        .font(.subheadline)
-                    }
-                    
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "figure.pool.swim",
-                                title: "Disabling Exercise Notifications",
-                                labelColor: Color("BrandPrimary")
-                            )
-                    ) {
-                        Group {
-                            Text("1. Open the Watch app on your iPhone.")
-                            Text("2. Tap on 'My Watch'.")
-                            Text("3. Tap on 'Notifications'.")
-                            Text("4. Select 'Activity'.")
-                            Text("5. Toggle off 'Workout Reminders'.")
-                        }
-                        .font(.subheadline)
-                    }
-                    
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "figure.walk",
-                                title: "Adjust Move Goals",
-                                labelColor: Color("BrandPrimary")
-                            )
-                    ) {
-                        Group {
-                            Text("1. Open the Activity app on your Apple Watch.")
-                            Text("2. Firmly press the display.")
-                            Text("3. Tap 'Change Move Goal'.")
-                            Text("4. Adjust the goal to a level that suits your current capabilities.")
-                        }
-                        .font(.subheadline)
-                    }
-                    
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "aqi.low",
-                                title: "Disabling Breathe Reminders",
-                                labelColor: Color("BrandPrimary")
-                            )
-                    ) {
-                        Group {
-                            Text("1. Open the Activity app on your Apple Watch.")
-                            Text("2. Firmly press the display.")
-                            Text("3. Tap 'Change Move Goal'.")
-                            Text("4. Adjust the goal to a level that suits your current capabilities.")
-                        }
-                        .font(.subheadline)
                     }
                 }
             }

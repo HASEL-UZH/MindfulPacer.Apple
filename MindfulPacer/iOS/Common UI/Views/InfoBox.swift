@@ -23,6 +23,7 @@ struct InfoBox: View {
                     Text(text)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.subheadline)
+                        .foregroundColor(.secondary)
                 } icon: {
                     Icon(name: "info.circle", color: .secondary)
                 }

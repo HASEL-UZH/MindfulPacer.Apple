@@ -50,7 +50,6 @@ extension OnboardingView {
                                4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch.
                                """
                             )
-                            .font(.subheadline)
                         }
                         .iconLabelGroupBoxStyle(.divider)
                     }

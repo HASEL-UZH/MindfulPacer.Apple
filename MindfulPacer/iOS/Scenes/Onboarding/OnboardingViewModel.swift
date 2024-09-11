@@ -5,6 +5,7 @@
 //  Created by Grigor Dochev on 10.09.2024.
 //
 
+import Combine
 import Foundation
 
 // MARK: - KeyFeatureItem
@@ -25,15 +26,77 @@ struct MainFeatureItem {
     let image: String
 }
 
+// MARK: - ActivityPromotingFeature
+
+struct ActivityPromotingFeature {
+    let icon: String
+    let title: String
+    let steps: String
+}
+
 // MARK: - OnboardingViewModel
 
 @Observable
 class OnboardingViewModel {
     // MARK: - Dependencies
     
-    // MARK: - Published Properties (State)
+    private let initializeNotificationsUseCase: InitializeNotificationsUseCase
+    
+    // MARK: - Published Properties
     
     var navigationPath: [OnboardingNavigationDestination] = []
+    
+    var viewDismissalPublisher = PassthroughSubject<Bool, Never>()
+    private var shouldDismiss = false {
+        didSet {
+            viewDismissalPublisher.send(shouldDismiss)
+        }
+    }
+    
+    var actionButtonHeight: CGFloat = 0.0
+    
+    var actionButtonTitle: String {
+        guard let lastDestination = navigationPath.last else {
+            return "Continue"
+        }
+        
+        switch lastDestination {
+        case .appleWatchConnection:
+            return "Continue"
+        case .notifications:
+            return "Allow Notifications"
+        case .appleHealth:
+            return "Allow Health Access"
+        case .mainFeatures:
+            return "Continue"
+        case .activityPromotingFeatures:
+            return "Continue"
+        case .disclaimer:
+            return "Finish"
+        }
+    }
+    
+    var isActionButtonDisabled: Bool {
+        guard let lastDestination = navigationPath.last else {
+            return false
+        }
+        
+        switch lastDestination {
+        case .disclaimer:
+            return !didAcceptTerms
+        default:
+            return false
+        }
+    }
+    
+    var showAcceptTermsButton: Bool {
+        guard let lastDestination = navigationPath.last else {
+            return false
+        }
+        
+        return lastDestination == .disclaimer
+    }
+    var didAcceptTerms: Bool = false
     
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
@@ -84,44 +147,72 @@ class OnboardingViewModel {
         )
     ]
     
-    var actionButtonHeight: CGFloat = 0.0
-    
-    var actionButtonTitle: String {
-        guard let lastDestination = navigationPath.last else {
-            return "Continue"
-        }
-        
-        switch lastDestination {
-        case .appleWatchConnection:
-            return "Continue"
-        case .notifications:
-            return "Allow Notifications"
-        case .appleHealth:
-            return "Allow Health Access"
-        case .mainFeatures:
-            return "Continue"
-        case .activityPromotingFeatures:
-            return "Continue"
-        case .disclaimer:
-            return "Finish"
-        }
-    }
-    
-    var showAcceptTermsButton: Bool {
-        guard let lastDestination = navigationPath.last else {
-            return false
-        }
-        
-        return lastDestination == .disclaimer
-    }
-    var didAcceptTerms: Bool = false
+    let activityPromotingFeatures: [ActivityPromotingFeature] = [
+        ActivityPromotingFeature(
+            icon: "figure.stand",
+            title: "Disabling Stand Reminders",
+            steps:
+                """
+                1. Open the Watch app on your iPhone.
+                2. Tap on 'My Watch' at the bottom.
+                3. Scroll down and tap on 'Activity'.
+                4. Toggle off 'Stand Reminders'.
+                """
+        ),
+        ActivityPromotingFeature(
+            icon: "bell.badge",
+            title: "Disabling Activity Reminders",
+            steps:
+                """
+                1. Open the Watch app on your iPhone.
+                2. Tap on 'My Watch'.
+                3. Tap on 'Notifications'.
+                4. Select 'Activity'.
+                5. Toggle off 'Activity Reminders'.
+                """
+        ),
+        ActivityPromotingFeature(
+            icon: "figure.pool.swim",
+            title: "Disabling Exercise Notifications",
+            steps:
+                """
+                1. Open the Watch app on your iPhone.
+                2. Tap on 'My Watch'.
+                3. Tap on 'Notifications'.
+                4. Select 'Activity'.
+                5. Toggle off 'Workout Reminders'.
+                """
+        ),
+        ActivityPromotingFeature(
+            icon: "figure.walk",
+            title: "Adjust Move Goals",
+            steps:
+                """
+                1. Open the Activity app on your Apple Watch.
+                2. Firmly press the display.
+                3. Tap 'Change Move Goal'.
+                4. Adjust the goal to a level that suits your current capabilities.
+                """
+        ),
+        ActivityPromotingFeature(
+            icon: "aqi.low",
+            title: "Disabling Breathe Reminders",
+            steps:
+                """
+                1. Open the Activity app on your Apple Watch.
+                2. Firmly press the display.
+                3. Tap 'Change Move Goal'.
+                4. Adjust the goal to a level that suits your current capabilities.
+                """
+        )
+    ]
     
     // MARK: - Initialization
     
     init(
-        
+        initializeNotificationsUseCase: InitializeNotificationsUseCase
     ) {
-        
+        self.initializeNotificationsUseCase = initializeNotificationsUseCase
     }
     
     // MARK: - View Lifecycle
@@ -143,7 +234,14 @@ class OnboardingViewModel {
         case .appleWatchConnection:
             navigationPath.append(OnboardingNavigationDestination.notifications)
         case .notifications:
-            navigationPath.append(OnboardingNavigationDestination.appleHealth)
+            initializeNotificationsUseCase.execute { result in
+                switch result {
+                case .success(_):
+                    self.navigationPath.append(OnboardingNavigationDestination.appleHealth)
+                case .failure(let failure):
+                    print("DEBUG: Notifications not authorized \(String(describing: failure.failureReason))")
+                }
+            }
         case .appleHealth:
             navigationPath.append(OnboardingNavigationDestination.mainFeatures)
         case .mainFeatures:
@@ -151,7 +249,7 @@ class OnboardingViewModel {
         case .activityPromotingFeatures:
             navigationPath.append(OnboardingNavigationDestination.disclaimer)
         case .disclaimer:
-            break // TODO: We need to dismiss
+            shouldDismiss = true
         }
     }
     

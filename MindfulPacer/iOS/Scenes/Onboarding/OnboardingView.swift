@@ -23,6 +23,7 @@ enum OnboardingNavigationDestination: Hashable {
 struct OnboardingView: View {
     // MARK: Properties
     
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
     
     // MARK: Body
@@ -37,6 +38,11 @@ struct OnboardingView: View {
             }
             .navigationDestination(for: OnboardingNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
+            }
+            .onReceive(viewModel.viewDismissalPublisher) { shouldDismiss in
+                if shouldDismiss {
+                    dismiss()
+                }
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -75,6 +81,7 @@ struct OnboardingView: View {
             PrimaryButton(title: viewModel.actionButtonTitle) {
                 viewModel.actionButtonTapped()
             }
+            .disabled(viewModel.isActionButtonDisabled)
         }
         .padding([.horizontal, .top])
         .background(.ultraThinMaterial)

@@ -29,9 +29,9 @@ class RootViewModel {
     func onViewFirstAppear() {
         initializeNotificationsUseCase.execute { result in
             switch result {
-            case .success(let success):
+            case .success(_):
                 print("DEBUGY: Successfully initialized notifications")
-            case .failure(let failure):
+            case .failure(_):
                 print("DEBUGY: Could not initialize notifications")
             }
         }

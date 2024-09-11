@@ -18,7 +18,7 @@ extension OnboardingView {
         // MARK: Body
         
         var body: some View {
-            VStack(spacing: 64) {
+            VStack(spacing: 32) {
                 VStack(spacing: 4) {
                     Image("MindfulPacer Icon")
                         .resizable()
@@ -53,7 +53,7 @@ extension OnboardingView {
                     Image(systemName: icon)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 48, height: 48)
+                        .frame(width: 32, height: 32)
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
                     
