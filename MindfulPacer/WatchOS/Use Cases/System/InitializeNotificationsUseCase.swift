@@ -15,15 +15,14 @@ protocol InitializeNotificationsUseCase {
 
 final class DefaultInitializeNotificationsUseCase: InitializeNotificationsUseCase {
     private let notificationService: NotificationService
-    
+
     init(notificationService: NotificationService) {
         self.notificationService = notificationService
     }
-    
+
     func execute(completion: @escaping (Result<Void, Error>) -> Void) {
         notificationService.requestNotificationAuthorization { result in
             completion(result)
         }
     }
 }
-

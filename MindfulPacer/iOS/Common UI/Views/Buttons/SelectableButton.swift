@@ -9,29 +9,49 @@ import SwiftUI
 
 // MARK: - SelectableButton
 
-struct SelectableButton<Content: View>: View {
+struct SelectableButton<Label: View>: View {
     // MARK: ButtonShape Enum
-    
+
     enum ButtonShape {
         case roundedRectangle(cornerRadius: CGFloat)
         case circle
     }
 
     // MARK: Properties
-    
+
     var shape: ButtonShape
-    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
-    var foregroundColor: Color = Color.secondary
-    var selectionColor: Color = Color("BrandPrimary")
+    var backgroundColor: Color
+    var foregroundColor: Color
+    var selectionColor: Color
     var isSelected: Bool
-    var action: () -> Void
-    @ViewBuilder let content: () -> Content
+    let action: () -> Void
+    let label: () -> Label
+
+    // MARK: Initializer
+
+    init(
+        shape: ButtonShape,
+        backgroundColor: Color = Color(.secondarySystemGroupedBackground),
+        foregroundColor: Color = Color.secondary,
+        selectionColor: Color = Color("BrandPrimary"),
+        isSelected: Bool,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        self.shape = shape
+        self.backgroundColor = backgroundColor
+        self.foregroundColor = foregroundColor
+        self.selectionColor = selectionColor
+        self.isSelected = isSelected
+        self.action = action
+        self.label = label
+    }
 
     // MARK: Body
-    
+
     var body: some View {
         Button(action: action) {
-            content()
+            label()
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background {
@@ -51,7 +71,7 @@ struct SelectableButton<Content: View>: View {
     }
 
     // MARK: Background Shape
-    
+
     @ViewBuilder
     private func backgroundShape() -> some View {
         switch shape {
@@ -63,7 +83,7 @@ struct SelectableButton<Content: View>: View {
     }
 
     // MARK: Overlay Shape
-    
+
     @ViewBuilder
     private func overlayShape() -> some View {
         switch shape {
@@ -82,31 +102,31 @@ struct SelectableButton<Content: View>: View {
 #Preview {
     @Previewable @State var isRoundedRectangleButtonSelected = false
     @Previewable @State var isCircleButtonSelected = false
-    
+
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
-        
+
         VStack(spacing: 32) {
             SelectableButton(
                 shape: .roundedRectangle(cornerRadius: 16),
-                isSelected: isRoundedRectangleButtonSelected,
-                action: {
-                    isRoundedRectangleButtonSelected.toggle()
-                }) {
-                    Label("Save", systemImage: "square.and.arrow.down.fill")
-                        .fontWeight(.semibold)
-                }
-            
+                isSelected: isRoundedRectangleButtonSelected
+            ) {
+                isRoundedRectangleButtonSelected.toggle()
+            } label: {
+                Label("Save", systemImage: "square.and.arrow.down.fill")
+                    .fontWeight(.semibold)
+            }
+
             SelectableButton(
                 shape: .circle,
                 selectionColor: .yellow,
-                isSelected: isCircleButtonSelected,
-                action: {
-                    isCircleButtonSelected.toggle()
-                }) {
-                    Image(systemName: "star.fill")
-                }
+                isSelected: isCircleButtonSelected
+            ) {
+                isCircleButtonSelected.toggle()
+            } label: {
+                Image(systemName: "star.fill")
+            }
         }
         .padding(.horizontal)
     }

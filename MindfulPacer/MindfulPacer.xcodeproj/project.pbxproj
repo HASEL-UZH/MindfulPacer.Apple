@@ -1057,6 +1057,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */,
 				0DBA37442C32087400209681 /* PBXTargetDependency */,
 			);
 			name = iOS;
@@ -1079,6 +1080,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0D2590242C92FEAA000EA518 /* PBXTargetDependency */,
 			);
 			name = WatchOS;
 			packageProductDependencies = (
@@ -1166,6 +1168,7 @@
 			packageReferences = (
 				0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */,
 				0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */,
+				0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
@@ -1369,6 +1372,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0D2590242C92FEAA000EA518 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */;
+		};
 		0DBA37442C32087400209681 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
@@ -1383,6 +1390,10 @@
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
 			targetProxy = 0DDD33872C7B60A900A0B091 /* PBXContainerItemProxy */;
+		};
+		0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1800,6 +1811,14 @@
 				minimumVersion = 1.1.1;
 			};
 		};
+		0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/SwiftLint.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.57.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1813,10 +1832,20 @@
 			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
 		};
+		0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
 		0D500FD72C7492F700395AEB /* SystemNotification */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */;
 			productName = SystemNotification;
+		};
+		0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

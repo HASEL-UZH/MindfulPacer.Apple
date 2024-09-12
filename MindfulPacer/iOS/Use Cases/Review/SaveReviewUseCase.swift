@@ -30,11 +30,11 @@ protocol SaveReviewUseCase {
 
 class DefaultSaveReviewUseCase: SaveReviewUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(
         existingReview: Review,
         newDate: Date,
@@ -62,7 +62,7 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         existingReview.painsAndNeedlesRating = newPainsAndNeedlesRating
         existingReview.muscleAchesRating = newMuscleAchesRating
         existingReview.additionalInformation = newAdditionalInformation
-        
+
         do {
             try modelContext.save()
             return .success(existingReview)

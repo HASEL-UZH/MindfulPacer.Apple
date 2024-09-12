@@ -19,17 +19,17 @@ protocol ConnectivityServiceProtocol: Sendable {
 
 final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, @unchecked Sendable {
     static let shared = ConnectivityService()
-    
+
     private override init() {
         super.init()
     }
-    
+
     func initializeSession(completion: @escaping (Result<Void, Error>) -> Void) {
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
             session.activate()
-            
+
             if session.activationState != .activated {
                 completion(.failure(ConnectivityError.sessionActivationFailed(SessionError.notActivated)))
             } else {
@@ -51,8 +51,8 @@ extension ConnectivityService {
             print("WCSession activated with state: \(activationState.rawValue)")
         }
     }
-    
-    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let command = message[MessageKeys.command] as? String, let messageCommand = MessageCommand(rawValue: command) {
             switch messageCommand {
             case .triggerLocalNotification:
@@ -71,7 +71,7 @@ extension ConnectivityService {
             }
         }
     }
-    
+
     func sessionReachabilityDidChange(_ session: WCSession) {
         if session.isReachable {
             print("DEBUGY: WCSession is reachable.")

@@ -17,13 +17,13 @@ protocol DeleteReviewReminderUseCase {
 
 class DefaultDeleteReviewReminderUseCase: DeleteReviewReminderUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(reviewReminder: ReviewReminder) {
         modelContext.delete(reviewReminder)
-        try! modelContext.save()
+        try? modelContext.save()
     }
 }

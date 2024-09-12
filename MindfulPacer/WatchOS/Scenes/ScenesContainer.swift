@@ -7,13 +7,12 @@
 
 import Factory
 
-
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
-    
+
     // MARK: - Root
-    
+
     @MainActor
     var rootViewModel: Factory<RootViewModel> {
         self {

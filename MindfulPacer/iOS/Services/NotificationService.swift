@@ -25,11 +25,11 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
     }
 
     // MARK: - Notification Authorization
-    
+
     func requestNotificationAuthorization(completion: @escaping (Result<Void, NotificationError>) -> Void) {
         let notificationCenter = UNUserNotificationCenter.current()
         let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-        
+
         notificationCenter.requestAuthorization(options: options) { granted, error in
             if let error = error {
                 // Wrap any underlying errors in your custom error type
@@ -46,7 +46,7 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
     }
 
     // MARK: - Trigger Local Notification
-    
+
     func triggerLocalNotification(title: String, body: String, completion: @escaping (Result<Void, NotificationError>) -> Void) {
         let content = UNMutableNotificationContent()
         content.title = title

@@ -12,7 +12,7 @@ import XCTest
 
 class MockCreateReviewUseCase: CreateReviewUseCase {
     var executeResult: Result<iOS.Review, Error> = .success(iOS.Review()) // Adjust the Review initializer to match your actual Review model
-    
+
     func execute(
         date: Date,
         category: iOS.Category?,

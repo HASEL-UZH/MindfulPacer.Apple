@@ -15,12 +15,12 @@ protocol TriggerWatchNotificationUseCase {
 
 final class DefaultTriggerWatchNotificationUseCase: TriggerWatchNotificationUseCase {
     private let notificationService: NotificationServiceProtocol
-    
+
     init(notificationService: NotificationServiceProtocol = NotificationService.shared) {
         self.notificationService = notificationService
     }
-    
-    func execute(title: String, body: String,completion: @escaping (Result<Void, NotificationError>) -> Void) {
+
+    func execute(title: String, body: String, completion: @escaping (Result<Void, NotificationError>) -> Void) {
         notificationService.triggerLocalNotification(title: title, body: body, completion: completion)
     }
 }

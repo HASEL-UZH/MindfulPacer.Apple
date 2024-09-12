@@ -17,22 +17,22 @@ class CreateReviewReminderViewModel {
     enum Mode { case create, edit }
 
     // MARK: - Dependencies
-    
+
     private let modelContext: ModelContext
     private let createReviewReminderUseCase: CreateReviewReminderUseCase
     private let deleteReviewReminderUseCase: DeleteReviewReminderUseCase
     private let saveReviewReminderUseCase: SaveReviewReminderUseCase
     private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
-    
-    // MARK: - Published Properties (State)
-    
+
+    // MARK: - Published Properties
+
     var mode: Mode = .create
     var navigationPath: [CreateReviewReminderNavigationDestination] = []
-    var activeSheet: CreateReviewReminderSheet? = nil
-    var activeAlert: CreateReviewReminderAlert? = nil
-    
+    var activeSheet: CreateReviewReminderSheet?
+    var activeAlert: CreateReviewReminderAlert?
+
     var shouldDismiss: Bool = false
-    
+
     var summaryViewTitle: String {
         switch mode {
         case .create:
@@ -41,12 +41,12 @@ class CreateReviewReminderViewModel {
             "Edit Review Reminder"
         }
     }
-    
+
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-        
+
         switch lastDestination {
         case .measurementType:
             return selectedMeasurementType == nil
@@ -60,11 +60,11 @@ class CreateReviewReminderViewModel {
             return (selectedMeasurementType == nil || selectedReviewReminderType == nil || threshold == nil || selectedInterval == nil)
         }
     }
-    
+
     var isSaveButtonDisabled: Bool {
         selectedMeasurementType == nil || selectedReviewReminderType == nil || threshold == nil || selectedInterval == nil
     }
-    
+
     var showActionButton: Bool {
         /// Check if the second-to-last element in the navigationPath is .summary
         if navigationPath.dropLast().last == .summary {
@@ -72,12 +72,12 @@ class CreateReviewReminderViewModel {
         }
         return true
     }
-    
+
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
             return "Continue"
         }
-        
+
         switch lastDestination {
         case .summary:
             return "Create"
@@ -85,7 +85,7 @@ class CreateReviewReminderViewModel {
             return "Continue"
         }
     }
-    
+
     var thresholdUnitText: String {
         switch selectedMeasurementType {
         case .heartRate:
@@ -96,12 +96,12 @@ class CreateReviewReminderViewModel {
             ""
         }
     }
-    
+
     var notificationPreviewBodyText: String {
         String("A review reminder was triggered because your \(selectedMeasurementType?.rawValue.lowercased() ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText.lowercased()) over a period of \(selectedInterval?.rawValue.lowercased() ?? "<INTERBAL>").")
     }
-    
-    var selectedMeasurementType: ReviewReminder.MeasurementType? = nil {
+
+    var selectedMeasurementType: ReviewReminder.MeasurementType? {
         didSet {
             validateThreshold()
         }
@@ -111,11 +111,11 @@ class CreateReviewReminderViewModel {
             validateThreshold()
         }
     }
-    var selectedReviewReminderType: ReviewReminder.ReviewReminderType? = nil
-    var selectedInterval: ReviewReminder.Interval? = nil
-        
+    var selectedReviewReminderType: ReviewReminder.ReviewReminderType?
+    var selectedInterval: ReviewReminder.Interval?
+
     // MARK: - Initialization
-    
+
     init(
         modelContext: ModelContext,
         createReviewReminderUseCase: CreateReviewReminderUseCase,
@@ -129,27 +129,27 @@ class CreateReviewReminderViewModel {
         self.saveReviewReminderUseCase = saveReviewReminderUseCase
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
-    
+
     // MARK: - View Lifecycle
-    
+
     func onViewFirstAppear() {}
-    
+
     func configureMode(with reviewReminder: ReviewReminder?) {
         if let reviewReminder {
             mode = .edit
             loadReviewReminder(reviewReminder)
         }
     }
-    
+
     // MARK: - User Actions
-    
+
     func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigateTo(destination: .measurementType)
             return
         }
-        
+
         switch currentDestination {
         case .measurementType:
             navigateTo(destination: .reviewReminderType)
@@ -163,7 +163,7 @@ class CreateReviewReminderViewModel {
             createReviewReminder()
         }
     }
-    
+
     func saveReviewReminder(_ reviewReminder: ReviewReminder?) {
         let result = saveReviewReminderUseCase.execute(
             existingReviewReminder: reviewReminder.unsafelyUnwrapped,
@@ -172,20 +172,20 @@ class CreateReviewReminderViewModel {
             newThreshold: threshold.unsafelyUnwrapped,
             newInterval: selectedInterval.unsafelyUnwrapped
         )
-        
-        if case .failure(_) = result {
+
+        if case .failure = result {
             presentAlert(.unableToSaveReviewReminder)
         }
-        
+
         shouldDismiss = true
     }
-    
+
     func deleteReviewReminder(_ reviewReminder: ReviewReminder?) {
         guard let reviewReminder else { return }
         deleteReviewReminderUseCase.execute(reviewReminder: reviewReminder)
         shouldDismiss = true
     }
-    
+
     func sendNotificationToWatch() {
         triggerWatchNotificationUseCase.execute(title: "Review Reminder", body: notificationPreviewBodyText) { result in
             switch result {
@@ -197,57 +197,57 @@ class CreateReviewReminderViewModel {
             }
         }
     }
-    
+
     func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
         selectedItem = (selectedItem == item) ? nil : item
     }
-    
+
     // MARK: - Presentation
-    
+
     func navigateTo(destination: CreateReviewReminderNavigationDestination) {
         navigationPath.append(destination)
     }
-    
+
     func presentSheet(_ sheet: CreateReviewReminderSheet) {
         activeSheet = sheet
     }
-    
+
     func presentAlert(_ alert: CreateReviewReminderAlert) {
         activeAlert = alert
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func loadReviewReminder(_ reviewReminder: ReviewReminder) {
         selectedMeasurementType = reviewReminder.measurementType
         selectedReviewReminderType = reviewReminder.reviewReminderType
         threshold = reviewReminder.threshold
         selectedInterval = reviewReminder.interval
     }
-    
+
     private func createReviewReminder() {
         guard let measurementType = selectedMeasurementType,
               let reviewReminderType = selectedReviewReminderType,
               let threshold,
               let interval = selectedInterval else { return }
-        
+
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
             reviewReminderType: reviewReminderType,
             threshold: threshold,
             interval: interval
         )
-        
-        if case .failure(_) = result {
+
+        if case .failure = result {
             self.presentAlert(.unableToSaveReviewReminder)
         }
-        
+
         shouldDismiss = true
     }
-    
+
     private func validateThreshold() {
         guard let threshold = threshold else { return }
-        
+
         if let measurementType = selectedMeasurementType {
             switch measurementType {
             case .steps:
@@ -256,7 +256,7 @@ class CreateReviewReminderViewModel {
                 } else if threshold > 100_000 {
                     self.threshold = 100_000
                 }
-                
+
             case .heartRate:
                 if threshold < 0 {
                     self.threshold = 0

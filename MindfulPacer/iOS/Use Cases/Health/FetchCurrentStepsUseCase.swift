@@ -15,11 +15,11 @@ protocol FetchCurrentStepsUseCase {
 
 final class DefaultFetchCurrentStepsUseCase: FetchCurrentStepsUseCase {
     private let healthKitService: HealthKitService
-    
+
     init(healthKitService: HealthKitService) {
         self.healthKitService = healthKitService
     }
-    
+
     func execute(completion: @escaping @Sendable (Result<(stepCount: Double, timestamp: Date), Error>) -> Void) {
         HealthKitService.shared.fetchCurrentStepCount { result in
             switch result {

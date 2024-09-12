@@ -28,9 +28,9 @@ extension EnvironmentValues {
     }
 }
 
-private struct KeyboardVisibility:ViewModifier {
-    @State var isKeyboardShowing:Bool = false
-    
+private struct KeyboardVisibility: ViewModifier {
+    @State var isKeyboardShowing: Bool = false
+
     private var keyboardPublisher: AnyPublisher<Bool, Never> {
         Publishers
             .Merge(
@@ -45,7 +45,7 @@ private struct KeyboardVisibility:ViewModifier {
             .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
             .eraseToAnyPublisher()
     }
-    
+
     fileprivate func body(content: Content) -> some View {
         content
             .environment(\.keyboardShowing, isKeyboardShowing)

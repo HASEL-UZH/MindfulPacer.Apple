@@ -23,7 +23,7 @@ extension SchemaV1 {
         var measurementType: MeasurementType = MeasurementType.heartRate
         var reviewReminderType: ReviewReminderType = ReviewReminderType.light
         var threshold: Int = 0
-        var interval: Interval = Interval._10seconds
+        var interval: Interval = Interval.tenSeconds
         var reviews: [Review]?
 
         init(
@@ -31,7 +31,7 @@ extension SchemaV1 {
             measurementType: MeasurementType = MeasurementType.heartRate,
             reviewReminderType: ReviewReminderType = ReviewReminderType.light,
             threshold: Int = 0,
-            interval: Interval = Interval._10seconds,
+            interval: Interval = Interval.tenSeconds,
             reviews: [Review]? = []
         ) {
             self.id = id
@@ -41,7 +41,7 @@ extension SchemaV1 {
             self.interval = interval
             self.reviews = reviews
         }
-        
+
         var triggerSummary: String {
             "Above \(threshold) \(measurementType == .heartRate ? "bpm" : "steps") for \(interval.rawValue.lowercased())"
         }
@@ -54,7 +54,7 @@ extension ReviewReminder {
     enum MeasurementType: String, Codable, CaseIterable {
         case heartRate = "Heart Rate"
         case steps = "Steps"
-                
+
         var icon: String {
             switch self {
             case .heartRate: "heart"
@@ -71,7 +71,7 @@ extension ReviewReminder {
         case light = "Light"
         case medium = "Medium"
         case strong = "Strong"
-                
+
         var icon: String {
             switch self {
             case .light: "sun.min"
@@ -79,7 +79,7 @@ extension ReviewReminder {
             case .strong: "lightbulb"
             }
         }
-        
+
         var description: String {
             switch self {
             case .light:
@@ -90,7 +90,7 @@ extension ReviewReminder {
                 "Shows a red color"
             }
         }
-        
+
         var color: Color {
             switch self {
             case .light: .yellow
@@ -106,16 +106,16 @@ extension ReviewReminder {
 extension ReviewReminder {
     enum Interval: String, Codable, CaseIterable {
         case immediately = "Immediately"
-        case _10seconds = "10 Seconds"
-        case _30second = "30 Seconds"
-        case _1minute = "1 Minute"
-        
+        case tenSeconds = "10 Seconds"
+        case thirtySeconds = "30 Seconds"
+        case oneMinute = "1 Minute"
+
         var icon: String {
             switch self {
             case .immediately: "alarm"
-            case ._10seconds: "10.circle"
-            case ._30second: "30.circle"
-            case ._1minute: "1.circle"
+            case .tenSeconds: "10.circle"
+            case .thirtySeconds: "30.circle"
+            case .oneMinute: "1.circle"
             }
         }
     }

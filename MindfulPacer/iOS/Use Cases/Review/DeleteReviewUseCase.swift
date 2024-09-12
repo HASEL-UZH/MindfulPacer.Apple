@@ -17,13 +17,13 @@ protocol DeleteReviewUseCase {
 
 class DefaultDeleteReviewUseCase: DeleteReviewUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(review: Review) {
         modelContext.delete(review)
-        try! modelContext.save()
+        try? modelContext.save()
     }
 }

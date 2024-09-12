@@ -12,11 +12,11 @@ import SwiftUI
 extension EditReviewView {
     struct CategoryView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: EditReviewViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             ScrollView {
                 LazyVGrid(
@@ -26,21 +26,21 @@ extension EditReviewView {
                     ForEach(viewModel.categories) { category in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedCategory == category,
-                            action: {
-                                viewModel.toggleSelection(category, selectedItem: &viewModel.selectedCategory)
-                            }) {
-                                VStack(spacing: 16) {
-                                    Image(systemName: category.icon)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .symbolVariant(.fill)
-                                        .frame(width: 32, height: 32)
-                                    Text(category.name)
-                                        .font(.subheadline)
-                                        .lineLimit(2)
-                                }
+                            isSelected: viewModel.selectedCategory == category
+                        ) {
+                            viewModel.toggleSelection(category, selectedItem: &viewModel.selectedCategory)
+                        } label: {
+                            VStack(spacing: 16) {
+                                Image(systemName: category.icon)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .symbolVariant(.fill)
+                                    .frame(width: 32, height: 32)
+                                Text(category.name)
+                                    .font(.subheadline)
+                                    .lineLimit(2)
                             }
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -58,7 +58,7 @@ extension EditReviewView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    
+
     NavigationStack {
         EditReviewView.CategoryView(viewModel: viewModel)
             .navigationTitle("Category")

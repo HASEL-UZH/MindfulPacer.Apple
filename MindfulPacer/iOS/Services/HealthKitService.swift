@@ -15,7 +15,7 @@ enum Period {
     case week
     case month
     case sixMonths
-    
+
     var startDate: Date {
         switch self {
         case .day:
@@ -43,13 +43,13 @@ protocol HealthKitServiceProtocol {
 class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     static let shared = HealthKitService()
     private var healthStore: HKHealthStore?
-    
+
     init() {
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
         }
     }
-    
+
     // MARK: - Request HealthKit Authorization
 
     func requestAuthorization(completion: @escaping (Bool, HealthKitError?) -> Void) {
@@ -59,10 +59,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             completion(false, error)
             return
         }
-        
+
         let typesToShare: Set = [HKObjectType.workoutType()]
         let typesToRead: Set = [heartRateType, stepType]
-        
+
         healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
             if let error = error {
                 let customError = HealthKitError(type: .unknownError, underlyingError: error)
@@ -83,27 +83,27 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             completion(.failure(HealthKitError(type: .heartRateTypeUnavailable)))
             return
         }
-        
+
         let predicate = HKQuery.predicateForSamples(withStart: period.startDate, end: Date(), options: .strictEndDate)
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-        let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { query, results, error in
+        let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, results, error in
             if let error = error {
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
-            
+
             guard let samples = results as? [HKQuantitySample] else {
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
-            
+
             completion(.success(samples))
         }
-        
+
         healthStore?.execute(query)
     }
 
@@ -114,7 +114,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             completion(.failure(HealthKitError(type: .stepCountTypeUnavailable)))
             return
         }
-        
+
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictEndDate)
         let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
@@ -124,18 +124,18 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 }
                 return
             }
-            
+
             guard let result = result, let sum = result.sumQuantity() else {
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .failedToFetchStepCount)))
                 }
                 return
             }
-            
+
             let stepCount = sum.doubleValue(for: HKUnit.count())
             completion(.success(stepCount))
         }
-        
+
         healthStore?.execute(query)
     }
 }

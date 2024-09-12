@@ -21,11 +21,11 @@ protocol CreateReviewReminderUseCase {
 
 class DefaultCreateReviewReminderUseCase: CreateReviewReminderUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(
         measurementType: ReviewReminder.MeasurementType,
         reviewReminderType: ReviewReminder.ReviewReminderType,
@@ -38,9 +38,9 @@ class DefaultCreateReviewReminderUseCase: CreateReviewReminderUseCase {
             threshold: threshold,
             interval: interval
         )
-        
+
         modelContext.insert(reviewReminder)
-        
+
         do {
             try modelContext.save()
             return .success(reviewReminder)

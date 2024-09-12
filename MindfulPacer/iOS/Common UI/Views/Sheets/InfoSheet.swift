@@ -11,13 +11,13 @@ import SwiftUI
 
 struct InfoSheet<Content: View>: View {
     // MARK: Properties
-    
+
     var title: String
-    var info: String? = nil
+    var info: String?
     var content: () -> Content
 
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -29,7 +29,7 @@ struct InfoSheet<Content: View>: View {
                         InfoBox(text: info)
                             .padding(.horizontal)
                     }
-                    
+
                     ViewThatFits {
                         content()
                             .padding(.horizontal)

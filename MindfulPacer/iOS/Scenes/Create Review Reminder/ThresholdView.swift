@@ -13,19 +13,19 @@ import SwiftData
 extension CreateReviewReminderView {
     struct ThresholdView: View {
         @Bindable var viewModel: CreateReviewReminderViewModel
-        
+
         var body: some View {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 16) {
                     HStack(alignment: .lastTextBaseline) {
                         TextField("0", value: $viewModel.threshold, format: .number)
                             .font(.largeTitle)
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.numberPad)
-                        
+
                         Text(viewModel.thresholdUnitText)
                             .foregroundStyle(.secondary)
                     }
@@ -34,7 +34,7 @@ extension CreateReviewReminderView {
                         RoundedRectangle(cornerRadius: 16)
                             .foregroundStyle(Color(.secondarySystemGroupedBackground))
                     }
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -48,7 +48,7 @@ extension CreateReviewReminderView {
                         Image(systemName: "info.circle.fill")
                     }
                 }
-                
+
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
                 }
@@ -76,10 +76,9 @@ extension CreateReviewReminderView.ThresholdView {
         modelContext: container.mainContext,
         triggerHapticFeedbackUseCase: UseCasesContainer.shared.triggerHapticFeedbackUseCase()
     )
-    
+
     NavigationStack {
         CreateReviewReminderView.ThresholdView(viewModel: viewModel)
     }
     .tint(Color("PrimaryGreen"))
 }
-

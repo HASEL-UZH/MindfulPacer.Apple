@@ -11,11 +11,11 @@ import SwiftUI
 
 struct ReviewRemindersListView: View {
     // MARK: Properties
-    
+
     @Bindable var viewModel: HomeViewModel
-    
+
     // MARK: Body
-    
+
     var body: some View {
         VStack {
             if viewModel.reviewReminders.isEmpty {
@@ -46,9 +46,9 @@ struct ReviewRemindersListView: View {
             }
         }
     }
-    
+
     // MARK: Review Reminders Empty State
-    
+
     var reviewRemindersEmptyState: some View {
         VStack(alignment: .leading, spacing: 16) {
             ContentUnavailableView {
@@ -57,7 +57,7 @@ struct ReviewRemindersListView: View {
                 Text("You have not created any review reminders.")
             } actions: {
                 Button {
-                    viewModel.presentSheet(.editReviewSheet(nil))
+                    viewModel.presentSheet(.createReviewReminderSheet(nil))
                 } label: {
                     Text("Create Review Reminder")
                 }
@@ -72,7 +72,7 @@ struct ReviewRemindersListView: View {
 
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
-    
+
     NavigationStack {
         ReviewRemindersListView(viewModel: viewModel)
     }

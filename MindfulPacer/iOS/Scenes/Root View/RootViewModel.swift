@@ -13,18 +13,18 @@ import SwiftData
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-    
+
     private let modelContext: ModelContext
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
 
     // MARK: - Published Properties
-    
-    var activeSheet: RootSheet? = nil
-        
+
+    var activeSheet: RootSheet?
+
     // MARK: - Initialization
-    
+
     init(
         modelContext: ModelContext,
         addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
@@ -36,9 +36,9 @@ class RootViewModel {
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
-    
+
     // MARK: - View Events
-    
+
     @MainActor
     func onViewFirstAppear() {
         Task {
@@ -47,18 +47,18 @@ class RootViewModel {
         }
         checkIfUserHasSeenOnboarding()
     }
-    
+
     // MARK: - Presentation
-    
+
     func presentSheet(_ sheet: RootSheet) {
         activeSheet = sheet
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func checkIfUserHasSeenOnboarding() {
         let hasSeenOnboarding = checkUserHasSeenOnboardingUseCase.execute()
-        
+
         if !hasSeenOnboarding {
             presentSheet(.onboardingView)
         }

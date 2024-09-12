@@ -12,11 +12,11 @@ import SwiftUI
 extension HomeView {
     struct ReviewRemindersWidget: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: HomeViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewRemindersList) {
                 IconLabelGroupBox(
@@ -49,9 +49,9 @@ extension HomeView {
             }
             .foregroundStyle(.primary)
         }
-        
+
         // MARK: Recent Review Reminders Summary
-        
+
         private var recentReviewRemindersSummary: some View {
             Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
                 VStack(alignment: .leading, spacing: 16) {
@@ -66,9 +66,9 @@ extension HomeView {
                 }
             }
         }
-        
+
         // MARK: Create Review Reminder Button
-        
+
         private var createReviewReminderButton: some View {
             Button {
                 viewModel.presentSheet(.createReviewReminderSheet(nil))
@@ -84,6 +84,6 @@ extension HomeView {
 
 #Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-    
+
     HomeView.ReviewRemindersWidget(viewModel: viewModel)
 }

@@ -12,11 +12,11 @@ import SwiftUI
 extension HomeView {
     struct StepsWidget: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: HomeViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
                 IconLabelGroupBox(
@@ -35,9 +35,9 @@ extension HomeView {
             }
             .foregroundStyle(.primary)
         }
-        
+
         // MARK: Steps Summary
-        
+
         private var stepsSummary: some View {
             if let currentSteps = viewModel.currentSteps {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -62,6 +62,6 @@ extension HomeView {
 
 #Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-    
+
     HomeView.StepsWidget(viewModel: viewModel)
 }

@@ -16,20 +16,20 @@ protocol AddDefaultCategoriesUseCase {
 
 class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     // TODO: Categories seem to be duplicated, must not be fetching from CloudKit fast enough
     func execute() async {
         if await categoriesExist() {
             return
         }
-        
+
         await addDefaultCategories()
     }
-    
+
     private func categoriesExist() async -> Bool {
         do {
             let descriptor = FetchDescriptor<Category>()
@@ -40,21 +40,21 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
             return false
         }
     }
-    
+
     @MainActor
     private func addDefaultCategories() async {
         DefaultCategoryData.initializeData()
 
         for category in DefaultCategoryData.categories {
             modelContext.insert(category)
-            
+
             if let subcategories = category.subcategories {
                 for subcategory in subcategories {
                     modelContext.insert(subcategory)
                 }
             }
         }
-        
+
         do {
             try modelContext.save()
         } catch {

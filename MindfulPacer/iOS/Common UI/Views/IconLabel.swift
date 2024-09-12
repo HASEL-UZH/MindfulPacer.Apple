@@ -30,13 +30,13 @@ struct IconLabelStyleConfiguration {
 
 struct AnyIconLabelStyle: IconLabelStyle {
     private let _makeBody: (IconLabelStyleConfiguration) -> AnyView
-    
+
     init<Style: IconLabelStyle>(_ style: Style) {
         _makeBody = { configuration in
             AnyView(style.makeBody(configuration: configuration))
         }
     }
-    
+
     func makeBody(configuration: IconLabelStyleConfiguration) -> some View {
         _makeBody(configuration)
     }
@@ -78,7 +78,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         renderingMode: configuration.symbolRenderingMode,
                         background: configuration.background
                     )
-                    
+
                     Text(configuration.title)
                         .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
                         .truncationMode(.middle)
@@ -117,7 +117,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                         renderingMode: configuration.symbolRenderingMode,
                         background: configuration.background
                     )
-                    
+
                     Text(configuration.title)
                         .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
                         .truncationMode(.middle)
@@ -153,16 +153,16 @@ extension EnvironmentValues {
 struct IconLabel: View {
     var icon: String
     var title: String
-    var textColor: Color? = nil
-    var iconColor: Color? = nil
-    var labelColor: Color? = nil
+    var textColor: Color?
+    var iconColor: Color?
+    var labelColor: Color?
     var symbolVariant: SymbolVariants = .fill
     var symbolRenderingMode: SymbolRenderingMode = .monochrome
     var background: Bool = false
     var axis: Axis = .horizontal
-    
+
     @Environment(\.iconLabelStyle) private var style
-    
+
     var body: some View {
         style.makeBody(configuration: .init(
             icon: icon,
@@ -182,7 +182,7 @@ struct IconLabel: View {
 
 struct IconLabelStyleModifier: ViewModifier {
     let style: AnyIconLabelStyle
-    
+
     func body(content: Content) -> some View {
         content.environment(\.iconLabelStyle, style)
     }
@@ -204,7 +204,7 @@ extension View {
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
         IconLabel(icon: "figure.walk", title: "Walking", textColor: .blue, iconColor: .pink, background: true)
-        
+
         IconLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .pink, background: false)
             .iconLabelStyle(.pill)
     }

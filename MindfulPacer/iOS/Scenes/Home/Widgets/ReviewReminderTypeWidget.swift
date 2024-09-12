@@ -12,7 +12,7 @@ import SwiftUI
 extension HomeView {
     struct ReviewReminderTypeWidget: View {
         // MARK: Body
-        
+
         var body: some View {
             IconLabelGroupBox(
                 label:
@@ -33,7 +33,7 @@ extension HomeView {
                             HStack(alignment: .lastTextBaseline, spacing: 4) {
                                 Text("0")
                                     .font(.title.weight(.semibold))
-                                
+
                                 Text(reviewReminderType.rawValue.lowercased())
                                     .foregroundStyle(reviewReminderType.color)
                             }
@@ -51,7 +51,7 @@ extension HomeView {
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
-        
+
         HomeView.ReviewReminderTypeWidget()
             .padding()
     }

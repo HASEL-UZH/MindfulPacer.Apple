@@ -21,7 +21,7 @@ enum CreateReviewReminderSheet: Identifiable {
     case reviewReminderTypeInfo
     case heartRateThresholdInfo
     case intervalInfo
-    
+
     var id: Int {
         hashValue
     }
@@ -31,7 +31,7 @@ enum CreateReviewReminderAlert: Identifiable {
     case deleteConfirmation
     case unableToSaveReviewReminder
     case unableToSendTestNotification
-    
+
     var id: Int {
         hashValue
     }
@@ -41,21 +41,21 @@ enum CreateReviewReminderAlert: Identifiable {
 
 struct CreateReviewReminderView: View {
     // MARK: Properties
-    
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State private var viewModel: CreateReviewReminderViewModel = ScenesContainer.shared.createReviewReminderViewModel()
-    
+
     var reviewReminder: ReviewReminder?
-    
+
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 switch viewModel.mode {
                 case .create:
                     intro
@@ -79,7 +79,7 @@ struct CreateReviewReminderView: View {
             .navigationDestination(for: CreateReviewReminderNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
             }
-            onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
                 if shouldDismiss {
                     dismiss()
                 }
@@ -93,9 +93,9 @@ struct CreateReviewReminderView: View {
             }
         }
     }
-    
+
     // MARK: Alerts
-    
+
     private func alertContent(for alert: CreateReviewReminderAlert) -> Alert {
         switch alert {
         case .deleteConfirmation:
@@ -106,9 +106,9 @@ struct CreateReviewReminderView: View {
             return unableToSendTestNotificationAlert
         }
     }
-    
+
     // MARK: Sheets
-    
+
     @ViewBuilder
     private func sheetContent(for sheet: CreateReviewReminderSheet) -> some View {
         switch sheet {
@@ -120,9 +120,9 @@ struct CreateReviewReminderView: View {
             intervalInfoSheet
         }
     }
-    
+
     // MARK: Navigation Destination
-    
+
     @ViewBuilder
     private func navigationDestination(for destination: CreateReviewReminderNavigationDestination) -> some View {
         switch destination {
@@ -138,9 +138,9 @@ struct CreateReviewReminderView: View {
             SummaryView(viewModel: viewModel)
         }
     }
-    
+
     // MARK: Edit Mode Toolbar
-    
+
     private var editModeToolbar: some ToolbarContent {
         Group {
             if viewModel.mode == .edit {
@@ -159,9 +159,9 @@ struct CreateReviewReminderView: View {
             }
         }
     }
-    
+
     // MARK: Action Button
-    
+
     private var actionButton: some View {
         PrimaryButton(title: viewModel.actionButtonTitle) {
             viewModel.actionButtonTapped()
@@ -173,37 +173,37 @@ struct CreateReviewReminderView: View {
             Divider()
         }
     }
-    
+
     // MARK: Intro
-    
+
     private var intro: some View {
         VStack {
             Button("Cancel") {
                 dismiss()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             VStack(spacing: 32) {
                 Text("Create Review Reminder")
                     .font(.largeTitle.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
-                
+
                 Image("Create Review Reminder")
                     .resizable()
                     .scaledToFit()
-                
+
                 Text("This allows you to add a new review reminder which can be triggered on your Apple Watch or iPhone.")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            
+
             Spacer()
         }
         .padding()
     }
- 
+
     // MARK: Review Reminder Type Info Sheet
-    
+
     private var reviewReminderTypeInfoSheet: some View {
         InfoSheet(
             title: "Review Reminder Type Information",
@@ -222,9 +222,10 @@ struct CreateReviewReminderView: View {
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(16)
     }
-    
+
     // MARK: Threshold Info Sheet
-    
+
+    // swiftlint:disable trailing_whitespace
     private var thresholdInfoSheet: some View {
         InfoSheet(
             title: "Threshold Information",
@@ -234,14 +235,28 @@ struct CreateReviewReminderView: View {
                 IconLabelGroupBox(
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
-                    Text("The current step count, as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\n For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.")
+                    Text(
+                        """
+                        The current step count, as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.
+                        
+                        For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.
+                        """
+                    )
                     
                 }
-                
+
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
-                    Text("The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.")
+                    Text(
+                        """
+                        The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.
+                        
+                        Please note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.
+                        
+                        For example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.
+                        """
+                    )
                 }
             }
             .font(.subheadline)
@@ -250,9 +265,9 @@ struct CreateReviewReminderView: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(16)
     }
-    
+
     // MARK: Interval Info Sheet
-    
+
     private var intervalInfoSheet: some View {
         InfoSheet(
             title: "Interval Information",
@@ -262,13 +277,25 @@ struct CreateReviewReminderView: View {
                 IconLabelGroupBox(
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                 ) {
-                    Text("The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the review reminder to be triggered.\n\nFor example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer.")
+                    Text(
+                        """
+                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the review reminder to be triggered.
+                        
+                        For example: Do a quick review when the detected heart rate is greater than 120 for 30 seconds or longer.
+                        """
+                    )
                 }
-                
+
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                 ) {
-                    Text("The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the review reminder to be triggered.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.")
+                    Text(
+                        """
+                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the review reminder to be triggered.
+                        
+                        For example: Do a quick review when completing 2000 or more steps within 30 minutes.
+                        """
+                    )
                 }
             }
             .font(.subheadline)
@@ -277,9 +304,10 @@ struct CreateReviewReminderView: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(16)
     }
-    
+    // swiftlint:enable trailing_whitespace
+
     // MARK: Unable to Save Review Reminder Alert
-    
+
     private var unableToSaveReviewReminderAlert: Alert {
         Alert(
             title: Text("Error Saving Review Reminder"),
@@ -287,9 +315,9 @@ struct CreateReviewReminderView: View {
             dismissButton: .default(Text("Ok"))
         )
     }
-    
+
     // MARK: Unable to Send Test Notification Alert
-    
+
     private var unableToSendTestNotificationAlert: Alert {
         Alert(
             title: Text("Unable to Send Notification"),
@@ -297,9 +325,9 @@ struct CreateReviewReminderView: View {
             dismissButton: .default(Text("Ok"))
         )
     }
-    
+
     // MARK: Review Deletion Confirmation Alert
-    
+
     private var reviewReminderDeletionConfirmationAlert: Alert {
         Alert(
             title: Text("Delete Review Reminder"),

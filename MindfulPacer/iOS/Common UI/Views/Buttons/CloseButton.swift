@@ -11,11 +11,11 @@ import SwiftUI
 
 struct CloseButton: View {
     // MARK: Properties
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     // MARK: Body
-    
+
     var body: some View {
         Button {
             dismiss()

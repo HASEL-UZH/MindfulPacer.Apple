@@ -12,11 +12,11 @@ import SwiftUI
 extension OnboardingView {
     struct KeyFeaturesView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: OnboardingViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             VStack(spacing: 32) {
                 VStack(spacing: 4) {
@@ -28,7 +28,7 @@ extension OnboardingView {
                         .font(.largeTitle.bold())
                         .foregroundStyle(LinearGradient(colors: [Color("BrandPrimary")], startPoint: .topLeading, endPoint: .bottomTrailing))
                 }
-                
+
                 VStack(spacing: 16) {
                     ForEach(viewModel.keyFeatures, id: \.title) { feature in
                         keyFeatureItem(
@@ -43,9 +43,9 @@ extension OnboardingView {
             .frame(maxHeight: .infinity, alignment: .center)
             .safeAreaPadding(.bottom, viewModel.actionButtonHeight)
         }
-        
+
         // MARK: Key Feature Item
-        
+
         @ViewBuilder
         private func keyFeatureItem(icon: String, title: String, description: String) -> some View {
             Card {
@@ -56,11 +56,11 @@ extension OnboardingView {
                         .frame(width: 32, height: 32)
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
                             .fontWeight(.semibold)
-                        
+
                         Text(description)
                             .font(.subheadline)
                     }
@@ -75,11 +75,11 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-    
+
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
-        
+
         OnboardingView.KeyFeaturesView(viewModel: viewModel)
     }
 }

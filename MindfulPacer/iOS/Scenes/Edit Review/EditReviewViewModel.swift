@@ -14,9 +14,9 @@ import SwiftData
 @Observable
 class EditReviewViewModel {
     enum Mode { case create, edit }
-    
+
     // MARK: - Dependencies
-    
+
     private let modelContext: ModelContext
     private let createReviewUseCase: CreateReviewUseCase
     private let deleteReviewUseCase: DeleteReviewUseCase
@@ -24,15 +24,15 @@ class EditReviewViewModel {
     private let saveReviewUseCase: SaveReviewUseCase
 
     // MARK: - Published Properties (State)
-    
+
     var mode: Mode = .create
     var navigationPath: [EditReviewNavigationDestination] = []
-    var activeSheet: EditReviewSheet? = nil
-    var activeAlert: EditReviewAlert? = nil
+    var activeSheet: EditReviewSheet?
+    var activeAlert: EditReviewAlert?
 
-    var currentRatingType: ReviewMetricRatingType? = nil
+    var currentRatingType: ReviewMetricRatingType?
     var categories: [Category] = []
-    
+
     var navigationTitle: String {
         switch mode {
         case .create:
@@ -41,16 +41,16 @@ class EditReviewViewModel {
             "Edit Review"
         }
     }
-    
+
     var date: Date = .now
-    var selectedCategory: Category? = nil {
+    var selectedCategory: Category? {
         didSet { selectedSubcategory = nil }
     }
-    var selectedMood: Mood? = nil
-    var selectedSubcategory: Subcategory? = nil
+    var selectedMood: Mood?
+    var selectedSubcategory: Subcategory?
     var didTriggerCrash: Bool = false
     var additionalInformation: String = ""
-    
+
     var ratings: [ReviewMetricRating] = [
         ReviewMetricRating(type: .headaches),
         ReviewMetricRating(type: .energyLevel),
@@ -59,15 +59,15 @@ class EditReviewViewModel {
         ReviewMetricRating(type: .painsAndNeedles),
         ReviewMetricRating(type: .muscleAches)
     ]
-    
+
     var isActionButtonDisabled: Bool {
         selectedCategory == nil
     }
-    
+
     var isReviewDeleted = false
-    
+
     // MARK: - Initialization
-    
+
     init(
         modelContext: ModelContext,
         createReviewUseCase: CreateReviewUseCase,
@@ -81,22 +81,22 @@ class EditReviewViewModel {
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
         self.saveReviewUseCase = saveReviewUseCase
     }
-    
+
     // MARK: - View Lifecycle
-    
+
     func onViewFirstAppear() {
         fetchDefaultCategories()
     }
-    
+
     func configureMode(with review: Review?) {
         if let review {
             mode = .edit
             loadReview(review)
         }
     }
-    
+
     // MARK: - User Actions
-    
+
     func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
         if selectedItem == item {
             selectedItem = nil
@@ -107,7 +107,7 @@ class EditReviewViewModel {
             }
         }
     }
-    
+
     func setRating(for type: ReviewMetricRatingType, with value: Int?) {
         if let index = ratings.firstIndex(where: { $0.type == type }) {
             if ratings[index].value == value {
@@ -119,7 +119,7 @@ class EditReviewViewModel {
             }
         }
     }
-    
+
     func createReview() {
         let result = createReviewUseCase.execute(
             date: date,
@@ -135,12 +135,12 @@ class EditReviewViewModel {
             muscleAchesRating: ratings[.muscleAches]?.value,
             additionalInformation: additionalInformation
         )
-        
-        if case .failure(_) = result {
+
+        if case .failure = result {
             presentAlert(.unableToSaveReview)
         }
     }
-    
+
     func saveReview(_ review: Review?) {
         let result = saveReviewUseCase.execute(
             existingReview: review.unsafelyUnwrapped,
@@ -157,50 +157,50 @@ class EditReviewViewModel {
             newMuscleAchesRating: ratings[5].value,
             newAdditionalInformation: additionalInformation
         )
-        
-        if case .failure(_) = result {
+
+        if case .failure = result {
             presentAlert(.unableToSaveReview)
         }
     }
-    
+
     func deleteReview(_ review: Review?) {
         /// Fix for crash that occurs when you try to access reviewReminder property when the review is deleted
         isReviewDeleted = true
         guard let review else { return }
         deleteReviewUseCase.execute(review: review)
     }
-    
+
     // MARK: - Presentation
-    
+
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
     }
-    
+
     func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type
         presentSheet(.ratingSheet)
     }
-    
+
     func presentSheet(_ sheet: EditReviewSheet) {
         activeSheet = sheet
     }
-    
+
     func dismissSheet(_ sheet: EditReviewSheet) {
         activeSheet = nil
     }
-    
+
     func presentAlert(_ alert: EditReviewAlert) {
         activeAlert = alert
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func fetchDefaultCategories() {
         if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
             categories = fetchedCategories
         }
     }
-    
+
     private func loadReview(_ review: Review) {
         date = review.date
         selectedCategory = review.category

@@ -16,11 +16,11 @@ protocol FetchDefaultCategoriesUseCase {
 
 class DefaultFetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute() -> [Category]? {
         do {
             let descriptor = FetchDescriptor<Category>(sortBy: [SortDescriptor(\.name)])

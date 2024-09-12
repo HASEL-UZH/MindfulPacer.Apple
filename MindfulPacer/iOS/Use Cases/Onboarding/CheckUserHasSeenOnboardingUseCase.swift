@@ -16,7 +16,7 @@ protocol CheckUserHasSeenOnboardingUseCase {
 
 class DefaultCheckUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase {
     @AppStorage("userHasSeenOnboarding") var userHasSeenOnboarding: Bool = false
-    
+
     func execute() -> Bool {
         return userHasSeenOnboarding
     }

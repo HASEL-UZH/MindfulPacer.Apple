@@ -11,11 +11,11 @@ import SwiftUI
 
 struct RoundedList<Content: View>: View {
     // MARK: Properties
-    
+
     @ViewBuilder var content: Content
-    
+
     // MARK: Body
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -27,7 +27,7 @@ struct RoundedList<Content: View>: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.leading)
                             }
-                            
+
                             VStack(spacing: 0) {
                                 ForEach(section.content) { subview in
                                     subview
@@ -40,7 +40,7 @@ struct RoundedList<Content: View>: View {
                                 }
                             }
                             .cornerRadius(16)
-                            
+
                             if !section.footer.isEmpty {
                                 section.footer
                                     .frame(maxWidth: .infinity, alignment: .leading)

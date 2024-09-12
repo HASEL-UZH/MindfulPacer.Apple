@@ -16,7 +16,7 @@ protocol ToggleUserHasSeenOnboardingUseCase {
 
 class DefaultToggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase {
     @AppStorage("userHasSeenOnboarding") var userHasSeenOnboarding: Bool = false
-    
+
     func execute() {
         userHasSeenOnboarding = true
     }

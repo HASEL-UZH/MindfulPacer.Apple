@@ -12,11 +12,11 @@ import SwiftUI
 extension OnboardingView {
     struct MainFeaturesView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: OnboardingViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -41,7 +41,7 @@ extension OnboardingView {
                                 .scaledToFit()
                                 .frame(height: 200)
                                 .frame(maxWidth: .infinity, alignment: .center)
-                            
+
                             Text(feature.points)
                         }
                     }
@@ -56,6 +56,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-    
+
     OnboardingView.MainFeaturesView(viewModel: viewModel)
 }

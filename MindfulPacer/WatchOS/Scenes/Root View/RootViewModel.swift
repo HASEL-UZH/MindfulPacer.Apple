@@ -10,10 +10,10 @@ import Foundation
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-    
+
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
-    
+
     // MARK: - Initialization
 
     init(
@@ -23,15 +23,15 @@ class RootViewModel {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
-    
+
     // MARK: View Events
-    
+
     func onViewFirstAppear() {
         initializeNotificationsUseCase.execute { result in
             switch result {
-            case .success(_):
+            case .success:
                 print("DEBUGY: Successfully initialized notifications")
-            case .failure(_):
+            case .failure:
                 print("DEBUGY: Could not initialize notifications")
             }
         }

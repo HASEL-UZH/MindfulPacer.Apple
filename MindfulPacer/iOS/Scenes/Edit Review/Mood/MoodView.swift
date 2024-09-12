@@ -12,11 +12,11 @@ import SwiftUI
 extension EditReviewView {
     struct MoodView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: EditReviewViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             ScrollView {
                 LazyVGrid(
@@ -26,16 +26,16 @@ extension EditReviewView {
                     ForEach(DefaultMoodData.moods, id: \.id) { mood in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 12),
-                            isSelected: viewModel.selectedMood == mood,
-                            action: {
-                                viewModel.toggleSelection(mood, selectedItem: &viewModel.selectedMood)
-                            }) {
-                                Text(mood.emoji)
-                                    .font(.title)
-                            }
-                            .contextMenu {
-                                Text(mood.description)
-                            }
+                            isSelected: viewModel.selectedMood == mood
+                        ) {
+                            viewModel.toggleSelection(mood, selectedItem: &viewModel.selectedMood)
+                        } label: {
+                            Text(mood.emoji)
+                                .font(.title)
+                        }
+                        .contextMenu {
+                            Text(mood.description)
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -53,7 +53,7 @@ extension EditReviewView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    
+
     NavigationStack {
         EditReviewView.MoodView(viewModel: viewModel)
             .navigationTitle("Mood")

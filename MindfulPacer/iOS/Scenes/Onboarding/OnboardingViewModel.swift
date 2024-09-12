@@ -39,23 +39,23 @@ struct ActivityPromotingFeature {
 @Observable
 class OnboardingViewModel {
     // MARK: - Dependencies
-    
+
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
     private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
-    
+
     // MARK: - Published Properties
-    
+
     var navigationPath: [OnboardingNavigationDestination] = []
-    
+
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
-    
+
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
             return "Continue"
         }
-        
+
         switch lastDestination {
         case .appleWatchConnection:
             return "Continue"
@@ -71,12 +71,12 @@ class OnboardingViewModel {
             return "Finish"
         }
     }
-    
+
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-        
+
         switch lastDestination {
         case .disclaimer:
             return !didAcceptTerms
@@ -84,19 +84,19 @@ class OnboardingViewModel {
             return false
         }
     }
-    
+
     var showAcceptTermsButton: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-        
+
         return lastDestination == .disclaimer
     }
     var didAcceptTerms: Bool = false
-    
+
     var didCompleteNotificationsRequest: Bool = false
     var didCompleteHealthAuthorization: Bool = false
-    
+
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
             icon: "figure.run",
@@ -119,7 +119,7 @@ class OnboardingViewModel {
             description: "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline."
         )
     ]
-    
+
     let mainFeatures: [MainFeatureItem] = [
         MainFeatureItem(
             icon: "flame",
@@ -145,7 +145,7 @@ class OnboardingViewModel {
             image: "iPhone Placeholder"
         )
     ]
-    
+
     let activityPromotingFeatures: [ActivityPromotingFeature] = [
         ActivityPromotingFeature(
             icon: "figure.stand",
@@ -205,9 +205,9 @@ class OnboardingViewModel {
                 """
         )
     ]
-    
+
     // MARK: - Initialization
-    
+
     init(
         initializeNotificationsUseCase: InitializeNotificationsUseCase,
         requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
@@ -217,20 +217,20 @@ class OnboardingViewModel {
         self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
         self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
     }
-    
+
     // MARK: - View Lifecycle
-    
+
     func onViewFirstAppear() {}
-    
+
     // MARK: - User Actions
-    
+
     func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigationPath.append(OnboardingNavigationDestination.appleWatchConnection)
             return
         }
-        
+
         switch currentDestination {
         case .appleWatchConnection:
             navigationPath.append(OnboardingNavigationDestination.notifications)
@@ -247,14 +247,14 @@ class OnboardingViewModel {
             shouldDismiss = true
         }
     }
-    
+
     func skipButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigateTo(destination: .appleWatchConnection)
             return
         }
-        
+
         switch currentDestination {
         case .appleWatchConnection:
             navigateTo(destination: .notifications)
@@ -270,19 +270,19 @@ class OnboardingViewModel {
             break
         }
     }
-    
+
     // MARK: - Presentation
-    
+
     func navigateTo(destination: OnboardingNavigationDestination) {
         navigationPath.append(destination)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func requestNotificationPermission() {
         initializeNotificationsUseCase.execute { result in
             switch result {
-            case .success(_):
+            case .success:
                 print("DEBUG: Notifications are now authorized")
             case .failure(let failure):
                 print("DEBUG: Notifications not authorized \(String(describing: failure.failureReason))")
@@ -291,7 +291,7 @@ class OnboardingViewModel {
             self.didCompleteNotificationsRequest = true
         }
     }
-    
+
     private func requestHealthAuthorization() {
         requestHealthAuthorisationUseCase.execute { success, error in
             if let error = error {

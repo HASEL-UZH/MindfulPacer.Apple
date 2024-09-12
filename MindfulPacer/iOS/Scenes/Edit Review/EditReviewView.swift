@@ -17,7 +17,7 @@ enum EditReviewNavigationDestination: Hashable {
 
 enum EditReviewSheet: Identifiable {
     case ratingSheet
-    
+
     var id: Int {
         hashValue
     }
@@ -26,7 +26,7 @@ enum EditReviewSheet: Identifiable {
 enum EditReviewAlert: Identifiable {
     case deleteConfirmation
     case unableToSaveReview
-    
+
     var id: Int {
         hashValue
     }
@@ -34,22 +34,23 @@ enum EditReviewAlert: Identifiable {
 
 // MARK: - EditReviewView
 
+// swiftlint:disable:next type_body_length
 struct EditReviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
-    
+
     var review: Review?
-        
+
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             GeometryReader { proxy in
                 ScrollView {
                     VStack(spacing: 16) {
                         date
-                                                
+
                         VStack(spacing: 0) {
                             category
                             if viewModel.selectedCategory.isNotNil {
@@ -57,16 +58,16 @@ struct EditReviewView: View {
                                 subcategory
                             }
                         }
-                        
+
                         mood
                         ratings(width: proxy.size.width / 2)
                         triggerCrash
                         additionalInformation
-                        
+
                         if !viewModel.isReviewDeleted {
                             reviewReminder
                         }
-                        
+
                         if viewModel.mode == .edit {
                             deleteButton
                         }
@@ -92,13 +93,13 @@ struct EditReviewView: View {
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
                 }
-                
+
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .topBarTrailing) {
                     if viewModel.mode == .edit {
                         Button("Save") {
@@ -124,9 +125,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Alert Content
-    
+
     private func alertContent(for alert: EditReviewAlert) -> Alert {
         switch alert {
         case .deleteConfirmation:
@@ -135,16 +136,16 @@ struct EditReviewView: View {
             return unableToSaveReviewAlert
         }
     }
-    
+
     // MARK: Sheet Content
-    
+
     @ViewBuilder
     private func sheetContent(for sheet: EditReviewSheet) -> some View {
         switch sheet {
         case .ratingSheet:
             if let ratingType = viewModel.currentRatingType,
                let rating = viewModel.ratings.first(where: { $0.type == ratingType }) {
-                
+
                 RatingSelectionView(
                     rating: rating,
                     onRatingSelected: { value in
@@ -159,9 +160,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Navigation Destination
-    
+
     @ViewBuilder
     private func navigationDestination(for destination: EditReviewNavigationDestination) -> some View {
         switch destination {
@@ -176,9 +177,9 @@ struct EditReviewView: View {
             MoodView(viewModel: viewModel)
         }
     }
-    
+
     // MARK: Date
-    
+
     private var date: some View {
         Card {
             DatePicker(selection: $viewModel.date) {
@@ -195,9 +196,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Category
-    
+
     private var category: some View {
         NavigationLink(value: EditReviewNavigationDestination.category) {
             HStack {
@@ -211,16 +212,16 @@ struct EditReviewView: View {
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .layoutPriority(1)
-                
+
                 Spacer(minLength: 16)
-                
+
                 HStack(spacing: 4) {
                     if let category = viewModel.selectedCategory {
                         Text(category.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
                     }
-                    
+
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 }
@@ -237,9 +238,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Subcategory
-    
+
     private var subcategory: some View {
         NavigationLink(value: EditReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
             HStack {
@@ -253,16 +254,16 @@ struct EditReviewView: View {
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .layoutPriority(1)
-                
+
                 Spacer(minLength: 16)
-                
+
                 HStack(spacing: 4) {
                     if let subcategory = viewModel.selectedSubcategory {
                         Text(subcategory.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
                     }
-                    
+
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 }
@@ -274,9 +275,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Mood
-    
+
     private var mood: some View {
         NavigationLink(value: EditReviewNavigationDestination.mood) {
             Card {
@@ -291,15 +292,15 @@ struct EditReviewView: View {
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                     .layoutPriority(1)
-                    
+
                     Spacer()
-                    
+
                     HStack(spacing: 4) {
                         if let mood = viewModel.selectedMood {
                             Text(mood.emoji)
                                 .frame(width: 24, height: 24)
                         }
-                        
+
                         Icon(name: "chevron.right", color: Color(.systemGray2))
                             .font(.subheadline.weight(.semibold))
                     }
@@ -307,9 +308,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Ratings
-    
+
     @ViewBuilder private func ratings(width: CGFloat) -> some View {
         LazyVGrid(
             columns: Array(repeating: GridItem(spacing: 16), count: 2),
@@ -336,9 +337,9 @@ struct EditReviewView: View {
             }
         }
     }
-    
+
     // MARK: Trigger Crash
-    
+
     private var triggerCrash: some View {
         Card {
             Toggle(isOn: $viewModel.didTriggerCrash) {
@@ -356,9 +357,9 @@ struct EditReviewView: View {
             .tint(.accentColor)
         }
     }
-    
+
     // MARK: Additional Information
-    
+
     private var additionalInformation: some View {
         IconLabelGroupBox(
             label: IconLabel(
@@ -371,9 +372,9 @@ struct EditReviewView: View {
             TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
         }
     }
-    
+
     // MARK: - Review Reminder
-    
+
     @ViewBuilder
     private var reviewReminder: some View {
         if let review = review {
@@ -397,14 +398,14 @@ struct EditReviewView: View {
                                 labelColor: reviewReminder.measurementType == .heartRate ? .pink : .teal
                             )
                             .font(.subheadline.weight(.semibold))
-                            
+
                             Text(reviewReminder.triggerSummary)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
-                        
+
                         Spacer()
-                        
+
                         Icon(
                             name: "alarm",
                             color: reviewReminder.reviewReminderType.color,
@@ -426,9 +427,9 @@ struct EditReviewView: View {
             manualReview
         }
     }
-    
+
     // MARK: Manual Review
-    
+
     private var manualReview: some View {
         Card(backgroundColor: Color(.tertiarySystemFill)) {
             IconLabel(
@@ -443,9 +444,9 @@ struct EditReviewView: View {
             .layoutPriority(1)
         }
     }
-    
+
     // MARK: Create Button
-    
+
     private var createButton: some View {
         PrimaryButton(title: "Create") {
             viewModel.createReview()
@@ -459,9 +460,9 @@ struct EditReviewView: View {
             Divider()
         }
     }
-    
+
     // MARK: Delete Button
-    
+
     private var deleteButton: some View {
         PrimaryButton(
             title: "Delete Review",
@@ -471,9 +472,9 @@ struct EditReviewView: View {
             viewModel.presentAlert(.deleteConfirmation)
         }
     }
-    
+
     // MARK: Hide Keyboard Button
-    
+
     private var hideKeyboardButton: some View {
         Button {
             hideKeyboard()
@@ -482,9 +483,9 @@ struct EditReviewView: View {
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
-    
+
     // MARK: Review Deletion Confirmation Alert
-    
+
     private var reviewDeletionConfirmationAlert: Alert {
         Alert(
             title: Text("Delete Review"),
@@ -496,9 +497,9 @@ struct EditReviewView: View {
             secondaryButton: .cancel()
         )
     }
-    
+
     // MARK: - Unable to Save Review Alert
-    
+
     private var unableToSaveReviewAlert: Alert {
         Alert(
             title: Text("Save Error"),
@@ -512,7 +513,7 @@ struct EditReviewView: View {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    
+
     return EditReviewView(viewModel: viewModel)
         .tint(Color("BrandPrimary"))
 }
