@@ -55,7 +55,7 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         existingReview.subcategory = newSubcategory
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
-        existingReview.perceivedEnergyLevelRating = newPainsAndNeedlesRating
+        existingReview.perceivedEnergyLevelRating = newPerceivedEnergyLevelRating
         existingReview.headachesRating = newHeadachesRating
         existingReview.shortnessOfBreatheRating = newShortnessOfBreatheRating
         existingReview.feverRating = newFeverRating
