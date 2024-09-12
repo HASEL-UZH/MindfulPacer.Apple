@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SwiftData
+import CocoaLumberjackSwift
 
 // MARK: - CreateReviewReminderViewModel
 
@@ -36,9 +37,9 @@ class CreateReviewReminderViewModel {
     var summaryViewTitle: String {
         switch mode {
         case .create:
-            "Review Reminder Summary"
+            return "Review Reminder Summary"
         case .edit:
-            "Edit Review Reminder"
+            return "Edit Review Reminder"
         }
     }
 
@@ -89,11 +90,11 @@ class CreateReviewReminderViewModel {
     var thresholdUnitText: String {
         switch selectedMeasurementType {
         case .heartRate:
-            "bpm"
+            return "bpm"
         case .steps:
-            "steps"
+            return "steps"
         case nil:
-            ""
+            return ""
         }
     }
 
@@ -103,11 +104,13 @@ class CreateReviewReminderViewModel {
 
     var selectedMeasurementType: ReviewReminder.MeasurementType? {
         didSet {
+            DDLogInfo("Selected measurement type updated to \(String(describing: selectedMeasurementType))")
             validateThreshold()
         }
     }
     var threshold: Int? {
         didSet {
+            DDLogInfo("Threshold updated to \(String(describing: threshold))")
             validateThreshold()
         }
     }
@@ -128,16 +131,23 @@ class CreateReviewReminderViewModel {
         self.deleteReviewReminderUseCase = deleteReviewReminderUseCase
         self.saveReviewReminderUseCase = saveReviewReminderUseCase
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
+
+        DDLogInfo("CreateReviewReminderViewModel initialized in mode: \(mode)")
     }
 
     // MARK: - View Lifecycle
 
-    func onViewFirstAppear() {}
+    func onViewFirstAppear() {
+        DDLogInfo("View first appeared")
+    }
 
     func configureMode(with reviewReminder: ReviewReminder?) {
         if let reviewReminder {
+            DDLogInfo("Configuring view model with existing review reminder: \(reviewReminder)")
             mode = .edit
             loadReviewReminder(reviewReminder)
+        } else {
+            DDLogInfo("Creating new review reminder")
         }
     }
 
@@ -146,9 +156,12 @@ class CreateReviewReminderViewModel {
     func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
+            DDLogInfo("Navigating to measurement type")
             navigateTo(destination: .measurementType)
             return
         }
+
+        DDLogInfo("Action button tapped at destination: \(currentDestination)")
 
         switch currentDestination {
         case .measurementType:
@@ -160,11 +173,13 @@ class CreateReviewReminderViewModel {
         case .interval:
             navigateTo(destination: .summary)
         case .summary:
+            DDLogInfo("Creating review reminder")
             createReviewReminder()
         }
     }
 
     func saveReviewReminder(_ reviewReminder: ReviewReminder?) {
+        DDLogInfo("Saving review reminder: \(String(describing: reviewReminder))")
         let result = saveReviewReminderUseCase.execute(
             existingReviewReminder: reviewReminder.unsafelyUnwrapped,
             newMeasurementType: selectedMeasurementType.unsafelyUnwrapped,
@@ -174,6 +189,7 @@ class CreateReviewReminderViewModel {
         )
 
         if case .failure = result {
+            DDLogError("Failed to save review reminder")
             presentAlert(.unableToSaveReviewReminder)
         }
 
@@ -182,43 +198,50 @@ class CreateReviewReminderViewModel {
 
     func deleteReviewReminder(_ reviewReminder: ReviewReminder?) {
         guard let reviewReminder else { return }
+        DDLogInfo("Deleting review reminder: \(reviewReminder)")
         deleteReviewReminderUseCase.execute(reviewReminder: reviewReminder)
         shouldDismiss = true
     }
 
     func sendNotificationToWatch() {
+        DDLogInfo("Sending notification to watch")
         triggerWatchNotificationUseCase.execute(title: "Review Reminder", body: notificationPreviewBodyText) { result in
             switch result {
             case .success:
-                print("DEBUGY: Notification sent successfully.")
+                DDLogInfo("Notification sent successfully")
             case .failure(let error):
                 self.presentAlert(.unableToSendTestNotification)
-                print("DEBUGY: Failed to send notification: \(error.localizedDescription)")
+                DDLogError("Failed to send notification: \(error.localizedDescription)")
             }
         }
     }
 
     func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
         selectedItem = (selectedItem == item) ? nil : item
+        DDLogInfo("Toggled selection of \(item), selectedItem is now: \(String(describing: selectedItem))")
     }
 
     // MARK: - Presentation
 
     func navigateTo(destination: CreateReviewReminderNavigationDestination) {
+        DDLogInfo("Navigating to: \(destination)")
         navigationPath.append(destination)
     }
 
     func presentSheet(_ sheet: CreateReviewReminderSheet) {
+        DDLogInfo("Presenting sheet: \(sheet)")
         activeSheet = sheet
     }
 
     func presentAlert(_ alert: CreateReviewReminderAlert) {
+        DDLogInfo("Presenting alert: \(alert)")
         activeAlert = alert
     }
 
     // MARK: - Private Methods
 
     private func loadReviewReminder(_ reviewReminder: ReviewReminder) {
+        DDLogInfo("Loading review reminder: \(reviewReminder)")
         selectedMeasurementType = reviewReminder.measurementType
         selectedReviewReminderType = reviewReminder.reviewReminderType
         threshold = reviewReminder.threshold
@@ -229,7 +252,10 @@ class CreateReviewReminderViewModel {
         guard let measurementType = selectedMeasurementType,
               let reviewReminderType = selectedReviewReminderType,
               let threshold,
-              let interval = selectedInterval else { return }
+              let interval = selectedInterval else {
+                  DDLogError("Missing required fields to create review reminder")
+                  return
+              }
 
         let result = createReviewReminderUseCase.execute(
             measurementType: measurementType,
@@ -239,6 +265,7 @@ class CreateReviewReminderViewModel {
         )
 
         if case .failure = result {
+            DDLogError("Failed to create review reminder")
             self.presentAlert(.unableToSaveReviewReminder)
         }
 
@@ -246,6 +273,7 @@ class CreateReviewReminderViewModel {
     }
 
     private func validateThreshold() {
+        DDLogInfo("Validating threshold: \(String(describing: threshold)) for measurement type: \(String(describing: selectedMeasurementType))")
         guard let threshold = threshold else { return }
 
         if let measurementType = selectedMeasurementType {
@@ -253,15 +281,19 @@ class CreateReviewReminderViewModel {
             case .steps:
                 if threshold < 0 {
                     self.threshold = 0
+                    DDLogWarn("Steps threshold set below 0, resetting to 0")
                 } else if threshold > 100_000 {
                     self.threshold = 100_000
+                    DDLogWarn("Steps threshold set above 100,000, resetting to 100,000")
                 }
 
             case .heartRate:
                 if threshold < 0 {
                     self.threshold = 0
+                    DDLogWarn("Heart rate threshold set below 0, resetting to 0")
                 } else if threshold > 250 {
                     self.threshold = 250
+                    DDLogWarn("Heart rate threshold set above 250, resetting to 250")
                 }
             }
         }

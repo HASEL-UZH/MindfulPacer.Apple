@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import CocoaLumberjackSwift
 
 // MARK: - EditReviewViewModel
 
@@ -36,15 +37,18 @@ class EditReviewViewModel {
     var navigationTitle: String {
         switch mode {
         case .create:
-            "Create Review"
+            return "Create Review"
         case .edit:
-            "Edit Review"
+            return "Edit Review"
         }
     }
 
     var date: Date = .now
     var selectedCategory: Category? {
-        didSet { selectedSubcategory = nil }
+        didSet {
+            selectedSubcategory = nil
+            DDLogInfo("Selected category changed to \(String(describing: selectedCategory))")
+        }
     }
     var selectedMood: Mood?
     var selectedSubcategory: Subcategory?
@@ -61,7 +65,9 @@ class EditReviewViewModel {
     ]
 
     var isActionButtonDisabled: Bool {
-        selectedCategory == nil
+        let disabled = selectedCategory == nil
+        DDLogVerbose("Action button is \(disabled ? "disabled" : "enabled")")
+        return disabled
     }
 
     var isReviewDeleted = false
@@ -80,17 +86,20 @@ class EditReviewViewModel {
         self.deleteReviewUseCase = deleteReviewUseCase
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
         self.saveReviewUseCase = saveReviewUseCase
+        DDLogDebug("EditReviewViewModel initialized")
     }
 
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
+        DDLogInfo("View first appeared, fetching default categories")
         fetchDefaultCategories()
     }
 
     func configureMode(with review: Review?) {
         if let review {
             mode = .edit
+            DDLogInfo("Configured view model for editing review: \(review)")
             loadReview(review)
         }
     }
@@ -106,6 +115,7 @@ class EditReviewViewModel {
                 navigationPath.removeLast()
             }
         }
+        DDLogInfo("Toggled selection of item: \(item), current selection: \(String(describing: selectedItem))")
     }
 
     func setRating(for type: ReviewMetricRatingType, with value: Int?) {
@@ -118,9 +128,11 @@ class EditReviewViewModel {
                 dismissSheet(.ratingSheet)
             }
         }
+        DDLogInfo("Set rating for type: \(type) with value: \(String(describing: value))")
     }
 
     func createReview() {
+        DDLogInfo("Creating review with selected data")
         let result = createReviewUseCase.execute(
             date: date,
             category: selectedCategory,
@@ -138,10 +150,14 @@ class EditReviewViewModel {
 
         if case .failure = result {
             presentAlert(.unableToSaveReview)
+            DDLogError("Failed to create review")
+        } else {
+            DDLogInfo("Review created successfully")
         }
     }
 
     func saveReview(_ review: Review?) {
+        DDLogInfo("Saving review with updated data")
         let result = saveReviewUseCase.execute(
             existingReview: review.unsafelyUnwrapped,
             newDate: date,
@@ -160,37 +176,48 @@ class EditReviewViewModel {
 
         if case .failure = result {
             presentAlert(.unableToSaveReview)
+            DDLogError("Failed to save review")
+        } else {
+            DDLogInfo("Review saved successfully")
         }
     }
 
     func deleteReview(_ review: Review?) {
-        /// Fix for crash that occurs when you try to access reviewReminder property when the review is deleted
         isReviewDeleted = true
-        guard let review else { return }
+        guard let review else {
+            DDLogWarn("Attempted to delete a nil review")
+            return
+        }
         deleteReviewUseCase.execute(review: review)
+        DDLogInfo("Review deleted successfully")
     }
 
     // MARK: - Presentation
 
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
+        DDLogInfo("Navigated to destination: \(destination)")
     }
 
     func presentRatingSheet(for type: ReviewMetricRatingType) {
         currentRatingType = type
         presentSheet(.ratingSheet)
+        DDLogInfo("Presented rating sheet for type: \(type)")
     }
 
     func presentSheet(_ sheet: EditReviewSheet) {
         activeSheet = sheet
+        DDLogInfo("Presented sheet: \(sheet)")
     }
 
     func dismissSheet(_ sheet: EditReviewSheet) {
         activeSheet = nil
+        DDLogInfo("Dismissed sheet: \(sheet)")
     }
 
     func presentAlert(_ alert: EditReviewAlert) {
         activeAlert = alert
+        DDLogInfo("Presented alert: \(alert)")
     }
 
     // MARK: - Private Methods
@@ -198,6 +225,9 @@ class EditReviewViewModel {
     private func fetchDefaultCategories() {
         if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
             categories = fetchedCategories
+            DDLogInfo("Fetched default categories: \(fetchedCategories)")
+        } else {
+            DDLogWarn("Failed to fetch default categories")
         }
     }
 
@@ -214,5 +244,6 @@ class EditReviewViewModel {
         ratings[5] = ReviewMetricRating(type: .muscleAches, value: review.muscleAchesRating)
         didTriggerCrash = review.didTriggerCrash
         additionalInformation = review.additionalInformation
+        DDLogInfo("Loaded review: \(review)")
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import WatchConnectivity
 import WatchKit
+import CocoaLumberjackSwift
 
 // MARK: - ConnectivityServiceProtocol
 
@@ -31,11 +32,14 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             session.activate()
 
             if session.activationState != .activated {
+                DDLogError("WCSession activation failed: Session is not activated.")
                 completion(.failure(ConnectivityError.sessionActivationFailed(SessionError.notActivated)))
             } else {
+                DDLogInfo("WCSession activated successfully.")
                 completion(.success(()))
             }
         } else {
+            DDLogError("WCSession not supported on this device.")
             completion(.failure(SessionError.notSupported))
         }
     }
@@ -46,9 +50,9 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
 extension ConnectivityService {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed with error: \(error.localizedDescription)")
+            DDLogError("WCSession activation failed: \(error.localizedDescription)")
         } else {
-            print("WCSession activated with state: \(activationState.rawValue)")
+            DDLogInfo("WCSession activated with state: \(activationState.rawValue)")
         }
     }
 
@@ -58,13 +62,13 @@ extension ConnectivityService {
             case .triggerLocalNotification:
                 if let data = message[MessageKeys.data] as? [String: String],
                    let title = data["title"], let body = data["body"] {
-                    print("DEBUGY: Calling triggerLocalNotification")
+                    DDLogInfo("Received message to trigger local notification on watch with title: \(title) and body: \(body)")
                     NotificationService.shared.triggerLocalNotification(title: title, body: body) { result in
                         switch result {
                         case .success:
-                            print("DEBUGY: Notification triggered successfully on watch.")
+                            DDLogInfo("Local notification triggered successfully on watch.")
                         case .failure(let error):
-                            print("DEBUGY: Failed to trigger notification on watch: \(error.localizedDescription)")
+                            DDLogError("Failed to trigger local notification on watch: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -74,9 +78,9 @@ extension ConnectivityService {
 
     func sessionReachabilityDidChange(_ session: WCSession) {
         if session.isReachable {
-            print("DEBUGY: WCSession is reachable.")
+            DDLogInfo("WCSession is reachable.")
         } else {
-            print("DEBUGY: WCSession is not reachable.")
+            DDLogWarn("WCSession is not reachable.")
         }
     }
 }

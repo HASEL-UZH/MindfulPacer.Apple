@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import CocoaLumberjackSwift
 
 // MARK: - NotificationServiceProtocol
 
@@ -32,14 +33,15 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
 
         notificationCenter.requestAuthorization(options: options) { granted, error in
             if let error = error {
-                // Wrap any underlying errors in your custom error type
                 let customError = NotificationError(type: .unknownError, underlyingError: error)
+                DDLogError("Failed to request notification authorization: \(error.localizedDescription)")
                 completion(.failure(customError))
             } else if granted {
+                DDLogInfo("Notification authorization granted")
                 completion(.success(()))
             } else {
-                // Use the custom error for permission denial
                 let deniedError = NotificationError(type: .permissionDenied)
+                DDLogWarn("Notification authorization denied by the user")
                 completion(.failure(deniedError))
             }
         }
@@ -53,15 +55,15 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
         content.body = body
         content.sound = .default
 
-        // No trigger for immediate notification
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                // Example usage of custom error for failed notification sending
                 let sendError = NotificationError(type: .failedToSendNotification, underlyingError: error)
+                DDLogError("Failed to send local notification: \(error.localizedDescription)")
                 completion(.failure(sendError))
             } else {
+                DDLogInfo("Local notification triggered successfully with title: \(title)")
                 completion(.success(()))
             }
         }

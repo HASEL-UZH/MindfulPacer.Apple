@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocoaLumberjackSwift
 
 @Observable
 class RootViewModel {
@@ -30,11 +31,12 @@ class RootViewModel {
         initializeNotificationsUseCase.execute { result in
             switch result {
             case .success:
-                print("DEBUGY: Successfully initialized notifications")
-            case .failure:
-                print("DEBUGY: Could not initialize notifications")
+                DDLogInfo("Successfully initialized notifications")
+            case .failure(let error):
+                DDLogError("Failed to initialize notifications: \(error.localizedDescription)")
             }
         }
         initializeConnectivityUseCase.execute()
+        DDLogInfo("Connectivity initialization triggered")
     }
 }
