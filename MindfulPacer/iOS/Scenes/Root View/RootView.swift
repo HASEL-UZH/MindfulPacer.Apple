@@ -32,6 +32,11 @@ struct RootView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
+            
+            AnalyticsView()
+                .tabItem {
+                    Label("Analytics", systemImage: "chart.bar")
+                }
         }
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)
@@ -58,4 +63,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
+        .tint(Color("BrandPrimary"))
 }

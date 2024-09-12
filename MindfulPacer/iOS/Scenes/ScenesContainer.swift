@@ -13,6 +13,17 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
 
+    // MARK: - Analytics
+
+    @MainActor
+    var analyticsViewModel: Factory<AnalyticsViewModel> {
+        self {
+            AnalyticsViewModel(
+                modelContext: ModelContainer.prod.mainContext
+            )
+        }
+    }
+
     // MARK: - Home
 
     @MainActor

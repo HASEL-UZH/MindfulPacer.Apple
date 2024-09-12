@@ -19,6 +19,8 @@
 		0D25902D2C92FFF5000EA518 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0D25902C2C92FFF5000EA518 /* CocoaLumberjackSwift */; };
 		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
 		0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82062C46654B0004CD34 /* RootViewModel.swift */; };
+		0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C22C937461008F11C7 /* AnalyticsView.swift */; };
+		0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */; };
 		0D34C45E2C83683200928C53 /* SaveReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReviewUseCase.swift */; };
 		0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4602C837F4400928C53 /* StepsWidget.swift */; };
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
@@ -189,6 +191,8 @@
 		0D1B26B92C8CFE050086FD50 /* ReviewsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterViewModel.swift; sourceTree = "<group>"; };
 		0D2F82042C46653E0004CD34 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0D2F82062C46654B0004CD34 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		0D3006C22C937461008F11C7 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
 		0D34C45D2C83683200928C53 /* SaveReviewUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReviewUseCase.swift; sourceTree = "<group>"; };
 		0D34C4602C837F4400928C53 /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
@@ -380,6 +384,15 @@
 				0D2F82062C46654B0004CD34 /* RootViewModel.swift */,
 			);
 			path = "Root View";
+			sourceTree = "<group>";
+		};
+		0D3006C12C93745B008F11C7 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				0D3006C22C937461008F11C7 /* AnalyticsView.swift */,
+				0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		0D34C44C2C822F4800928C53 /* Edit Review */ = {
@@ -849,6 +862,7 @@
 		0DC3FDCA2C2EDC8B00335543 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				0D3006C12C93745B008F11C7 /* Analytics */,
 				0D9AB0CD2C6E8B2800BB773F /* Create Review Reminder */,
 				0D34C44C2C822F4800928C53 /* Edit Review */,
 				0DC2D7E72C7C7DCC008122CC /* Home */,
@@ -1262,6 +1276,7 @@
 				0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */,
 				0D67F4372C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
+				0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */,
@@ -1272,6 +1287,7 @@
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
 				0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */,
+				0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */,
 				0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */,
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
 				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
