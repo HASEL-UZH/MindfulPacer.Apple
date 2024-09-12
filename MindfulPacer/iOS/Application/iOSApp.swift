@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct iOSApp: App {
+struct IOSApp: App {
     init() {
         // FIXME: This is a temporary workaround due to the bug that causes alert items to not have the tint color provided upstream
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "BrandPrimary")

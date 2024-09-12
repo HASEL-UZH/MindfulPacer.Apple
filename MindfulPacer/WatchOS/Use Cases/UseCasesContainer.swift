@@ -14,14 +14,14 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 
 extension UseCasesContainer {
     // MARK: - iOS Communication
-    
+
     @MainActor
     var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
         self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
     }
-    
+
     // MARK: - System
-    
+
     @MainActor
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
         self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }

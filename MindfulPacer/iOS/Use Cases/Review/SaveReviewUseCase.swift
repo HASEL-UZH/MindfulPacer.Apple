@@ -30,11 +30,11 @@ protocol SaveReviewUseCase {
 
 class DefaultSaveReviewUseCase: SaveReviewUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(
         existingReview: Review,
         newDate: Date,
@@ -55,14 +55,14 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         existingReview.subcategory = newSubcategory
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
-        existingReview.perceivedEnergyLevelRating = newPainsAndNeedlesRating
+        existingReview.perceivedEnergyLevelRating = newPerceivedEnergyLevelRating
         existingReview.headachesRating = newHeadachesRating
         existingReview.shortnessOfBreatheRating = newShortnessOfBreatheRating
         existingReview.feverRating = newFeverRating
         existingReview.painsAndNeedlesRating = newPainsAndNeedlesRating
         existingReview.muscleAchesRating = newMuscleAchesRating
         existingReview.additionalInformation = newAdditionalInformation
-        
+
         do {
             try modelContext.save()
             return .success(existingReview)

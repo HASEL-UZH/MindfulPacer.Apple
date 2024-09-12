@@ -6,14 +6,15 @@
 //
 
 import Foundation
+import CocoaLumberjackSwift
 
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-    
+
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
-    
+
     // MARK: - Initialization
 
     init(
@@ -23,18 +24,19 @@ class RootViewModel {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
-    
+
     // MARK: View Events
-    
+
     func onViewFirstAppear() {
         initializeNotificationsUseCase.execute { result in
             switch result {
-            case .success(_):
-                print("DEBUGY: Successfully initialized notifications")
-            case .failure(_):
-                print("DEBUGY: Could not initialize notifications")
+            case .success:
+                DDLogInfo("Successfully initialized notifications")
+            case .failure(let error):
+                DDLogError("Failed to initialize notifications: \(error.localizedDescription)")
             }
         }
         initializeConnectivityUseCase.execute()
+        DDLogInfo("Connectivity initialization triggered")
     }
 }

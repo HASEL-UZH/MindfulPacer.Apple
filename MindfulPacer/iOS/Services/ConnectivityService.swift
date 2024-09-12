@@ -7,6 +7,7 @@
 
 import Foundation
 import WatchConnectivity
+import CocoaLumberjackSwift
 
 // MARK: - ConnectivityServiceProtocol
 
@@ -19,42 +20,46 @@ protocol ConnectivityServiceProtocol: Sendable {
 
 final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, @unchecked Sendable {
     static let shared = ConnectivityService()
-    
+
     private override init() {
         super.init()
+        DDLogInfo("ConnectivityService initialized")
     }
-    
+
     func initializeSession(completion: @escaping (Result<Void, Error>) -> Void) {
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
             session.activate()
-            
+
             if session.activationState != .activated {
+                DDLogError("WCSession activation failed - not activated")
                 completion(.failure(ConnectivityError.sessionActivationFailed(SessionError.notActivated)))
             } else {
+                DDLogInfo("WCSession successfully activated")
                 completion(.success(()))
             }
         } else {
+            DDLogError("WCSession is not supported on this device")
             completion(.failure(SessionError.notSupported))
         }
     }
-    
+
     func sendMessage(_ command: MessageCommand, data: [String: Any]? = nil, completion: @escaping (Result<Void, Error>) -> Void) {
         guard WCSession.default.isReachable else {
-            print("DEBUGY: WCSession is not reachable")
+            DDLogWarn("WCSession is not reachable")
             completion(.failure(SessionError.notReachable))
             return
         }
-        
+
         var message: [String: Any] = [MessageKeys.command: command.rawValue]
         if let data = data {
             message[MessageKeys.data] = data
         }
-        
-        print("DEBUGY: Sending message \(message)")
+
+        DDLogInfo("Sending message: \(message)")
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            print("DEBUGY: Failed to send message: \(error.localizedDescription)")
+            DDLogError("Failed to send message: \(error.localizedDescription)")
             completion(.failure(ConnectivityError.messageSendingFailed(error)))
         }
     }
@@ -65,22 +70,26 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
 extension ConnectivityService {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed with error: \(error.localizedDescription)")
+            DDLogError("WCSession activation failed with error: \(error.localizedDescription)")
         } else {
-            print("WCSession activated with state: \(activationState.rawValue)")
+            DDLogInfo("WCSession activated with state: \(activationState.rawValue)")
         }
     }
-    
+
     func sessionReachabilityDidChange(_ session: WCSession) {
         if session.isReachable {
-            print("WCSession is reachable.")
+            DDLogInfo("WCSession is reachable")
         } else {
-            print("WCSession is not reachable.")
+            DDLogWarn("WCSession is not reachable")
         }
     }
-    
-    func sessionDidBecomeInactive(_ session: WCSession) { }
+
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        DDLogInfo("WCSession did become inactive")
+    }
+
     func sessionDidDeactivate(_ session: WCSession) {
+        DDLogInfo("WCSession did deactivate, activating again")
         session.activate()
     }
 }

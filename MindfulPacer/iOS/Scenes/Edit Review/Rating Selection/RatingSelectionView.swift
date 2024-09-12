@@ -12,18 +12,18 @@ import SwiftUI
 extension EditReviewView {
     struct RatingSelectionView: View {
         // MARK: Properties
-        
+
         let rating: ReviewMetricRating
         let onRatingSelected: (Int?) -> Void
-        
+
         // MARK: Body
-        
+
         var body: some View {
             NavigationStack {
                 VStack {
                     VStack(alignment: .leading, spacing: 16) {
                         InfoBox(text: "How much did this affect you?")
-                        
+
                         VStack(spacing: 16) {
                             HStack(spacing: 16) {
                                 ForEach(0 ..< 4, id: \.self) { index in
@@ -32,16 +32,16 @@ extension EditReviewView {
                                             shape: .circle,
                                             backgroundColor: rating.color(for: index).opacity(0.1),
                                             selectionColor: Color("BrandPrimary"),
-                                            isSelected: rating.value == index,
-                                            action: {
-                                                onRatingSelected(index)
-                                            }) {
-                                                Text("\(index)")
-                                                    .fontWeight(.semibold)
-                                                    .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
-                                            }
-                                            .buttonStyle(.plain)
-                                        
+                                            isSelected: rating.value == index
+                                        ) {
+                                            onRatingSelected(index)
+                                        } label: {
+                                            Text("\(index)")
+                                                .fontWeight(.semibold)
+                                                .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
+                                        }
+                                        .buttonStyle(.plain)
+
                                         Text(rating.description(for: index))
                                             .font(.footnote.weight(.semibold))
                                             .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
@@ -51,7 +51,7 @@ extension EditReviewView {
                         }
                     }
                     .padding(.horizontal)
-                    
+
                     Spacer()
                 }
                 .background(Color(.systemGroupedBackground).ignoresSafeArea())
@@ -72,7 +72,7 @@ extension EditReviewView {
 #Preview {
     @Previewable @State var currentRatingType: ReviewMetricRatingType = ReviewMetricRatingType.energyLevel
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-    
+
     EditReviewView.RatingSelectionView(
         rating: ReviewMetricRating(type: currentRatingType),
         onRatingSelected: { rating in

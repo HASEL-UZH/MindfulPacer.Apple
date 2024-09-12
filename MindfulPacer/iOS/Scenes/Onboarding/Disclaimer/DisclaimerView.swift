@@ -12,11 +12,11 @@ import SwiftUI
 extension OnboardingView {
     struct DisclaimerView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: OnboardingViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -30,7 +30,7 @@ extension OnboardingView {
                         .frame(width: 128, height: 128)
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
-                    
+
                     IconLabelGroupBox(label:
                                         IconLabel(
                                             icon: "exclamationmark.triangle",
@@ -45,10 +45,10 @@ extension OnboardingView {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
                     Text("When in doubt, please contact an experienced physician, personal trainer or other qualified professional.")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     Card(backgroundColor: Color(.tertiarySystemFill)) {
                         ZStack {
                             Label {
@@ -72,6 +72,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-    
+
     OnboardingView.DisclaimerView(viewModel: viewModel)
 }

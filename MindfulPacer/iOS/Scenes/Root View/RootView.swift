@@ -11,7 +11,7 @@ import SwiftUI
 
 enum RootSheet: Identifiable {
     case onboardingView
-    
+
     var id: Int {
         hashValue
     }
@@ -21,11 +21,11 @@ enum RootSheet: Identifiable {
 
 struct RootView: View {
     // MARK: Properties
-    
+
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
-    
+
     // MARK: Body
-    
+
     var body: some View {
         TabView {
             HomeView()
@@ -40,9 +40,9 @@ struct RootView: View {
             viewModel.onViewFirstAppear()
         }
     }
-    
+
     // MARK: Sheets
-    
+
     @ViewBuilder
     private func sheetContent(for sheet: RootSheet) -> some View {
         switch sheet {

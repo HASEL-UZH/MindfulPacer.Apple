@@ -12,17 +12,17 @@ import SwiftUI
 extension CreateReviewReminderView {
     struct SummaryView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: CreateReviewReminderViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             GeometryReader { proxy in
                 ZStack(alignment: .top) {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()
-                    
+
                     ScrollView {
                         VStack(spacing: 16) {
                             measurementType
@@ -30,7 +30,7 @@ extension CreateReviewReminderView {
                             threshold
                             interval
                             notificationPreview
-                            
+
                             if viewModel.mode == .edit {
                                 deleteButton
                             }
@@ -42,9 +42,9 @@ extension CreateReviewReminderView {
                 .navigationTitle(viewModel.summaryViewTitle)
             }
         }
-        
+
         // MARK: Summary Widget
-        
+
         @ViewBuilder
         private func summaryWidget<Content: View>(
             icon: String,
@@ -69,9 +69,9 @@ extension CreateReviewReminderView {
                 }
             }
         }
-        
+
         // MARK: Measurement Type
-        
+
         private var measurementType: some View {
             summaryWidget(
                 icon: "ruler",
@@ -85,9 +85,9 @@ extension CreateReviewReminderView {
                     }
                 }
         }
-        
+
         // MARK: Review Reminder Type
-        
+
         private var reviewReminderType: some View {
             summaryWidget(
                 icon: "alarm",
@@ -101,9 +101,9 @@ extension CreateReviewReminderView {
                     }
                 }
         }
-        
+
         // MARK: Threshold
-        
+
         private var threshold: some View {
             summaryWidget(
                 icon: "chart.line.flattrend.xyaxis",
@@ -122,9 +122,9 @@ extension CreateReviewReminderView {
                     }
                 }
         }
-        
+
         // MARK: Interval
-        
+
         private var interval: some View {
             summaryWidget(
                 icon: "timer",
@@ -138,9 +138,9 @@ extension CreateReviewReminderView {
                     }
                 }
         }
-        
+
         // MARK: Notification Preview
-        
+
         private var notificationPreview: some View {
             IconLabelGroupBox(
                 label: IconLabel(
@@ -160,11 +160,11 @@ extension CreateReviewReminderView {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 32, height: 32)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Review Reminder Triggered")
                                 .font(.subheadline.weight(.semibold))
-                            
+
                             Text(viewModel.notificationPreviewBodyText)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
@@ -182,9 +182,9 @@ extension CreateReviewReminderView {
             }
             .iconLabelGroupBoxStyle(.divider)
         }
-        
+
         // MARK: Notification Preview Button
-        
+
         private var notificationPreviewButton: some View {
             Button {
                 viewModel.sendNotificationToWatch()
@@ -198,9 +198,9 @@ extension CreateReviewReminderView {
             }
             .disabled(viewModel.isActionButtonDisabled)
         }
-        
+
         // MARK: Delete Button
-        
+
         private var deleteButton: some View {
             PrimaryButton(
                 title: "Delete Review Reminder",
@@ -217,7 +217,7 @@ extension CreateReviewReminderView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
-    
+
     NavigationStack {
         CreateReviewReminderView.SummaryView(viewModel: viewModel)
     }

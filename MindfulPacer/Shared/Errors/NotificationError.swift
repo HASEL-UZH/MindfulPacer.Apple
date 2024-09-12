@@ -17,7 +17,7 @@ struct NotificationError: Error, LocalizedError {
         case failedToSendNotification
         case unknownError
     }
-    
+
     let type: ErrorType
     let underlyingError: Error?
 
@@ -56,7 +56,7 @@ struct NotificationError: Error, LocalizedError {
         }
         return nil
     }
-    
+
     // Optionally, provide custom initializers
     init(type: ErrorType, underlyingError: Error? = nil) {
         self.type = type

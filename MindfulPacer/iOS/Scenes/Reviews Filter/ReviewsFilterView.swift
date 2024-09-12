@@ -10,29 +10,30 @@ import SwiftUI
 
 // MARK: - ReviewsFilterView
 
+// swiftlint:disable:next type_body_length
 struct ReviewsFilterView: View {
     // MARK: Properties
-    
+
     @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
-    
+
     let filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
-    
+
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack {
             RoundedList {
                 dateRange
-                
+
                 Section {
                     categories
                     subcategories
                     moods
                     triggeredCrash
                 }
-                
+
                 dateSorting
-                
+
             }
             .navigationTitle("Filter Reviews")
             .navigationBarTitleDisplayMode(.inline)
@@ -47,16 +48,16 @@ struct ReviewsFilterView: View {
             }
         }
     }
-    
+
     // MARK: Reset Button
-    
+
     private var resetButton: some View {
         Button("Reset") {
             viewModel.resetFilters()
         }
         .fontWeight(.semibold)
     }
-    
+
     // MARK: Date Range
 
     private var dateRange: some View {
@@ -72,7 +73,7 @@ struct ReviewsFilterView: View {
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .layoutPriority(1)
-                
+
                 Group {
                     DatePicker(
                         "From",
@@ -80,8 +81,7 @@ struct ReviewsFilterView: View {
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.compact)
-                    
-                    
+
                     DatePicker(
                         "To",
                         selection: viewModel.toDateBinding,
@@ -97,7 +97,7 @@ struct ReviewsFilterView: View {
     }
 
     // MARK: Categories
-    
+
     private var categories: some View {
         NavigationLink {
             categoriesFilterView
@@ -110,9 +110,9 @@ struct ReviewsFilterView: View {
             )
         }
     }
-    
+
     // MARK: Subcategories
-    
+
     private var subcategories: some View {
         NavigationLink {
             subcategoriesFilterView
@@ -125,9 +125,9 @@ struct ReviewsFilterView: View {
             )
         }
     }
-    
+
     // MARK: Moods
-    
+
     private var moods: some View {
         NavigationLink {
             moodFilterView
@@ -140,9 +140,9 @@ struct ReviewsFilterView: View {
             )
         }
     }
-    
+
     // MARK: Filter Item
-    
+
     @ViewBuilder
     private func filterItem(
         label: String,
@@ -156,7 +156,7 @@ struct ReviewsFilterView: View {
                     Text(label)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.accent)
-                    
+
                     if !selectedSummary.isEmpty {
                         Text(selectedSummary)
                             .font(.footnote)
@@ -168,13 +168,13 @@ struct ReviewsFilterView: View {
                 Icon(name: icon, background: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             HStack(spacing: 4) {
                 if selectedCount > 0 {
                     Text("\(selectedCount)")
                         .foregroundStyle(Color(.systemGray2))
                 }
-                
+
                 Icon(name: "chevron.right", color: Color(.systemGray2))
                     .font(.subheadline.weight(.semibold))
             }
@@ -183,9 +183,9 @@ struct ReviewsFilterView: View {
         .background(Color(.secondarySystemGroupedBackground))
         .foregroundStyle(.primary)
     }
-    
+
     // MARK: Categories Filter View
-    
+
     private var categoriesFilterView: some View {
         ScrollView {
             LazyVGrid(
@@ -195,22 +195,22 @@ struct ReviewsFilterView: View {
                 ForEach(viewModel.categories) { category in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedCategories.contains(category),
-                        action: {
-                            viewModel.toggleFilterCategory(category)
-                        }) {
-                            VStack(spacing: 16) {
-                                Image(systemName: category.icon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .symbolVariant(.fill)
-                                    .frame(width: 24, height: 24)
-                                Text(category.name)
-                                    .font(.footnote)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                            }
+                        isSelected: viewModel.reviewFilter.selectedCategories.contains(category)
+                    ) {
+                        viewModel.toggleFilterCategory(category)
+                    } label: {
+                        VStack(spacing: 16) {
+                            Image(systemName: category.icon)
+                                .resizable()
+                                .scaledToFit()
+                                .symbolVariant(.fill)
+                                .frame(width: 24, height: 24)
+                            Text(category.name)
+                                .font(.footnote)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
                         }
+                    }
                 }
             }
             .padding(.horizontal)
@@ -218,9 +218,9 @@ struct ReviewsFilterView: View {
         .navigationTitle("Categories")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
-    
+
     // MARK: Subcategories Filter View
-    
+
     private var subcategoriesFilterView: some View {
         ScrollView {
             LazyVGrid(
@@ -230,22 +230,22 @@ struct ReviewsFilterView: View {
                 ForEach(viewModel.subcategories) { subcategory in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subcategory),
-                        action: {
-                            viewModel.toggleFilterSubcategory(subcategory)
-                        }) {
-                            VStack(spacing: 16) {
-                                Image(systemName: subcategory.icon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .symbolVariant(.fill)
-                                    .frame(width: 24, height: 24)
-                                Text(subcategory.name)
-                                    .font(.footnote)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                            }
+                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subcategory)
+                    ) {
+                        viewModel.toggleFilterSubcategory(subcategory)
+                    } label: {
+                        VStack(spacing: 16) {
+                            Image(systemName: subcategory.icon)
+                                .resizable()
+                                .scaledToFit()
+                                .symbolVariant(.fill)
+                                .frame(width: 24, height: 24)
+                            Text(subcategory.name)
+                                .font(.footnote)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
                         }
+                    }
                 }
             }
             .padding(.horizontal)
@@ -253,9 +253,9 @@ struct ReviewsFilterView: View {
         .navigationTitle("Subcategories")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
-    
+
     // MARK: Mood Filter View
-    
+
     private var moodFilterView: some View {
         ScrollView {
             LazyVGrid(
@@ -265,16 +265,16 @@ struct ReviewsFilterView: View {
                 ForEach(DefaultMoodData.moods, id: \.id) { mood in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 12),
-                        isSelected: viewModel.reviewFilter.selectedMoods.contains(mood),
-                        action: {
-                            viewModel.toggleFilterMood(mood)
-                        }) {
-                            Text(mood.emoji)
-                                .font(.title)
-                        }
-                        .contextMenu {
-                            Text(mood.description)
-                        }
+                        isSelected: viewModel.reviewFilter.selectedMoods.contains(mood)
+                    ) {
+                        viewModel.toggleFilterMood(mood)
+                    } label: {
+                        Text(mood.emoji)
+                            .font(.title)
+                    }
+                    .contextMenu {
+                        Text(mood.description)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -282,9 +282,9 @@ struct ReviewsFilterView: View {
         .navigationTitle("Mood")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
-    
+
     // MARK: Triggered Crash
-    
+
     private var triggeredCrash: some View {
         Toggle(isOn: viewModel.triggeredCrashBinding) {
             IconLabel(
@@ -302,9 +302,9 @@ struct ReviewsFilterView: View {
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
     }
-    
+
     // MARK: Date Sorting
-    
+
     private var dateSorting: some View {
         Section {
             HStack {
@@ -315,9 +315,9 @@ struct ReviewsFilterView: View {
                     background: true
                 )
                 .font(.subheadline.weight(.semibold))
-                
+
                 Spacer(minLength: 32)
-                
+
                 Picker(String(), selection: viewModel.reviewSortingBinding) {
                     Label("Descending", systemImage: "arrow.down")
                         .tag(ReviewSorting.dateDescending)
@@ -339,8 +339,6 @@ struct ReviewsFilterView: View {
 // MARK: - Preview
 
 #Preview {
-    let viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
-    
     ReviewsFilterView(filterAndSortingPublisher: nil)
         .tint(Color("BrandPrimary"))
 }

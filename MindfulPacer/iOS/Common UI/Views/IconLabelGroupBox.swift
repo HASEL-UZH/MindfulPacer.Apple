@@ -26,13 +26,13 @@ struct IconLabelGroupBoxStyleConfiguration {
 
 struct AnyIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
     private let _makeBody: (IconLabelGroupBoxStyleConfiguration) -> AnyView
-    
+
     init<Style: IconLabelGroupBoxStyle>(_ style: Style) {
         _makeBody = { configuration in
             AnyView(style.makeBody(configuration: configuration))
         }
     }
-    
+
     func makeBody(configuration: IconLabelGroupBoxStyleConfiguration) -> some View {
         _makeBody(configuration)
     }
@@ -56,19 +56,19 @@ struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .layoutPriority(1)
-                
+
                 if let accessoryIndicator = configuration.accessoryIndicator {
                     accessoryIndicator
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
-            
+
             if let description = configuration.description {
                 description
             }
-            
+
             configuration.content
-            
+
             if let footer = configuration.footer {
                 footer
             }
@@ -94,27 +94,27 @@ struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                         .layoutPriority(1)
-                    
+
                     if let accessoryIndicator = configuration.accessoryIndicator {
                         accessoryIndicator
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
-                
+
                 if let description = configuration.description {
                     description
                 }
             }
             .padding()
-            
+
             Divider()
-            
+
             configuration.content
                 .padding()
-            
+
             if let footer = configuration.footer {
                 Divider()
-                
+
                 footer
                     .padding()
             }
@@ -136,7 +136,7 @@ private struct IconLabelGroupBoxStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var IconLabelGroupBoxStyle: AnyIconLabelGroupBoxStyle {
+    var iconLabelGroupBoxStyle: AnyIconLabelGroupBoxStyle {
         get { self[IconLabelGroupBoxStyleKey.self] }
         set { self[IconLabelGroupBoxStyleKey.self] = newValue }
     }
@@ -150,8 +150,8 @@ struct IconLabelGroupBox<Content: View, AccessoryIndicator: View, Footer: View>:
     let content: Content
     let accessoryIndicator: AccessoryIndicator?
     let footer: Footer?
-    @Environment(\.IconLabelGroupBoxStyle) private var style
-    
+    @Environment(\.iconLabelGroupBoxStyle) private var style
+
     init(
         label: IconLabel,
         description: Text? = nil,
@@ -165,7 +165,7 @@ struct IconLabelGroupBox<Content: View, AccessoryIndicator: View, Footer: View>:
         self.accessoryIndicator = accessoryIndicator()
         self.footer = footer()
     }
-    
+
     var body: some View {
         style.makeBody(configuration: .init(
             label: label,
@@ -181,9 +181,9 @@ struct IconLabelGroupBox<Content: View, AccessoryIndicator: View, Footer: View>:
 
 struct IconLabelGroupBoxStyleModifier: ViewModifier {
     let style: AnyIconLabelGroupBoxStyle
-    
+
     func body(content: Content) -> some View {
-        content.environment(\.IconLabelGroupBoxStyle, style)
+        content.environment(\.iconLabelGroupBoxStyle, style)
     }
 }
 
@@ -257,11 +257,11 @@ extension IconLabelGroupBox where Footer == EmptyView {
 #Preview {
     @Previewable @State var isExpanded = false
     @Previewable @Namespace var namespace
-    
+
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
-        
+
         VStack(spacing: 32) {
             IconLabelGroupBox(
                 label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal),
@@ -269,15 +269,15 @@ extension IconLabelGroupBox where Footer == EmptyView {
             ) {
                 Text("Content with a default style")
             } accessoryIndicator: {
-                Button(action: {
+                Button {
                     isExpanded.toggle()
-                }) {
+                } label: {
                     Icon(name: "chevron.down", color: Color("BrandPrimary"), variant: .circle)
                 }
             }
             .iconLabelGroupBoxStyle(.divider)
             .padding()
-            
+
             IconLabelGroupBox(
                 label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink),
                 description: Text("This is my description.").font(.subheadline.weight(.semibold))

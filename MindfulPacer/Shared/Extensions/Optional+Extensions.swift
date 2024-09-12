@@ -33,14 +33,14 @@ extension Optional {
 
     // Execute code when the Optional instance has _any_ wrapped value.
     @discardableResult
-    func whenSome(_ block: (Wrapped) -> ()) -> Wrapped? {
+    func whenSome(_ block: (Wrapped) -> Void) -> Wrapped? {
         _ = map(block)
         return self
     }
 
     // Execute code when the Optional instance does not contain any wrapped value.
     @discardableResult
-    func whenNone(_ block: () -> ()) -> Wrapped? {
+    func whenNone(_ block: () -> Void) -> Wrapped? {
         if case .none = self {
             block()
         }

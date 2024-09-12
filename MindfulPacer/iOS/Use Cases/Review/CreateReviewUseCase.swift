@@ -29,11 +29,11 @@ protocol CreateReviewUseCase {
 
 class DefaulCreateReviewUseCase: CreateReviewUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(
         date: Date,
         category: Category?,
@@ -62,9 +62,9 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
             muscleAchesRating: muscleAchesRating,
             additionalInformation: additionalInformation
         )
-        
+
         modelContext.insert(review)
-        
+
         do {
             try modelContext.save()
             return .success(review)

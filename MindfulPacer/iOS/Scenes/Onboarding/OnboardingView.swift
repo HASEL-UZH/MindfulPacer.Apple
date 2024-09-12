@@ -22,18 +22,18 @@ enum OnboardingNavigationDestination: Hashable {
 
 struct OnboardingView: View {
     // MARK: Properties
-    
+
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-    
+
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 KeyFeaturesView(viewModel: viewModel)
             }
             .navigationDestination(for: OnboardingNavigationDestination.self) { destination in
@@ -49,9 +49,9 @@ struct OnboardingView: View {
             actionButton
         }
     }
-    
+
     // MARK: Navigation Destination
-    
+
     @ViewBuilder
     private func navigationDestination(for destination: OnboardingNavigationDestination) -> some View {
         switch destination {
@@ -69,15 +69,15 @@ struct OnboardingView: View {
             DisclaimerView(viewModel: viewModel)
         }
     }
-    
+
     // MARK: Action Button
-    
+
     private var actionButton: some View {
         VStack(spacing: 16) {
             if viewModel.showAcceptTermsButton {
                 acceptTermsButton
             }
-            
+
             PrimaryButton(title: viewModel.actionButtonTitle) {
                 viewModel.actionButtonTapped()
             }
@@ -94,9 +94,9 @@ struct OnboardingView: View {
             viewModel.actionButtonHeight = newValue.height
         }
     }
-    
+
     // MARK: Accept Terms Button
-    
+
     private var acceptTermsButton: some View {
         HStack(spacing: 8) {
             Button {
@@ -109,7 +109,7 @@ struct OnboardingView: View {
             }
             .contentTransition(.symbolEffect(.replace))
             .foregroundStyle(Color("BrandPrimary"))
-            
+
             Text("I Understand and Accept")
                 .fontWeight(.semibold)
         }
@@ -122,23 +122,23 @@ struct OnboardingView: View {
 extension OnboardingView {
     struct OnboardingPage<Content: View>: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: OnboardingViewModel
         var title: String
         var showSkipButton: Bool = true
         var content: () -> Content
-        
+
         // MARK: Body
-        
+
         var body: some View {
             ScrollView {
                 VStack(spacing: 16) {
                     Text(title)
                         .font(.largeTitle.bold())
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     content()
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)

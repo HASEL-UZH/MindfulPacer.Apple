@@ -12,16 +12,16 @@ import SwiftUI
 extension CreateReviewReminderView {
     struct IntervalView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: CreateReviewReminderViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 16) {
                     intervalSelectionList
                     descriptionText
@@ -44,28 +44,28 @@ extension CreateReviewReminderView {
             ForEach(ReviewReminder.Interval.allCases, id: \.self) { interval in
                 SelectableButton(
                     shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedInterval == interval,
-                    action: {
-                        viewModel.toggleSelection(
-                            interval,
-                            selectedItem: &viewModel.selectedInterval
+                    isSelected: viewModel.selectedInterval == interval
+                ) {
+                    viewModel.toggleSelection(
+                        interval,
+                        selectedItem: &viewModel.selectedInterval
+                    )
+                } label: {
+                    HStack {
+                        IconLabel(
+                            icon: interval.icon,
+                            title: interval.rawValue,
+                            labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
                         )
-                    }) {
-                        HStack {
-                            IconLabel(
-                                icon: interval.icon,
-                                title: interval.rawValue,
-                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
-                            )
-                            Spacer()
-                            if viewModel.selectedInterval == interval {
-                                Image(systemName: "checkmark.circle.fill")
-                            }
+                        Spacer()
+                        if viewModel.selectedInterval == interval {
+                            Image(systemName: "checkmark.circle.fill")
                         }
                     }
+                }
             }
         }
-        
+
         // MARK: Description Text
 
         private var descriptionText: some View {
@@ -92,7 +92,7 @@ extension CreateReviewReminderView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
-    
+
     NavigationStack {
         CreateReviewReminderView.IntervalView(viewModel: viewModel)
     }

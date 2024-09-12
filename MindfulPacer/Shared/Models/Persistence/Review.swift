@@ -79,7 +79,7 @@ extension SchemaV1 {
         var icon: String = ""
         @Relationship(inverse: \Subcategory.category) var subcategories: [Subcategory]?
         var review: Review?
-        
+
         init(
             id: UUID = UUID(),
             name: String = "",
@@ -106,7 +106,7 @@ extension SchemaV1 {
         var icon: String = ""
         var category: Category?
         var review: Review?
-        
+
         init(
             id: UUID = UUID(),
             name: String = "",
@@ -132,7 +132,7 @@ enum ReviewMetricRatingType: CaseIterable {
     case fever
     case painsAndNeedles
     case muscleAches
-    
+
     var name: String {
         switch self {
         case .headaches: "Headaches"
@@ -143,7 +143,7 @@ enum ReviewMetricRatingType: CaseIterable {
         case .muscleAches: "Muscle Aches"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .headaches: "brain.head.profile.fill"
@@ -161,7 +161,7 @@ enum ReviewMetricRatingType: CaseIterable {
 struct ReviewMetricRating {
     let type: ReviewMetricRatingType
     var value: Int?
-    
+
     var color: Color {
         switch value {
         case 0: .green
@@ -171,11 +171,11 @@ struct ReviewMetricRating {
         default: .gray
         }
     }
-    
+
     var description: String {
         return description(for: value)
     }
-    
+
     func description(for value: Int?) -> String {
         switch value {
         case 0: return "None"
@@ -185,7 +185,7 @@ struct ReviewMetricRating {
         default: return "Not Set"
         }
     }
-    
+
     func color(for value: Int?) -> Color {
         switch value {
         case 0: .green
@@ -208,7 +208,8 @@ extension Array where Element == ReviewMetricRating {
 @MainActor
 struct DefaultCategoryData {
     static var categories: [Category] = []
-    
+
+    // swiftlint:disable:next function_body_length
     static func initializeData() {
         // MARK: Categories
         let movement = Category(name: "Movement", icon: "figure.run")
@@ -220,7 +221,7 @@ struct DefaultCategoryData {
         let work = Category(name: "Work", icon: "briefcase")
         let reviewReminders = Category(name: "Review Reminders", icon: "bell.badge")
         let others = Category(name: "Others", icon: "ellipsis")
-        
+
         // MARK: Movement Subcategories
         let standUp = Subcategory(name: "Stand Up", icon: "figure.stand", category: movement)
         let walking = Subcategory(name: "Walking", icon: "figure.walk", category: movement)
@@ -303,7 +304,7 @@ struct DefaultCategoryData {
         interactionsAndSocial.subcategories = [meetingCloseFriends, meetingNewPeople, meetingFamily, onlineSocializing, groupActivities, attendingEvents]
         work.subcategories = [workOnTasks, researchingInformation, meetings, emailAndChat, helpingOthers, networking, learning, projectManagement, breaks]
         reviewReminders.subcategories = [steps, heartRate]
-        
+
         categories = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, reviewReminders, others]
     }
 }
@@ -314,7 +315,7 @@ struct Mood: Equatable {
     let id = UUID()
     let emoji: String
     let description: String
-    
+
     @MainActor
     static func mood(for emoji: String?) -> Mood? {
         DefaultMoodData.moods.first { $0.emoji == emoji }

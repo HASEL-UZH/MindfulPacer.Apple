@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import CocoaLumberjackSwift
 
 // MARK: - KeyFeatureItem
 
@@ -39,23 +40,23 @@ struct ActivityPromotingFeature {
 @Observable
 class OnboardingViewModel {
     // MARK: - Dependencies
-    
+
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
     private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
-    
+
     // MARK: - Published Properties
-    
+
     var navigationPath: [OnboardingNavigationDestination] = []
-    
+
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
-    
+
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
             return "Continue"
         }
-        
+
         switch lastDestination {
         case .appleWatchConnection:
             return "Continue"
@@ -71,12 +72,12 @@ class OnboardingViewModel {
             return "Finish"
         }
     }
-    
+
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-        
+
         switch lastDestination {
         case .disclaimer:
             return !didAcceptTerms
@@ -84,19 +85,19 @@ class OnboardingViewModel {
             return false
         }
     }
-    
+
     var showAcceptTermsButton: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-        
+
         return lastDestination == .disclaimer
     }
     var didAcceptTerms: Bool = false
-    
+
     var didCompleteNotificationsRequest: Bool = false
     var didCompleteHealthAuthorization: Bool = false
-    
+
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
             icon: "figure.run",
@@ -119,7 +120,7 @@ class OnboardingViewModel {
             description: "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline."
         )
     ]
-    
+
     let mainFeatures: [MainFeatureItem] = [
         MainFeatureItem(
             icon: "flame",
@@ -145,7 +146,7 @@ class OnboardingViewModel {
             image: "iPhone Placeholder"
         )
     ]
-    
+
     let activityPromotingFeatures: [ActivityPromotingFeature] = [
         ActivityPromotingFeature(
             icon: "figure.stand",
@@ -205,9 +206,9 @@ class OnboardingViewModel {
                 """
         )
     ]
-    
+
     // MARK: - Initialization
-    
+
     init(
         initializeNotificationsUseCase: InitializeNotificationsUseCase,
         requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
@@ -216,45 +217,56 @@ class OnboardingViewModel {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
         self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
         self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
+        DDLogInfo("OnboardingViewModel initialized")
     }
-    
+
     // MARK: - View Lifecycle
-    
-    func onViewFirstAppear() {}
-    
+
+    func onViewFirstAppear() {
+        DDLogInfo("onViewFirstAppear called")
+    }
+
     // MARK: - User Actions
-    
+
     func actionButtonTapped() {
+        DDLogInfo("actionButtonTapped called")
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigationPath.append(OnboardingNavigationDestination.appleWatchConnection)
             return
         }
-        
+
         switch currentDestination {
         case .appleWatchConnection:
+            DDLogInfo("Navigating to notifications")
             navigationPath.append(OnboardingNavigationDestination.notifications)
         case .notifications:
+            DDLogInfo("Requesting notification permission")
             requestNotificationPermission()
         case .appleHealth:
+            DDLogInfo("Requesting health authorization")
             requestHealthAuthorization()
         case .mainFeatures:
+            DDLogInfo("Navigating to activity promoting features")
             navigationPath.append(OnboardingNavigationDestination.activityPromotingFeatures)
         case .activityPromotingFeatures:
+            DDLogInfo("Navigating to disclaimer")
             navigationPath.append(OnboardingNavigationDestination.disclaimer)
         case .disclaimer:
+            DDLogInfo("Toggling user has seen onboarding and dismissing")
             toggleUserHasSeenOnboardingUseCase.execute()
             shouldDismiss = true
         }
     }
-    
+
     func skipButtonTapped() {
+        DDLogInfo("skipButtonTapped called")
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigateTo(destination: .appleWatchConnection)
             return
         }
-        
+
         switch currentDestination {
         case .appleWatchConnection:
             navigateTo(destination: .notifications)
@@ -270,34 +282,37 @@ class OnboardingViewModel {
             break
         }
     }
-    
+
     // MARK: - Presentation
-    
+
     func navigateTo(destination: OnboardingNavigationDestination) {
+        DDLogInfo("Navigating to \(destination)")
         navigationPath.append(destination)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func requestNotificationPermission() {
+        DDLogInfo("Requesting notification permission")
         initializeNotificationsUseCase.execute { result in
             switch result {
-            case .success(_):
-                print("DEBUG: Notifications are now authorized")
+            case .success:
+                DDLogInfo("Notifications are now authorized")
             case .failure(let failure):
-                print("DEBUG: Notifications not authorized \(String(describing: failure.failureReason))")
+                DDLogWarn("Notifications not authorized \(String(describing: failure.failureReason))")
             }
             self.navigateTo(destination: .appleHealth)
             self.didCompleteNotificationsRequest = true
         }
     }
-    
+
     private func requestHealthAuthorization() {
+        DDLogInfo("Requesting health authorization")
         requestHealthAuthorisationUseCase.execute { success, error in
             if let error = error {
-                print(error.errorDescription ?? "An error occurred.")
-                print(error.recoverySuggestion ?? "")
+                DDLogWarn("Health authorization failed: \(error.errorDescription ?? "Unknown error")")
             } else if success {
+                DDLogInfo("Health authorization successful")
                 self.navigateTo(destination: .mainFeatures)
             }
             self.didCompleteHealthAuthorization = true

@@ -12,16 +12,16 @@ import SwiftUI
 extension CreateReviewReminderView {
     struct MeasurementTypeView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: CreateReviewReminderViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 16) {
                     measurementTypeSelectionList
                     descriptionText
@@ -31,38 +31,38 @@ extension CreateReviewReminderView {
             }
             .navigationTitle("Measurement Type")
         }
-        
+
         // MARK: Measurement Type Selection List
-        
+
         @ViewBuilder
         private var measurementTypeSelectionList: some View {
             ForEach(ReviewReminder.MeasurementType.allCases, id: \.self) { measurementType in
                 SelectableButton(
                     shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedMeasurementType == measurementType,
-                    action: {
-                        viewModel.toggleSelection(
-                            measurementType,
-                            selectedItem: &viewModel.selectedMeasurementType
+                    isSelected: viewModel.selectedMeasurementType == measurementType
+                ) {
+                    viewModel.toggleSelection(
+                        measurementType,
+                        selectedItem: &viewModel.selectedMeasurementType
+                    )
+                } label: {
+                    HStack {
+                        IconLabel(
+                            icon: measurementType.icon,
+                            title: measurementType.rawValue,
+                            labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
                         )
-                    }) {
-                        HStack {
-                            IconLabel(
-                                icon: measurementType.icon,
-                                title: measurementType.rawValue,
-                                labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
-                            )
-                            Spacer()
-                            if viewModel.selectedMeasurementType == measurementType {
-                                Image(systemName: "checkmark.circle.fill")
-                            }
+                        Spacer()
+                        if viewModel.selectedMeasurementType == measurementType {
+                            Image(systemName: "checkmark.circle.fill")
                         }
                     }
+                }
             }
         }
-        
+
         // MARK: Description Text
-        
+
         private var descriptionText: some View {
             Text("Select for which measurement type you want to receive reminders to do a review.")
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -77,7 +77,7 @@ extension CreateReviewReminderView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.createReviewReminderViewModel()
-    
+
     NavigationStack {
         CreateReviewReminderView.MeasurementTypeView(viewModel: viewModel)
     }

@@ -21,7 +21,7 @@ struct HealthKitError: Error, LocalizedError {
         case failedToFetchStepCount
         case unknownError
     }
-    
+
     let type: ErrorType
     let underlyingError: Error?
 

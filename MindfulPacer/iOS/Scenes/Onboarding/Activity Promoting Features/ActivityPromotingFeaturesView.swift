@@ -12,11 +12,11 @@ import SwiftUI
 extension OnboardingView {
     struct ActivityPromotingFeaturesView: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: OnboardingViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -29,10 +29,10 @@ extension OnboardingView {
                         .frame(width: 128, height: 128)
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
-                    
+
                     Text("Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these.")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     ForEach(viewModel.activityPromotingFeatures, id: \.title) { feature in
                         IconLabelGroupBox(
                             label:
@@ -55,6 +55,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-    
+
     OnboardingView.ActivityPromotingFeaturesView(viewModel: viewModel)
 }

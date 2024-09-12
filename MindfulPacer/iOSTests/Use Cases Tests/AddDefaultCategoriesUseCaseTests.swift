@@ -13,35 +13,35 @@ import XCTest
 class AddDefaultCategoriesUseCaseTests: XCTestCase {
     var useCase: DefaultAddDefaultCategoriesUseCase!
     var mockModelContext: ModelContext!
-    
+
     @MainActor
     override func setUp() {
         super.setUp()
         mockModelContext = ModelContainer.testing.mainContext
         useCase = DefaultAddDefaultCategoriesUseCase(modelContext: mockModelContext)
     }
-    
+
     override func tearDown() {
         useCase = nil
         mockModelContext = nil
         super.tearDown()
     }
-    
+
     @MainActor
     func testExecute_addsDefaultCategoriesWhenNoneExist() async {
         await useCase.execute()
-        
+
         var categories: [iOS.Category] = []
         let descriptor = FetchDescriptor<iOS.Category>()
         do {
             categories = try mockModelContext.fetch(descriptor)
         } catch {
-            
+
         }
-        
+
         XCTAssertEqual(categories.count, DefaultCategoryData.categories.count)
     }
-    
+
 //    func testExecute_doesNotAddCategoriesIfTheyAlreadyExist() async {
 //        // Assume categories already exist
 //        mockModelContext.insertedObjects = DefaultCategoryData.categories

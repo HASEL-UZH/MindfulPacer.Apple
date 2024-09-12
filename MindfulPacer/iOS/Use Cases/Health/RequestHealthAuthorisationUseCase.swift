@@ -15,11 +15,11 @@ protocol RequestHealthAuthorisationUseCase {
 
 final class DefaultRequestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase {
     private let healthKitService: HealthKitService
-    
+
     init(healthKitService: HealthKitService) {
         self.healthKitService = healthKitService
     }
-    
+
     func execute(completion: @escaping (Bool, HealthKitError?) -> Void) {
         healthKitService.requestAuthorization(completion: completion)
     }

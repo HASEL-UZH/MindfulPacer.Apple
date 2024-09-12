@@ -11,13 +11,13 @@ import SwiftUI
 
 struct ReviewCell: View {
     // MARK: Properties
-    
+
     var review: Review
     var withBackground: Bool = true
     var onTap: () -> Void
-    
+
     // MARK: Body
-    
+
     var body: some View {
         Button {
             onTap()
@@ -31,9 +31,9 @@ struct ReviewCell: View {
             }
         }
     }
-    
+
     // MARK: Cell Content
-    
+
     private var cellContent: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
@@ -44,18 +44,18 @@ struct ReviewCell: View {
                     IconLabel(icon: category.icon, title: category.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
                 }
-                
+
                 Text(review.date.formatted(.dateTime.day().month().hour().minute()))
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
-            
+
             Spacer()
-                            
+
             if review.didTriggerCrash {
                 Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
             }
-            
+
             if let mood = review.mood, !mood.isEmpty {
                 Text(mood)
                     .frame(width: 24, height: 24)
@@ -77,6 +77,6 @@ struct ReviewCell: View {
 
 #Preview {
     ReviewCell(review: Review()) {
-        
+
     }
 }

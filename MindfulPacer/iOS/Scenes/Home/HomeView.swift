@@ -18,11 +18,11 @@ enum HomeViewSheet: Identifiable {
     case editReviewSheet(Review?)
     case createReviewReminderSheet(ReviewReminder?)
     case reviewsFilterView
-    
+
     var id: Int {
         switch self {
-        case .editReviewSheet(_): 0
-        case .createReviewReminderSheet(_): 1
+        case .editReviewSheet: 0
+        case .createReviewReminderSheet: 1
         case .reviewsFilterView: 2
         }
     }
@@ -32,11 +32,11 @@ enum HomeViewSheet: Identifiable {
 
 struct HomeView: View {
     // MARK: Properties
-    
+
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
 
     // MARK: Body
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -60,24 +60,26 @@ struct HomeView: View {
                 withAnimation {
                     viewModel.onSheetDismissed()
                 }
-            }) { sheetContent(for: $0) }
+            }, content: { sheet in
+                sheetContent(for: sheet)
+            })
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
         }
     }
-    
+
     // MARK: Steps and Heart Rate Section
-    
+
     private var stepsAndHeartRateSection: some View {
         HStack(spacing: 16) {
             StepsWidget(viewModel: viewModel)
             HeartRateWidget()
         }
     }
-    
+
     // MARK: Navigation Destination
-    
+
     @ViewBuilder
     private func navigationDestination(for destination: HomeViewNavigationDestination) -> some View {
         switch destination {
@@ -87,9 +89,9 @@ struct HomeView: View {
             ReviewRemindersListView(viewModel: viewModel)
         }
     }
-    
+
     // MARK: Sheet Content
-    
+
     @ViewBuilder
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
@@ -105,9 +107,9 @@ struct HomeView: View {
                 .presentationDragIndicator(reviewReminder.isNil ? .hidden : .visible)
         case .reviewsFilterView:
             ReviewsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
-            .presentationDetents([.medium, .large])
-            .presentationCornerRadius(16)
-            .presentationDragIndicator(.visible)
+                .presentationDetents([.medium, .large])
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
         }
     }
 }

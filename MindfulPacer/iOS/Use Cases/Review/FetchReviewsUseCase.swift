@@ -16,11 +16,11 @@ protocol FetchReviewsUseCase {
 
 class DefaultFetchReviewsUseCase: FetchReviewsUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute() -> [Review]? {
         do {
             let descriptor = FetchDescriptor<Review>(sortBy: [SortDescriptor(\.date, order: .reverse)])

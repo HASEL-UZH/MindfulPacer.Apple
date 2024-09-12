@@ -12,9 +12,9 @@ import SwiftData
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
-    
+
     // MARK: - Home
-    
+
     @MainActor
     var homeViewModel: Factory<HomeViewModel> {
         self {
@@ -27,9 +27,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    
+
     // MARK: - Onboarding
-    
+
     @MainActor
     var onboardingViewModel: Factory<OnboardingViewModel> {
         self {
@@ -40,9 +40,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    
+
     // MARK: - Root
-    
+
     @MainActor
     var rootViewModel: Factory<RootViewModel> {
         self {
@@ -54,9 +54,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    
+
     // MARK: - Review
-    
+
     @MainActor
     var editReviewViewModel: Factory<EditReviewViewModel> {
         self {
@@ -69,16 +69,16 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-    
+
     @MainActor
     var reviewsFilterViewModel: Factory<ReviewsFilterViewModel> {
         self {
             ReviewsFilterViewModel(fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase())
         }
     }
-    
+
     // MARK: - Review Reminder
-    
+
     @MainActor
     var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {
         self {

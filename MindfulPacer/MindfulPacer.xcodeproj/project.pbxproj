@@ -13,6 +13,10 @@
 		0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */; };
 		0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1016F12C57B229008AF31D /* HealthKitService.swift */; };
 		0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1B26B92C8CFE050086FD50 /* ReviewsFilterViewModel.swift */; };
+		0D2590272C92FFA8000EA518 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 0D2590262C92FFA8000EA518 /* CocoaLumberjack */; };
+		0D2590292C92FFA8000EA518 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0D2590282C92FFA8000EA518 /* CocoaLumberjackSwift */; };
+		0D25902B2C92FFF5000EA518 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 0D25902A2C92FFF5000EA518 /* CocoaLumberjack */; };
+		0D25902D2C92FFF5000EA518 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0D25902C2C92FFF5000EA518 /* CocoaLumberjackSwift */; };
 		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
 		0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82062C46654B0004CD34 /* RootViewModel.swift */; };
 		0D34C45E2C83683200928C53 /* SaveReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReviewUseCase.swift */; };
@@ -300,7 +304,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D2590272C92FFA8000EA518 /* CocoaLumberjack in Frameworks */,
 				0D500FD82C7492F700395AEB /* SystemNotification in Frameworks */,
+				0D2590292C92FFA8000EA518 /* CocoaLumberjackSwift in Frameworks */,
 				0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -309,7 +315,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D25902B2C92FFF5000EA518 /* CocoaLumberjack in Frameworks */,
 				0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */,
+				0D25902D2C92FFF5000EA518 /* CocoaLumberjackSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1057,12 +1065,15 @@
 			buildRules = (
 			);
 			dependencies = (
+				0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */,
 				0DBA37442C32087400209681 /* PBXTargetDependency */,
 			);
 			name = iOS;
 			packageProductDependencies = (
 				0D0DE2D52C32DEB100C54B0C /* Factory */,
 				0D500FD72C7492F700395AEB /* SystemNotification */,
+				0D2590262C92FFA8000EA518 /* CocoaLumberjack */,
+				0D2590282C92FFA8000EA518 /* CocoaLumberjackSwift */,
 			);
 			productName = MindfulPacer;
 			productReference = 0D8C66302C2DA96000853EDE /* iOS.app */;
@@ -1079,10 +1090,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				0D2590242C92FEAA000EA518 /* PBXTargetDependency */,
 			);
 			name = WatchOS;
 			packageProductDependencies = (
 				0D0DE2D72C32DEE900C54B0C /* Factory */,
+				0D25902A2C92FFF5000EA518 /* CocoaLumberjack */,
+				0D25902C2C92FFF5000EA518 /* CocoaLumberjackSwift */,
 			);
 			productName = "WatchOS Watch App";
 			productReference = 0DBA37382C32087300209681 /* WatchOS.app */;
@@ -1166,6 +1180,8 @@
 			packageReferences = (
 				0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */,
 				0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */,
+				0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */,
+				0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
@@ -1369,6 +1385,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0D2590242C92FEAA000EA518 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */;
+		};
 		0DBA37442C32087400209681 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
@@ -1383,6 +1403,10 @@
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
 			targetProxy = 0DDD33872C7B60A900A0B091 /* PBXContainerItemProxy */;
+		};
+		0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1792,12 +1816,28 @@
 				minimumVersion = 2.3.2;
 			};
 		};
+		0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CocoaLumberjack/CocoaLumberjack.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.8.5;
+			};
+		};
 		0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/danielsaidi/SystemNotification.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.1.1;
+			};
+		};
+		0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/SwiftLint.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.57.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1813,10 +1853,40 @@
 			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
 		};
+		0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		0D2590262C92FFA8000EA518 /* CocoaLumberjack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjack;
+		};
+		0D2590282C92FFA8000EA518 /* CocoaLumberjackSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwift;
+		};
+		0D25902A2C92FFF5000EA518 /* CocoaLumberjack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjack;
+		};
+		0D25902C2C92FFF5000EA518 /* CocoaLumberjackSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwift;
+		};
 		0D500FD72C7492F700395AEB /* SystemNotification */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */;
 			productName = SystemNotification;
+		};
+		0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

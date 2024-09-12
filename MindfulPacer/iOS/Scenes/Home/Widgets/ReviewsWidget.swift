@@ -12,11 +12,11 @@ import SwiftUI
 extension HomeView {
     struct ReviewsWidget: View {
         // MARK: Properties
-        
+
         @Bindable var viewModel: HomeViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
                 IconLabelGroupBox(
@@ -49,9 +49,9 @@ extension HomeView {
             }
             .foregroundStyle(.primary)
         }
-        
+
         // MARK: Create Review Button
-        
+
         private var createReviewButton: some View {
             Button {
                 viewModel.presentSheet(.editReviewSheet(nil))
@@ -60,9 +60,9 @@ extension HomeView {
                     .font(.subheadline.weight(.semibold))
             }
         }
-        
-        // MARK:  Recent Reviews Summary
-        
+
+        // MARK: Recent Reviews Summary
+
         private var recentReviewsSummary: some View {
             Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
                 VStack(alignment: .leading, spacing: 16) {
@@ -84,6 +84,6 @@ extension HomeView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
-    
+
     HomeView.ReviewsWidget(viewModel: viewModel)
 }

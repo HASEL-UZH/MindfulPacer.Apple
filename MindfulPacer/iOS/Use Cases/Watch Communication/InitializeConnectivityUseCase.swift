@@ -15,17 +15,17 @@ protocol InitializeConnectivityUseCase {
 
 final class DefaultInitializeConnectivityUseCase: InitializeConnectivityUseCase {
     private let connectivityService: ConnectivityService
-    
+
     init(connectivityService: ConnectivityService) {
         self.connectivityService = connectivityService
     }
-    
+
     func execute() {
         connectivityService.initializeSession { result in
             switch result {
-            case .success(let success):
+            case .success:
                 print("Session initialized")
-            case .failure(let failure):
+            case .failure:
                 print("Failed to initialize session")
             }
         }

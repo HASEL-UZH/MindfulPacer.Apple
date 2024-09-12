@@ -12,11 +12,11 @@ import SwiftUI
 extension HomeView {
     struct ReviewsListView: View {
         // MARK: - Properties
-        
+
         @Bindable var viewModel: HomeViewModel
-        
+
         // MARK: Body
-        
+
         var body: some View {
             VStack(spacing: 16) {
                 if viewModel.reviewFilter.activeFilterCount != 0 {
@@ -25,7 +25,7 @@ extension HomeView {
                             .safeAreaPadding(.horizontal)
                     }
                 }
-                
+
                 if viewModel.filteredReviews.isEmpty {
                     if viewModel.reviewFilter.activeFilterCount > 0 {
                         filteredReviewsEmptyState
@@ -61,9 +61,9 @@ extension HomeView {
                 }
             }
         }
-        
+
         // MARK: Filter Button
-        
+
         private var filterButton: some View {
             Button {
                 viewModel.presentSheet(.reviewsFilterView)
@@ -83,9 +83,9 @@ extension HomeView {
             }
             .padding([.bottom, .trailing])
         }
-        
+
         // MARK: Reviews Empty State
-        
+
         private var reviewsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
@@ -103,9 +103,9 @@ extension HomeView {
                 }
             }
         }
-        
+
         // MARK: Filtered Reviews Empty State
-        
+
         private var filteredReviewsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
@@ -123,9 +123,9 @@ extension HomeView {
                 }
             }
         }
-        
+
         // MARK: Review Filter Sorting Summary
-        
+
         private var reviewFilterSortingSummary: some View {
             HStack(spacing: 8) {
                 categoryFilterSummary
@@ -134,9 +134,9 @@ extension HomeView {
                 crashFilterSummary
             }
         }
-        
+
         // MARK: Category Filter Summary
-        
+
         private var categoryFilterSummary: some View {
             ForEach(viewModel.reviewFilter.selectedCategories) { category in
                 filterItem(
@@ -146,9 +146,9 @@ extension HomeView {
                 )
             }
         }
-        
+
         // MARK: Subcategory Filter Summary
-        
+
         private var subcategoryFilterSummary: some View {
             ForEach(viewModel.reviewFilter.selectedSubcategories) { subcategory in
                 filterItem(
@@ -158,9 +158,9 @@ extension HomeView {
                 )
             }
         }
-        
+
         // MARK: Mood Filter Summary
-        
+
         private var moodFilterSummary: some View {
             ForEach(viewModel.reviewFilter.selectedMoods, id: \.description) { mood in
                 filterItem(
@@ -169,9 +169,9 @@ extension HomeView {
                 )
             }
         }
-        
+
         // MARK: Crash Filter Summary
-        
+
         @ViewBuilder
         private var crashFilterSummary: some View {
             if viewModel.reviewFilter.triggeredCrash {
@@ -182,9 +182,9 @@ extension HomeView {
                 )
             }
         }
-        
+
         // MARK: Filter Item
-        
+
         @ViewBuilder
         private func filterItem(
             icon: String? = nil,
@@ -225,7 +225,7 @@ extension HomeView {
 
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
-    
+
     NavigationStack {
         HomeView.ReviewsListView(viewModel: viewModel)
     }

@@ -15,7 +15,7 @@ protocol SaveReviewReminderUseCase {
         newReviewReminderType: ReviewReminder.ReviewReminderType,
         newThreshold: Int,
         newInterval: ReviewReminder.Interval
-        
+
     ) -> Result<ReviewReminder, Error>
 }
 
@@ -23,11 +23,11 @@ protocol SaveReviewReminderUseCase {
 
 class DefaultSaveReviewReminderUseCase: SaveReviewReminderUseCase {
     private let modelContext: ModelContext
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     func execute(
         existingReviewReminder: ReviewReminder,
         newMeasurementType: ReviewReminder.MeasurementType,
@@ -39,7 +39,7 @@ class DefaultSaveReviewReminderUseCase: SaveReviewReminderUseCase {
         existingReviewReminder.reviewReminderType = newReviewReminderType
         existingReviewReminder.threshold = newThreshold
         existingReviewReminder.interval = newInterval
-        
+
         do {
             try modelContext.save()
             return .success(existingReviewReminder)

@@ -24,7 +24,7 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
     private override init() {
         super.init()
     }
-    
+
     // MARK: - Setup
 
     func setDelegate() {
@@ -32,7 +32,7 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
     }
 
     // MARK: - Notification Authorization
-    
+
     func requestNotificationAuthorization(completion: @escaping (Result<Void, Error>) -> Void) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
@@ -50,9 +50,9 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
             }
         }
     }
-    
+
     // MARK: - Trigger Local Notification
-    
+
     func triggerLocalNotification(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {
         print("DEBUG: triggerLocalNotification called")
         let content = UNMutableNotificationContent()
@@ -71,9 +71,9 @@ final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNo
             }
         }
     }
-    
+
     // MARK: - UNUserNotificationCenterDelegate
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound, .badge, .list])
     }
