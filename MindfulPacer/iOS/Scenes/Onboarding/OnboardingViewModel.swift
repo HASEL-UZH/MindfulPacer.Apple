@@ -38,6 +38,7 @@ struct ActivityPromotingFeature {
 // MARK: - OnboardingViewModel
 
 @Observable
+@MainActor
 class OnboardingViewModel {
     // MARK: - Dependencies
 
@@ -291,7 +292,7 @@ class OnboardingViewModel {
     }
 
     // MARK: - Private Methods
-
+    
     private func requestNotificationPermission() {
         DDLogInfo("Requesting notification permission")
         initializeNotificationsUseCase.execute { result in
@@ -301,8 +302,11 @@ class OnboardingViewModel {
             case .failure(let failure):
                 DDLogWarn("Notifications not authorized \(String(describing: failure.failureReason))")
             }
-            self.navigateTo(destination: .appleHealth)
-            self.didCompleteNotificationsRequest = true
+            
+            Task { @MainActor in
+                self.navigateTo(destination: .appleHealth)
+                self.didCompleteNotificationsRequest = true
+            }
         }
     }
 
@@ -313,9 +317,15 @@ class OnboardingViewModel {
                 DDLogWarn("Health authorization failed: \(error.errorDescription ?? "Unknown error")")
             } else if success {
                 DDLogInfo("Health authorization successful")
-                self.navigateTo(destination: .mainFeatures)
+                Task { @MainActor in
+                    self.didCompleteHealthAuthorization = true
+                    self.navigateTo(destination: .mainFeatures)
+                }
             }
-            self.didCompleteHealthAuthorization = true
+            
+            Task { @MainActor in
+                self.didCompleteHealthAuthorization = true
+            }
         }
     }
 }

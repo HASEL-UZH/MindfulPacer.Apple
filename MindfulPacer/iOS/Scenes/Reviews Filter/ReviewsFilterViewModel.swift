@@ -103,7 +103,7 @@ class ReviewsFilterViewModel {
     }
 
     var selectedFilterMoodsSummary: String {
-        reviewFilter.selectedMoods.map { $0.description }.joined(separator: ", ")
+        reviewFilter.selectedMoods.map { $0.text }.joined(separator: ", ")
     }
 
     // MARK: - Private Properties
@@ -155,7 +155,7 @@ class ReviewsFilterViewModel {
     }
 
     func toggleFilterMood(_ mood: Mood) {
-        DDLogInfo("toggleFilterMood called with mood: \(mood.description)")
+        DDLogInfo("toggleFilterMood called with mood: \(mood.text)")
         toggleSelection(in: &reviewFilter.selectedMoods, item: mood)
         publishChanges()
     }

@@ -107,6 +107,7 @@ struct EditReviewView: View {
                             dismiss()
                         }
                         .fontWeight(.semibold)
+                        .disabled(viewModel.isSaveButtonDisabled)
                     }
                 }
             }

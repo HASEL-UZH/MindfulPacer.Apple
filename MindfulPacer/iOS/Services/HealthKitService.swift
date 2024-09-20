@@ -11,22 +11,35 @@ import CocoaLumberjackSwift
 
 // MARK: - Period
 
-enum Period {
-    case day
-    case week
-    case month
-    case sixMonths
-
+enum Period: String, CaseIterable {
+    case oneHour = "1H"
+    case twoHours = "2H"
+    case day = "D"
+    case week = "W"
+    
     var startDate: Date {
         switch self {
+        case .oneHour:
+            Calendar.current.date(byAdding: .hour, value: -1, to: Date())!
+        case .twoHours:
+            Calendar.current.date(byAdding: .hour, value: -2, to: Date())!
         case .day:
-            return Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+            Calendar.current.date(byAdding: .day, value: -1, to: Date())!
         case .week:
-            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())!
-        case .month:
-            return Calendar.current.date(byAdding: .month, value: -1, to: Date())!
-        case .sixMonths:
-            return Calendar.current.date(byAdding: .month, value: -6, to: Date())!
+            Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())!
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .oneHour:
+            "one hour"
+        case .twoHours:
+            "two hours"
+        case .day:
+            "day"
+        case .week:
+            "week"
         }
     }
 }
@@ -34,8 +47,8 @@ enum Period {
 // MARK: - HealthKitServiceProtocol
 
 protocol HealthKitServiceProtocol {
-    func requestAuthorization(completion: @escaping (Bool, HealthKitError?) -> Void)
-    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void)
+    func requestAuthorization(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void)
+    func fetchMeasurementData(for period: Period, measurementType: MeasurementType, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void)
     func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void)
 }
 
@@ -56,12 +69,16 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
 
     // MARK: - Request HealthKit Authorization
 
-    func requestAuthorization(completion: @escaping (Bool, HealthKitError?) -> Void) {
+    func requestAuthorization(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void) {
         guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
               let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
             let error = HealthKitError(type: .healthDataUnavailable)
             DDLogError("Health data unavailable: heart rate or step count types are missing")
-            completion(false, error)
+            
+            // Run completion explicitly on the main thread.
+            DispatchQueue.main.async {
+                completion(false, error)
+            }
             return
         }
 
@@ -69,53 +86,57 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         let typesToRead: Set = [heartRateType, stepType]
 
         healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
-            if let error = error {
-                let customError = HealthKitError(type: .unknownError, underlyingError: error)
-                DDLogError("HealthKit authorization failed: \(error.localizedDescription)")
-                completion(false, customError)
-            } else if !success {
-                let deniedError = HealthKitError(type: .permissionDenied)
-                DDLogWarn("HealthKit authorization denied by user")
-                completion(false, deniedError)
-            } else {
-                DDLogInfo("HealthKit authorization granted")
-                completion(true, nil)
+            // Ensure the completion runs on the main thread.
+            DispatchQueue.main.async {
+                if let error = error {
+                    let customError = HealthKitError(type: .unknownError, underlyingError: error)
+                    DDLogError("HealthKit authorization failed: \(error.localizedDescription)")
+                    completion(false, customError)
+                } else if !success {
+                    let deniedError = HealthKitError(type: .permissionDenied)
+                    DDLogWarn("HealthKit authorization denied by user")
+                    completion(false, deniedError)
+                } else {
+                    DDLogInfo("HealthKit authorization granted")
+                    completion(true, nil)
+                }
             }
         }
     }
-
-    // MARK: - Fetch Heart Rate Data
-
-    func fetchHeartRateData(for period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
-        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
-            DDLogError("Heart rate data type unavailable")
-            completion(.failure(HealthKitError(type: .heartRateTypeUnavailable)))
+    
+    // MARK: - Fetch Measurement Data (Heart Rate or Steps)
+    
+    func fetchMeasurementData(for period: Period, measurementType: MeasurementType, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
+        guard let quantityTypeIdentifier = measurementType.quantityTypeIdentifier,
+              let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
+            DDLogError("\(measurementType.rawValue) data type unavailable")
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
             return
         }
-
+        
         let predicate = HKQuery.predicateForSamples(withStart: period.startDate, end: Date(), options: .strictEndDate)
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-        let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, results, error in
+        let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, results, error in
             if let error = error {
-                DDLogError("Failed to fetch heart rate data: \(error.localizedDescription)")
+                DDLogError("Failed to fetch \(measurementType.rawValue) data: \(error.localizedDescription)")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
-
+            
             guard let samples = results as? [HKQuantitySample] else {
-                DDLogError("Failed to cast fetched heart rate data to HKQuantitySample")
+                DDLogError("Failed to cast fetched \(measurementType.rawValue) data to HKQuantitySample")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
-
-            DDLogInfo("Successfully fetched heart rate data with \(samples.count) samples")
+            
+            DDLogInfo("Successfully fetched \(samples.count) \(measurementType.rawValue) samples")
             completion(.success(samples))
         }
-
+        
         healthStore?.execute(query)
     }
 

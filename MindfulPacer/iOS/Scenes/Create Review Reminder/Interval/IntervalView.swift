@@ -24,17 +24,12 @@ extension CreateReviewReminderView {
 
                 VStack(spacing: 16) {
                     intervalSelectionList
-                    descriptionText
+                    description
                     Spacer()
                 }
                 .padding(.horizontal)
             }
             .navigationTitle("Interval")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    infoButton
-                }
-            }
         }
 
         // MARK: Interval Selection List
@@ -66,24 +61,21 @@ extension CreateReviewReminderView {
             }
         }
 
-        // MARK: Description Text
+        // MARK: Description
 
-        private var descriptionText: some View {
-            Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-        }
-
-        // MARK: Info Button
-
-        private var infoButton: some View {
-            Button {
-                viewModel.presentSheet(.intervalInfo)
-            } label: {
-                Image(systemName: "info.circle.fill")
+        private var description: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                
+                Button("Learn More") {
+                    viewModel.presentSheet(.intervalInfo)
+                }
+                .font(.subheadline.weight(.semibold))
             }
+            .padding(.horizontal)
         }
     }
 }

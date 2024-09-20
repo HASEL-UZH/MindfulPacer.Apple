@@ -30,13 +30,20 @@ extension CreateReviewReminderView {
                 .padding(.horizontal)
             }
             .navigationTitle("Measurement Type")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") {
+                        viewModel.dismissView()
+                    }
+                }
+            }
         }
 
         // MARK: Measurement Type Selection List
 
         @ViewBuilder
         private var measurementTypeSelectionList: some View {
-            ForEach(ReviewReminder.MeasurementType.allCases, id: \.self) { measurementType in
+            ForEach(MeasurementType.allCases, id: \.self) { measurementType in
                 SelectableButton(
                     shape: .roundedRectangle(cornerRadius: 16),
                     isSelected: viewModel.selectedMeasurementType == measurementType

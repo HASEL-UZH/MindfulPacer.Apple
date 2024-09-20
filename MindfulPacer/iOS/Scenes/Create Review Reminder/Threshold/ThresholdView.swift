@@ -24,19 +24,21 @@ extension CreateReviewReminderView {
 
                 VStack(spacing: 16) {
                     thresholdInput
-                    descriptionText
+                    description
                     Spacer()
                 }
                 .padding(.horizontal)
             }
             .navigationTitle("Threshold")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    infoButton
-                }
-
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") {
+                        viewModel.dismissView()
+                    }
                 }
             }
         }
@@ -61,24 +63,21 @@ extension CreateReviewReminderView {
             }
         }
 
-        // MARK: Description Text
+        // MARK: Description
 
-        private var descriptionText: some View {
-            Text("Set a threshold that triggers a reminder when reached for a specified interval.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-        }
-
-        // MARK: Info Button
-
-        private var infoButton: some View {
-            Button {
-                viewModel.presentSheet(.heartRateThresholdInfo)
-            } label: {
-                Image(systemName: "info.circle.fill")
+        private var description: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                
+                Button("Learn More") {
+                    viewModel.presentSheet(.heartRateThresholdInfo)
+                }
+                .font(.subheadline.weight(.semibold))
             }
+            .padding(.horizontal)
         }
 
         // MARK: Hide Keyboard Button

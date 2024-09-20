@@ -102,7 +102,7 @@ class CreateReviewReminderViewModel {
         String("A review reminder was triggered because your \(selectedMeasurementType?.rawValue.lowercased() ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText.lowercased()) over a period of \(selectedInterval?.rawValue.lowercased() ?? "<INTERBAL>").")
     }
 
-    var selectedMeasurementType: ReviewReminder.MeasurementType? {
+    var selectedMeasurementType: MeasurementType? {
         didSet {
             DDLogInfo("Selected measurement type updated to \(String(describing: selectedMeasurementType))")
             validateThreshold()
@@ -238,6 +238,10 @@ class CreateReviewReminderViewModel {
         activeAlert = alert
     }
 
+    func dismissView() {
+        shouldDismiss = true
+    }
+    
     // MARK: - Private Methods
 
     private func loadReviewReminder(_ reviewReminder: ReviewReminder) {

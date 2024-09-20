@@ -18,7 +18,7 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
+            NavigationLink(value: Int()) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "figure.walk",
@@ -38,19 +38,32 @@ extension HomeView {
 
         // MARK: Steps Summary
 
+        @ViewBuilder
         private var stepsSummary: some View {
             if let currentSteps = viewModel.currentSteps {
-                HStack(alignment: .lastTextBaseline, spacing: 4) {
-                    Text("\(Int(currentSteps.stepCount))")
-                        .font(.title.weight(.semibold))
-                    Text("steps")
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .lastTextBaseline, spacing: 4) {
+                        Text("\(Int(currentSteps.stepCount))")
+                            .font(.title.weight(.semibold))
+                        Text("steps")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Text("**Updated:** \(currentSteps.timestamp.formatted(.dateTime.hour().minute()))")
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             } else {
-                HStack(alignment: .center, spacing: 4) {
-                    Text("--")
-                        .font(.title.weight(.semibold))
-                    Text("steps")
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .center, spacing: 4) {
+                        Text("--")
+                            .font(.title.weight(.semibold))
+                        Text("steps")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Text("No data")
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }

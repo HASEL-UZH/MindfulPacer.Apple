@@ -32,10 +32,10 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reviewReminders.isEmpty {
-                        ContentUnavailableView(
-                            "No Review Reminders",
-                            systemImage: "bell.badge.slash.fill",
-                            description: Text("Tap the **+** button to create a review reminder.")
+                        EmptyStateView(
+                            image: "bell.badge.slash",
+                            title: "No Review Reminders",
+                            description: "Tap the + button to create a review reminder."
                         )
                     } else {
                         recentReviewRemindersSummary
@@ -85,5 +85,8 @@ extension HomeView {
 #Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
 
-    HomeView.ReviewRemindersWidget(viewModel: viewModel)
+    ScrollView {
+        HomeView.ReviewRemindersWidget(viewModel: viewModel)
+    }
+    .background(Color(.systemGroupedBackground))
 }

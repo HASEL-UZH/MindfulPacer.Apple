@@ -14,7 +14,7 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
+            NavigationLink(value: Int()) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "heart.fill",
@@ -34,6 +34,7 @@ extension HomeView {
 
         // MARK: Heart Rate Summary
 
+        @ViewBuilder
         private var heartRateSummary: some View {
             if let heartRate = getHeartRate() { // TODO: Replace with actual heart rate retrieval
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -43,10 +44,16 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 }
             } else {
-                HStack(alignment: .center, spacing: 4) {
-                    Text("--")
-                        .font(.title.weight(.semibold))
-                    Text("bpm")
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .center, spacing: 4) {
+                        Text("--")
+                            .font(.title.weight(.semibold))
+                        Text("bpm")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Text("No Data")
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }

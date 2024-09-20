@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import HealthKit
 import SwiftData
 import SwiftUI
 #if os(watchOS)
@@ -15,6 +16,7 @@ import WatchKit
 // MARK: - Review Reminder
 
 typealias ReviewReminder = SchemaV1.ReviewReminder
+typealias MeasurementType = SchemaV1.ReviewReminder.MeasurementType
 
 extension SchemaV1 {
     @Model
@@ -54,11 +56,27 @@ extension ReviewReminder {
     enum MeasurementType: String, Codable, CaseIterable {
         case heartRate = "Heart Rate"
         case steps = "Steps"
-
+        
+        var quantityTypeIdentifier: HKQuantityTypeIdentifier? {
+            switch self {
+            case .heartRate:
+                return .heartRate
+            case .steps:
+                return .stepCount
+            }
+        }
+        
         var icon: String {
             switch self {
-            case .heartRate: "heart"
+            case .heartRate: "heart.fill"
             case .steps: "figure.walk"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .heartRate: .pink
+            case .steps: .teal
             }
         }
     }

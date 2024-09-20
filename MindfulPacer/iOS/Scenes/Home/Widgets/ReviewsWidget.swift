@@ -32,10 +32,10 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reviews.isEmpty {
-                        ContentUnavailableView(
-                            "No Reviews",
-                            systemImage: "book.pages.fill",
-                            description: Text("Tap the **+** button to create a review.")
+                        EmptyStateView(
+                            image: "book.pages",
+                            title: "No Reviews",
+                            description: "Tap the + button to create a review."
                         )
                     } else {
                         recentReviewsSummary
@@ -85,5 +85,8 @@ extension HomeView {
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
 
-    HomeView.ReviewsWidget(viewModel: viewModel)
+    ScrollView {
+        HomeView.ReviewsWidget(viewModel: viewModel)
+    }
+    .background(Color(.systemGroupedBackground))
 }

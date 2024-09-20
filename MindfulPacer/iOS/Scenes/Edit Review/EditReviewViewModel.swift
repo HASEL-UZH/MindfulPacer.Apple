@@ -70,6 +70,12 @@ class EditReviewViewModel {
         return disabled
     }
 
+    var isSaveButtonDisabled: Bool {
+        let disabled = selectedCategory == nil
+        DDLogVerbose("Action button is \(disabled ? "disabled" : "enabled")")
+        return disabled
+    }
+
     var isReviewDeleted = false
 
     // MARK: - Initialization
@@ -137,7 +143,7 @@ class EditReviewViewModel {
             date: date,
             category: selectedCategory,
             subcategory: selectedSubcategory,
-            mood: selectedMood?.emoji,
+            mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
             perceivedEnergyLevelRating: ratings[.energyLevel]?.value,
             headachesRating: ratings[.headaches]?.value,
@@ -163,7 +169,7 @@ class EditReviewViewModel {
             newDate: date,
             newCategory: selectedCategory,
             newSubcategory: selectedSubcategory,
-            newMood: selectedMood?.emoji,
+            newMood: selectedMood,
             newDidTriggerCrash: didTriggerCrash,
             newPerceivedEnergyLevelRating: ratings[1].value,
             newHeadachesRating: ratings[0].value,
@@ -235,7 +241,7 @@ class EditReviewViewModel {
         date = review.date
         selectedCategory = review.category
         selectedSubcategory = review.subcategory
-        selectedMood = Mood.mood(for: review.mood)
+        selectedMood = review.mood
         ratings[0] = ReviewMetricRating(type: .headaches, value: review.headachesRating)
         ratings[1] = ReviewMetricRating(type: .energyLevel, value: review.perceivedEnergyLevelRating)
         ratings[2] = ReviewMetricRating(type: .shortnessOfBreath, value: review.shortnessOfBreatheRating)

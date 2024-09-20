@@ -23,7 +23,7 @@ extension EditReviewView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 5),
                     spacing: 16
                 ) {
-                    ForEach(DefaultMoodData.moods, id: \.id) { mood in
+                    ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 12),
                             isSelected: viewModel.selectedMood == mood
@@ -34,7 +34,7 @@ extension EditReviewView {
                                 .font(.title)
                         }
                         .contextMenu {
-                            Text(mood.description)
+                            Text(mood.text)
                         }
                     }
                 }

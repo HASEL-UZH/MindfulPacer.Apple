@@ -103,9 +103,9 @@ extension HomeView {
                 }
             }
         }
-
+        
         // MARK: Filtered Reviews Empty State
-
+        
         private var filteredReviewsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
@@ -162,7 +162,7 @@ extension HomeView {
         // MARK: Mood Filter Summary
 
         private var moodFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedMoods, id: \.description) { mood in
+            ForEach(viewModel.reviewFilter.selectedMoods, id: \.text) { mood in
                 filterItem(
                     emoji: mood.emoji,
                     removeAction: { viewModel.toggleFilterMood(mood) }

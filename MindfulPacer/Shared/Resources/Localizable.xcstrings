@@ -4,6 +4,9 @@
     "--" : {
       "shouldTranslate" : false
     },
+    "**Updated:** %@" : {
+
+    },
     "%lld" : {
 
     },
@@ -25,6 +28,9 @@
           }
         }
       }
+    },
+    "Analytics" : {
+
     },
     "Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these." : {
 
@@ -62,6 +68,9 @@
     "Create Review Reminder" : {
 
     },
+    "Day" : {
+
+    },
     "Delete" : {
 
     },
@@ -96,7 +105,7 @@
     "From" : {
 
     },
-    "Hello, World!" : {
+    "Goal" : {
 
     },
     "Home" : {
@@ -108,7 +117,13 @@
     "Interval" : {
 
     },
+    "Learn More" : {
+
+    },
     "Measurement Type" : {
+
+    },
+    "Min Value" : {
 
     },
     "MindfulPacer" : {
@@ -136,6 +151,12 @@
 
     },
     "New Review" : {
+
+    },
+    "No data" : {
+
+    },
+    "No Data" : {
 
     },
     "No Interval Selected" : {
@@ -204,6 +225,9 @@
     "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
+    "Settings" : {
+
+    },
     "Skip" : {
 
     },
@@ -226,12 +250,6 @@
 
     },
     "Summary of your review reminders." : {
-
-    },
-    "Tap the **+** button to create a review reminder." : {
-
-    },
-    "Tap the **+** button to create a review." : {
 
     },
     "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
@@ -266,6 +284,19 @@
     },
     "Unable to Send Notification" : {
 
+    },
+    "Value" : {
+
+    },
+    "Visualise your %@ data within the last %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Visualise your %1$@ data within the last %2$@."
+          }
+        }
+      }
     },
     "When in doubt, please contact an experienced physician, personal trainer or other qualified professional." : {
 

@@ -14,6 +14,7 @@ import SwiftUI
 typealias Review = SchemaV1.Review
 typealias Category = SchemaV1.Category
 typealias Subcategory = SchemaV1.Subcategory
+typealias Mood = Review.Mood
 
 // MARK: - Review
 
@@ -24,7 +25,7 @@ extension SchemaV1 {
         var date: Date = Date.now
         @Relationship(inverse: \Category.review) var category: Category?
         @Relationship(inverse: \Subcategory.review) var subcategory: Subcategory?
-        var mood: String? = ""
+        var mood: Mood?
         var didTriggerCrash: Bool = false
         var perceivedEnergyLevelRating: Int?
         var headachesRating: Int?
@@ -40,7 +41,7 @@ extension SchemaV1 {
             date: Date = .now,
             category: Category? = nil,
             subcategory: Subcategory? = nil,
-            mood: String? = "",
+            mood: Mood? = nil,
             didTriggerCrash: Bool = false,
             perceivedEnergyLevelRating: Int? = 0,
             headachesRating: Int? = 0,
@@ -120,6 +121,15 @@ extension SchemaV1 {
             self.category = category
             self.review = review
         }
+    }
+}
+
+// MARK: - Mood
+
+extension Review {
+    struct Mood: Codable, Equatable {
+        let emoji: String
+        let text: String
     }
 }
 
@@ -311,39 +321,28 @@ struct DefaultCategoryData {
 
 // MARK: - Default Moods
 
-struct Mood: Equatable {
-    let id = UUID()
-    let emoji: String
-    let description: String
-
-    @MainActor
-    static func mood(for emoji: String?) -> Mood? {
-        DefaultMoodData.moods.first { $0.emoji == emoji }
-    }
-}
-
 @MainActor
 struct DefaultMoodData {
     static var moods: [Mood] = [
-        Mood(emoji: "😊", description: "Happy"),
-        Mood(emoji: "😢", description: "Sad"),
-        Mood(emoji: "😡", description: "Angry"),
-        Mood(emoji: "😍", description: "In love"),
-        Mood(emoji: "😨", description: "Scared"),
-        Mood(emoji: "😅", description: "Nervous"),
-        Mood(emoji: "🤔", description: "Thinking"),
-        Mood(emoji: "😴", description: "Tired"),
-        Mood(emoji: "😎", description: "Cool/Confident"),
-        Mood(emoji: "😭", description: "Crying/Overwhelmed"),
-        Mood(emoji: "🤗", description: "Hugging/Supportive"),
-        Mood(emoji: "😕", description: "Confused"),
-        Mood(emoji: "😏", description: "Smirking"),
-        Mood(emoji: "😱", description: "Shocked"),
-        Mood(emoji: "🤩", description: "Excited"),
-        Mood(emoji: "😒", description: "Unimpressed"),
-        Mood(emoji: "😜", description: "Playful/Teasing"),
-        Mood(emoji: "😔", description: "Disappointed"),
-        Mood(emoji: "🤒", description: "Sick"),
-        Mood(emoji: "😤", description: "Frustrated")
+        Mood(emoji: "😊", text: "Happy"),
+        Mood(emoji: "😢", text: "Sad"),
+        Mood(emoji: "😡", text: "Angry"),
+        Mood(emoji: "😍", text: "In love"),
+        Mood(emoji: "😨", text: "Scared"),
+        Mood(emoji: "😅", text: "Nervous"),
+        Mood(emoji: "🤔", text: "Thinking"),
+        Mood(emoji: "😴", text: "Tired"),
+        Mood(emoji: "😎", text: "Cool/Confident"),
+        Mood(emoji: "😭", text: "Crying/Overwhelmed"),
+        Mood(emoji: "🤗", text: "Hugging/Supportive"),
+        Mood(emoji: "😕", text: "Confused"),
+        Mood(emoji: "😏", text: "Smirking"),
+        Mood(emoji: "😱", text: "Shocked"),
+        Mood(emoji: "🤩", text: "Excited"),
+        Mood(emoji: "😒", text: "Unimpressed"),
+        Mood(emoji: "😜", text: "Playful/Teasing"),
+        Mood(emoji: "😔", text: "Disappointed"),
+        Mood(emoji: "🤒", text: "Sick"),
+        Mood(emoji: "😤", text: "Frustrated")
     ]
 }

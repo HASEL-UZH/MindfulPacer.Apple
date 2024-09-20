@@ -12,6 +12,7 @@ import SwiftUI
 enum HomeViewNavigationDestination: Hashable {
     case reviewsList
     case reviewRemindersList
+    case analytics
 }
 
 enum HomeViewSheet: Identifiable {
@@ -41,8 +42,8 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    stepsAndHeartRateSection
                     ReviewsWidget(viewModel: viewModel)
+                    stepsAndHeartRateSection
                     ReviewRemindersWidget(viewModel: viewModel)
                     ReviewReminderTypeWidget()
                     Spacer()
@@ -87,6 +88,8 @@ struct HomeView: View {
             ReviewsListView(viewModel: viewModel)
         case .reviewRemindersList:
             ReviewRemindersListView(viewModel: viewModel)
+        case .analytics:
+            AnalyticsView()
         }
     }
 

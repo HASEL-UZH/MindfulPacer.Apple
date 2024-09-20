@@ -23,6 +23,16 @@ extension UseCasesContainer {
     }
 
     @MainActor
+    var fetchHeartRateUseCase: Factory<DefaultFetchHeartRateUseCase> {
+        self { DefaultFetchHeartRateUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
+    var fetchStepsUseCase: Factory<DefaultFetchStepsUseCase> {
+        self { DefaultFetchStepsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
     var requestHealthAuthorisationUseCase: Factory<DefaultRequestHealthAuthorisationUseCase> {
         self { DefaultRequestHealthAuthorisationUseCase(healthKitService: HealthKitService.shared) }
     }

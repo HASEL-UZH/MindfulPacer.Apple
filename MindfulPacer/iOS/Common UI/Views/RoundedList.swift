@@ -19,7 +19,7 @@ struct RoundedList<Content: View>: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                Group(sectionsOf: content) { sections in
+                Group(sections: content) { sections in
                     ForEach(sections) { section in
                         VStack(spacing: 8) {
                             if !section.header.isEmpty {

@@ -40,6 +40,15 @@ extension CreateReviewReminderView {
                     }
                 }
                 .navigationTitle(viewModel.summaryViewTitle)
+                .toolbar {
+                    if viewModel.mode == .create {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Cancel") {
+                                viewModel.dismissView()
+                            }
+                        }
+                    }
+                }
             }
         }
 

@@ -37,6 +37,11 @@ struct RootView: View {
                 .tabItem {
                     Label("Analytics", systemImage: "chart.bar")
                 }
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
         }
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)

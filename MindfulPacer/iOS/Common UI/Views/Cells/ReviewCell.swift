@@ -56,8 +56,8 @@ struct ReviewCell: View {
                 Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
             }
 
-            if let mood = review.mood, !mood.isEmpty {
-                Text(mood)
+            if let mood = review.mood {
+                Text(mood.emoji)
                     .frame(width: 24, height: 24)
                     .padding(4)
                     .background {
