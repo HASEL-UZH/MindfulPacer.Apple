@@ -14,24 +14,18 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            NavigationLink(value: Int()) {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "heart.fill",
-                        title: "Heart Rate",
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                ) {
-                    heartRateSummary
-                } accessoryIndicator: {
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "heart.fill",
+                    title: "Heart Rate",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+            ) {
+                heartRateSummary
             }
-            .foregroundStyle(.primary)
         }
-
+        
         // MARK: Heart Rate Summary
 
         @ViewBuilder

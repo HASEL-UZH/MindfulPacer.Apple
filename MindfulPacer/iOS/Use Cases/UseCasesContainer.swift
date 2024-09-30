@@ -75,6 +75,11 @@ extension UseCasesContainer {
     var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
         self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
+    
+    @MainActor
+    var fetchReviewsInPeriodUseCase: Factory<DefaultFetchReviewsInPeriodUseCase> {
+        self { DefaultFetchReviewsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
 
     @MainActor
     var filterReviewsUseCase: Factory<DefaultFilterReviewsUseCase> {

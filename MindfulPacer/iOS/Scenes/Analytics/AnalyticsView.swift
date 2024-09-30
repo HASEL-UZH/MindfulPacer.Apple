@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+// MARK: - Presentation Enums
+
+enum AnalyticsViewSheet: Identifiable {
+    case editReviewSheet(Review?)
+
+    var id: Int {
+        switch self {
+        case .editReviewSheet: 0
+        }
+    }
+}
+
 // MARK: - AnalyticsView
 
 struct AnalyticsView: View {
@@ -19,25 +31,29 @@ struct AnalyticsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                IconLabelGroupBox(
-                    label:
+                VStack(spacing: 16) {
+                    Group {
                         IconLabel(
                             icon: viewModel.selectedMeasurementType.icon,
                             title: viewModel.selectedMeasurementType.rawValue,
                             labelColor: viewModel.selectedMeasurementType.color,
                             background: true
-                        ),
-                    description:
+                        )
+                        .font(.subheadline.weight(.semibold))
+                        
                         Text("Visualise your \(viewModel.selectedMeasurementType.rawValue.lowercased()) data within the last \(viewModel.selectedPeriod.description).")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                ) {
-                    LineChart(
-                        chartData: viewModel.selectedMeasurementType == .heartRate ? viewModel.heartRateChartData : viewModel.stepsChartData,
-                        color: viewModel.selectedMeasurementType.color,
-                        measurementType: viewModel.selectedMeasurementType
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    LineChartView(
+                        viewModel: viewModel,
+                        onReviewSelected: { review in
+                            viewModel.presentSheet(.editReviewSheet(review))
+                        }
                     )
-                } footer: {
+                    
                     Picker(selection: $viewModel.selectedPeriod) {
                         ForEach(Period.allCases, id: \.self) { period in
                             Text(period.rawValue)
@@ -48,23 +64,10 @@ struct AnalyticsView: View {
                     }
                     .pickerStyle(.segmented)
                 }
-                .padding(.horizontal)
-
-                VStack(spacing: 0) {
-                    Text("Reviews")
-                        .font(.title.bold())
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-
-                    RoundedList {
-                        ReviewCell(review: Review()) {
-                            
-                        }
-                    }
-                    .safeAreaPadding(.top)
-                }
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
                 
-                Spacer()
+                reviewsInPeriod
             }
             .navigationTitle("Analytics")
             .background {
@@ -91,9 +94,61 @@ struct AnalyticsView: View {
                     .tint(Color("BrandPrimary"))
                 }
             }
+            .sheet(item: $viewModel.activeSheet, onDismiss: {
+//                withAnimation {
+//                    viewModel.onSheetDismissed()
+//                }
+                // TODO: Refresh the reviews on dismissal in case of edit
+            }, content: { sheet in
+                sheetContent(for: sheet)
+            })
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
+            .onAppear {
+                viewModel.onViewAppear()
+            }
+        }
+    }
+    
+    // MARK: Reviews in Period
+    
+    private var reviewsInPeriod: some View {
+        VStack(spacing: 0) {
+            Text("Reviews")
+                .font(.title.bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+
+            RoundedList {
+                if viewModel.reviewsInPeriod.isEmpty {
+                    EmptyStateView(
+                        image: "book.pages",
+                        title: "No Reviews",
+                        description: "There are no reviews in the selected period."
+                    )
+                } else {
+                    ForEach(viewModel.reviewsInPeriod) { review in
+                        ReviewCell(review: review) {
+                            viewModel.presentSheet(.editReviewSheet(review))
+                        }
+                    }
+                }
+            }
+            .safeAreaPadding(.top)
+        }
+    }
+    
+    // MARK: Sheet Content
+
+    @ViewBuilder
+    private func sheetContent(for sheet: AnalyticsViewSheet) -> some View {
+        switch sheet {
+        case .editReviewSheet(let review):
+            EditReviewView(review: review)
+                .interactiveDismissDisabled(review.isNil)
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(review.isNil ? .hidden : .visible)
         }
     }
 }

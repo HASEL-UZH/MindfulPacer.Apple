@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+// MARK: - Tab
+
+enum Tab: String {
+    case home
+    case analytics
+    case settings
+}
+
 // MARK: - Presentation Enums
 
 enum RootSheet: Identifiable {
@@ -32,16 +40,19 @@ struct RootView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
+                .tag(Tab.home)
             
             AnalyticsView()
                 .tabItem {
                     Label("Analytics", systemImage: "chart.bar")
                 }
+                .tag(Tab.analytics)
             
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+                .tag(Tab.settings)
         }
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)

@@ -21,7 +21,8 @@ protocol CreateReviewUseCase {
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String
+        additionalInformation: String,
+        reviewReminder: ReviewReminder?
     ) -> Result<Review, Error>
 }
 
@@ -46,7 +47,8 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String
+        additionalInformation: String,
+        reviewReminder: ReviewReminder?
     ) -> Result<Review, Error> {
         let review = Review(
             date: date,
@@ -60,7 +62,8 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
             feverRating: feverRating,
             painsAndNeedlesRating: painsAndNeedlesRating,
             muscleAchesRating: muscleAchesRating,
-            additionalInformation: additionalInformation
+            additionalInformation: additionalInformation,
+            reviewReminder: reviewReminder
         )
 
         modelContext.insert(review)

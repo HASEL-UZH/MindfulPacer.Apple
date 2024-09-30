@@ -32,6 +32,7 @@ enum HomeViewSheet: Identifiable {
 // MARK: - HomeView
 
 struct HomeView: View {
+    
     // MARK: Properties
 
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()

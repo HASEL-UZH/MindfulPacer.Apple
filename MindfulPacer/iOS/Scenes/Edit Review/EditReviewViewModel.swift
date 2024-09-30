@@ -151,7 +151,8 @@ class EditReviewViewModel {
             feverRating: ratings[.fever]?.value,
             painsAndNeedlesRating: ratings[.painsAndNeedles]?.value,
             muscleAchesRating: ratings[.muscleAches]?.value,
-            additionalInformation: additionalInformation
+            additionalInformation: additionalInformation,
+            reviewReminder: nil
         )
 
         if case .failure = result {

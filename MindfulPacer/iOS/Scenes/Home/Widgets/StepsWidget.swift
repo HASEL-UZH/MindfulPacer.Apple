@@ -16,24 +16,18 @@ extension HomeView {
         @Bindable var viewModel: HomeViewModel
 
         // MARK: Body
-
+        
         var body: some View {
-            NavigationLink(value: Int()) {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "figure.walk",
-                        title: "Steps",
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                ) {
-                    stepsSummary
-                } accessoryIndicator: {
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: "figure.walk",
+                    title: "Steps",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+            ) {
+                stepsSummary
             }
-            .foregroundStyle(.primary)
         }
 
         // MARK: Steps Summary

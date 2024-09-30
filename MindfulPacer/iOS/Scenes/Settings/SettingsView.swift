@@ -44,6 +44,12 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: "About")
                 }
+                
+                Section {
+                    manuallyCreateReview
+                } header: {
+                    sectionHeader(title: "Developer")
+                }
             }
             .navigationTitle("Settings")
             .sheet(item: $viewModel.activeSheet) { sheet in
@@ -128,6 +134,20 @@ struct SettingsView: View {
                 title: "Onboarding",
                 description: "View the onboarding again",
                 accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+    
+    // MARK: Manually Create Review
+    
+    private var manuallyCreateReview: some View {
+        Button {
+            viewModel.manuallyCreateReviewWithReviewReminder()
+        } label: {
+            settingsCell(
+                icon: "book.pages",
+                title: "Create Review",
+                description: "Create a review with a review reminder"
             )
         }
     }

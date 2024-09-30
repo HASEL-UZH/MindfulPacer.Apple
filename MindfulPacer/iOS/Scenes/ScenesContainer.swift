@@ -21,6 +21,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             AnalyticsViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 fetchHeartRateUseCase: UseCasesContainer.shared.fetchHeartRateUseCase(),
+                fetchReviewsInPeriodUseCase: UseCasesContainer.shared.fetchReviewsInPeriodUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
                 fetchStepsUseCase: UseCasesContainer.shared.fetchStepsUseCase()
             )
         }
@@ -110,7 +112,11 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
-            SettingsViewModel()
+            SettingsViewModel(
+                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
+                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase()
+            )
         }
     }
 }
