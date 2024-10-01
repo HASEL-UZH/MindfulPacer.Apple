@@ -94,58 +94,52 @@ extension AnalyticsView {
                         }
                     }
                 }
-                .onChange(of: viewModel.rawSelectedDate) { oldValue, newValue in
-                    viewModel.selectedDateChanged(oldValue: oldValue, newValue: newValue)
+                .chartYAxis {
+                    AxisMarks(preset: .inset) {
+                        AxisGridLine()
+                        AxisValueLabel()
+                    }
                 }
+                .chartXScale(range: .plotDimension)
                 
-                // Overlay buttons for reviews
-                GeometryReader { geo in
+                GeometryReader { proxy in
                     ForEach(viewModel.reviewsInPeriod) { review in
-                        if let xPosition = xPositionForReview(review, in: geo.size) {
+                        if let xPosition = xPositionForReview(review, in: proxy.size) {
                             Button {
                                 onReviewSelected(review)
                             } label: {
-                                if let category = review.category {
-                                    Icon(name: category.icon)
-                                        .foregroundStyle(.blue)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .padding(8)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .foregroundStyle(Color(.tertiarySystemGroupedBackground))
-                                        }
-                                } else if let subcategory = review.subcategory {
-                                    Icon(name: subcategory.icon)
-                                        .foregroundStyle(.blue)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .padding(8)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .foregroundStyle(Color(.tertiarySystemGroupedBackground))
-                                        }
+                                if let subcategory = review.subcategory {
+                                    Icon(name: subcategory.icon, background: false)
+                                } else if let category = review.category {
+                                    Icon(name: category.icon, background: false)
                                 }
                             }
-                            .position(x: xPosition, y: geo.size.height - 20)  // Positioned below x-axis
+                            .position(x: xPosition, y: proxy.size.height - 20)
                         }
                     }
                 }
             }
         }
         
-        // Helper function to get the x-coordinate for a review based on its date
         private func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
             guard let firstDate = viewModel.chartData.first?.date,
                   let lastDate = viewModel.chartData.last?.date else {
                 return nil
             }
             
+            // Calculate the total time interval of the chart and the review's time offset.
             let totalTimeInterval = lastDate.timeIntervalSince(firstDate)
             let reviewTimeInterval = review.date.timeIntervalSince(firstDate)
             
+            // Ensure the total time interval is positive.
             guard totalTimeInterval > 0 else { return nil }
             
+            // Calculate the x position as a percentage of the total chart width.
             let xPercentage = reviewTimeInterval / totalTimeInterval
-            return chartSize.width * CGFloat(xPercentage)
+            let xPosition = chartSize.width * CGFloat(xPercentage)
+            
+            // Clamp the value to ensure it remains within the x-axis bounds of the chart.
+            return min(max(0, xPosition), chartSize.width)
         }
         
         private func annotationView(data: ChartDataItem) -> some ChartContent {

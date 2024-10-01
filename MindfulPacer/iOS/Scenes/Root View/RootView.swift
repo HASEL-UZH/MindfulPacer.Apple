@@ -31,7 +31,7 @@ struct RootView: View {
     // MARK: Properties
 
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
-
+    
     // MARK: Body
 
     var body: some View {

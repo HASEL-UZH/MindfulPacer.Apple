@@ -42,7 +42,7 @@ extension OnboardingView {
                                 .frame(height: 200)
                                 .frame(maxWidth: .infinity, alignment: .center)
                             
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 ForEach(feature.points, id: \.self) { point in
                                     HStack(alignment: .top) {
                                         Text("•")

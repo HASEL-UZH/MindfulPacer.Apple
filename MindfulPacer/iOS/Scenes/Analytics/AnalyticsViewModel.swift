@@ -32,7 +32,7 @@ class AnalyticsViewModel {
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
     }
-    var selectedMeasurementType: MeasurementType = .steps {
+    var selectedMeasurementType: MeasurementType = .heartRate {
         didSet { refreshChart() }
     }
     
@@ -110,6 +110,10 @@ class AnalyticsViewModel {
         activeSheet = sheet
     }
     
+    func onSheetDismissed() {
+        refreshChart()
+    }
+    
     // MARK: - Chart Related
     
     func chartValueForReview(_ review: SchemaV1.Review) -> Double {
@@ -171,7 +175,7 @@ class AnalyticsViewModel {
         
         updateReviewsInPeriod()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.updateChartThresholds()
         }
     }

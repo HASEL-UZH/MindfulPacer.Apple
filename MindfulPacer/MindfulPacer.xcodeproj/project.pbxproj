@@ -129,6 +129,8 @@
 		0DC2D7E92C7C7DD7008122CC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */; };
 		0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */; };
 		0DD32DE82CAAA1F200E91B90 /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE72CAAA1F200E91B90 /* LineChartView.swift */; };
+		0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */; };
+		0DD32DED2CAC0A1D00E91B90 /* BottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 0DD32DEC2CAC0A1D00E91B90 /* BottomSheet */; };
 		0DD3FDAB2C89BE8400859A1C /* FilterReviewsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */; };
 		0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDAC2C8A3ED100859A1C /* Card.swift */; };
 		0DD3FDC42C8CC73D00859A1C /* RoundedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDC32C8CC73C00859A1C /* RoundedList.swift */; };
@@ -306,6 +308,7 @@
 		0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0DD32DE72CAAA1F200E91B90 /* LineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
+		0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentHeartRateUseCase.swift; sourceTree = "<group>"; };
 		0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterReviewsUseCase.swift; sourceTree = "<group>"; };
 		0DD3FDAC2C8A3ED100859A1C /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		0DD3FDC32C8CC73C00859A1C /* RoundedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedList.swift; sourceTree = "<group>"; };
@@ -332,6 +335,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0D2590272C92FFA8000EA518 /* CocoaLumberjack in Frameworks */,
+				0DD32DED2CAC0A1D00E91B90 /* BottomSheet in Frameworks */,
 				0D500FD82C7492F700395AEB /* SystemNotification in Frameworks */,
 				0D2590292C92FFA8000EA518 /* CocoaLumberjackSwift in Frameworks */,
 				0D3006D42C998025008F11C7 /* Algorithms in Frameworks */,
@@ -665,6 +669,7 @@
 		0D6A45042C84CBCF002807D3 /* Health */ = {
 			isa = PBXGroup;
 			children = (
+				0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */,
 				0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */,
 				0D6AEB4E2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift */,
 				0D6AEB502C9DA7B000D8D22F /* FetchStepsUseCase.swift */,
@@ -1139,6 +1144,7 @@
 				0D2590262C92FFA8000EA518 /* CocoaLumberjack */,
 				0D2590282C92FFA8000EA518 /* CocoaLumberjackSwift */,
 				0D3006D32C998025008F11C7 /* Algorithms */,
+				0DD32DEC2CAC0A1D00E91B90 /* BottomSheet */,
 			);
 			productName = MindfulPacer;
 			productReference = 0D8C66302C2DA96000853EDE /* iOS.app */;
@@ -1248,6 +1254,7 @@
 				0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 				0D2590252C92FFA8000EA518 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 				0D3006D22C998025008F11C7 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				0DD32DEB2CAC0A1D00E91B90 /* XCRemoteSwiftPackageReference "BottomSheet" */,
 			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
@@ -1383,6 +1390,7 @@
 				0DA6CB002C37F7A300FE1E61 /* DataContainer.swift in Sources */,
 				0D1FD5162CA326C9008153A0 /* FetchReviewsInPeriodUseCase.swift in Sources */,
 				0DD858942C71468700061F63 /* ConnectivityError.swift in Sources */,
+				0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */,
 				0D3006D72C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */,
 				0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */,
@@ -1920,6 +1928,14 @@
 				minimumVersion = 1.1.1;
 			};
 		};
+		0DD32DEB2CAC0A1D00E91B90 /* XCRemoteSwiftPackageReference "BottomSheet" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lucaszischka/BottomSheet";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.1;
+			};
+		};
 		0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/SwiftLint.git";
@@ -1975,6 +1991,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0D500FD62C7492F700395AEB /* XCRemoteSwiftPackageReference "SystemNotification" */;
 			productName = SystemNotification;
+		};
+		0DD32DEC2CAC0A1D00E91B90 /* BottomSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DD32DEB2CAC0A1D00E91B90 /* XCRemoteSwiftPackageReference "BottomSheet" */;
+			productName = BottomSheet;
 		};
 		0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */ = {
 			isa = XCSwiftPackageProductDependency;

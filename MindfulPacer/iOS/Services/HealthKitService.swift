@@ -49,7 +49,7 @@ enum Period: String, CaseIterable {
 protocol HealthKitServiceProtocol {
     func requestAuthorization(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void)
     func fetchMeasurementData(for period: Period, measurementType: MeasurementType, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void)
-    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void)
+    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void)
 }
 
 // MARK: - HealthKitService
@@ -142,37 +142,45 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         healthStore?.execute(query)
     }
     
-    // MARK: - Fetch Current Step Count
+    // MARK: - Fetch Current Measurement Value
     
-    func fetchCurrentStepCount(completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void) {
-        guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            DDLogError("Step count data type unavailable")
-            completion(.failure(HealthKitError(type: .stepCountTypeUnavailable)))
+    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void) {
+        guard let quantityType = HKQuantityType.quantityType(forIdentifier: measurementType == .steps ? .stepCount : .heartRate) else {
+            DDLogError("\(measurementType.rawValue) data type unavailable")
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
             return
         }
         
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictEndDate)
-        let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+        let queryOptions: HKStatisticsOptions = (measurementType == .steps) ? .cumulativeSum : .discreteAverage
+        
+        let query = HKStatisticsQuery(quantityType: quantityType, quantitySamplePredicate: predicate, options: queryOptions) { _, result, error in
             if let error = error {
-                DDLogError("Failed to fetch step count: \(error.localizedDescription)")
+                DDLogError("Failed to fetch \(measurementType.rawValue) data: \(error.localizedDescription)")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
             
-            guard let result = result, let sum = result.sumQuantity() else {
-                DDLogError("Failed to fetch step count or sum quantity is nil")
+            guard let result = result else {
+                DDLogError("Failed to fetch \(measurementType.rawValue) or result is nil")
                 Task { @MainActor in
-                    completion(.failure(HealthKitError(type: .failedToFetchStepCount)))
+                    completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
             
-            let stepCount = sum.doubleValue(for: HKUnit.count())
-            DDLogInfo("Successfully fetched current step count: \(stepCount)")
-            completion(.success(stepCount))
+            let value: Double
+            if measurementType == .steps {
+                value = result.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
+            } else {
+                value = result.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) ?? 0
+            }
+            
+            DDLogInfo("Successfully fetched current \(measurementType.rawValue) value: \(value)")
+            completion(.success(value))
         }
         
         healthStore?.execute(query)

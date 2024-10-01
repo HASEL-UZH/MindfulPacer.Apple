@@ -44,7 +44,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ReviewsWidget(viewModel: viewModel)
-                    stepsAndHeartRateSection
+                    stepsAndHeartRateWidgets
                     ReviewRemindersWidget(viewModel: viewModel)
                     ReviewReminderTypeWidget()
                     Spacer()
@@ -71,12 +71,12 @@ struct HomeView: View {
         }
     }
 
-    // MARK: Steps and Heart Rate Section
+    // MARK: Steps and Heart Rate Widgets
 
-    private var stepsAndHeartRateSection: some View {
+    private var stepsAndHeartRateWidgets: some View {
         HStack(spacing: 16) {
             StepsWidget(viewModel: viewModel)
-            HeartRateWidget()
+            HeartRateWidget(viewModel: viewModel)
         }
     }
 

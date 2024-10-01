@@ -31,41 +31,39 @@ struct AnalyticsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                VStack(spacing: 16) {
-                    Group {
+                IconLabelGroupBox(
+                    label:
                         IconLabel(
                             icon: viewModel.selectedMeasurementType.icon,
                             title: viewModel.selectedMeasurementType.rawValue,
                             labelColor: viewModel.selectedMeasurementType.color,
                             background: true
-                        )
-                        .font(.subheadline.weight(.semibold))
-                        
+                        ),
+                    description:
                         Text("Visualise your \(viewModel.selectedMeasurementType.rawValue.lowercased()) data within the last \(viewModel.selectedPeriod.description).")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    LineChartView(
-                        viewModel: viewModel,
-                        onReviewSelected: { review in
-                            viewModel.presentSheet(.editReviewSheet(review))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                ) {
+                    VStack(spacing: 16) {
+                        LineChartView(
+                            viewModel: viewModel,
+                            onReviewSelected: { review in
+                                viewModel.presentSheet(.editReviewSheet(review))
+                            }
+                        )
+                        
+                        Picker(selection: $viewModel.selectedPeriod) {
+                            ForEach(Period.allCases, id: \.self) { period in
+                                Text(period.rawValue)
+                                    .tag(period)
+                            }
+                        } label: {
+                            EmptyView()
                         }
-                    )
-                    
-                    Picker(selection: $viewModel.selectedPeriod) {
-                        ForEach(Period.allCases, id: \.self) { period in
-                            Text(period.rawValue)
-                                .tag(period)
-                        }
-                    } label: {
-                        EmptyView()
+                        .pickerStyle(.segmented)
                     }
-                    .pickerStyle(.segmented)
                 }
-                .padding()
-                .background(Color(.secondarySystemGroupedBackground))
+                .padding(.horizontal)
                 
                 reviewsInPeriod
             }
@@ -95,10 +93,9 @@ struct AnalyticsView: View {
                 }
             }
             .sheet(item: $viewModel.activeSheet, onDismiss: {
-//                withAnimation {
-//                    viewModel.onSheetDismissed()
-//                }
-                // TODO: Refresh the reviews on dismissal in case of edit
+                withAnimation {
+                    viewModel.onSheetDismissed()
+                }
             }, content: { sheet in
                 sheetContent(for: sheet)
             })
@@ -119,23 +116,23 @@ struct AnalyticsView: View {
                 .font(.title.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
-
-            RoundedList {
-                if viewModel.reviewsInPeriod.isEmpty {
-                    EmptyStateView(
-                        image: "book.pages",
-                        title: "No Reviews",
-                        description: "There are no reviews in the selected period."
-                    )
-                } else {
+            
+            if viewModel.reviewsInPeriod.isEmpty {
+                EmptyStateView(
+                    image: "book.pages",
+                    title: "No Reviews",
+                    description: "There are no reviews in the selected period."
+                )
+            } else {
+                RoundedList {
                     ForEach(viewModel.reviewsInPeriod) { review in
                         ReviewCell(review: review) {
                             viewModel.presentSheet(.editReviewSheet(review))
                         }
                     }
                 }
+                .safeAreaPadding(.top)
             }
-            .safeAreaPadding(.top)
         }
     }
     
