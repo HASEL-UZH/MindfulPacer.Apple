@@ -44,12 +44,8 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: "About")
                 }
-                
-                Section {
-                    manuallyCreateReview
-                } header: {
-                    sectionHeader(title: "Developer")
-                }
+
+                version
             }
             .navigationTitle("Settings")
             .sheet(item: $viewModel.activeSheet) { sheet in
@@ -137,19 +133,21 @@ struct SettingsView: View {
             )
         }
     }
+
+    // MARK: Version
     
-    // MARK: Manually Create Review
-    
-    private var manuallyCreateReview: some View {
-        Button {
-            viewModel.manuallyCreateReviewWithReviewReminder()
-        } label: {
-            settingsCell(
-                icon: "book.pages",
-                title: "Create Review",
-                description: "Create a review with a review reminder"
-            )
+    private var version: some View {
+        VStack(spacing: 8) {
+            Image("MindfulPacer Icon")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 32)
+            
+            Text("MindfulPacer Version 1.0.0")
+                .font(.subheadline.weight(.thin))
+                .foregroundStyle(.secondary)
         }
+        .padding()
     }
     
     // MARK: Settings Cell

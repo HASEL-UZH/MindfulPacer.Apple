@@ -20,7 +20,7 @@ struct ChartDataItem: Identifiable, Equatable {
 // MARK: - LineChartView
 
 extension AnalyticsView {
-    struct LineChartView: View {
+    struct HeartRateLineChartView: View {
         // MARK: Properties
         
         @Bindable var viewModel: AnalyticsViewModel
@@ -30,7 +30,6 @@ extension AnalyticsView {
         
         var body: some View {
             ZStack {
-                // Main Chart
                 Chart {
                     if let selectedData = viewModel.selectedData {
                         annotationView(data: selectedData)
@@ -101,6 +100,15 @@ extension AnalyticsView {
                     }
                 }
                 .chartXScale(range: .plotDimension)
+                .overlay {
+                    if viewModel.chartData.isEmpty {
+                        EmptyStateView(
+                            image: "chart.xyaxis.line",
+                            title: "No Data",
+                            description: "There is no heart rate data."
+                        )
+                    }
+                }
                 
                 GeometryReader { proxy in
                     ForEach(viewModel.reviewsInPeriod) { review in
@@ -191,7 +199,7 @@ extension AnalyticsView {
                     background: true
                 )
         ) {
-            AnalyticsView.LineChartView(
+            AnalyticsView.HeartRateLineChartView(
                 viewModel: viewModel,
                 onReviewSelected: { review in
                     print("Selected review: \(review)")

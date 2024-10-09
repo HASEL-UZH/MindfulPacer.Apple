@@ -36,25 +36,29 @@ extension CreateReviewReminderView {
 
         @ViewBuilder
         private var intervalSelectionList: some View {
-            ForEach(ReviewReminder.Interval.allCases, id: \.self) { interval in
-                SelectableButton(
-                    shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedInterval == interval
-                ) {
-                    viewModel.toggleSelection(
-                        interval,
-                        selectedItem: &viewModel.selectedInterval
-                    )
-                } label: {
-                    HStack {
-                        IconLabel(
-                            icon: interval.icon,
-                            title: interval.rawValue,
-                            labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+            if viewModel.validIntervals.isEmpty {
+                InfoBox(text: "Select a measurement type to see the available intervals.")
+            } else {
+                ForEach(viewModel.validIntervals, id: \.self) { interval in
+                    SelectableButton(
+                        shape: .roundedRectangle(cornerRadius: 16),
+                        isSelected: viewModel.selectedInterval == interval
+                    ) {
+                        viewModel.toggleSelection(
+                            interval,
+                            selectedItem: &viewModel.selectedInterval
                         )
-                        Spacer()
-                        if viewModel.selectedInterval == interval {
-                            Image(systemName: "checkmark.circle.fill")
+                    } label: {
+                        HStack {
+                            IconLabel(
+                                icon: interval.icon,
+                                title: interval.rawValue,
+                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+                            )
+                            Spacer()
+                            if viewModel.selectedInterval == interval {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
                         }
                     }
                 }

@@ -30,7 +30,7 @@ struct AnalyticsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
+            VStack(spacing: 16) {                
                 IconLabelGroupBox(
                     label:
                         IconLabel(
@@ -45,12 +45,15 @@ struct AnalyticsView: View {
                         .foregroundStyle(.secondary)
                 ) {
                     VStack(spacing: 16) {
-                        LineChartView(
-                            viewModel: viewModel,
-                            onReviewSelected: { review in
+                        if viewModel.selectedMeasurementType == .heartRate {
+                            HeartRateLineChartView(viewModel: viewModel) { review in
                                 viewModel.presentSheet(.editReviewSheet(review))
                             }
-                        )
+                        } else {
+                            StepsBarChartView(viewModel: viewModel) { review in
+                                viewModel.presentSheet(.editReviewSheet(review))
+                            }
+                        }
                         
                         Picker(selection: $viewModel.selectedPeriod) {
                             ForEach(Period.allCases, id: \.self) { period in

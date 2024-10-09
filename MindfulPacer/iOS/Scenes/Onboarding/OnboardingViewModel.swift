@@ -132,7 +132,7 @@ class OnboardingViewModel {
                 "Overlays of your reviews on activity & energy",
                 "Visually correlate activities, energy levels and reviews"
             ],
-            image: "iPhone Placeholder"
+            image: "Main Feature 1"
         ),
         MainFeatureItem(
             icon: "book.pages",
@@ -142,7 +142,7 @@ class OnboardingViewModel {
                 "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day",
                 "Manually add and edit reviews anytime"
             ],
-            image: "iPhone Placeholder"
+            image: "Main Feature 2"
         )
     ]
     

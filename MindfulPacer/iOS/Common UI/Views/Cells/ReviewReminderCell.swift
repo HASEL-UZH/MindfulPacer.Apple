@@ -9,29 +9,6 @@ import SwiftUI
 
 // MARK: - ReviewReminderCell
 
-struct TopRightCornerShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        // Start at the top-leading corner
-        path.move(to: CGPoint(x: 0, y: 0))
-
-        // Draw a line to the top-right corner
-        path.addLine(to: CGPoint(x: rect.width, y: 0))
-
-        // Draw a line to the bottom-trailing corner
-        path.addLine(to: CGPoint(x: rect.width, y: 0))
-
-        // Draw a line along the diagonal from bottom-trailing to top-leading
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-
-        // Close the path
-        path.closeSubpath()
-
-        return path
-    }
-}
-
 struct ReviewReminderCell: View {
     // MARK: Properties
 
@@ -67,9 +44,10 @@ struct ReviewReminderCell: View {
                 )
                 .font(.subheadline.weight(.semibold))
 
-                Text("Above \(reviewReminder.threshold) \(reviewReminder.measurementType == .heartRate ? "bpm" : "steps") for \(reviewReminder.interval.rawValue.lowercased())")
+                Text(reviewReminder.triggerSummary)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
 
             Spacer()

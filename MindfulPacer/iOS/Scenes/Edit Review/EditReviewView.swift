@@ -379,7 +379,8 @@ struct EditReviewView: View {
     @ViewBuilder
     private var reviewReminder: some View {
         if let review = review {
-            if let reviewReminder = review.reviewReminder {
+            if let reviewReminderMeasurementType = review.measurementType,
+               let reviewReminderType = review.reviewReminderType {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "alarm",
@@ -394,13 +395,13 @@ struct EditReviewView: View {
                     HStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 8) {
                             IconLabel(
-                                icon: reviewReminder.measurementType.icon,
-                                title: reviewReminder.measurementType.rawValue,
-                                labelColor: reviewReminder.measurementType == .heartRate ? .pink : .teal
+                                icon: reviewReminderMeasurementType.icon,
+                                title: reviewReminderMeasurementType.rawValue,
+                                labelColor: reviewReminderMeasurementType == .heartRate ? .pink : .teal
                             )
                             .font(.subheadline.weight(.semibold))
 
-                            Text(reviewReminder.triggerSummary)
+                            Text(viewModel.reviewReminderTriggerSummary(for: review))
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -409,7 +410,7 @@ struct EditReviewView: View {
 
                         Icon(
                             name: "alarm",
-                            color: reviewReminder.reviewReminderType.color,
+                            color: reviewReminderType.color,
                             background: true
                         )
                     }

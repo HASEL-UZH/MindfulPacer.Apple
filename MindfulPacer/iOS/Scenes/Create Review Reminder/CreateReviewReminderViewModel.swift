@@ -86,6 +86,17 @@ class CreateReviewReminderViewModel {
             return "Continue"
         }
     }
+    
+    var validIntervals: [ReviewReminder.Interval] {
+        switch selectedMeasurementType {
+        case .heartRate:
+            ReviewReminder.Interval.heartRateIntervals
+        case .steps:
+            ReviewReminder.Interval.stepsIntervals
+        case .none:
+            []
+        }
+    }
 
     var thresholdUnitText: String {
         switch selectedMeasurementType {
@@ -106,6 +117,7 @@ class CreateReviewReminderViewModel {
         didSet {
             DDLogInfo("Selected measurement type updated to \(String(describing: selectedMeasurementType))")
             validateThreshold()
+            resetSelectedFields()
         }
     }
     var threshold: Int? {
@@ -274,6 +286,12 @@ class CreateReviewReminderViewModel {
         }
 
         shouldDismiss = true
+    }
+    
+    private func resetSelectedFields() {
+        threshold = nil
+        selectedInterval = nil
+        selectedReviewReminderType = nil
     }
 
     private func validateThreshold() {

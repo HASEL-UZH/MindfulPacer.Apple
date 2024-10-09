@@ -181,7 +181,7 @@ class AnalyticsViewModel {
     }
     
     private func updateReviewsInPeriod() {
-        reviewsInPeriod = fetchReviewsInPeriodUseCase.execute(period: selectedPeriod, measurementType: selectedMeasurementType)
+        reviewsInPeriod = fetchReviewsInPeriodUseCase.execute(period: selectedPeriod)
     }
     
     private func parseSelectedData(from data: [ChartDataItem], in selectedDate: Date?, for period: Period) -> ChartDataItem? {
@@ -216,5 +216,4 @@ class AnalyticsViewModel {
             }
             .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
     }
-    
 }

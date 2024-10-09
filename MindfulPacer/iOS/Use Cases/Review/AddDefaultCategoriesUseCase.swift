@@ -22,6 +22,12 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     }
 
     // TODO: Categories seem to be duplicated, must not be fetching from CloudKit fast enough
+    /*
+     Potential solution:
+     - Add a timestamp property to each Category which will reflect exactly when it was added
+     - On each app launch check if there are duplicate categories and only keep the category with the earliest timestamp
+     - Before doing that, make sure to update all reviews that may referece a newer duplicate category to now reference the oldest one
+     */
     func execute() async {
         if await categoriesExist() {
             return

@@ -22,10 +22,10 @@ protocol CreateReviewUseCase {
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
         additionalInformation: String,
-        reviewReminder: ReviewReminder?
-        // TODO: Instead of having a reference to a review reminder, store the fields like threshold, measurement type etc separately; this is for 2 reasons:
-        // 1. If the user deletes a review reminder, the reference will be nil so this review will say it was created manually
-        // 2. If the user changes the review reminder, this change will be reflected in the review, even though the state of the review reminder is now different to what it was when the review was created from the triggered review reminder
+        measurementType: ReviewReminder.MeasurementType?,
+        reviewReminderType: ReviewReminder.ReviewReminderType?,
+        threshold: Int?,
+        interval: ReviewReminder.Interval?
     ) -> Result<Review, Error>
 }
 
@@ -51,7 +51,10 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
         additionalInformation: String,
-        reviewReminder: ReviewReminder?
+        measurementType: ReviewReminder.MeasurementType?,
+        reviewReminderType: ReviewReminder.ReviewReminderType?,
+        threshold: Int?,
+        interval: ReviewReminder.Interval?
     ) -> Result<Review, Error> {
         let review = Review(
             date: date,
@@ -66,7 +69,10 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
             painsAndNeedlesRating: painsAndNeedlesRating,
             muscleAchesRating: muscleAchesRating,
             additionalInformation: additionalInformation,
-            reviewReminder: reviewReminder
+            measurementType: measurementType,
+            reviewReminderType: reviewReminderType,
+            threshold: threshold,
+            interval: interval
         )
 
         modelContext.insert(review)

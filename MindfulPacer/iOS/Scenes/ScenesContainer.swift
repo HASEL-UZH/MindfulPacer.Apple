@@ -113,11 +113,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
-            SettingsViewModel(
-                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
-                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase()
-            )
+            SettingsViewModel()
         }
     }
 }

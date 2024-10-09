@@ -11,7 +11,7 @@ import SwiftData
 // MARK: - FetchReviewsInPeriodUseCase
 
 protocol FetchReviewsInPeriodUseCase {
-    func execute(period: Period, measurementType: MeasurementType) -> [Review]
+    func execute(period: Period) -> [Review]
 }
 
 // MARK: - Use Case Implementation
@@ -23,15 +23,13 @@ class DefaultFetchReviewsInPeriodUseCase: FetchReviewsInPeriodUseCase {
         self.modelContext = modelContext
     }
     
-    func execute(period: Period, measurementType: MeasurementType) -> [Review] {
+    func execute(period: Period) -> [Review] {
         do {
             let descriptor = FetchDescriptor<Review>(sortBy: [SortDescriptor(\Review.date, order: .reverse)])
                         
             let reviews = try modelContext.fetch(descriptor)
             let filteredReviews = reviews.filter { review in
                 (review.date >= period.startDate && review.date <= Date())
-                && review.reviewReminder != nil
-                && review.reviewReminder?.measurementType == measurementType
             }
             
             return filteredReviews

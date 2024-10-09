@@ -8,7 +8,6 @@
 import Foundation
 import SwiftData
 
-// FIXME: Not working, deletion does not persist
 protocol DeleteReviewUseCase {
     func execute(review: Review)
 }

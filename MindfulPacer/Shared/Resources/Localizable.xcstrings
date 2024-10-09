@@ -22,16 +22,6 @@
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
 
     },
-    "Above %lld %@ for %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Above %1$lld %2$@ for %3$@"
-          }
-        }
-      }
-    },
     "Analytics" : {
 
     },
@@ -144,6 +134,9 @@
     "MindfulPacer only processes raw data from your Apple Watch and your diary entries, and does **NOT** make automated recommendations." : {
 
     },
+    "MindfulPacer Version 1.0.0" : {
+
+    },
     "Modify Filters" : {
 
     },
@@ -231,7 +224,13 @@
     "Sorting" : {
 
     },
+    "Start" : {
+
+    },
     "steps" : {
+
+    },
+    "Steps" : {
 
     },
     "Subcategories" : {

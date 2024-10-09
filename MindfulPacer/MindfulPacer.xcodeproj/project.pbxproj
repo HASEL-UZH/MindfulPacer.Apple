@@ -63,6 +63,7 @@
 		0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FF62C75242A00395AEB /* CreateReviewReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */; };
+		0D5DD9D02CAEB8930029EB6B /* StepsBarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5DD9CF2CAEB8930029EB6B /* StepsBarChartView.swift */; };
 		0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
 		0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
 		0D67F4222C90CA26000F6114 /* KeyFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4212C90CA26000F6114 /* KeyFeaturesView.swift */; };
@@ -128,7 +129,7 @@
 		0DBA37452C32087400209681 /* WatchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0DBA37382C32087300209681 /* WatchOS.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0DC2D7E92C7C7DD7008122CC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */; };
 		0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */; };
-		0DD32DE82CAAA1F200E91B90 /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE72CAAA1F200E91B90 /* LineChartView.swift */; };
+		0DD32DE82CAAA1F200E91B90 /* HeartRateLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE72CAAA1F200E91B90 /* HeartRateLineChartView.swift */; };
 		0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */; };
 		0DD32DED2CAC0A1D00E91B90 /* BottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 0DD32DEC2CAC0A1D00E91B90 /* BottomSheet */; };
 		0DD3FDAB2C89BE8400859A1C /* FilterReviewsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */; };
@@ -244,6 +245,7 @@
 		0D500FEA2C749B2700395AEB /* MoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodView.swift; sourceTree = "<group>"; };
 		0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extensions.swift"; sourceTree = "<group>"; };
 		0D500FF52C75242A00395AEB /* CreateReviewReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewReminderUseCase.swift; sourceTree = "<group>"; };
+		0D5DD9CF2CAEB8930029EB6B /* StepsBarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsBarChartView.swift; sourceTree = "<group>"; };
 		0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
 		0D67F4212C90CA26000F6114 /* KeyFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFeaturesView.swift; sourceTree = "<group>"; };
 		0D67F4242C90DF19000F6114 /* AppleWatchConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchConnectionView.swift; sourceTree = "<group>"; };
@@ -307,7 +309,7 @@
 		0DBA37412C32087400209681 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		0DD32DE72CAAA1F200E91B90 /* LineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
+		0DD32DE72CAAA1F200E91B90 /* HeartRateLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateLineChartView.swift; sourceTree = "<group>"; };
 		0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentHeartRateUseCase.swift; sourceTree = "<group>"; };
 		0DD3FDAA2C89BE8400859A1C /* FilterReviewsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterReviewsUseCase.swift; sourceTree = "<group>"; };
 		0DD3FDAC2C8A3ED100859A1C /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
@@ -417,7 +419,8 @@
 		0D3006C12C93745B008F11C7 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				0DD32DE62CAAA1E700E91B90 /* Line Chart */,
+				0DD32DE62CAAA1E700E91B90 /* Heart Rate Line Chart */,
+				0D5DD9CE2CAEB88A0029EB6B /* Steps Bar Chart */,
 				0D3006C22C937461008F11C7 /* AnalyticsView.swift */,
 				0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */,
 			);
@@ -591,6 +594,14 @@
 				0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */,
 			);
 			path = System;
+			sourceTree = "<group>";
+		};
+		0D5DD9CE2CAEB88A0029EB6B /* Steps Bar Chart */ = {
+			isa = PBXGroup;
+			children = (
+				0D5DD9CF2CAEB8930029EB6B /* StepsBarChartView.swift */,
+			);
+			path = "Steps Bar Chart";
 			sourceTree = "<group>";
 		};
 		0D67F4202C90CA16000F6114 /* Key Features */ = {
@@ -997,12 +1008,12 @@
 			path = "View Modifiers";
 			sourceTree = "<group>";
 		};
-		0DD32DE62CAAA1E700E91B90 /* Line Chart */ = {
+		0DD32DE62CAAA1E700E91B90 /* Heart Rate Line Chart */ = {
 			isa = PBXGroup;
 			children = (
-				0DD32DE72CAAA1F200E91B90 /* LineChartView.swift */,
+				0DD32DE72CAAA1F200E91B90 /* HeartRateLineChartView.swift */,
 			);
-			path = "Line Chart";
+			path = "Heart Rate Line Chart";
 			sourceTree = "<group>";
 		};
 		0DD8588C2C7140C600061F63 /* Watch Communication */ = {
@@ -1367,6 +1378,7 @@
 				0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
+				0D5DD9D02CAEB8930029EB6B /* StepsBarChartView.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
@@ -1379,7 +1391,7 @@
 				0DFCA1D22C623FB40000C87C /* EditReviewViewModel.swift in Sources */,
 				0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 				0D909E292C9043CF00377589 /* OnboardingViewModel.swift in Sources */,
-				0DD32DE82CAAA1F200E91B90 /* LineChartView.swift in Sources */,
+				0DD32DE82CAAA1F200E91B90 /* HeartRateLineChartView.swift in Sources */,
 				0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */,
 				0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */,
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,

@@ -34,8 +34,12 @@ extension SchemaV1 {
         var painsAndNeedlesRating: Int?
         var muscleAchesRating: Int?
         var additionalInformation: String = ""
-        @Relationship(inverse: \ReviewReminder.reviews) var reviewReminder: ReviewReminder?
-
+        // MARK: Review Reminder Properties
+        var measurementType: ReviewReminder.MeasurementType?
+        var reviewReminderType: ReviewReminder.ReviewReminderType?
+        var threshold: Int?
+        var interval: ReviewReminder.Interval?
+        
         init(
             id: UUID = UUID(),
             date: Date = .now,
@@ -50,7 +54,10 @@ extension SchemaV1 {
             painsAndNeedlesRating: Int? = 0,
             muscleAchesRating: Int? = 0,
             additionalInformation: String = "",
-            reviewReminder: ReviewReminder? = nil
+            measurementType: ReviewReminder.MeasurementType? = nil,
+            reviewReminderType: ReviewReminder.ReviewReminderType? = nil,
+            threshold: Int? = nil,
+            interval: ReviewReminder.Interval? = nil
         ) {
             self.id = id
             self.date = date
@@ -65,7 +72,10 @@ extension SchemaV1 {
             self.painsAndNeedlesRating = painsAndNeedlesRating
             self.muscleAchesRating = muscleAchesRating
             self.additionalInformation = additionalInformation
-            self.reviewReminder = reviewReminder
+            self.measurementType = measurementType
+            self.reviewReminderType = reviewReminderType
+            self.threshold = threshold
+            self.interval = interval
         }
     }
 }

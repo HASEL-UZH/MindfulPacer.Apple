@@ -152,7 +152,10 @@ class EditReviewViewModel {
             painsAndNeedlesRating: ratings[.painsAndNeedles]?.value,
             muscleAchesRating: ratings[.muscleAches]?.value,
             additionalInformation: additionalInformation,
-            reviewReminder: nil
+            measurementType: nil,
+            reviewReminderType: nil,
+            threshold: nil,
+            interval: nil
         )
 
         if case .failure = result {
@@ -198,9 +201,22 @@ class EditReviewViewModel {
         deleteReviewUseCase.execute(review: review)
         DDLogInfo("Review deleted successfully")
     }
-
+    
+    func reviewReminderTriggerSummary(for review: Review) -> String {
+        guard let reviewReminderMeasurementType = review.measurementType,
+              let reviewReminderInterval = review.interval,
+              let reviewReminderThreshold = review.threshold else { return "No summary" }
+        
+        switch reviewReminderMeasurementType {
+        case .heartRate:
+            return "Above \(reviewReminderThreshold) bpm for \(reviewReminderInterval.rawValue.lowercased())"
+        case .steps:
+            return "Above \(reviewReminderThreshold) steps within the window of \(reviewReminderInterval.rawValue.lowercased())"
+        }
+    }
+    
     // MARK: - Presentation
-
+    
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
         DDLogInfo("Navigated to destination: \(destination)")

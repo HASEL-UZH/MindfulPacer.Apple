@@ -8,13 +8,14 @@
 import Foundation
 import SwiftData
 import CocoaLumberjackSwift
+import SwiftUI
 
 // MARK: - RootViewModel
 
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-
+    
     private let modelContext: ModelContext
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
