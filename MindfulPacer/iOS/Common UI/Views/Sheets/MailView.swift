@@ -13,6 +13,8 @@ import MessageUI
 struct MailView: UIViewControllerRepresentable {
     @Binding var result: Result<MFMailComposeResult, Error>?
     
+    // MARK: Coordinator
+    
     class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
         @Binding var result: Result<MFMailComposeResult, Error>?
         
@@ -34,48 +36,13 @@ struct MailView: UIViewControllerRepresentable {
         Coordinator(result: $result)
     }
     
+    // MARK: View Controller
+    
     func makeUIViewController(context: UIViewControllerRepresentableContext<MailView>) -> MFMailComposeViewController {
         let viewController = MFMailComposeViewController()
         viewController.mailComposeDelegate = context.coordinator
-        viewController.setToRecipients(["strengtheon@gmail.com"])
-        
-        // Adding subject and body
-        viewController.setSubject("Bug Report for Strengtheon")
-        let messageBody = """
-        **Bug Report for Strengtheon**
-        
-        **Information:**
-        - App Version: [App version where the bug was encountered]
-        - Date: [Date when the report is being sent]
-        
-        **Device Information:**
-        - Device: [e.g., iPhone 14 Pro]
-        - OS Version: [e.g., iOS 15.4]
-        
-        **Bug Description:**
-        Please describe the issue in detail. Include what you were trying to do when the bug occurred, and any specific actions that triggered the issue.
-        
-        **Steps to Reproduce:**
-        1. [First step]
-        2. [Second step]
-        3. [And so on...]
-        
-        **Expected Behavior:**
-        Describe what you expected to happen when you performed the above steps.
-        
-        **Actual Behavior:**
-        Describe what actually happened instead.
-        
-        **Frequency:**
-        How often does the bug occur? [Always, sometimes (please specify frequency), once]
-        
-        **Screenshots:**
-        If possible, attach screenshots or videos that demonstrate the issue.
-        
-        **Additional Information:**
-        Include any other information that you think could be helpful in diagnosing the problem, such as specific settings used.
-        """
-        viewController.setMessageBody(messageBody, isHTML: false)
+        viewController.setToRecipients(["support@mindfulpacer.ch"])
+        viewController.setSubject("MindfulPacer - Feedback/Question")
         
         return viewController
     }

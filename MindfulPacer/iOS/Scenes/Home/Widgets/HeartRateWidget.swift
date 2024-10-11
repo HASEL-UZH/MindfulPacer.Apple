@@ -27,6 +27,7 @@ extension HomeView {
                 )
             ) {
                 heartRateSummary
+                    .foregroundStyle(Color.primary)
             }
         }
         

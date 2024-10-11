@@ -24,7 +24,8 @@ class RootViewModel {
     // MARK: - Published Properties
 
     var activeSheet: RootSheet?
-
+    var selectedTab: Tab = .home
+    
     // MARK: - Initialization
 
     init(
@@ -65,6 +66,12 @@ class RootViewModel {
         activeSheet = sheet
     }
 
+    // MARK: - User Actions
+    
+    func widgetTapped() {
+        selectedTab = .analytics
+    }
+    
     // MARK: - Private Methods
 
     private func checkIfUserHasSeenOnboarding() {

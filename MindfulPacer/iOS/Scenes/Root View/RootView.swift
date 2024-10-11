@@ -19,7 +19,7 @@ enum Tab: String {
 
 enum RootSheet: Identifiable {
     case onboardingView
-
+    
     var id: Int {
         hashValue
     }
@@ -29,18 +29,20 @@ enum RootSheet: Identifiable {
 
 struct RootView: View {
     // MARK: Properties
-
+    
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
     
     // MARK: Body
-
+    
     var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
-                .tag(Tab.home)
+        TabView(selection: $viewModel.selectedTab) {
+            HomeView {
+                viewModel.widgetTapped()
+            }
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+            .tag(Tab.home)
             
             AnalyticsView()
                 .tabItem {
@@ -61,9 +63,9 @@ struct RootView: View {
             viewModel.onViewFirstAppear()
         }
     }
-
+    
     // MARK: Sheets
-
+    
     @ViewBuilder
     private func sheetContent(for sheet: RootSheet) -> some View {
         switch sheet {

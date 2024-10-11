@@ -12,6 +12,7 @@ import SwiftUI
 enum SettingsSheet: Identifiable {
     case onboardingView
     case mailView
+    case systemReportView
 
     var id: Int {
         hashValue
@@ -44,8 +45,8 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: "About")
                 }
-
-                version
+                
+                appVersion
             }
             .navigationTitle("Settings")
             .sheet(item: $viewModel.activeSheet) { sheet in
@@ -65,6 +66,11 @@ struct SettingsView: View {
                 .presentationDragIndicator(.visible)
         case .mailView:
             MailView(result: $viewModel.mailResult)
+                .presentationCornerRadius(16)
+        case .systemReportView:
+            SystemReportView(viewModel: viewModel)
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
         }
     }
     
@@ -134,25 +140,24 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: Version
+    // MARK: App Version
     
-    private var version: some View {
-        VStack(spacing: 8) {
-            Image("MindfulPacer Icon")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 32)
-            
-            Text("MindfulPacer Version 1.0.0")
-                .font(.subheadline.weight(.thin))
-                .foregroundStyle(.secondary)
+    private var appVersion: some View {
+        Button {
+            viewModel.presentSheet(.systemReportView)
+        } label: {
+            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "info.circle")
+                .font(.footnote)
+                .foregroundStyle(Color.secondary)
         }
-        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
     }
     
     // MARK: Settings Cell
     
-    @ViewBuilder func settingsCell(
+    @ViewBuilder
+    func settingsCell(
         icon: String,
         title: String,
         description: String? = nil,

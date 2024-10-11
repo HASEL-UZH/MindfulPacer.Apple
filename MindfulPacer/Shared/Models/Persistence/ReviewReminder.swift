@@ -153,7 +153,7 @@ extension ReviewReminder {
         }
         
         static var heartRateIntervals: [Interval] {
-            [.immediately, .tenSeconds, .thirtyMinutes, .oneMinute]
+            [.immediately, .tenSeconds, .thirtySeconds, .oneMinute]
         }
         
         static var stepsIntervals: [Interval] {

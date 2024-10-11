@@ -134,7 +134,7 @@
     "MindfulPacer only processes raw data from your Apple Watch and your diary entries, and does **NOT** make automated recommendations." : {
 
     },
-    "MindfulPacer Version 1.0.0" : {
+    "MindfulPacer Version %@" : {
 
     },
     "Modify Filters" : {
@@ -218,6 +218,9 @@
     "Settings" : {
 
     },
+    "Share this report to help us troubleshoot issues." : {
+
+    },
     "Skip" : {
 
     },
@@ -246,6 +249,9 @@
 
     },
     "Summary of your review reminders." : {
+
+    },
+    "System Report" : {
 
     },
     "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {

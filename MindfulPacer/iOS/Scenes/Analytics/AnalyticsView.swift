@@ -10,11 +10,11 @@ import SwiftUI
 // MARK: - Presentation Enums
 
 enum AnalyticsViewSheet: Identifiable {
-    case editReviewSheet(Review?)
+    case editReviewView(Review?)
 
     var id: Int {
         switch self {
-        case .editReviewSheet: 0
+        case .editReviewView: 0
         }
     }
 }
@@ -30,45 +30,49 @@ struct AnalyticsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {                
-                IconLabelGroupBox(
-                    label:
-                        IconLabel(
-                            icon: viewModel.selectedMeasurementType.icon,
-                            title: viewModel.selectedMeasurementType.rawValue,
-                            labelColor: viewModel.selectedMeasurementType.color,
-                            background: true
-                        ),
-                    description:
-                        Text("Visualise your \(viewModel.selectedMeasurementType.rawValue.lowercased()) data within the last \(viewModel.selectedPeriod.description).")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-                    VStack(spacing: 16) {
-                        if viewModel.selectedMeasurementType == .heartRate {
-                            HeartRateLineChartView(viewModel: viewModel) { review in
-                                viewModel.presentSheet(.editReviewSheet(review))
+            GeometryReader { proxy in
+            VStack(spacing: 16) {
+                    IconLabelGroupBox(
+                        label:
+                            IconLabel(
+                                icon: viewModel.selectedMeasurementType.icon,
+                                title: viewModel.selectedMeasurementType.rawValue,
+                                labelColor: viewModel.selectedMeasurementType.color,
+                                background: true
+                            ),
+                        description:
+                            Text("Visualise your \(viewModel.selectedMeasurementType.rawValue.lowercased()) data within the last \(viewModel.selectedPeriod.description).")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    ) {
+                        VStack(spacing: 16) {
+                            if viewModel.selectedMeasurementType == .heartRate {
+                                HeartRateLineChartView(viewModel: viewModel) { review in
+                                    viewModel.presentSheet(.editReviewView(review))
+                                }
+                            } else {
+                                StepsBarChartView(viewModel: viewModel) { review in
+                                    viewModel.presentSheet(.editReviewView(review))
+                                }
                             }
-                        } else {
-                            StepsBarChartView(viewModel: viewModel) { review in
-                                viewModel.presentSheet(.editReviewSheet(review))
+                            
+                            Picker(selection: $viewModel.selectedPeriod) {
+                                ForEach(Period.allCases, id: \.self) { period in
+                                    Text(period.rawValue)
+                                        .tag(period)
+                                }
+                            } label: {
+                                EmptyView()
                             }
+                            .pickerStyle(.segmented)
                         }
-                        
-                        Picker(selection: $viewModel.selectedPeriod) {
-                            ForEach(Period.allCases, id: \.self) { period in
-                                Text(period.rawValue)
-                                    .tag(period)
-                            }
-                        } label: {
-                            EmptyView()
-                        }
-                        .pickerStyle(.segmented)
                     }
+                    .frame(height: proxy.size.height / 2)
+                    .padding(.horizontal)
+                    
+                    reviewsInPeriod
+                        .frame(height: proxy.size.height / 2)
                 }
-                .padding(.horizontal)
-                
-                reviewsInPeriod
             }
             .navigationTitle("Analytics")
             .background {
@@ -115,10 +119,18 @@ struct AnalyticsView: View {
     
     private var reviewsInPeriod: some View {
         VStack(spacing: 0) {
-            Text("Reviews")
-                .font(.title.bold())
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
+            HStack {
+                Text("Reviews")
+                    .font(.title.bold())
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Button {
+                    viewModel.presentSheet(.editReviewView(nil))
+                } label: {
+                    Icon(name: "plus.circle")
+                }
+            }
+            .padding(.horizontal)
             
             if viewModel.reviewsInPeriod.isEmpty {
                 EmptyStateView(
@@ -130,7 +142,7 @@ struct AnalyticsView: View {
                 RoundedList {
                     ForEach(viewModel.reviewsInPeriod) { review in
                         ReviewCell(review: review) {
-                            viewModel.presentSheet(.editReviewSheet(review))
+                            viewModel.presentSheet(.editReviewView(review))
                         }
                     }
                 }
@@ -144,7 +156,7 @@ struct AnalyticsView: View {
     @ViewBuilder
     private func sheetContent(for sheet: AnalyticsViewSheet) -> some View {
         switch sheet {
-        case .editReviewSheet(let review):
+        case .editReviewView(let review):
             EditReviewView(review: review)
                 .interactiveDismissDisabled(review.isNil)
                 .presentationCornerRadius(16)

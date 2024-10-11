@@ -79,13 +79,17 @@ class HomeViewModel {
 
     func onViewFirstAppear() {
         DDLogInfo("onViewFirstAppear called")
+        setupBindings()
+    }
+
+    func onViewAppear() {
+        DDLogInfo("onViewAppear called")
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchReviews()
         fetchReviewReminders()
-        setupBindings()
     }
-
+    
     func onSheetDismissed() {
         DDLogInfo("onSheetDismissed called")
         fetchReviews()

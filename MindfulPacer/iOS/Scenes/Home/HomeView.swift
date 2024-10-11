@@ -16,14 +16,14 @@ enum HomeViewNavigationDestination: Hashable {
 }
 
 enum HomeViewSheet: Identifiable {
-    case editReviewSheet(Review?)
-    case createReviewReminderSheet(ReviewReminder?)
+    case editReviewView(Review?)
+    case createReviewReminderView(ReviewReminder?)
     case reviewsFilterView
 
     var id: Int {
         switch self {
-        case .editReviewSheet: 0
-        case .createReviewReminderSheet: 1
+        case .editReviewView: 0
+        case .createReviewReminderView: 1
         case .reviewsFilterView: 2
         }
     }
@@ -36,7 +36,8 @@ struct HomeView: View {
     // MARK: Properties
 
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-
+    var onWidgetTap: () -> Void
+    
     // MARK: Body
 
     var body: some View {
@@ -68,20 +69,32 @@ struct HomeView: View {
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
+            .onAppear {
+                viewModel.onViewAppear()
+            }
         }
     }
-
+    
     // MARK: Steps and Heart Rate Widgets
-
+    
     private var stepsAndHeartRateWidgets: some View {
         HStack(spacing: 16) {
-            StepsWidget(viewModel: viewModel)
-            HeartRateWidget(viewModel: viewModel)
+            Button {
+                onWidgetTap()
+            } label: {
+                StepsWidget(viewModel: viewModel)
+            }
+            
+            Button {
+                onWidgetTap()
+            } label: {
+                HeartRateWidget(viewModel: viewModel)
+            }
         }
     }
-
+    
     // MARK: Navigation Destination
-
+    
     @ViewBuilder
     private func navigationDestination(for destination: HomeViewNavigationDestination) -> some View {
         switch destination {
@@ -99,12 +112,12 @@ struct HomeView: View {
     @ViewBuilder
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
-        case .editReviewSheet(let review):
+        case .editReviewView(let review):
             EditReviewView(review: review)
                 .interactiveDismissDisabled(review.isNil)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(review.isNil ? .hidden : .visible)
-        case .createReviewReminderSheet(let reviewReminder):
+        case .createReviewReminderView(let reviewReminder):
             CreateReviewReminderView(reviewReminder: reviewReminder)
                 .interactiveDismissDisabled(reviewReminder.isNil)
                 .presentationCornerRadius(16)
@@ -122,7 +135,7 @@ struct HomeView: View {
 
 #Preview {
     TabView {
-        HomeView()
+        HomeView(onWidgetTap: { })
             .tabItem {
                 Label("Home", systemImage: "house")
             }

@@ -41,7 +41,6 @@ extension AnalyticsView {
                         .opacity(viewModel.rawSelectedDate == nil || dataPoint.date == viewModel.selectedData?.date ? 1.0 : 0.3)
                     }
                 }
-                .frame(height: 256)
                 .chartXSelection(value: $viewModel.rawSelectedDate)
                 .chartYScale(domain: 0...(viewModel.maxValue * 1.1))
                 .chartXAxis {
@@ -96,9 +95,17 @@ extension AnalyticsView {
                                 onReviewSelected(review)
                             } label: {
                                 if let subcategory = review.subcategory {
-                                    Icon(name: subcategory.icon, background: false)
+                                    Icon(
+                                        name: subcategory.icon,
+                                        color: .primary,
+                                        background: false
+                                    )
                                 } else if let category = review.category {
-                                    Icon(name: category.icon, background: false)
+                                    Icon(
+                                        name: category.icon,
+                                        color: .primary,
+                                        background: false
+                                    )
                                 }
                             }
                             .position(x: xPosition, y: proxy.size.height - 20)

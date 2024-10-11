@@ -54,7 +54,7 @@ extension HomeView {
 
         private var createReviewButton: some View {
             Button {
-                viewModel.presentSheet(.editReviewSheet(nil))
+                viewModel.presentSheet(.editReviewView(nil))
             } label: {
                 IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
@@ -68,7 +68,7 @@ extension HomeView {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.recentReviews) { review in
                         ReviewCell(review: review, withBackground: false) {
-                            viewModel.presentSheet(.editReviewSheet(review))
+                            viewModel.presentSheet(.editReviewView(review))
                         }
                         if review != viewModel.recentReviews.last {
                             Divider()

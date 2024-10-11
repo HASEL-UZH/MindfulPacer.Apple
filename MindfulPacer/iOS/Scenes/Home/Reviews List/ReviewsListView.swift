@@ -38,7 +38,7 @@ extension HomeView {
                     RoundedList {
                         ForEach(viewModel.filteredReviews) { review in
                             ReviewCell(review: review) {
-                                viewModel.presentSheet(.editReviewSheet(review))
+                                viewModel.presentSheet(.editReviewView(review))
                             }
                         }
                     }
@@ -49,7 +49,7 @@ extension HomeView {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.presentSheet(.editReviewSheet(nil))
+                        viewModel.presentSheet(.editReviewView(nil))
                     } label: {
                         Label("New Review", systemImage: "plus")
                     }
@@ -94,7 +94,7 @@ extension HomeView {
                     Text("You have not created any reviews.")
                 } actions: {
                     Button {
-                        viewModel.presentSheet(.editReviewSheet(nil))
+                        viewModel.presentSheet(.editReviewView(nil))
                     } label: {
                         Text("Create Review")
                     }

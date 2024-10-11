@@ -27,6 +27,7 @@ extension HomeView {
                 )
             ) {
                 stepsSummary
+                    .foregroundStyle(Color.primary)
             }
         }
 
