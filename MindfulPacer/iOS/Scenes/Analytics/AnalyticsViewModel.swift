@@ -131,6 +131,21 @@ class AnalyticsViewModel {
         }
     }
     
+    func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
+        guard let firstDate = chartData.first?.date,
+              let lastDate = chartData.last?.date else {
+            return nil
+        }
+        
+        let totalTimeInterval = lastDate.timeIntervalSince(firstDate)
+        let reviewTimeInterval = review.date.timeIntervalSince(firstDate)
+        
+        guard totalTimeInterval > 0 else { return nil }
+        
+        let xPercentage = reviewTimeInterval / totalTimeInterval
+        return chartSize.width * CGFloat(xPercentage)
+    }
+    
     // MARK: - Private Methods
     
     private func fetchReviewReminders() {

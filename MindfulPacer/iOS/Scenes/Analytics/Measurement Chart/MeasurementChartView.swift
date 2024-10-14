@@ -1,11 +1,10 @@
 //
-//  LineChartView.swift
+//  MeasurementChartView.swift
 //  iOS
 //
-//  Created by Grigor Dochev on 30.09.2024.
+//  Created by Grigor Dochev on 14.10.2024.
 //
 
-import Algorithms
 import SwiftUI
 import Charts
 
@@ -17,10 +16,10 @@ struct ChartDataItem: Identifiable, Equatable {
     let value: Double
 }
 
-// MARK: - LineChartView
+// MARK: - MeasurementChartView
 
 extension AnalyticsView {
-    struct HeartRateLineChartView: View {
+    struct MeasurementChartView: View {
         // MARK: Properties
         
         @Bindable var viewModel: AnalyticsViewModel
@@ -42,29 +41,40 @@ extension AnalyticsView {
                     }
                     
                     ForEach(viewModel.chartData) { dataPoint in
-                        Plot {
-                            AreaMark(
+                        switch viewModel.selectedMeasurementType {
+                        case .heartRate:
+                            Plot {
+                                AreaMark(
+                                    x: .value("Time", dataPoint.date),
+                                    yStart: .value("Value", dataPoint.value),
+                                    yEnd: .value("Min Value", viewModel.minValue)
+                                )
+                                .foregroundStyle(Gradient(colors: [viewModel.chartColor.opacity(0.5), .clear]))
+                                .interpolationMethod(.catmullRom)
+                                
+                                LineMark(
+                                    x: .value("Time", dataPoint.date),
+                                    y: .value("Value", dataPoint.value)
+                                )
+                                .foregroundStyle(viewModel.chartColor)
+                                .interpolationMethod(.catmullRom)
+                                .symbol(.circle)
+                            }
+                        case .steps:
+                            BarMark(
                                 x: .value("Time", dataPoint.date),
-                                yStart: .value("Value", dataPoint.value),
-                                yEnd: .value("Min Value", viewModel.minValue)
-                            )
-                            .foregroundStyle(Gradient(colors: [viewModel.chartColor.opacity(0.5), .clear]))
-                            .interpolationMethod(.catmullRom)
-                            
-                            LineMark(
-                                x: .value("Time", dataPoint.date),
-                                y: .value("Value", dataPoint.value)
+                                yStart: .value("Start", 0),
+                                yEnd: .value("Steps", max(0, dataPoint.value)),
+                                width: .automatic
                             )
                             .foregroundStyle(viewModel.chartColor)
-                            .interpolationMethod(.catmullRom)
-                            .symbol(.circle)
+                            .opacity(viewModel.rawSelectedDate == nil || dataPoint.date == viewModel.selectedData?.date ? 1.0 : 0.3)
                         }
                     }
                 }
                 .chartXSelection(value: $viewModel.rawSelectedDate)
-                .chartYScale(domain: (viewModel.minValue - abs(viewModel.minValue * 0.15))...(viewModel.maxValue * 1.1))
+                .chartYScale(domain: 0...(viewModel.maxValue * 1.1))
                 .chartXAxis {
-                    // Customize the x-axis based on the selected period
                     switch viewModel.selectedPeriod {
                     case .oneHour:
                         AxisMarks(values: .stride(by: .minute, count: 5)) {
@@ -102,60 +112,47 @@ extension AnalyticsView {
                 .overlay {
                     if viewModel.chartData.isEmpty {
                         EmptyStateView(
-                            image: "chart.xyaxis.line",
+                            image: viewModel.selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis",
                             title: "No Data",
-                            description: "There is no heart rate data."
+                            description: viewModel.selectedMeasurementType == .heartRate ? "There is no heart rate data." : "There is no step count data."
                         )
                     }
                 }
                 
-                GeometryReader { proxy in
-                    ForEach(viewModel.reviewsInPeriod) { review in
-                        if let xPosition = xPositionForReview(review, in: proxy.size) {
-                            Button {
-                                onReviewSelected(review)
-                            } label: {
-                                if let subcategory = review.subcategory {
-                                    Icon(
-                                        name: subcategory.icon,
-                                        color: .primary,
-                                        background: false
-                                    )
-                                } else if let category = review.category {
-                                    Icon(
-                                        name: category.icon,
-                                        color: .primary,
-                                        background: false
-                                    )
-                                }
+                reviewsOverlay
+            }
+        }
+        
+        // MARK: Reviews Overlay
+        
+        private var reviewsOverlay: some View {
+            GeometryReader { proxy in
+                ForEach(viewModel.reviewsInPeriod) { review in
+                    if let xPosition = viewModel.xPositionForReview(review, in: proxy.size) {
+                        Button {
+                            onReviewSelected(review)
+                        } label: {
+                            if let subcategory = review.subcategory {
+                                Icon(
+                                    name: subcategory.icon,
+                                    color: .primary,
+                                    background: false
+                                )
+                            } else if let category = review.category {
+                                Icon(
+                                    name: category.icon,
+                                    color: .primary,
+                                    background: false
+                                )
                             }
-                            .position(x: xPosition, y: proxy.size.height - 20)
                         }
+                        .position(x: xPosition, y: proxy.size.height - 20)
                     }
                 }
             }
         }
         
-        private func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
-            guard let firstDate = viewModel.chartData.first?.date,
-                  let lastDate = viewModel.chartData.last?.date else {
-                return nil
-            }
-            
-            // Calculate the total time interval of the chart and the review's time offset.
-            let totalTimeInterval = lastDate.timeIntervalSince(firstDate)
-            let reviewTimeInterval = review.date.timeIntervalSince(firstDate)
-            
-            // Ensure the total time interval is positive.
-            guard totalTimeInterval > 0 else { return nil }
-            
-            // Calculate the x position as a percentage of the total chart width.
-            let xPercentage = reviewTimeInterval / totalTimeInterval
-            let xPosition = chartSize.width * CGFloat(xPercentage)
-            
-            // Clamp the value to ensure it remains within the x-axis bounds of the chart.
-            return min(max(0, xPosition), chartSize.width)
-        }
+        // MARK: Annotation View
         
         private func annotationView(data: ChartDataItem) -> some ChartContent {
             RuleMark(x: .value("Measurement Type", data.date))
@@ -188,31 +185,10 @@ extension AnalyticsView {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     let viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
     
-    ZStack {
-        Color(.systemGroupedBackground)
-            .ignoresSafeArea()
+    AnalyticsView.MeasurementChartView(viewModel: viewModel) { _ in
         
-        IconLabelGroupBox(
-            label:
-                IconLabel(
-                    icon: "chart.xyaxis.line",
-                    title: "Line Chart",
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-        ) {
-            AnalyticsView.HeartRateLineChartView(
-                viewModel: viewModel,
-                onReviewSelected: { review in
-                    print("Selected review: \(review)")
-                }
-            )
-        }
-        .padding()
     }
 }

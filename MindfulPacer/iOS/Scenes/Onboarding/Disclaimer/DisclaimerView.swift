@@ -52,7 +52,7 @@ extension OnboardingView {
                     Card(backgroundColor: Color(.tertiarySystemFill)) {
                         ZStack {
                             Label {
-                                Text("You can reach out to the following email address in case you have further questions: mindfulpacer@outlook.com")
+                                Text("You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
