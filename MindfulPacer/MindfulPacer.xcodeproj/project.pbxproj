@@ -49,6 +49,7 @@
 		0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */; };
 		0D4EBE462C727F8900C1865D /* IntervalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE452C727F8900C1865D /* IntervalView.swift */; };
 		0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE4B2C72865F00C1865D /* SummaryView.swift */; };
+		0D4FD49F2CBD306D00C2D7A9 /* MeasurementChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4FD49E2CBD306D00C2D7A9 /* MeasurementChartView.swift */; };
 		0D500FC22C7355BD00395AEB /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC12C7355BD00395AEB /* NotificationService.swift */; };
 		0D500FC42C73560A00395AEB /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC32C73560A00395AEB /* NotificationService.swift */; };
 		0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */; };
@@ -235,6 +236,7 @@
 		0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdView.swift; sourceTree = "<group>"; };
 		0D4EBE452C727F8900C1865D /* IntervalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntervalView.swift; sourceTree = "<group>"; };
 		0D4EBE4B2C72865F00C1865D /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		0D4FD49E2CBD306D00C2D7A9 /* MeasurementChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementChartView.swift; sourceTree = "<group>"; };
 		0D500FC12C7355BD00395AEB /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0D500FC32C73560A00395AEB /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerWatchNotificationUseCase.swift; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 				0D5DD9CE2CAEB88A0029EB6B /* Steps Bar Chart */,
 				0D3006C22C937461008F11C7 /* AnalyticsView.swift */,
 				0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */,
+				0D4FD49E2CBD306D00C2D7A9 /* MeasurementChartView.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -1368,6 +1371,7 @@
 				0D909E272C9043B300377589 /* OnboardingView.swift in Sources */,
 				0D67F4342C90E255000F6114 /* DisclaimerView.swift in Sources */,
 				0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */,
+				0D4FD49F2CBD306D00C2D7A9 /* MeasurementChartView.swift in Sources */,
 				0D67F4222C90CA26000F6114 /* KeyFeaturesView.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,

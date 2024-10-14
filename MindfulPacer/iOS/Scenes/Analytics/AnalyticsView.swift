@@ -46,16 +46,10 @@ struct AnalyticsView: View {
                             .foregroundStyle(.secondary)
                     ) {
                         VStack(spacing: 16) {
-                            if viewModel.selectedMeasurementType == .heartRate {
-                                HeartRateLineChartView(viewModel: viewModel) { review in
-                                    viewModel.presentSheet(.editReviewView(review))
-                                }
-                            } else {
-                                StepsBarChartView(viewModel: viewModel) { review in
-                                    viewModel.presentSheet(.editReviewView(review))
-                                }
+                            MeasurementChartView(viewModel: viewModel) { review in
+                                viewModel.presentSheet(.editReviewView(review))
                             }
-                            
+                           
                             Picker(selection: $viewModel.selectedPeriod) {
                                 ForEach(Period.allCases, id: \.self) { period in
                                     Text(period.rawValue)
