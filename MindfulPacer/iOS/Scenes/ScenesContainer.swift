@@ -13,6 +13,21 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
 
+    // MARK: - Analytics
+
+    @MainActor
+    var analyticsViewModel: Factory<AnalyticsViewModel> {
+        self {
+            AnalyticsViewModel(
+                modelContext: ModelContainer.prod.mainContext,
+                fetchHeartRateUseCase: UseCasesContainer.shared.fetchHeartRateUseCase(),
+                fetchReviewsInPeriodUseCase: UseCasesContainer.shared.fetchReviewsInPeriodUseCase(),
+                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                fetchStepsUseCase: UseCasesContainer.shared.fetchStepsUseCase()
+            )
+        }
+    }
+
     // MARK: - Home
 
     @MainActor
@@ -20,6 +35,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
+                fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
                 fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
@@ -89,6 +105,15 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 saveReviewReminderUseCase: UseCasesContainer.shared.saveReviewReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )
+        }
+    }
+    
+    // MARK: - Settings
+    
+    @MainActor
+    var settingsViewModel: Factory<SettingsViewModel> {
+        self {
+            SettingsViewModel()
         }
     }
 }

@@ -26,7 +26,7 @@ struct ReviewRemindersListView: View {
                     Section {
                         ForEach(viewModel.reviewReminders) { reviewReminder in
                             ReviewReminderCell(reviewReminder: reviewReminder) {
-                                viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
+                                viewModel.presentSheet(.createReviewReminderView(reviewReminder))
                             }
                         }
                     }
@@ -39,7 +39,7 @@ struct ReviewRemindersListView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    viewModel.presentSheet(.createReviewReminderSheet(nil))
+                    viewModel.presentSheet(.createReviewReminderView(nil))
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -57,7 +57,7 @@ struct ReviewRemindersListView: View {
                 Text("You have not created any review reminders.")
             } actions: {
                 Button {
-                    viewModel.presentSheet(.createReviewReminderSheet(nil))
+                    viewModel.presentSheet(.createReviewReminderView(nil))
                 } label: {
                     Text("Create Review Reminder")
                 }

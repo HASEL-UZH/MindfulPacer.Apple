@@ -181,7 +181,7 @@ struct CreateReviewReminderView: View {
             Button("Cancel") {
                 dismiss()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .trailing)
 
             VStack(spacing: 32) {
                 Text("Create Review Reminder")

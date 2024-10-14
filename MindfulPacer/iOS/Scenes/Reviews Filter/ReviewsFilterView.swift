@@ -38,8 +38,12 @@ struct ReviewsFilterView: View {
             .navigationTitle("Filter Reviews")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarLeading) {
                     resetButton
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    CloseButton()
                 }
             }
             .onViewFirstAppear {
@@ -103,8 +107,8 @@ struct ReviewsFilterView: View {
             categoriesFilterView
         } label: {
             filterItem(
-                label: "Categories",
                 icon: "rectangle.grid.2x2.fill",
+                title: "Categories",
                 selectedCount: viewModel.reviewFilter.selectedCategories.count,
                 selectedSummary: viewModel.selectedFilterCategoriesSummary
             )
@@ -118,8 +122,8 @@ struct ReviewsFilterView: View {
             subcategoriesFilterView
         } label: {
             filterItem(
-                label: "Subategories",
                 icon: "rectangle.grid.3x3.fill",
+                title: "Subategories",
                 selectedCount: viewModel.reviewFilter.selectedSubcategories.count,
                 selectedSummary: viewModel.selectedFilterSubcategoriesSummary
             )
@@ -133,8 +137,8 @@ struct ReviewsFilterView: View {
             moodFilterView
         } label: {
             filterItem(
-                label: "Mood",
                 icon: "face.smiling.fill",
+                title: "Mood",
                 selectedCount: viewModel.reviewFilter.selectedMoods.count,
                 selectedSummary: viewModel.selectedFilterMoodsSummary
             )
@@ -145,28 +149,20 @@ struct ReviewsFilterView: View {
 
     @ViewBuilder
     private func filterItem(
-        label: String,
         icon: String,
+        title: String,
         selectedCount: Int,
         selectedSummary: String
     ) -> some View {
         HStack {
-            Label {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(label)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.accent)
-
-                    if !selectedSummary.isEmpty {
-                        Text(selectedSummary)
-                            .font(.footnote)
-                            .foregroundStyle(Color.secondary)
-                            .lineLimit(1)
-                    }
-                }
-            } icon: {
-                Icon(name: icon, background: true)
-            }
+            IconLabel(
+                icon: icon,
+                title: title,
+                description: selectedSummary.isEmpty ? nil : selectedSummary,
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+            .font(.subheadline.weight(.semibold))
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 4) {
@@ -262,7 +258,7 @@ struct ReviewsFilterView: View {
                 columns: Array(repeating: GridItem(spacing: 16), count: 5),
                 spacing: 16
             ) {
-                ForEach(DefaultMoodData.moods, id: \.id) { mood in
+                ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 12),
                         isSelected: viewModel.reviewFilter.selectedMoods.contains(mood)
@@ -273,7 +269,7 @@ struct ReviewsFilterView: View {
                             .font(.title)
                     }
                     .contextMenu {
-                        Text(mood.description)
+                        Text(mood.text)
                     }
                 }
             }

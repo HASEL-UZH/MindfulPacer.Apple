@@ -24,66 +24,62 @@ extension CreateReviewReminderView {
 
                 VStack(spacing: 16) {
                     intervalSelectionList
-                    descriptionText
+                    description
                     Spacer()
                 }
                 .padding(.horizontal)
             }
             .navigationTitle("Interval")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    infoButton
-                }
-            }
         }
 
         // MARK: Interval Selection List
 
         @ViewBuilder
         private var intervalSelectionList: some View {
-            ForEach(ReviewReminder.Interval.allCases, id: \.self) { interval in
-                SelectableButton(
-                    shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedInterval == interval
-                ) {
-                    viewModel.toggleSelection(
-                        interval,
-                        selectedItem: &viewModel.selectedInterval
-                    )
-                } label: {
-                    HStack {
-                        IconLabel(
-                            icon: interval.icon,
-                            title: interval.rawValue,
-                            labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+            if viewModel.validIntervals.isEmpty {
+                InfoBox(text: "Select a measurement type to see the available intervals.")
+            } else {
+                ForEach(viewModel.validIntervals, id: \.self) { interval in
+                    SelectableButton(
+                        shape: .roundedRectangle(cornerRadius: 16),
+                        isSelected: viewModel.selectedInterval == interval
+                    ) {
+                        viewModel.toggleSelection(
+                            interval,
+                            selectedItem: &viewModel.selectedInterval
                         )
-                        Spacer()
-                        if viewModel.selectedInterval == interval {
-                            Image(systemName: "checkmark.circle.fill")
+                    } label: {
+                        HStack {
+                            IconLabel(
+                                icon: interval.icon,
+                                title: interval.rawValue,
+                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
+                            )
+                            Spacer()
+                            if viewModel.selectedInterval == interval {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
                         }
                     }
                 }
             }
         }
 
-        // MARK: Description Text
+        // MARK: Description
 
-        private var descriptionText: some View {
-            Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-        }
-
-        // MARK: Info Button
-
-        private var infoButton: some View {
-            Button {
-                viewModel.presentSheet(.intervalInfo)
-            } label: {
-                Image(systemName: "info.circle.fill")
+        private var description: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                
+                Button("Learn More") {
+                    viewModel.presentSheet(.intervalInfo)
+                }
+                .font(.subheadline.weight(.semibold))
             }
+            .padding(.horizontal)
         }
     }
 }

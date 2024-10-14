@@ -14,7 +14,7 @@ struct InfoSheet<Content: View>: View {
 
     var title: String
     var info: String?
-    var content: () -> Content
+    @ViewBuilder var content: Content
 
     // MARK: Body
 
@@ -29,16 +29,16 @@ struct InfoSheet<Content: View>: View {
                         InfoBox(text: info)
                             .padding(.horizontal)
                     }
-
+                    
                     ViewThatFits {
-                        content()
+                        content
                             .padding(.horizontal)
                         ScrollView {
-                            content()
+                            content
                                 .padding(.horizontal)
                         }
                     }
-
+                    
                     Spacer()
                 }
             }
@@ -59,7 +59,7 @@ extension InfoSheet where Content == EmptyView {
     init(title: String, info: String? = nil) {
         self.title = title
         self.info = info
-        self.content = { EmptyView() }
+        self.content = { EmptyView() }()
     }
 }
 

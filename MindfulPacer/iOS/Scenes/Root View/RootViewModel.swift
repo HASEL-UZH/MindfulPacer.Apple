@@ -8,13 +8,14 @@
 import Foundation
 import SwiftData
 import CocoaLumberjackSwift
+import SwiftUI
 
 // MARK: - RootViewModel
 
 @Observable
 class RootViewModel {
     // MARK: - Dependencies
-
+    
     private let modelContext: ModelContext
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
@@ -23,7 +24,8 @@ class RootViewModel {
     // MARK: - Published Properties
 
     var activeSheet: RootSheet?
-
+    var selectedTab: Tab = .home
+    
     // MARK: - Initialization
 
     init(
@@ -64,6 +66,12 @@ class RootViewModel {
         activeSheet = sheet
     }
 
+    // MARK: - User Actions
+    
+    func widgetTapped() {
+        selectedTab = .analytics
+    }
+    
     // MARK: - Private Methods
 
     private func checkIfUserHasSeenOnboarding() {

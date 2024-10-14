@@ -10,7 +10,7 @@
 	<true/>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.com.MindfulPacer.Apple</string>
+		<string>iCloud.Cloud.com.MindfulPacer.Apple.iOS</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>

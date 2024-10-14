@@ -18,10 +18,25 @@ extension UseCasesContainer {
     // MARK: - Health
 
     @MainActor
+    var fetchCurrentHeartRateUseCase: Factory<DefaultFetchCurrentHeartRateUseCase> {
+        self { DefaultFetchCurrentHeartRateUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
     var fetchCurrentStepsUseCase: Factory<DefaultFetchCurrentStepsUseCase> {
         self { DefaultFetchCurrentStepsUseCase(healthKitService: HealthKitService.shared) }
     }
 
+    @MainActor
+    var fetchHeartRateUseCase: Factory<DefaultFetchHeartRateUseCase> {
+        self { DefaultFetchHeartRateUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
+    var fetchStepsUseCase: Factory<DefaultFetchStepsUseCase> {
+        self { DefaultFetchStepsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
     @MainActor
     var requestHealthAuthorisationUseCase: Factory<DefaultRequestHealthAuthorisationUseCase> {
         self { DefaultRequestHealthAuthorisationUseCase(healthKitService: HealthKitService.shared) }
@@ -64,6 +79,11 @@ extension UseCasesContainer {
     @MainActor
     var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
         self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
+    
+    @MainActor
+    var fetchReviewsInPeriodUseCase: Factory<DefaultFetchReviewsInPeriodUseCase> {
+        self { DefaultFetchReviewsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol InitializeNotificationsUseCase {
-    func execute(completion: @escaping (Result<Void, NotificationError>) -> Void)
+    func execute(completion: @escaping @Sendable (Result<Void, NotificationError>) -> Void)
 }
 
 // MARK: - Use Case Implementation
@@ -20,9 +20,12 @@ final class DefaultInitializeNotificationsUseCase: InitializeNotificationsUseCas
         self.notificationService = notificationService
     }
 
-    func execute(completion: @escaping (Result<Void, NotificationError>) -> Void) {
+    func execute(completion: @escaping @Sendable (Result<Void, NotificationError>) -> Void) {
         notificationService.requestNotificationAuthorization { result in
-            completion(result)
+            // Ensure the completion handler is called on the main thread if necessary.
+            DispatchQueue.main.async {
+                completion(result)
+            }
         }
     }
 }

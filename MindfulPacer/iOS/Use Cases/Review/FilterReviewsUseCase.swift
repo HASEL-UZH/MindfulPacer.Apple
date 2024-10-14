@@ -45,11 +45,9 @@ class DefaultFilterReviewsUseCase: FilterReviewsUseCase {
                 matches = matches || (review.subcategory.map { filters.selectedSubcategories.contains($0) } ?? false)
             }
 
-            // Apply Mood Filter (match any selected mood emoji)
+            // Apply Mood Filter (match any selected mood)
             if !filters.selectedMoods.isEmpty {
-                matches = matches || (review.mood.map { moodEmoji in
-                    filters.selectedMoods.contains { $0.emoji == moodEmoji }
-                } ?? false)
+                matches = matches || (review.mood.map { filters.selectedMoods.contains($0) } ?? false)
             }
 
             // Apply Triggered Crash Filter

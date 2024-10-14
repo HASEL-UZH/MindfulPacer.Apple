@@ -16,7 +16,7 @@ extension HomeView {
         @Bindable var viewModel: HomeViewModel
 
         // MARK: Body
-
+        
         var body: some View {
             NavigationLink(value: HomeViewNavigationDestination.reviewRemindersList) {
                 IconLabelGroupBox(
@@ -32,10 +32,10 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reviewReminders.isEmpty {
-                        ContentUnavailableView(
-                            "No Review Reminders",
-                            systemImage: "bell.badge.slash.fill",
-                            description: Text("Tap the **+** button to create a review reminder.")
+                        EmptyStateView(
+                            image: "bell.badge.slash",
+                            title: "No Review Reminders",
+                            description: "Tap the + button to create a review reminder."
                         )
                     } else {
                         recentReviewRemindersSummary
@@ -57,7 +57,7 @@ extension HomeView {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
                         ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
-                            viewModel.presentSheet(.createReviewReminderSheet(reviewReminder))
+                            viewModel.presentSheet(.createReviewReminderView(reviewReminder))
                         }
                         if viewModel.recentReviewReminders.last != reviewReminder {
                             Divider()
@@ -71,7 +71,7 @@ extension HomeView {
 
         private var createReviewReminderButton: some View {
             Button {
-                viewModel.presentSheet(.createReviewReminderSheet(nil))
+                viewModel.presentSheet(.createReviewReminderView(nil))
             } label: {
                 IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
@@ -85,5 +85,8 @@ extension HomeView {
 #Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
 
-    HomeView.ReviewRemindersWidget(viewModel: viewModel)
+    ScrollView {
+        HomeView.ReviewRemindersWidget(viewModel: viewModel)
+    }
+    .background(Color(.systemGroupedBackground))
 }

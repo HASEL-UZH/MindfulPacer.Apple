@@ -7,11 +7,19 @@
 
 import SwiftUI
 
+// MARK: - Tab
+
+enum Tab: String {
+    case home
+    case analytics
+    case settings
+}
+
 // MARK: - Presentation Enums
 
 enum RootSheet: Identifiable {
     case onboardingView
-
+    
     var id: Int {
         hashValue
     }
@@ -21,17 +29,32 @@ enum RootSheet: Identifiable {
 
 struct RootView: View {
     // MARK: Properties
-
+    
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
-
+    
     // MARK: Body
-
+    
     var body: some View {
-        TabView {
-            HomeView()
+        TabView(selection: $viewModel.selectedTab) {
+            HomeView {
+                viewModel.widgetTapped()
+            }
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+            .tag(Tab.home)
+            
+            AnalyticsView()
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Label("Analytics", systemImage: "chart.bar")
                 }
+                .tag(Tab.analytics)
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(Tab.settings)
         }
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)
@@ -40,9 +63,9 @@ struct RootView: View {
             viewModel.onViewFirstAppear()
         }
     }
-
+    
     // MARK: Sheets
-
+    
     @ViewBuilder
     private func sheetContent(for sheet: RootSheet) -> some View {
         switch sheet {
@@ -58,4 +81,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
+        .tint(Color("BrandPrimary"))
 }

@@ -32,10 +32,10 @@ extension HomeView {
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reviews.isEmpty {
-                        ContentUnavailableView(
-                            "No Reviews",
-                            systemImage: "book.pages.fill",
-                            description: Text("Tap the **+** button to create a review.")
+                        EmptyStateView(
+                            image: "book.pages",
+                            title: "No Reviews",
+                            description: "Tap the + button to create a review."
                         )
                     } else {
                         recentReviewsSummary
@@ -54,7 +54,7 @@ extension HomeView {
 
         private var createReviewButton: some View {
             Button {
-                viewModel.presentSheet(.editReviewSheet(nil))
+                viewModel.presentSheet(.editReviewView(nil))
             } label: {
                 IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
@@ -68,7 +68,7 @@ extension HomeView {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.recentReviews) { review in
                         ReviewCell(review: review, withBackground: false) {
-                            viewModel.presentSheet(.editReviewSheet(review))
+                            viewModel.presentSheet(.editReviewView(review))
                         }
                         if review != viewModel.recentReviews.last {
                             Divider()
@@ -85,5 +85,8 @@ extension HomeView {
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
 
-    HomeView.ReviewsWidget(viewModel: viewModel)
+    ScrollView {
+        HomeView.ReviewsWidget(viewModel: viewModel)
+    }
+    .background(Color(.systemGroupedBackground))
 }

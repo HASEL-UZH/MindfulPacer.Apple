@@ -38,7 +38,7 @@ extension HomeView {
                     RoundedList {
                         ForEach(viewModel.filteredReviews) { review in
                             ReviewCell(review: review) {
-                                viewModel.presentSheet(.editReviewSheet(review))
+                                viewModel.presentSheet(.editReviewView(review))
                             }
                         }
                     }
@@ -49,7 +49,7 @@ extension HomeView {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.presentSheet(.editReviewSheet(nil))
+                        viewModel.presentSheet(.editReviewView(nil))
                     } label: {
                         Label("New Review", systemImage: "plus")
                     }
@@ -94,7 +94,7 @@ extension HomeView {
                     Text("You have not created any reviews.")
                 } actions: {
                     Button {
-                        viewModel.presentSheet(.editReviewSheet(nil))
+                        viewModel.presentSheet(.editReviewView(nil))
                     } label: {
                         Text("Create Review")
                     }
@@ -103,9 +103,9 @@ extension HomeView {
                 }
             }
         }
-
+        
         // MARK: Filtered Reviews Empty State
-
+        
         private var filteredReviewsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
@@ -162,7 +162,7 @@ extension HomeView {
         // MARK: Mood Filter Summary
 
         private var moodFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedMoods, id: \.description) { mood in
+            ForEach(viewModel.reviewFilter.selectedMoods, id: \.text) { mood in
                 filterItem(
                     emoji: mood.emoji,
                     removeAction: { viewModel.toggleFilterMood(mood) }

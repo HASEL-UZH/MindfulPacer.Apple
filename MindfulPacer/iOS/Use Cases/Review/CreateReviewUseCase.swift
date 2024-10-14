@@ -13,7 +13,7 @@ protocol CreateReviewUseCase {
         date: Date,
         category: Category?,
         subcategory: Subcategory?,
-        mood: String?,
+        mood: Mood?,
         didTriggerCrash: Bool,
         perceivedEnergyLevelRating: Int?,
         headachesRating: Int?,
@@ -21,7 +21,11 @@ protocol CreateReviewUseCase {
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String
+        additionalInformation: String,
+        measurementType: ReviewReminder.MeasurementType?,
+        reviewReminderType: ReviewReminder.ReviewReminderType?,
+        threshold: Int?,
+        interval: ReviewReminder.Interval?
     ) -> Result<Review, Error>
 }
 
@@ -38,7 +42,7 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         date: Date,
         category: Category?,
         subcategory: Subcategory?,
-        mood: String?,
+        mood: Mood?,
         didTriggerCrash: Bool,
         perceivedEnergyLevelRating: Int?,
         headachesRating: Int?,
@@ -46,7 +50,11 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
         feverRating: Int?,
         painsAndNeedlesRating: Int?,
         muscleAchesRating: Int?,
-        additionalInformation: String
+        additionalInformation: String,
+        measurementType: ReviewReminder.MeasurementType?,
+        reviewReminderType: ReviewReminder.ReviewReminderType?,
+        threshold: Int?,
+        interval: ReviewReminder.Interval?
     ) -> Result<Review, Error> {
         let review = Review(
             date: date,
@@ -60,7 +68,11 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
             feverRating: feverRating,
             painsAndNeedlesRating: painsAndNeedlesRating,
             muscleAchesRating: muscleAchesRating,
-            additionalInformation: additionalInformation
+            additionalInformation: additionalInformation,
+            measurementType: measurementType,
+            reviewReminderType: reviewReminderType,
+            threshold: threshold,
+            interval: interval
         )
 
         modelContext.insert(review)

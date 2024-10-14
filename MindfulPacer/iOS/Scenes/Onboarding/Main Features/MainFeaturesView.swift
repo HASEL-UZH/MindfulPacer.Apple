@@ -12,11 +12,11 @@ import SwiftUI
 extension OnboardingView {
     struct MainFeaturesView: View {
         // MARK: Properties
-
+        
         @Bindable var viewModel: OnboardingViewModel
-
+        
         // MARK: Body
-
+        
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -41,8 +41,18 @@ extension OnboardingView {
                                 .scaledToFit()
                                 .frame(height: 200)
                                 .frame(maxWidth: .infinity, alignment: .center)
-
-                            Text(feature.points)
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                ForEach(feature.points, id: \.self) { point in
+                                    HStack(alignment: .top) {
+                                        Text("•")
+                                        Text(point)
+                                            .multilineTextAlignment(.leading)
+                                            .lineLimit(nil)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -56,6 +66,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-
+    
     OnboardingView.MainFeaturesView(viewModel: viewModel)
 }

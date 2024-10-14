@@ -20,6 +20,7 @@ class HomeViewModel {
     // MARK: - Dependencies
 
     private let modelContext: ModelContext
+    private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
     private let fetchReviewsUseCase: FetchReviewsUseCase
     private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
@@ -43,6 +44,7 @@ class HomeViewModel {
     }
 
     var currentSteps: (stepCount: Double, timestamp: Date)?
+    var currentHeartRate: (heartRate: Double, timestamp: Date)?
 
     var filterButtonTitle: String {
         let (filter, _) = filterAndSortingPublisher.value
@@ -58,12 +60,14 @@ class HomeViewModel {
 
     init(
         modelContext: ModelContext,
+        fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchReviewsUseCase: FetchReviewsUseCase,
         fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
         filterReviewsUseCase: FilterReviewsUseCase
     ) {
         self.modelContext = modelContext
+        self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
         self.fetchReviewsUseCase = fetchReviewsUseCase
         self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
@@ -75,12 +79,17 @@ class HomeViewModel {
 
     func onViewFirstAppear() {
         DDLogInfo("onViewFirstAppear called")
-        fetchCurrentSteps()
-        fetchReviews()
-        fetchReviewReminders()
         setupBindings()
     }
 
+    func onViewAppear() {
+        DDLogInfo("onViewAppear called")
+        fetchCurrentSteps()
+        fetchCurrentHeartRate()
+        fetchReviews()
+        fetchReviewReminders()
+    }
+    
     func onSheetDismissed() {
         DDLogInfo("onSheetDismissed called")
         fetchReviews()
@@ -177,6 +186,22 @@ class HomeViewModel {
                     self.currentSteps = success
                 case .failure(let failure):
                     DDLogWarn("Failed to fetch current steps: \(failure.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func fetchCurrentHeartRate() {
+        DDLogInfo("Fetching current heart rate")
+        fetchCurrentHeartRateUseCase.execute { [weak self] result in
+            guard let self = self else { return }
+            Task { @MainActor in
+                switch result {
+                case .success(let success):
+                    DDLogInfo("Fetched current heart rate successfully: \(success.heartRate)")
+                    self.currentHeartRate = success
+                case .failure(let failure):
+                    DDLogWarn("Failed to fetch current heart rate: \(failure.localizedDescription)")
                 }
             }
         }

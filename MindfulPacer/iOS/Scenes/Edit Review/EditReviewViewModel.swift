@@ -70,6 +70,12 @@ class EditReviewViewModel {
         return disabled
     }
 
+    var isSaveButtonDisabled: Bool {
+        let disabled = selectedCategory == nil
+        DDLogVerbose("Action button is \(disabled ? "disabled" : "enabled")")
+        return disabled
+    }
+
     var isReviewDeleted = false
 
     // MARK: - Initialization
@@ -137,7 +143,7 @@ class EditReviewViewModel {
             date: date,
             category: selectedCategory,
             subcategory: selectedSubcategory,
-            mood: selectedMood?.emoji,
+            mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
             perceivedEnergyLevelRating: ratings[.energyLevel]?.value,
             headachesRating: ratings[.headaches]?.value,
@@ -145,7 +151,11 @@ class EditReviewViewModel {
             feverRating: ratings[.fever]?.value,
             painsAndNeedlesRating: ratings[.painsAndNeedles]?.value,
             muscleAchesRating: ratings[.muscleAches]?.value,
-            additionalInformation: additionalInformation
+            additionalInformation: additionalInformation,
+            measurementType: nil,
+            reviewReminderType: nil,
+            threshold: nil,
+            interval: nil
         )
 
         if case .failure = result {
@@ -163,7 +173,7 @@ class EditReviewViewModel {
             newDate: date,
             newCategory: selectedCategory,
             newSubcategory: selectedSubcategory,
-            newMood: selectedMood?.emoji,
+            newMood: selectedMood,
             newDidTriggerCrash: didTriggerCrash,
             newPerceivedEnergyLevelRating: ratings[1].value,
             newHeadachesRating: ratings[0].value,
@@ -191,9 +201,22 @@ class EditReviewViewModel {
         deleteReviewUseCase.execute(review: review)
         DDLogInfo("Review deleted successfully")
     }
-
+    
+    func reviewReminderTriggerSummary(for review: Review) -> String {
+        guard let reviewReminderMeasurementType = review.measurementType,
+              let reviewReminderInterval = review.interval,
+              let reviewReminderThreshold = review.threshold else { return "No summary" }
+        
+        switch reviewReminderMeasurementType {
+        case .heartRate:
+            return "Above \(reviewReminderThreshold) bpm for \(reviewReminderInterval.rawValue.lowercased())"
+        case .steps:
+            return "Above \(reviewReminderThreshold) steps within the window of \(reviewReminderInterval.rawValue.lowercased())"
+        }
+    }
+    
     // MARK: - Presentation
-
+    
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
         DDLogInfo("Navigated to destination: \(destination)")
@@ -235,7 +258,7 @@ class EditReviewViewModel {
         date = review.date
         selectedCategory = review.category
         selectedSubcategory = review.subcategory
-        selectedMood = Mood.mood(for: review.mood)
+        selectedMood = review.mood
         ratings[0] = ReviewMetricRating(type: .headaches, value: review.headachesRating)
         ratings[1] = ReviewMetricRating(type: .energyLevel, value: review.perceivedEnergyLevelRating)
         ratings[2] = ReviewMetricRating(type: .shortnessOfBreath, value: review.shortnessOfBreatheRating)

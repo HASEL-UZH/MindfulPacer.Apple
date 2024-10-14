@@ -12,17 +12,18 @@ import SwiftUI
 enum HomeViewNavigationDestination: Hashable {
     case reviewsList
     case reviewRemindersList
+    case analytics
 }
 
 enum HomeViewSheet: Identifiable {
-    case editReviewSheet(Review?)
-    case createReviewReminderSheet(ReviewReminder?)
+    case editReviewView(Review?)
+    case createReviewReminderView(ReviewReminder?)
     case reviewsFilterView
 
     var id: Int {
         switch self {
-        case .editReviewSheet: 0
-        case .createReviewReminderSheet: 1
+        case .editReviewView: 0
+        case .createReviewReminderView: 1
         case .reviewsFilterView: 2
         }
     }
@@ -31,18 +32,20 @@ enum HomeViewSheet: Identifiable {
 // MARK: - HomeView
 
 struct HomeView: View {
+    
     // MARK: Properties
 
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-
+    var onWidgetTap: () -> Void
+    
     // MARK: Body
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    stepsAndHeartRateSection
                     ReviewsWidget(viewModel: viewModel)
+                    stepsAndHeartRateWidgets
                     ReviewRemindersWidget(viewModel: viewModel)
                     ReviewReminderTypeWidget()
                     Spacer()
@@ -66,20 +69,32 @@ struct HomeView: View {
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
+            .onAppear {
+                viewModel.onViewAppear()
+            }
         }
     }
-
-    // MARK: Steps and Heart Rate Section
-
-    private var stepsAndHeartRateSection: some View {
+    
+    // MARK: Steps and Heart Rate Widgets
+    
+    private var stepsAndHeartRateWidgets: some View {
         HStack(spacing: 16) {
-            StepsWidget(viewModel: viewModel)
-            HeartRateWidget()
+            Button {
+                onWidgetTap()
+            } label: {
+                StepsWidget(viewModel: viewModel)
+            }
+            
+            Button {
+                onWidgetTap()
+            } label: {
+                HeartRateWidget(viewModel: viewModel)
+            }
         }
     }
-
+    
     // MARK: Navigation Destination
-
+    
     @ViewBuilder
     private func navigationDestination(for destination: HomeViewNavigationDestination) -> some View {
         switch destination {
@@ -87,6 +102,8 @@ struct HomeView: View {
             ReviewsListView(viewModel: viewModel)
         case .reviewRemindersList:
             ReviewRemindersListView(viewModel: viewModel)
+        case .analytics:
+            AnalyticsView()
         }
     }
 
@@ -95,12 +112,12 @@ struct HomeView: View {
     @ViewBuilder
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
-        case .editReviewSheet(let review):
+        case .editReviewView(let review):
             EditReviewView(review: review)
                 .interactiveDismissDisabled(review.isNil)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(review.isNil ? .hidden : .visible)
-        case .createReviewReminderSheet(let reviewReminder):
+        case .createReviewReminderView(let reviewReminder):
             CreateReviewReminderView(reviewReminder: reviewReminder)
                 .interactiveDismissDisabled(reviewReminder.isNil)
                 .presentationCornerRadius(16)
@@ -118,7 +135,7 @@ struct HomeView: View {
 
 #Preview {
     TabView {
-        HomeView()
+        HomeView(onWidgetTap: { })
             .tabItem {
                 Label("Home", systemImage: "house")
             }

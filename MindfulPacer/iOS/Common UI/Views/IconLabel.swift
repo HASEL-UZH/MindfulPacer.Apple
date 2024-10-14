@@ -17,6 +17,7 @@ protocol IconLabelStyle {
 struct IconLabelStyleConfiguration {
     let icon: String
     let title: String
+    let description: String?
     let textColor: Color?
     let iconColor: Color?
     let labelColor: Color?
@@ -57,9 +58,20 @@ struct PlainIconLabelStyle: IconLabelStyle {
             switch configuration.axis {
             case .horizontal:
                 Label {
-                    Text(configuration.title)
-                        .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(.middle)
+                    if let description = configuration.description {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(configuration.title)
+                                .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
+                                .truncationMode(.middle)
+                            Text(description)
+                                .font(.subheadline)
+                                .foregroundStyle(Color.secondary)
+                        }
+                    } else {
+                        Text(configuration.title)
+                            .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
+                            .truncationMode(.middle)
+                    }
                 } icon: {
                     Icon(
                         name: configuration.icon,
@@ -79,9 +91,20 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         background: configuration.background
                     )
 
-                    Text(configuration.title)
-                        .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(.middle)
+                    if let description = configuration.description {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(configuration.title)
+                                .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
+                                .truncationMode(.middle)
+                            Text(description)
+                                .font(.subheadline)
+                                .foregroundStyle(Color.secondary)
+                        }
+                    } else {
+                        Text(configuration.title)
+                            .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
+                            .truncationMode(.middle)
+                    }
                 }
             }
         }
@@ -153,6 +176,7 @@ extension EnvironmentValues {
 struct IconLabel: View {
     var icon: String
     var title: String
+    var description: String?
     var textColor: Color?
     var iconColor: Color?
     var labelColor: Color?
@@ -167,6 +191,7 @@ struct IconLabel: View {
         style.makeBody(configuration: .init(
             icon: icon,
             title: title,
+            description: description,
             textColor: textColor,
             iconColor: iconColor,
             labelColor: labelColor,
@@ -203,9 +228,21 @@ extension View {
 
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
-        IconLabel(icon: "figure.walk", title: "Walking", textColor: .blue, iconColor: .pink, background: true)
-
-        IconLabel(icon: "heart.fill", title: "Heart Rate", labelColor: .pink, background: false)
-            .iconLabelStyle(.pill)
+        IconLabel(
+            icon: "figure.walk",
+            title: "Walking",
+            description: "Your total step count.",
+            textColor: .blue,
+            labelColor: .teal,
+            background: true
+        )
+        
+        IconLabel(
+            icon: "heart.fill",
+            title: "Heart Rate",
+            labelColor: .pink,
+            background: false
+        )
+        .iconLabelStyle(.pill)
     }
 }

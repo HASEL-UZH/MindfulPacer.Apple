@@ -8,19 +8,19 @@
 import Foundation
 
 protocol RequestHealthAuthorisationUseCase {
-    func execute(completion: @escaping (Bool, HealthKitError?) -> Void)
+    func execute(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void)
 }
 
 // MARK: - Use Case Implementation
 
 final class DefaultRequestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase {
     private let healthKitService: HealthKitService
-
+    
     init(healthKitService: HealthKitService) {
         self.healthKitService = healthKitService
     }
-
-    func execute(completion: @escaping (Bool, HealthKitError?) -> Void) {
+    
+    func execute(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void) {
         healthKitService.requestAuthorization(completion: completion)
     }
 }

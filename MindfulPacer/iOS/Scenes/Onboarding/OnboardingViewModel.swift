@@ -23,7 +23,7 @@ struct MainFeatureItem {
     let icon: String
     let title: String
     let description: String
-    let points: String
+    let points: [String]
     let image: String
 }
 
@@ -38,6 +38,7 @@ struct ActivityPromotingFeature {
 // MARK: - OnboardingViewModel
 
 @Observable
+@MainActor
 class OnboardingViewModel {
     // MARK: - Dependencies
 
@@ -126,27 +127,25 @@ class OnboardingViewModel {
             icon: "flame",
             title: "Energy & Activity Pacing",
             description: "Better manage your physical and mental energy by regulating your activity levels.",
-            points:
-                """
-                - Timelines of your physical activity (steps, heart rate and others)
-                - Overlays of your reviews on activity & energy
-                - Visually correlate activities, energy levels and reviews
-                """,
-            image: "iPhone Placeholder"
+            points: [
+                "Timelines of your physical activity (steps, heart rate and others)",
+                "Overlays of your reviews on activity & energy",
+                "Visually correlate activities, energy levels and reviews"
+            ],
+            image: "Main Feature 1"
         ),
         MainFeatureItem(
             icon: "book.pages",
             title: "Reviews of Activities & Energy Levels",
             description: "Add reflections on your activities, energy management, moods and symptoms.",
-            points:
-                """
-                - Your Apple Watch can remind you to reflect at times of high activity or specific times of the day
-                - Manually add and edit reviews anytime
-                """,
-            image: "iPhone Placeholder"
+            points: [
+                "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day",
+                "Manually add and edit reviews anytime"
+            ],
+            image: "Main Feature 2"
         )
     ]
-
+    
     let activityPromotingFeatures: [ActivityPromotingFeature] = [
         ActivityPromotingFeature(
             icon: "figure.stand",
@@ -291,7 +290,7 @@ class OnboardingViewModel {
     }
 
     // MARK: - Private Methods
-
+    
     private func requestNotificationPermission() {
         DDLogInfo("Requesting notification permission")
         initializeNotificationsUseCase.execute { result in
@@ -301,8 +300,11 @@ class OnboardingViewModel {
             case .failure(let failure):
                 DDLogWarn("Notifications not authorized \(String(describing: failure.failureReason))")
             }
-            self.navigateTo(destination: .appleHealth)
-            self.didCompleteNotificationsRequest = true
+            
+            Task { @MainActor in
+                self.navigateTo(destination: .appleHealth)
+                self.didCompleteNotificationsRequest = true
+            }
         }
     }
 
@@ -313,9 +315,15 @@ class OnboardingViewModel {
                 DDLogWarn("Health authorization failed: \(error.errorDescription ?? "Unknown error")")
             } else if success {
                 DDLogInfo("Health authorization successful")
-                self.navigateTo(destination: .mainFeatures)
+                Task { @MainActor in
+                    self.didCompleteHealthAuthorization = true
+                    self.navigateTo(destination: .mainFeatures)
+                }
             }
-            self.didCompleteHealthAuthorization = true
+            
+            Task { @MainActor in
+                self.didCompleteHealthAuthorization = true
+            }
         }
     }
 }

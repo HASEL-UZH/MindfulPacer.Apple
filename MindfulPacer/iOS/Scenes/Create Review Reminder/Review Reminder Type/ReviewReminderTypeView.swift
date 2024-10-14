@@ -24,7 +24,7 @@ extension CreateReviewReminderView {
 
                 VStack(spacing: 16) {
                     reviewReminderTypeSelectionList
-                    descriptionText
+                    description
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -32,7 +32,9 @@ extension CreateReviewReminderView {
             .navigationTitle("Review Reminder Type")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    infoButton
+                    Button("Cancel") {
+                        viewModel.dismissView()
+                    }
                 }
             }
         }
@@ -66,25 +68,22 @@ extension CreateReviewReminderView {
                 }
             }
         }
-
-        // MARK: Description Text
-
-        private var descriptionText: some View {
-            Text("Choose a review reminder type, which will be reflected in the color of the review reminder notifications you receive.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-        }
-
-        // MARK: Info Button
-
-        private var infoButton: some View {
-            Button {
-                viewModel.presentSheet(.reviewReminderTypeInfo)
-            } label: {
-                Image(systemName: "info.circle.fill")
+        
+        // MARK: Description
+        
+        private var description: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Choose a review reminder type, which will be reflected in the color of the review reminder notifications you receive.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                
+                Button("Learn More") {
+                    viewModel.presentSheet(.reviewReminderTypeInfo)
+                }
+                .font(.subheadline.weight(.semibold))
             }
+            .padding(.horizontal)
         }
     }
 }

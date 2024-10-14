@@ -65,6 +65,7 @@ struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
 
             if let description = configuration.description {
                 description
+                    .layoutPriority(1)
             }
 
             configuration.content
@@ -103,6 +104,7 @@ struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
 
                 if let description = configuration.description {
                     description
+                        .layoutPriority(1)
                 }
             }
             .padding()

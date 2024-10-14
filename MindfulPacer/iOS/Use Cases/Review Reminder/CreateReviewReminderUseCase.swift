@@ -10,7 +10,7 @@ import SwiftData
 
 protocol CreateReviewReminderUseCase {
     func execute(
-        measurementType: ReviewReminder.MeasurementType,
+        measurementType: MeasurementType,
         reviewReminderType: ReviewReminder.ReviewReminderType,
         threshold: Int,
         interval: ReviewReminder.Interval
@@ -27,7 +27,7 @@ class DefaultCreateReviewReminderUseCase: CreateReviewReminderUseCase {
     }
 
     func execute(
-        measurementType: ReviewReminder.MeasurementType,
+        measurementType: MeasurementType,
         reviewReminderType: ReviewReminder.ReviewReminderType,
         threshold: Int,
         interval: ReviewReminder.Interval

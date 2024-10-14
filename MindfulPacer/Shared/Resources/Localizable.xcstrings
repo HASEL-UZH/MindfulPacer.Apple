@@ -4,7 +4,13 @@
     "--" : {
       "shouldTranslate" : false
     },
+    "**Updated:** %@" : {
+
+    },
     "%lld" : {
+
+    },
+    "•" : {
 
     },
     "0" : {
@@ -16,15 +22,8 @@
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
 
     },
-    "Above %lld %@ for %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Above %1$lld %2$@ for %3$@"
-          }
-        }
-      }
+    "Analytics" : {
+
     },
     "Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these." : {
 
@@ -96,6 +95,9 @@
     "From" : {
 
     },
+    "Goal" : {
+
+    },
     "Home" : {
 
     },
@@ -105,7 +107,13 @@
     "Interval" : {
 
     },
+    "Learn More" : {
+
+    },
     "Measurement Type" : {
+
+    },
+    "Min Value" : {
 
     },
     "MindfulPacer" : {
@@ -126,6 +134,9 @@
     "MindfulPacer only processes raw data from your Apple Watch and your diary entries, and does **NOT** make automated recommendations." : {
 
     },
+    "MindfulPacer Version %@" : {
+
+    },
     "Modify Filters" : {
 
     },
@@ -133,6 +144,9 @@
 
     },
     "New Review" : {
+
+    },
+    "No data" : {
 
     },
     "No Interval Selected" : {
@@ -201,13 +215,25 @@
     "Set a threshold that triggers a reminder when reached for a specified interval." : {
 
     },
+    "Settings" : {
+
+    },
+    "Share this report to help us troubleshoot issues." : {
+
+    },
     "Skip" : {
 
     },
     "Sorting" : {
 
     },
+    "Start" : {
+
+    },
     "steps" : {
+
+    },
+    "Steps" : {
 
     },
     "Subcategories" : {
@@ -225,10 +251,7 @@
     "Summary of your review reminders." : {
 
     },
-    "Tap the **+** button to create a review reminder." : {
-
-    },
-    "Tap the **+** button to create a review." : {
+    "System Report" : {
 
     },
     "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a review reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick review when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
@@ -252,6 +275,9 @@
     "Threshold" : {
 
     },
+    "Time" : {
+
+    },
     "To" : {
 
     },
@@ -264,13 +290,26 @@
     "Unable to Send Notification" : {
 
     },
+    "Value" : {
+
+    },
+    "Visualise your %@ data within the last %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Visualise your %1$@ data within the last %2$@."
+          }
+        }
+      }
+    },
     "When in doubt, please contact an experienced physician, personal trainer or other qualified professional." : {
 
     },
     "When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you." : {
 
     },
-    "You can reach out to the following email address in case you have further questions: mindfulpacer@outlook.com" : {
+    "You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch" : {
 
     },
     "You can write anything here" : {
