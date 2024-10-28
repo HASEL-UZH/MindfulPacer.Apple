@@ -56,6 +56,7 @@ struct RootView: View {
                 }
                 .tag(Tab.settings)
         }
+        .preferredColorScheme(viewModel.colorScheme)
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)
         }

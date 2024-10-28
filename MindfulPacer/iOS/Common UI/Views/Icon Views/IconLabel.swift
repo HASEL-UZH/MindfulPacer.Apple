@@ -21,6 +21,7 @@ struct IconLabelStyleConfiguration {
     let textColor: Color?
     let iconColor: Color?
     let labelColor: Color?
+    let descriptionTextColor: Color?
     let symbolVariant: SymbolVariants
     let symbolRenderingMode: SymbolRenderingMode
     let background: Bool
@@ -65,7 +66,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                                 .truncationMode(.middle)
                             Text(description)
                                 .font(.subheadline)
-                                .foregroundStyle(Color.secondary)
+                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary) // Use descriptionTextColor
                         }
                     } else {
                         Text(configuration.title)
@@ -98,7 +99,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                                 .truncationMode(.middle)
                             Text(description)
                                 .font(.subheadline)
-                                .foregroundStyle(Color.secondary)
+                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary) // Use descriptionTextColor
                         }
                     } else {
                         Text(configuration.title)
@@ -180,6 +181,7 @@ struct IconLabel: View {
     var textColor: Color?
     var iconColor: Color?
     var labelColor: Color?
+    var descriptionTextColor: Color?
     var symbolVariant: SymbolVariants = .fill
     var symbolRenderingMode: SymbolRenderingMode = .monochrome
     var background: Bool = false
@@ -195,6 +197,7 @@ struct IconLabel: View {
             textColor: textColor,
             iconColor: iconColor,
             labelColor: labelColor,
+            descriptionTextColor: descriptionTextColor,
             symbolVariant: symbolVariant,
             symbolRenderingMode: symbolRenderingMode,
             background: background,

@@ -118,6 +118,23 @@ extension UseCasesContainer {
         self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
+    // MARK: - Settings
+    
+    @MainActor
+    var fetchThemeUseCase: Factory<FetchThemeUseCase> {
+        self { DefaultFetchThemeUseCase() }
+    }
+    
+    @MainActor
+    var listenToThemeChangesUseCase: Factory<ListenToThemeChangesUseCase> {
+        self { DefaultListenToThemeChangesUseCase() }
+    }
+    
+    @MainActor
+    var setThemeUseCase: Factory<SetThemeUseCase> {
+        self { DefaultSetThemeUseCase() }
+    }
+    
     // MARK: - System
 
     @MainActor

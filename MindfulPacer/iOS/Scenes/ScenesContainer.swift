@@ -66,7 +66,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
                 checkUserHasSeenOnboardingUseCase: UseCasesContainer.shared.checkUserHasSeenOnboardingUseCase(),
-                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
+                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase(),
+                listenToThemeChangesUseCase: UseCasesContainer.shared.listenToThemeChangesUseCase()
             )
         }
     }
@@ -113,7 +114,10 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
-            SettingsViewModel()
+            SettingsViewModel(
+                fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),
+                setThemeUseCase: UseCasesContainer.shared.setThemeUseCase()
+            )
         }
     }
 }

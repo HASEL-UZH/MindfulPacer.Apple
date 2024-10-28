@@ -49,6 +49,7 @@ enum ReviewSorting {
 @MainActor
 @Observable
 class ReviewsFilterViewModel {
+    
     // MARK: - Dependencies
 
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase

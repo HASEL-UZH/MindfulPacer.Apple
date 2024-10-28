@@ -19,6 +19,10 @@ enum SettingsSheet: Identifiable {
     }
 }
 
+enum SettingsNavigationDestination: Hashable {
+    case theme
+}
+
 // MARK: - SettingsView
 
 struct SettingsView: View {
@@ -30,12 +34,18 @@ struct SettingsView: View {
     // MARK: Body
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
                 Section {
                     viewOnboarding
                 } header: {
                     sectionHeader(title: "General")
+                }
+                
+                Section {
+                    theme
+                } header: {
+                    sectionHeader(title: "Appearance")
                 }
                 
                 Section {
@@ -49,9 +59,25 @@ struct SettingsView: View {
                 appVersion
             }
             .navigationTitle("Settings")
+            .navigationDestination(for: SettingsNavigationDestination.self) { destination in
+                navigationDestination(for: destination)
+            }
             .sheet(item: $viewModel.activeSheet) { sheet in
                 sheetContent(for: sheet)
             }
+            .onAppear {
+                viewModel.onViewAppear()
+            }
+        }
+    }
+    
+    // MARK: Navigation Destination
+
+    @ViewBuilder
+    private func navigationDestination(for destination: SettingsNavigationDestination) -> some View {
+        switch destination {
+        case .theme:
+            ThemeSettingsView(viewModel: viewModel)
         }
     }
     
@@ -81,6 +107,20 @@ struct SettingsView: View {
         Text(title)
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)
+    }
+    
+    // MARK: Theme
+    
+    private var theme: some View {
+        NavigationLink(value: SettingsNavigationDestination.theme) {
+            settingsCell(
+                icon: "circle.lefthalf.striped.horizontal.inverse",
+                title: "Theme",
+                description: "Change the app theme",
+                accessoryIndicatorText: viewModel.selectedTheme.rawValue,
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
     }
     
     // MARK: Support
@@ -161,6 +201,7 @@ struct SettingsView: View {
         icon: String,
         title: String,
         description: String? = nil,
+        accessoryIndicatorText: String? = nil,
         accessoryIndicatorIcon: String? = nil
     ) -> some View {
         HStack {
@@ -175,9 +216,17 @@ struct SettingsView: View {
             
             Spacer()
             
-            if let accessoryIndicatorIcon {
-                Icon(name: accessoryIndicatorIcon, color: Color(.systemGray2))
-                    .font(.subheadline.weight(.semibold))
+            HStack(spacing: 4) {
+                if let accessoryIndicatorText {
+                    Text(accessoryIndicatorText)
+                        .foregroundStyle(Color(.systemGray2))
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                
+                if let accessoryIndicatorIcon {
+                    Icon(name: accessoryIndicatorIcon, color: Color(.systemGray2))
+                        .font(.subheadline.weight(.semibold))
+                }
             }
         }
         .padding()
