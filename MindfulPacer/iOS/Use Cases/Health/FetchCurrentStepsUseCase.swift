@@ -21,10 +21,9 @@ final class DefaultFetchCurrentStepsUseCase: FetchCurrentStepsUseCase {
     }
 
     func execute(completion: @escaping @Sendable (Result<(stepCount: Double, timestamp: Date), Error>) -> Void) {
-        HealthKitService.shared.fetchCurrentMeasurement(for: .steps) { result in
+        healthKitService.fetchCurrentMeasurement(for: .steps) { result in
             switch result {
-            case .success(let stepCount):
-                let timestamp = Date()
+            case .success(let (stepCount, timestamp)):
                 completion(.success((stepCount: stepCount, timestamp: timestamp)))
             case .failure(let error):
                 completion(.failure(error))

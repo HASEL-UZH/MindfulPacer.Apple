@@ -9,14 +9,57 @@ import CocoaLumberjackSwift
 import Foundation
 import MessageUI
 
+// MARK: - Theme
+
+enum Theme: String, CaseIterable, Identifiable {
+    case system = "System"
+    case light = "Light"
+    case dark = "Dark"
+    
+    var id: Self { self }
+    
+    var icon: String {
+        switch self {
+        case .system:
+            "circle.lefthalf.filled.righthalf.striped.horizontal.inverse"
+        case .light:
+            "sun.min"
+        case .dark:
+            "moon"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .system:
+            "Use the same setting as your device"
+        case .light:
+            "Always use light mode"
+        case .dark:
+            "Always use dark mode"
+        }
+    }
+}
+
+// MARK: - SettingsViewModel
+
 @MainActor
 @Observable
 class SettingsViewModel {
     
+    // MARK: - Dependencies
+    
+    private let fetchThemeUseCase: FetchThemeUseCase
+    private let setThemeUseCase: SetThemeUseCase
+    
     // MARK: - Published Properties
     
+    var navigationPath: [SettingsNavigationDestination] = []
     var activeSheet: SettingsSheet?
+    
     var mailResult: Result<MFMailComposeResult, Error>?
+    
+    var selectedTheme: Theme = .system
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -82,12 +125,19 @@ class SettingsViewModel {
     
     // MARK: - Initialization
     
-    init() {
+    init(
+        fetchThemeUseCase: FetchThemeUseCase,
+        setThemeUseCase: SetThemeUseCase
+    ) {
+        self.fetchThemeUseCase = fetchThemeUseCase
+        self.setThemeUseCase = setThemeUseCase
     }
     
     // MARK: - View Events
     
-    func onViewAppear() {}
+    func onViewAppear() {
+        fetchCurrentSettings()
+    }
     
     // MARK: - Presentation
     
@@ -106,5 +156,16 @@ class SettingsViewModel {
         Model Name: \(modelName)
         Model Identifier: \(modelIdentifier)
         """
+    }
+    
+    func setTheme(to theme: Theme) {
+        setThemeUseCase.execute(theme: theme)
+        selectedTheme = theme
+    }
+    
+    // MARK: - Private Methods
+    
+    private func fetchCurrentSettings() {
+        selectedTheme = fetchThemeUseCase.execute()
     }
 }

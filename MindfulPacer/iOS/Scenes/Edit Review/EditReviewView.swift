@@ -16,10 +16,12 @@ enum EditReviewNavigationDestination: Hashable {
 }
 
 enum EditReviewSheet: Identifiable {
-    case ratingSheet
-
+    case symptomValueView(Symptom)
+    
     var id: Int {
-        hashValue
+        switch self {
+        case .symptomValueView: 0
+        }
     }
 }
 
@@ -60,7 +62,8 @@ struct EditReviewView: View {
                         }
 
                         mood
-                        ratings(width: proxy.size.width / 2)
+                        wellBeing
+                        symptoms(width: proxy.size.width / 2)
                         triggerCrash
                         additionalInformation
 
@@ -139,26 +142,32 @@ struct EditReviewView: View {
     }
 
     // MARK: Sheet Content
-
+    
     @ViewBuilder
     private func sheetContent(for sheet: EditReviewSheet) -> some View {
         switch sheet {
-        case .ratingSheet:
-            if let ratingType = viewModel.currentRatingType,
-               let rating = viewModel.ratings.first(where: { $0.type == ratingType }) {
-
-                RatingSelectionView(
-                    rating: rating,
-                    onRatingSelected: { value in
-                        viewModel.setRating(for: ratingType, with: value)
-                    }
-                )
-                .presentationDetents([.height(220)])
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
-            } else {
-                AnyView(EmptyView())
+        case .symptomValueView(let symptom):
+            Group {
+                switch symptom {
+                case .wellBeing:
+                    SymptomValueView(symptom: $viewModel.wellBeing)
+                case .fatigue:
+                    SymptomValueView(symptom: $viewModel.fatigue)
+                case .shortnessOfBreath:
+                    SymptomValueView(symptom: $viewModel.shortnessOfBreath)
+                case .sleepDisorder:
+                    SymptomValueView(symptom: $viewModel.sleepDisorder)
+                case .cognitiveImpairment:
+                    SymptomValueView(symptom: $viewModel.cognitiveImpairment)
+                case .physicalPain:
+                    SymptomValueView(symptom: $viewModel.physicalPain)
+                case .depressionOrAnxiety:
+                    SymptomValueView(symptom: $viewModel.depressionOrAnxiety)
+                }
             }
+            .presentationDetents([.height(220)])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(16)
         }
     }
 
@@ -310,31 +319,67 @@ struct EditReviewView: View {
         }
     }
 
-    // MARK: Ratings
+    // MARK: Well Being
+    
+    private var wellBeing: some View {
+        Button {
+            viewModel.presentSymptomValueSheet(for: .wellBeing(nil))
+        } label: {
+            Card {
+                HStack {
+                    IconLabel(
+                        icon: viewModel.wellBeing.icon,
+                        title: viewModel.wellBeing.displayName,
+                        labelColor: Color("BrandPrimary"),
+                        background: true
+                    )
+                    .font(.subheadline.weight(.semibold))
+                 
+                    Spacer()
+                    
+                    Text(viewModel.wellBeing.description)
+                        .foregroundColor(viewModel.wellBeing.description == "Not Set" ? Color(.systemGray2) : viewModel.wellBeing.color)
+                }
+            }
+        }
+    }
+    
+    // MARK: Symptoms
 
-    @ViewBuilder private func ratings(width: CGFloat) -> some View {
+    @ViewBuilder private func symptoms(width: CGFloat) -> some View {
         LazyVGrid(
             columns: Array(repeating: GridItem(spacing: 16), count: 2),
             spacing: 16
         ) {
-            ForEach(viewModel.ratings, id: \.type) { rating in
-                Button {
-                    viewModel.presentRatingSheet(for: rating.type)
-                } label: {
-                    IconLabelGroupBox(
-                        label: IconLabel(
-                            icon: rating.type.icon,
-                            title: rating.type.name,
-                            labelColor: Color("BrandPrimary"),
-                            background: true,
-                            axis: .vertical
-                        )
-                    ) {
-                        Text(rating.description)
-                            .foregroundColor(rating.description == "Not Set" ? Color(.systemGray2) : rating.color)
-                    }
-                }
-                .frame(maxWidth: width)
+            Group {
+                symptomCard(for: viewModel.fatigue)
+                symptomCard(for: viewModel.shortnessOfBreath)
+                symptomCard(for: viewModel.sleepDisorder)
+                symptomCard(for: viewModel.cognitiveImpairment)
+                symptomCard(for: viewModel.physicalPain)
+                symptomCard(for: viewModel.depressionOrAnxiety)
+            }
+            .frame(maxWidth: width)
+        }
+    }
+    
+    // MARK: Symptom Card
+    
+    @ViewBuilder private func symptomCard(for symptom: Symptom) -> some View {
+        Button {
+            viewModel.presentSymptomValueSheet(for: symptom)
+        } label: {
+            IconLabelGroupBox(
+                label: IconLabel(
+                    icon: symptom.icon,
+                    title: symptom.displayName,
+                    labelColor: Color("BrandPrimary"),
+                    background: true,
+                    axis: .vertical
+                )
+            ) {
+                Text(symptom.description)
+                    .foregroundColor(symptom.description == "Not Set" ? Color(.systemGray2) : symptom.color)
             }
         }
     }

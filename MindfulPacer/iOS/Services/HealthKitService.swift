@@ -7,7 +7,6 @@
 
 import Foundation
 import HealthKit
-import CocoaLumberjackSwift
 
 // MARK: - Period
 
@@ -49,7 +48,7 @@ enum Period: String, CaseIterable {
 protocol HealthKitServiceProtocol {
     func requestAuthorization(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void)
     func fetchMeasurementData(for period: Period, measurementType: MeasurementType, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void)
-    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void)
+    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<(value: Double, timestamp: Date), HealthKitError>) -> Void)
 }
 
 // MARK: - HealthKitService
@@ -61,9 +60,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     init() {
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
-            DDLogInfo("HealthKitService initialized and HealthKit is available")
-        } else {
-            DDLogWarn("HealthKit is not available on this device")
         }
     }
     
@@ -73,9 +69,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
               let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
             let error = HealthKitError(type: .healthDataUnavailable)
-            DDLogError("Health data unavailable: heart rate or step count types are missing")
             
-            // Run completion explicitly on the main thread.
             DispatchQueue.main.async {
                 completion(false, error)
             }
@@ -90,14 +84,11 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             DispatchQueue.main.async {
                 if let error = error {
                     let customError = HealthKitError(type: .unknownError, underlyingError: error)
-                    DDLogError("HealthKit authorization failed: \(error.localizedDescription)")
                     completion(false, customError)
                 } else if !success {
                     let deniedError = HealthKitError(type: .permissionDenied)
-                    DDLogWarn("HealthKit authorization denied by user")
                     completion(false, deniedError)
                 } else {
-                    DDLogInfo("HealthKit authorization granted")
                     completion(true, nil)
                 }
             }
@@ -109,7 +100,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     func fetchMeasurementData(for period: Period, measurementType: MeasurementType, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
         guard let quantityTypeIdentifier = measurementType.quantityTypeIdentifier,
               let quantityType = HKObjectType.quantityType(forIdentifier: quantityTypeIdentifier) else {
-            DDLogError("\(measurementType.rawValue) data type unavailable")
             completion(.failure(HealthKitError(type: .healthDataUnavailable)))
             return
         }
@@ -118,7 +108,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, results, error in
             if let error = error {
-                DDLogError("Failed to fetch \(measurementType.rawValue) data: \(error.localizedDescription)")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
@@ -126,7 +115,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
             
             guard let samples = results as? [HKQuantitySample] else {
-                DDLogError("Failed to cast fetched \(measurementType.rawValue) data to HKQuantitySample")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
@@ -135,7 +123,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             
             let aggregatedSamples = self.aggregateSamples(samples, for: period, measurementType: measurementType)
             
-            DDLogInfo("Successfully fetched and aggregated \(aggregatedSamples.count) \(measurementType.rawValue) samples")
             completion(.success(aggregatedSamples))
         }
         
@@ -144,43 +131,45 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     
     // MARK: - Fetch Current Measurement Value
     
-    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<Double, HealthKitError>) -> Void) {
+    func fetchCurrentMeasurement(for measurementType: MeasurementType, completion: @escaping @Sendable (Result<(value: Double, timestamp: Date), HealthKitError>) -> Void) {
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: measurementType == .steps ? .stepCount : .heartRate) else {
-            DDLogError("\(measurementType.rawValue) data type unavailable")
             completion(.failure(HealthKitError(type: .healthDataUnavailable)))
             return
         }
         
+        // Define the time range as starting from the beginning of today until now
         let startOfDay = Calendar.current.startOfDay(for: Date())
-        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictEndDate)
-        let queryOptions: HKStatisticsOptions = (measurementType == .steps) ? .cumulativeSum : .discreteAverage
+        let endOfDay = Date()
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: endOfDay, options: .strictEndDate)
         
-        let query = HKStatisticsQuery(quantityType: quantityType, quantitySamplePredicate: predicate, options: queryOptions) { _, result, error in
+        let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]) { _, results, error in
             if let error = error {
-                DDLogError("Failed to fetch \(measurementType.rawValue) data: \(error.localizedDescription)")
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
             
-            guard let result = result else {
-                DDLogError("Failed to fetch \(measurementType.rawValue) or result is nil")
+            guard let samples = results as? [HKQuantitySample], !samples.isEmpty else {
                 Task { @MainActor in
                     completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
             
-            let value: Double
-            if measurementType == .steps {
-                value = result.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
-            } else {
-                value = result.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) ?? 0
+            switch measurementType {
+            case .steps:
+                // Aggregate steps count and get the timestamp of the last recorded sample
+                let totalSteps = samples.reduce(0) { $0 + $1.quantity.doubleValue(for: HKUnit.count()) }
+                let lastTimestamp = samples.first!.endDate  // Latest sample is at index 0 due to descending sort
+                completion(.success((totalSteps, lastTimestamp)))
+                
+            case .heartRate:
+                // Return the latest heart rate value and its timestamp
+                let latestHeartRate = samples.first!.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                let lastTimestamp = samples.first!.endDate
+                completion(.success((latestHeartRate, lastTimestamp)))
             }
-            
-            DDLogInfo("Successfully fetched current \(measurementType.rawValue) value: \(value)")
-            completion(.success(value))
         }
         
         healthStore?.execute(query)
@@ -189,13 +178,12 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     // MARK: - Aggregate Samples
     
     private func aggregateSamples(_ samples: [HKQuantitySample], for period: Period, measurementType: MeasurementType) -> [HKQuantitySample] {
-        var groupedSamples: [Date: Double] = [:]
+        var groupedSamples: [Date: [Double]] = [:]
         let calendar = Calendar.current
         
         for sample in samples {
             var normalizedDate: Date
             
-            // For different periods, aggregate by minute, hour, or day
             if period == .oneHour || period == .twoHours {
                 normalizedDate = calendar.date(bySetting: .minute, value: calendar.component(.minute, from: sample.startDate), of: sample.startDate)!
                 normalizedDate = calendar.date(bySetting: .second, value: 0, of: normalizedDate)!
@@ -209,25 +197,30 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 normalizedDate = sample.startDate
             }
             
-            let currentValue = groupedSamples[normalizedDate] ?? 0
-            
-            switch measurementType {
-            case .steps:
-                groupedSamples[normalizedDate] = currentValue + sample.quantity.doubleValue(for: HKUnit.count())
-            case .heartRate:
-                // Aggregate heart rate by averaging
-                groupedSamples[normalizedDate] = (currentValue + sample.quantity.doubleValue(for: HKUnit(from: "count/min"))) / 2.0
+            // Store values for each normalized date
+            if groupedSamples[normalizedDate] == nil {
+                groupedSamples[normalizedDate] = []
             }
-            
-            print("Normalized Date for Grouping: \(normalizedDate), Updated Value: \(groupedSamples[normalizedDate] ?? 0)")
+            groupedSamples[normalizedDate]?.append(sample.quantity.doubleValue(for: measurementType == .steps ? HKUnit.count() : HKUnit(from: "count/min")))
         }
         
         // Convert the grouped data back to HKQuantitySample-like structures
         var aggregatedSamples: [HKQuantitySample] = []
-        for (normalizedDate, value) in groupedSamples {
+        for (normalizedDate, values) in groupedSamples {
+            let aggregatedValue: Double
+            
+            switch measurementType {
+            case .steps:
+                // Sum steps
+                aggregatedValue = values.reduce(0, +)
+            case .heartRate:
+                // Average heart rate
+                aggregatedValue = values.reduce(0, +) / Double(values.count)
+            }
+            
             let sample = HKQuantitySample(
                 type: HKQuantityType.quantityType(forIdentifier: measurementType == .steps ? .stepCount : .heartRate)!,
-                quantity: HKQuantity(unit: measurementType == .steps ? HKUnit.count() : HKUnit(from: "count/min"), doubleValue: value),
+                quantity: HKQuantity(unit: measurementType == .steps ? HKUnit.count() : HKUnit(from: "count/min"), doubleValue: aggregatedValue),
                 start: normalizedDate,
                 end: normalizedDate
             )

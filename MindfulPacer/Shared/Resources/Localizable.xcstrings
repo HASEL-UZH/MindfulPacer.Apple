@@ -269,6 +269,9 @@
     "The review reminder that triggered this review." : {
 
     },
+    "Theme" : {
+
+    },
     "This allows you to add a new review reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
@@ -291,6 +294,9 @@
 
     },
     "Value" : {
+
+    },
+    "View Options" : {
 
     },
     "Visualise your %@ data within the last %@." : {

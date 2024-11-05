@@ -16,12 +16,13 @@ protocol SaveReviewUseCase {
         newSubcategory: Subcategory?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
-        newPerceivedEnergyLevelRating: Int?,
-        newHeadachesRating: Int?,
-        newShortnessOfBreatheRating: Int?,
-        newFeverRating: Int?,
-        newPainsAndNeedlesRating: Int?,
-        newMuscleAchesRating: Int?,
+        newWellBeing: Symptom?,
+        newFatigue: Symptom?,
+        newShortnessOfBreath: Symptom?,
+        newSleepDisorder: Symptom?,
+        newCognitiveImpairment: Symptom,
+        newPhysicalPain: Symptom?,
+        newDepressionOrAnxiety: Symptom?,
         newAdditionalInformation: String
     ) -> Result<Review, Error>
 }
@@ -30,11 +31,11 @@ protocol SaveReviewUseCase {
 
 class DefaultSaveReviewUseCase: SaveReviewUseCase {
     private let modelContext: ModelContext
-
+    
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-
+    
     func execute(
         existingReview: Review,
         newDate: Date,
@@ -42,27 +43,29 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         newSubcategory: Subcategory?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
-        newPerceivedEnergyLevelRating: Int?,
-        newHeadachesRating: Int?,
-        newShortnessOfBreatheRating: Int?,
-        newFeverRating: Int?,
-        newPainsAndNeedlesRating: Int?,
-        newMuscleAchesRating: Int?,
+        newWellBeing: Symptom?,
+        newFatigue: Symptom?,
+        newShortnessOfBreath: Symptom?,
+        newSleepDisorder: Symptom?,
+        newCognitiveImpairment: Symptom,
+        newPhysicalPain: Symptom?,
+        newDepressionOrAnxiety: Symptom?,
         newAdditionalInformation: String
-    ) -> Result<Review, any Error> {
+    ) -> Result<Review, Error> {
         existingReview.date = newDate
         existingReview.category = newCategory
         existingReview.subcategory = newSubcategory
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
-        existingReview.perceivedEnergyLevelRating = newPerceivedEnergyLevelRating
-        existingReview.headachesRating = newHeadachesRating
-        existingReview.shortnessOfBreatheRating = newShortnessOfBreatheRating
-        existingReview.feverRating = newFeverRating
-        existingReview.painsAndNeedlesRating = newPainsAndNeedlesRating
-        existingReview.muscleAchesRating = newMuscleAchesRating
+        existingReview.wellBeing = newWellBeing
+        existingReview.fatigue = newFatigue
+        existingReview.shortnessOfBreath = newShortnessOfBreath
+        existingReview.sleepDisorder = newSleepDisorder
+        existingReview.cognitiveImpairment = newCognitiveImpairment
+        existingReview.physicalPain = newPhysicalPain
+        existingReview.depressionOrAnxiety = newDepressionOrAnxiety
         existingReview.additionalInformation = newAdditionalInformation
-
+        
         do {
             try modelContext.save()
             return .success(existingReview)
