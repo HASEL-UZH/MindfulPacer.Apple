@@ -15,12 +15,13 @@ protocol CreateReviewUseCase {
         subcategory: Subcategory?,
         mood: Mood?,
         didTriggerCrash: Bool,
-        perceivedEnergyLevelRating: Int?,
-        headachesRating: Int?,
-        shortnessOfBreatheRating: Int?,
-        feverRating: Int?,
-        painsAndNeedlesRating: Int?,
-        muscleAchesRating: Int?,
+        wellBeing: Symptom?,
+        fatigue: Symptom?,
+        shortnessOfBreath: Symptom?,
+        sleepDisorder: Symptom?,
+        cognitiveImpairment: Symptom?,
+        physicalPain: Symptom?,
+        depressionOrAnxiety: Symptom?,
         additionalInformation: String,
         measurementType: ReviewReminder.MeasurementType?,
         reviewReminderType: ReviewReminder.ReviewReminderType?,
@@ -33,23 +34,24 @@ protocol CreateReviewUseCase {
 
 class DefaulCreateReviewUseCase: CreateReviewUseCase {
     private let modelContext: ModelContext
-
+    
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-
+    
     func execute(
         date: Date,
         category: Category?,
         subcategory: Subcategory?,
         mood: Mood?,
         didTriggerCrash: Bool,
-        perceivedEnergyLevelRating: Int?,
-        headachesRating: Int?,
-        shortnessOfBreatheRating: Int?,
-        feverRating: Int?,
-        painsAndNeedlesRating: Int?,
-        muscleAchesRating: Int?,
+        wellBeing: Symptom?,
+        fatigue: Symptom?,
+        shortnessOfBreath: Symptom?,
+        sleepDisorder: Symptom?,
+        cognitiveImpairment: Symptom?,
+        physicalPain: Symptom?,
+        depressionOrAnxiety: Symptom?,
         additionalInformation: String,
         measurementType: ReviewReminder.MeasurementType?,
         reviewReminderType: ReviewReminder.ReviewReminderType?,
@@ -62,21 +64,22 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
             subcategory: subcategory,
             mood: mood,
             didTriggerCrash: didTriggerCrash,
-            perceivedEnergyLevelRating: perceivedEnergyLevelRating,
-            headachesRating: headachesRating,
-            shortnessOfBreatheRating: shortnessOfBreatheRating,
-            feverRating: feverRating,
-            painsAndNeedlesRating: painsAndNeedlesRating,
-            muscleAchesRating: muscleAchesRating,
+            wellBeing: wellBeing,
+            fatigue: fatigue,
+            shortnessOfBreath: shortnessOfBreath,
+            sleepDisorder: sleepDisorder,
+            cognitiveImpairment: cognitiveImpairment,
+            physicalPain: physicalPain,
+            depressionOrAnxiety: depressionOrAnxiety,
             additionalInformation: additionalInformation,
             measurementType: measurementType,
             reviewReminderType: reviewReminderType,
             threshold: threshold,
             interval: interval
         )
-
+        
         modelContext.insert(review)
-
+        
         do {
             try modelContext.save()
             return .success(review)

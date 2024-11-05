@@ -1,20 +1,20 @@
 //
-//  RatingSelectionView.swift
+//  SymptomValueView.swift
 //  iOS
 //
-//  Created by Grigor Dochev on 20.08.2024.
+//  Created by Grigor Dochev on 29.10.2024.
 //
 
 import SwiftUI
 
-// MARK: - RatingSelectionView
+// MARK: - SymptomValueView
 
 extension EditReviewView {
-    struct RatingSelectionView: View {
+    struct SymptomValueView: View {
+        
         // MARK: Properties
 
-        let rating: ReviewMetricRating
-        let onRatingSelected: (Int?) -> Void
+        @Binding var symptom: Symptom
 
         // MARK: Body
 
@@ -22,7 +22,7 @@ extension EditReviewView {
             NavigationStack {
                 VStack {
                     VStack(alignment: .leading, spacing: 16) {
-                        InfoBox(text: "How much did this affect you?")
+                        InfoBox(text: "Report severity of symptom.")
 
                         VStack(spacing: 16) {
                             HStack(spacing: 16) {
@@ -30,21 +30,21 @@ extension EditReviewView {
                                     VStack(spacing: 12) {
                                         SelectableButton(
                                             shape: .circle,
-                                            backgroundColor: rating.color(for: index).opacity(0.1),
+                                            backgroundColor: symptom.color(for: index).opacity(0.1),
                                             selectionColor: Color("BrandPrimary"),
-                                            isSelected: rating.value == index
+                                            isSelected: symptom.value == index
                                         ) {
-                                            onRatingSelected(index)
+                                            symptom.setValue(index)
                                         } label: {
                                             Text("\(index)")
                                                 .fontWeight(.semibold)
-                                                .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
+                                                .foregroundStyle(symptom.value == index ? Color("BrandPrimary") : symptom.color(for: index))
                                         }
                                         .buttonStyle(.plain)
 
-                                        Text(rating.description(for: index))
+                                        Text(symptom.description(for: index))
                                             .font(.footnote.weight(.semibold))
-                                            .foregroundStyle(rating.value == index ? Color("BrandPrimary") : rating.color(for: index))
+                                            .foregroundStyle(symptom.value == index ? Color("BrandPrimary") : symptom.color(for: index))
                                     }
                                 }
                             }
@@ -55,7 +55,7 @@ extension EditReviewView {
                     Spacer()
                 }
                 .background(Color(.systemGroupedBackground).ignoresSafeArea())
-                .navigationTitle(rating.type.name)
+                .navigationTitle(symptom.displayName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -70,13 +70,10 @@ extension EditReviewView {
 // MARK: - Preview
 
 #Preview {
-    @Previewable @State var currentRatingType: ReviewMetricRatingType = ReviewMetricRatingType.energyLevel
+    @Previewable @State var symptom: Symptom = Symptom.wellBeing(nil)
     let viewModel = ScenesContainer.shared.editReviewViewModel()
-
-    EditReviewView.RatingSelectionView(
-        rating: ReviewMetricRating(type: currentRatingType),
-        onRatingSelected: { rating in
-            viewModel.setRating(for: currentRatingType, with: rating)
-        }
+    
+    EditReviewView.SymptomValueView(
+        symptom: .constant(symptom)
     )
 }

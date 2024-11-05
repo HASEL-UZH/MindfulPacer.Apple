@@ -8,7 +8,6 @@
 import Combine
 import Foundation
 import SwiftData
-import CocoaLumberjackSwift
 import SwiftUI
 
 // MARK: - RootViewModel
@@ -23,7 +22,7 @@ class RootViewModel {
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     private let listenToThemeChangesUseCase: ListenToThemeChangesUseCase
-
+    
     // MARK: - Published Properties
     
     var activeSheet: RootSheet?
@@ -46,7 +45,7 @@ class RootViewModel {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
-
+    
     init(
         modelContext: ModelContext,
         addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
@@ -59,57 +58,44 @@ class RootViewModel {
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
         self.listenToThemeChangesUseCase = listenToThemeChangesUseCase
-
-        DDLogInfo("RootViewModel initialized")
-
-        // Listen for theme changes
-        listenForThemeChanges()
     }
-
+    
     // MARK: - View Events
-
+    
     @MainActor
     func onViewFirstAppear() {
-        DDLogInfo("onViewFirstAppear called")
+        listenForThemeChanges()
 
         Task {
-            DDLogInfo("Adding default categories")
             await addDefaultCategoriesUseCase.execute()
-
-            DDLogInfo("Initializing connectivity")
             initializeConnectivityUseCase.execute()
         }
-
+        
         checkIfUserHasSeenOnboarding()
     }
-
+    
     // MARK: - Presentation
-
+    
     func presentSheet(_ sheet: RootSheet) {
-        DDLogInfo("Presenting sheet: \(sheet)")
         activeSheet = sheet
     }
-
+    
     // MARK: - User Actions
     
     func widgetTapped() {
         selectedTab = .analytics
     }
-
+    
     // MARK: - Private Methods
     
     private func checkIfUserHasSeenOnboarding() {
-        DDLogInfo("Checking if user has seen onboarding")
         let hasSeenOnboarding = checkUserHasSeenOnboardingUseCase.execute()
-
+        
         if !hasSeenOnboarding {
-            DDLogInfo("User has not seen onboarding, presenting onboarding sheet")
             presentSheet(.onboardingView)
-        } else {
-            DDLogInfo("User has seen onboarding")
         }
     }
-
+    
     private func listenForThemeChanges() {
         listenToThemeChangesUseCase.execute()
             .receive(on: DispatchQueue.main)

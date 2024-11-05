@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftData
-import CocoaLumberjackSwift
 
 // MARK: - EditReviewViewModel
 
@@ -31,7 +30,6 @@ class EditReviewViewModel {
     var activeSheet: EditReviewSheet?
     var activeAlert: EditReviewAlert?
 
-    var currentRatingType: ReviewMetricRatingType?
     var categories: [Category] = []
 
     var navigationTitle: String {
@@ -42,37 +40,32 @@ class EditReviewViewModel {
             return "Edit Review"
         }
     }
-
+        
     var date: Date = .now
     var selectedCategory: Category? {
         didSet {
             selectedSubcategory = nil
-            DDLogInfo("Selected category changed to \(String(describing: selectedCategory))")
         }
     }
     var selectedMood: Mood?
     var selectedSubcategory: Subcategory?
+    var wellBeing = Symptom.wellBeing(nil)
+    var fatigue = Symptom.fatigue(nil)
+    var shortnessOfBreath = Symptom.shortnessOfBreath(nil)
+    var sleepDisorder = Symptom.sleepDisorder(nil)
+    var cognitiveImpairment = Symptom.cognitiveImpairment(nil)
+    var physicalPain = Symptom.physicalPain(nil)
+    var depressionOrAnxiety = Symptom.depressionOrAnxiety(nil)
     var didTriggerCrash: Bool = false
     var additionalInformation: String = ""
 
-    var ratings: [ReviewMetricRating] = [
-        ReviewMetricRating(type: .headaches),
-        ReviewMetricRating(type: .energyLevel),
-        ReviewMetricRating(type: .shortnessOfBreath),
-        ReviewMetricRating(type: .fever),
-        ReviewMetricRating(type: .painsAndNeedles),
-        ReviewMetricRating(type: .muscleAches)
-    ]
-
     var isActionButtonDisabled: Bool {
         let disabled = selectedCategory == nil
-        DDLogVerbose("Action button is \(disabled ? "disabled" : "enabled")")
         return disabled
     }
 
     var isSaveButtonDisabled: Bool {
         let disabled = selectedCategory == nil
-        DDLogVerbose("Action button is \(disabled ? "disabled" : "enabled")")
         return disabled
     }
 
@@ -92,20 +85,17 @@ class EditReviewViewModel {
         self.deleteReviewUseCase = deleteReviewUseCase
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
         self.saveReviewUseCase = saveReviewUseCase
-        DDLogDebug("EditReviewViewModel initialized")
     }
 
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
-        DDLogInfo("View first appeared, fetching default categories")
         fetchDefaultCategories()
     }
 
     func configureMode(with review: Review?) {
         if let review {
             mode = .edit
-            DDLogInfo("Configured view model for editing review: \(review)")
             loadReview(review)
         }
     }
@@ -121,36 +111,34 @@ class EditReviewViewModel {
                 navigationPath.removeLast()
             }
         }
-        DDLogInfo("Toggled selection of item: \(item), current selection: \(String(describing: selectedItem))")
     }
-
-    func setRating(for type: ReviewMetricRatingType, with value: Int?) {
-        if let index = ratings.firstIndex(where: { $0.type == type }) {
-            if ratings[index].value == value {
-                ratings[index].value = nil
-                presentSheet(.ratingSheet)
-            } else {
-                ratings[index].value = value
-                dismissSheet(.ratingSheet)
-            }
+    
+    func setSymptomValue(for symptom: Symptom, with value: Int?) {
+        switch symptom {
+        case .wellBeing: wellBeing.setValue(value)
+        case .fatigue: fatigue.setValue(value)
+        case .shortnessOfBreath: shortnessOfBreath.setValue(value)
+        case .sleepDisorder: sleepDisorder.setValue(value)
+        case .cognitiveImpairment: cognitiveImpairment.setValue(value)
+        case .physicalPain: physicalPain.setValue(value)
+        case .depressionOrAnxiety: depressionOrAnxiety.setValue(value)
         }
-        DDLogInfo("Set rating for type: \(type) with value: \(String(describing: value))")
     }
-
+    
     func createReview() {
-        DDLogInfo("Creating review with selected data")
         let result = createReviewUseCase.execute(
             date: date,
             category: selectedCategory,
             subcategory: selectedSubcategory,
             mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
-            perceivedEnergyLevelRating: ratings[.energyLevel]?.value,
-            headachesRating: ratings[.headaches]?.value,
-            shortnessOfBreatheRating: ratings[.shortnessOfBreath]?.value,
-            feverRating: ratings[.fever]?.value,
-            painsAndNeedlesRating: ratings[.painsAndNeedles]?.value,
-            muscleAchesRating: ratings[.muscleAches]?.value,
+            wellBeing: wellBeing,
+            fatigue: fatigue,
+            shortnessOfBreath: shortnessOfBreath,
+            sleepDisorder: sleepDisorder,
+            cognitiveImpairment: cognitiveImpairment,
+            physicalPain: physicalPain,
+            depressionOrAnxiety: depressionOrAnxiety,
             additionalInformation: additionalInformation,
             measurementType: nil,
             reviewReminderType: nil,
@@ -160,14 +148,10 @@ class EditReviewViewModel {
 
         if case .failure = result {
             presentAlert(.unableToSaveReview)
-            DDLogError("Failed to create review")
-        } else {
-            DDLogInfo("Review created successfully")
         }
     }
 
     func saveReview(_ review: Review?) {
-        DDLogInfo("Saving review with updated data")
         let result = saveReviewUseCase.execute(
             existingReview: review.unsafelyUnwrapped,
             newDate: date,
@@ -175,31 +159,27 @@ class EditReviewViewModel {
             newSubcategory: selectedSubcategory,
             newMood: selectedMood,
             newDidTriggerCrash: didTriggerCrash,
-            newPerceivedEnergyLevelRating: ratings[1].value,
-            newHeadachesRating: ratings[0].value,
-            newShortnessOfBreatheRating: ratings[2].value,
-            newFeverRating: ratings[3].value,
-            newPainsAndNeedlesRating: ratings[4].value,
-            newMuscleAchesRating: ratings[5].value,
+            newWellBeing: wellBeing,
+            newFatigue: fatigue,
+            newShortnessOfBreath: shortnessOfBreath,
+            newSleepDisorder: sleepDisorder,
+            newCognitiveImpairment: cognitiveImpairment,
+            newPhysicalPain: physicalPain,
+            newDepressionOrAnxiety: depressionOrAnxiety,
             newAdditionalInformation: additionalInformation
         )
-
+        
         if case .failure = result {
             presentAlert(.unableToSaveReview)
-            DDLogError("Failed to save review")
-        } else {
-            DDLogInfo("Review saved successfully")
         }
     }
 
     func deleteReview(_ review: Review?) {
         isReviewDeleted = true
         guard let review else {
-            DDLogWarn("Attempted to delete a nil review")
             return
         }
         deleteReviewUseCase.execute(review: review)
-        DDLogInfo("Review deleted successfully")
     }
     
     func reviewReminderTriggerSummary(for review: Review) -> String {
@@ -219,28 +199,22 @@ class EditReviewViewModel {
     
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
-        DDLogInfo("Navigated to destination: \(destination)")
     }
 
-    func presentRatingSheet(for type: ReviewMetricRatingType) {
-        currentRatingType = type
-        presentSheet(.ratingSheet)
-        DDLogInfo("Presented rating sheet for type: \(type)")
+    func presentSymptomValueSheet(for symptom: Symptom) {
+        presentSheet(.symptomValueView(symptom))
     }
 
     func presentSheet(_ sheet: EditReviewSheet) {
         activeSheet = sheet
-        DDLogInfo("Presented sheet: \(sheet)")
     }
 
     func dismissSheet(_ sheet: EditReviewSheet) {
         activeSheet = nil
-        DDLogInfo("Dismissed sheet: \(sheet)")
     }
 
     func presentAlert(_ alert: EditReviewAlert) {
         activeAlert = alert
-        DDLogInfo("Presented alert: \(alert)")
     }
 
     // MARK: - Private Methods
@@ -248,9 +222,6 @@ class EditReviewViewModel {
     private func fetchDefaultCategories() {
         if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
             categories = fetchedCategories
-            DDLogInfo("Fetched default categories: \(fetchedCategories)")
-        } else {
-            DDLogWarn("Failed to fetch default categories")
         }
     }
 
@@ -259,14 +230,14 @@ class EditReviewViewModel {
         selectedCategory = review.category
         selectedSubcategory = review.subcategory
         selectedMood = review.mood
-        ratings[0] = ReviewMetricRating(type: .headaches, value: review.headachesRating)
-        ratings[1] = ReviewMetricRating(type: .energyLevel, value: review.perceivedEnergyLevelRating)
-        ratings[2] = ReviewMetricRating(type: .shortnessOfBreath, value: review.shortnessOfBreatheRating)
-        ratings[3] = ReviewMetricRating(type: .fever, value: review.feverRating)
-        ratings[4] = ReviewMetricRating(type: .painsAndNeedles, value: review.painsAndNeedlesRating)
-        ratings[5] = ReviewMetricRating(type: .muscleAches, value: review.muscleAchesRating)
+        wellBeing.setValue(review.wellBeing?.value)
+        fatigue.setValue(review.fatigue?.value)
+        shortnessOfBreath.setValue(review.shortnessOfBreath?.value)
+        sleepDisorder.setValue(review.sleepDisorder?.value)
+        cognitiveImpairment.setValue(review.cognitiveImpairment?.value)
+        physicalPain.setValue(review.physicalPain?.value)
+        depressionOrAnxiety.setValue(review.depressionOrAnxiety?.value)
         didTriggerCrash = review.didTriggerCrash
         additionalInformation = review.additionalInformation
-        DDLogInfo("Loaded review: \(review)")
     }
 }

@@ -15,6 +15,7 @@ typealias Review = SchemaV1.Review
 typealias Category = SchemaV1.Category
 typealias Subcategory = SchemaV1.Subcategory
 typealias Mood = Review.Mood
+typealias Symptom = Review.Symptom
 
 // MARK: - Review
 
@@ -27,12 +28,13 @@ extension SchemaV1 {
         @Relationship(inverse: \Subcategory.review) var subcategory: Subcategory?
         var mood: Mood?
         var didTriggerCrash: Bool = false
-        var perceivedEnergyLevelRating: Int?
-        var headachesRating: Int?
-        var shortnessOfBreatheRating: Int?
-        var feverRating: Int?
-        var painsAndNeedlesRating: Int?
-        var muscleAchesRating: Int?
+        var wellBeing: Symptom?
+        var fatigue: Symptom?
+        var shortnessOfBreath: Symptom?
+        var sleepDisorder: Symptom?
+        var cognitiveImpairment: Symptom?
+        var physicalPain: Symptom?
+        var depressionOrAnxiety: Symptom?
         var additionalInformation: String = ""
         // MARK: Review Reminder Properties
         var measurementType: ReviewReminder.MeasurementType?
@@ -47,12 +49,13 @@ extension SchemaV1 {
             subcategory: Subcategory? = nil,
             mood: Mood? = nil,
             didTriggerCrash: Bool = false,
-            perceivedEnergyLevelRating: Int? = 0,
-            headachesRating: Int? = 0,
-            shortnessOfBreatheRating: Int? = 0,
-            feverRating: Int? = 0,
-            painsAndNeedlesRating: Int? = 0,
-            muscleAchesRating: Int? = 0,
+            wellBeing: Symptom?,
+            fatigue: Symptom?,
+            shortnessOfBreath: Symptom?,
+            sleepDisorder: Symptom?,
+            cognitiveImpairment: Symptom?,
+            physicalPain: Symptom?,
+            depressionOrAnxiety: Symptom?,
             additionalInformation: String = "",
             measurementType: ReviewReminder.MeasurementType? = nil,
             reviewReminderType: ReviewReminder.ReviewReminderType? = nil,
@@ -65,12 +68,13 @@ extension SchemaV1 {
             self.subcategory = subcategory
             self.mood = mood
             self.didTriggerCrash = didTriggerCrash
-            self.perceivedEnergyLevelRating = perceivedEnergyLevelRating
-            self.headachesRating = headachesRating
-            self.shortnessOfBreatheRating = shortnessOfBreatheRating
-            self.feverRating = feverRating
-            self.painsAndNeedlesRating = painsAndNeedlesRating
-            self.muscleAchesRating = muscleAchesRating
+            self.wellBeing = wellBeing
+            self.fatigue = fatigue
+            self.shortnessOfBreath = shortnessOfBreath
+            self.sleepDisorder = sleepDisorder
+            self.cognitiveImpairment = cognitiveImpairment
+            self.physicalPain = physicalPain
+            self.depressionOrAnxiety = depressionOrAnxiety
             self.additionalInformation = additionalInformation
             self.measurementType = measurementType
             self.reviewReminderType = reviewReminderType
@@ -143,83 +147,149 @@ extension Review {
     }
 }
 
-// MARK: - ReviewMetricRatingType
+// MARK: - Symptom
 
-enum ReviewMetricRatingType: CaseIterable {
-    case headaches
-    case energyLevel
-    case shortnessOfBreath
-    case fever
-    case painsAndNeedles
-    case muscleAches
-
-    var name: String {
-        switch self {
-        case .headaches: "Headaches"
-        case .energyLevel: "Energy Level"
-        case .shortnessOfBreath: "Shortness of Breathe"
-        case .fever: "Fever"
-        case .painsAndNeedles: "Pains and Needles"
-        case .muscleAches: "Muscle Aches"
+extension Review {
+    enum Symptom: Codable, Equatable {
+        case wellBeing(Int?)
+        case fatigue(Int?)
+        case shortnessOfBreath(Int?)
+        case sleepDisorder(Int?)
+        case cognitiveImpairment(Int?)
+        case physicalPain(Int?)
+        case depressionOrAnxiety(Int?)
+        
+        var value: Int? {
+            switch self {
+            case .wellBeing(let value),
+                 .fatigue(let value),
+                 .shortnessOfBreath(let value),
+                 .sleepDisorder(let value),
+                 .cognitiveImpairment(let value),
+                 .physicalPain(let value),
+                 .depressionOrAnxiety(let value):
+                return value
+            }
         }
-    }
-
-    var icon: String {
-        switch self {
-        case .headaches: "brain.head.profile.fill"
-        case .energyLevel: "bolt.fill"
-        case .shortnessOfBreath: "wind"
-        case .fever: "thermometer.high"
-        case .painsAndNeedles: "flame.fill"
-        case .muscleAches: "figure.rolling"
+        
+        mutating func setValue(_ newValue: Int?) {
+            switch self {
+            case .wellBeing:
+                self = newValue == self.value ? .wellBeing(nil) : .wellBeing(newValue)
+            case .fatigue:
+                self = newValue == self.value ? .fatigue(nil) : .fatigue(newValue)
+            case .shortnessOfBreath:
+                self = newValue == self.value ? .shortnessOfBreath(nil) : .shortnessOfBreath(newValue)
+            case .sleepDisorder:
+                self = newValue == self.value ? .sleepDisorder(nil) : .sleepDisorder(newValue)
+            case .cognitiveImpairment:
+                self = newValue == self.value ? .cognitiveImpairment(nil) : .cognitiveImpairment(newValue)
+            case .physicalPain:
+                self = newValue == self.value ? .physicalPain(nil) : .physicalPain(newValue)
+            case .depressionOrAnxiety:
+                self = newValue == self.value ? .depressionOrAnxiety(nil) : .depressionOrAnxiety(newValue)
+            }
         }
-    }
-}
 
-// MARK: - ReviewMetricRating
-
-struct ReviewMetricRating {
-    let type: ReviewMetricRatingType
-    var value: Int?
-
-    var color: Color {
-        switch value {
-        case 0: .green
-        case 1: .yellow
-        case 2: .orange
-        case 3: .red
-        default: .gray
+        var displayName: String {
+            switch self {
+            case .wellBeing: return "Subjective Well-being"
+            case .fatigue: return "Fatigue"
+            case .shortnessOfBreath: return "Shortness of Breath"
+            case .sleepDisorder: return "Sleep Disorder"
+            case .cognitiveImpairment: return "Cognitive Impairment"
+            case .physicalPain: return "Physical Pain"
+            case .depressionOrAnxiety: return "Depression/Anxiety"
+            }
         }
-    }
-
-    var description: String {
-        return description(for: value)
-    }
-
-    func description(for value: Int?) -> String {
-        switch value {
-        case 0: return "None"
-        case 1: return "Mild"
-        case 2: return "Moderate"
-        case 3: return "Severe"
-        default: return "Not Set"
+        
+        var icon: String {
+            switch self {
+            case .wellBeing: return "cross.fill"
+            case .fatigue: return "flame.fill"
+            case .shortnessOfBreath: return "wind"
+            case .sleepDisorder: return "bed.double.fill"
+            case .cognitiveImpairment: return "brain.head.profile"
+            case .physicalPain: return "figure.rolling"
+            case .depressionOrAnxiety: return "cloud"
+            }
         }
-    }
-
-    func color(for value: Int?) -> Color {
-        switch value {
-        case 0: .green
-        case 1: .yellow
-        case 2: .orange
-        case 3: .red
-        default: .gray
+        
+        var color: Color {
+            switch self {
+            case .wellBeing:
+                return wellBeingColor(for: value)
+            default:
+                return severityColor(for: value)
+            }
         }
-    }
-}
+        
+        var description: String {
+            switch self {
+            case .wellBeing:
+                return wellBeingDescription(for: value)
+            default:
+                return defaultSeverityDescription(for: value)
+            }
+        }
 
-extension Array where Element == ReviewMetricRating {
-    subscript(type: ReviewMetricRatingType) -> ReviewMetricRating? {
-        return first { $0.type == type }
+        func color(for index: Int) -> Color {
+            switch self {
+            case .wellBeing:
+                return wellBeingColor(for: index)
+            default:
+                return severityColor(for: index)
+            }
+        }
+        
+        func description(for index: Int) -> String {
+            switch self {
+            case .wellBeing:
+                return wellBeingDescription(for: index)
+            default:
+                return defaultSeverityDescription(for: index)
+            }
+        }
+        
+        private func wellBeingDescription(for value: Int?) -> String {
+            switch value {
+            case 0: return "Very Low"
+            case 1: return "Low"
+            case 2: return "High"
+            case 3: return "Very High"
+            default: return "Not Set"
+            }
+        }
+        
+        private func defaultSeverityDescription(for value: Int?) -> String {
+            switch value {
+            case 0: return "Absent"
+            case 1: return "Mild"
+            case 2: return "Moderate"
+            case 3: return "Severe"
+            default: return "Not Set"
+            }
+        }
+        
+        private func wellBeingColor(for value: Int?) -> Color {
+            switch value {
+            case 0: return .red
+            case 1: return .orange
+            case 2: return .yellow
+            case 3: return .green
+            default: return .gray
+            }
+        }
+        
+        private func severityColor(for value: Int?) -> Color {
+            switch value {
+            case 0: return .green
+            case 1: return .yellow
+            case 2: return .orange
+            case 3: return .red
+            default: return .gray
+            }
+        }
     }
 }
 
@@ -277,7 +347,7 @@ struct DefaultCategoryData {
         let sleep = Subcategory(name: "Sleep", icon: "bed.double", category: selfcare)
         let gettingDressed = Subcategory(name: "Getting Dress", icon: "tshirt", category: selfcare)
         let eating = Subcategory(name: "Eating", icon: "fork.knife", category: selfcare)
-        let meditation = Subcategory(name: "Meditation", icon: "apple.meditate", category: selfcare) // FIXME: Might not be able to use this symbol (refers to Apple's meditation in fitness app)
+        let meditation = Subcategory(name: "Meditation", icon: "apple.meditate", category: selfcare)
         let visitingDoctorOrTherapist = Subcategory(name: "Visiting Doctor or Therapist", icon: "cross", category: selfcare)
         let exercising = Subcategory(name: "Exercising", icon: "figure.strengthtraining.traditional", category: selfcare)
         let relaxation = Subcategory(name: "Relaxation", icon: "beach.umbrella", category: selfcare)

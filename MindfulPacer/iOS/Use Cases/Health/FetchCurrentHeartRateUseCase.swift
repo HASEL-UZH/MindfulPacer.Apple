@@ -21,10 +21,9 @@ final class DefaultFetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase {
     }
 
     func execute(completion: @escaping @Sendable (Result<(heartRate: Double, timestamp: Date), Error>) -> Void) {
-        HealthKitService.shared.fetchCurrentMeasurement(for: .heartRate) { result in
+        healthKitService.fetchCurrentMeasurement(for: .heartRate) { result in
             switch result {
-            case .success(let heartRate):
-                let timestamp = Date()
+            case .success(let (heartRate, timestamp)):
                 completion(.success((heartRate: heartRate, timestamp: timestamp)))
             case .failure(let error):
                 completion(.failure(error))

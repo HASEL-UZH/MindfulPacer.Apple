@@ -75,8 +75,8 @@ struct ReviewCell: View {
 
 // MARK: - Preview
 
-#Preview {
-    ReviewCell(review: Review()) {
-
-    }
-}
+//#Preview {
+//    ReviewCell(review: Review()) {
+//
+//    }
+//}

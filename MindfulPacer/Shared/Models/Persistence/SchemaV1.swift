@@ -51,40 +51,6 @@ extension ModelContainer {
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
         do {
-            //            DefaultCategoryData.initializeData()
-//
-//            for category in DefaultCategoryData.categories {
-//                preview.mainContext.insert(category)
-//
-//                if let subcategories = category.subcategories {
-//                    for subcategory in subcategories {
-//                        preview.mainContext.insert(subcategory)
-//                    }
-//                }
-//            }
-//
-//            do {
-//                try preview.mainContext.save()
-//            } catch {
-//                print("Error saving default categories: \(error)")
-//            }
-//
-//            let review = Review(
-//                date: .now,
-////                category: DefaultCategoryData.categories[0],
-////                subcategory: DefaultCategoryData.categories[0].subcategories![0],
-//                mood: "😭",
-//                perceivedEnergyLevelRating: 2,
-//                headachesRating: 1,
-//                shortnessOfBreatheRating: 1,
-//                feverRating: 0,
-//                painsAndNeedlesRating: 3,
-//                muscleAchesRating: 2,
-//                additionalInformation: "This was super tiring!"
-//            )
-//
-//            preview.mainContext.insert(review)
-
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("DEBUG: Failed to initialize ModelContainer.")

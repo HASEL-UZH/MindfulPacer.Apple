@@ -75,21 +75,19 @@ struct AnalyticsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Picker(selection: $viewModel.selectedMeasurementType) {
-                        ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                            Label(
-                                measurementType.rawValue,
-                                systemImage: measurementType.icon
-                            )
+                    Menu {
+                        Picker(selection: $viewModel.selectedMeasurementType) {
+                            ForEach(MeasurementType.allCases, id: \.self) { measurementType in
+                                Label(measurementType.rawValue, systemImage: measurementType.icon)
+                            }
+                        } label: {
+                            Text("Measurement Type")
                         }
+                        .pickerStyle(.menu)
+                        .tint(Color("BrandPrimary"))
                     } label: {
-                        Label(
-                            viewModel.selectedMeasurementType.rawValue,
-                            systemImage: viewModel.selectedMeasurementType.icon
-                        )
-                        
+                        Text("View Options")
                     }
-                    .pickerStyle(.menu)
                     .tint(Color("BrandPrimary"))
                 }
             }
@@ -121,7 +119,12 @@ struct AnalyticsView: View {
                 Button {
                     viewModel.presentSheet(.editReviewView(nil))
                 } label: {
-                    Icon(name: "plus.circle")
+                    IconLabel(
+                        icon: "plus.circle",
+                        title: "Create Review",
+                        labelColor: Color("BrandPrimary")
+                    )
+                    .font(.subheadline.weight(.semibold))
                 }
             }
             .padding(.horizontal)
