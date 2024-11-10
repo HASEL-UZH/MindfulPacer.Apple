@@ -26,6 +26,7 @@ enum SettingsNavigationDestination: Hashable {
 // MARK: - SettingsView
 
 struct SettingsView: View {
+    
     // MARK: Properties
     
     @Environment(\.openURL) private var openURL
@@ -37,6 +38,7 @@ struct SettingsView: View {
         NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
                 Section {
+                    modeOfUse
                     viewOnboarding
                 } header: {
                     sectionHeader(title: "General")
@@ -121,6 +123,24 @@ struct SettingsView: View {
                 accessoryIndicatorIcon: "chevron.right"
             )
         }
+    }
+    
+    // MARK: Mode of Use
+    
+    private var modeOfUse: some View {
+        Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
+            IconLabel(
+                image: Image(.mindfulPacerExpandedIcon),
+                title: "MindfulPacer Expanded",
+                description: "Access all app features",
+                labelColor: Color("BrandPrimary"),
+                background: true
+            )
+            .font(.subheadline.weight(.semibold))
+        }
+        .tint(.brandPrimary)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
     }
     
     // MARK: Support

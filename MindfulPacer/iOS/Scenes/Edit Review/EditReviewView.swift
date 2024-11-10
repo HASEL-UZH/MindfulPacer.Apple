@@ -60,12 +60,18 @@ struct EditReviewView: View {
                                 subcategory
                             }
                         }
-
-                        mood
+                        
+                        if viewModel.modeOfUse == .expanded {
+                            mood
+                        }
+                        
                         wellBeing
-                        symptoms(width: proxy.size.width / 2)
-                        triggerCrash
-                        additionalInformation
+                        
+                        if viewModel.modeOfUse == .expanded {
+                            symptoms(width: proxy.size.width / 2)
+                            triggerCrash
+                            additionalInformation
+                        }
 
                         if !viewModel.isReviewDeleted {
                             reviewReminder
@@ -187,7 +193,7 @@ struct EditReviewView: View {
             MoodView(viewModel: viewModel)
         }
     }
-
+    
     // MARK: Date
 
     private var date: some View {

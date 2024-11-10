@@ -10,6 +10,37 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - ModeOfUse
+
+enum ModeOfUse: String, CaseIterable, Identifiable {
+    case essentials
+    case expanded
+    
+    var id: Self { self }
+    
+    var name: String {
+        self.rawValue.capitalized
+    }
+    
+    var description: String {
+        switch self {
+        case .essentials:
+            "Simpler minified user interface that focuses on comparing perceived energy, pursued activity and biometric data."
+        case .expanded:
+            "Access all app features, including the ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors."
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .essentials:
+            "document"
+        case .expanded:
+            "text.document"
+        }
+    }
+}
+
 // MARK: - RootViewModel
 
 @Observable

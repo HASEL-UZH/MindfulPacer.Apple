@@ -15,7 +15,8 @@ protocol IconLabelStyle {
 }
 
 struct IconLabelStyleConfiguration {
-    let icon: String
+    let icon: String?
+    let image: Image?
     let title: String
     let description: String?
     let textColor: Color?
@@ -66,7 +67,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                                 .truncationMode(.middle)
                             Text(description)
                                 .font(.subheadline)
-                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary) // Use descriptionTextColor
+                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
                         }
                     } else {
                         Text(configuration.title)
@@ -76,6 +77,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                 } icon: {
                     Icon(
                         name: configuration.icon,
+                        image: configuration.image,
                         color: configuration.labelColor ?? configuration.iconColor ?? .primary,
                         variant: configuration.symbolVariant,
                         renderingMode: configuration.symbolRenderingMode,
@@ -86,12 +88,13 @@ struct PlainIconLabelStyle: IconLabelStyle {
                 VStack(alignment: .leading, spacing: 8) {
                     Icon(
                         name: configuration.icon,
+                        image: configuration.image,
                         color: configuration.labelColor ?? configuration.iconColor ?? .primary,
                         variant: configuration.symbolVariant,
                         renderingMode: configuration.symbolRenderingMode,
                         background: configuration.background
                     )
-
+                    
                     if let description = configuration.description {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(configuration.title)
@@ -99,7 +102,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                                 .truncationMode(.middle)
                             Text(description)
                                 .font(.subheadline)
-                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary) // Use descriptionTextColor
+                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
                         }
                     } else {
                         Text(configuration.title)
@@ -126,6 +129,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                 } icon: {
                     Icon(
                         name: configuration.icon,
+                        image: configuration.image,
                         color: configuration.labelColor ?? configuration.iconColor ?? .primary,
                         variant: configuration.symbolVariant,
                         renderingMode: configuration.symbolRenderingMode,
@@ -136,6 +140,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                 VStack(alignment: .leading, spacing: 8) {
                     Icon(
                         name: configuration.icon,
+                        image: configuration.image,
                         color: configuration.labelColor ?? configuration.iconColor ?? .primary,
                         variant: configuration.symbolVariant,
                         renderingMode: configuration.symbolRenderingMode,
@@ -175,7 +180,8 @@ extension EnvironmentValues {
 // MARK: - IconLabel
 
 struct IconLabel: View {
-    var icon: String
+    var icon: String?
+    var image: Image?
     var title: String
     var description: String?
     var textColor: Color?
@@ -192,6 +198,7 @@ struct IconLabel: View {
     var body: some View {
         style.makeBody(configuration: .init(
             icon: icon,
+            image: image,
             title: title,
             description: description,
             textColor: textColor,
@@ -241,11 +248,10 @@ extension View {
         )
         
         IconLabel(
-            icon: "heart.fill",
-            title: "Heart Rate",
-            labelColor: .pink,
-            background: false
+            image: Image(.mindfulPacerIcon),
+            title: "Custom Icon",
+            labelColor: .brandPrimary,
+            background: true
         )
-        .iconLabelStyle(.pill)
     }
 }

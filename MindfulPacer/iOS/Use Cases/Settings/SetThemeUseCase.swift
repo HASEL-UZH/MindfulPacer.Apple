@@ -17,6 +17,6 @@ class DefaultSetThemeUseCase: SetThemeUseCase {
     init() {}
 
     func execute(theme: Theme) {
-        UserDefaults.standard.setValue(theme.rawValue, forKey: "selectedTheme")
+        UserDefaults.standard.setValue(theme.rawValue, forKey: Constants.UserDefaultsKeys.theme)
     }
 }

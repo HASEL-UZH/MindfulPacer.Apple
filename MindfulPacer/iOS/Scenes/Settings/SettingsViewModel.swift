@@ -49,7 +49,9 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
+    private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
     private let fetchThemeUseCase: FetchThemeUseCase
+    private let setModeOfUseUseCase: SetModeOfUseUseCase
     private let setThemeUseCase: SetThemeUseCase
     
     // MARK: - Published Properties
@@ -60,6 +62,9 @@ class SettingsViewModel {
     var mailResult: Result<MFMailComposeResult, Error>?
     
     var selectedTheme: Theme = .system
+    var isExpandedModeOfUseOn: Bool = false {
+        didSet { updateModeOfUse() }
+    }
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -126,10 +131,14 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
+        fetchModeOfUseUseCase: FetchModeOfUseUseCase,
         fetchThemeUseCase: FetchThemeUseCase,
+        setModeOfUseUseCase: SetModeOfUseUseCase,
         setThemeUseCase: SetThemeUseCase
     ) {
+        self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
         self.fetchThemeUseCase = fetchThemeUseCase
+        self.setModeOfUseUseCase = setModeOfUseUseCase
         self.setThemeUseCase = setThemeUseCase
     }
     
@@ -167,5 +176,10 @@ class SettingsViewModel {
     
     private func fetchCurrentSettings() {
         selectedTheme = fetchThemeUseCase.execute()
+        isExpandedModeOfUseOn = fetchModeOfUseUseCase.execute() == .expanded
+    }
+    
+    private func updateModeOfUse() {
+        setModeOfUseUseCase.execute(modeOfUse: isExpandedModeOfUseOn ? .expanded : .essentials)
     }
 }

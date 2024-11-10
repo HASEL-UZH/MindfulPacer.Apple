@@ -52,6 +52,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             OnboardingViewModel(
                 initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase(),
                 requestHealthAuthorisationUseCase: UseCasesContainer.shared.requestHealthAuthorisationUseCase(),
+                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
                 toggleUserHasSeenOnboardingUseCase: UseCasesContainer.shared.toggleUserHasSeenOnboardingUseCase()
             )
         }
@@ -82,6 +83,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
                 deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
+                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
                 saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
             )
         }
@@ -115,7 +117,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
             SettingsViewModel(
+                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
                 fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),
+                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
                 setThemeUseCase: UseCasesContainer.shared.setThemeUseCase()
             )
         }

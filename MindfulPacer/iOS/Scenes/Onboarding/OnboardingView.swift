@@ -15,6 +15,7 @@ enum OnboardingNavigationDestination: Hashable {
     case appleHealth
     case mainFeatures
     case activityPromotingFeatures
+    case modeOfUse
     case disclaimer
 }
 
@@ -63,6 +64,8 @@ struct OnboardingView: View {
             AppleHealthView(viewModel: viewModel)
         case .mainFeatures:
             MainFeaturesView(viewModel: viewModel)
+        case .modeOfUse:
+            ModeOfUseView(viewModel: viewModel)
         case .activityPromotingFeatures:
             ActivityPromotingFeaturesView(viewModel: viewModel)
         case .disclaimer:

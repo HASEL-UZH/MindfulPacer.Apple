@@ -121,6 +121,11 @@ extension UseCasesContainer {
     // MARK: - Settings
     
     @MainActor
+    var fetchModeOfUseUseCase: Factory<FetchModeOfUseUseCase> {
+        self { DefaultFetchModeOfUseUseCase() }
+    }
+    
+    @MainActor
     var fetchThemeUseCase: Factory<FetchThemeUseCase> {
         self { DefaultFetchThemeUseCase() }
     }
@@ -131,8 +136,18 @@ extension UseCasesContainer {
     }
     
     @MainActor
+    var listenToModeOfUseChangesUseCase: Factory<ListenToModeOfUseChangesUseCase> {
+        self { DefaultListenToModeOfUseChangesUseCase() }
+    }
+    
+    @MainActor
     var setThemeUseCase: Factory<SetThemeUseCase> {
         self { DefaultSetThemeUseCase() }
+    }
+    
+    @MainActor
+    var setModeOfUseUseCase: Factory<SetModeOfUseUseCase> {
+        self { DefaultSetModeOfUseUseCase() }
     }
     
     // MARK: - System
