@@ -25,7 +25,7 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .essentials:
-            "Simpler minified user interface that focuses on comparing perceived energy, pursued activity and biometric data."
+            "Simpler minified user interface that focuses on comparing subjective well-being, pursued activity and biometric data."
         case .expanded:
             "Access all app features, including the ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors."
         }
@@ -34,9 +34,9 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
     var icon: String {
         switch self {
         case .essentials:
-            "document"
+            "MindfulPacer Essentials Icon"
         case .expanded:
-            "text.document"
+            "MindfulPacer Expanded Icon"
         }
     }
 }
