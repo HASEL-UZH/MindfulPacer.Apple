@@ -11,6 +11,7 @@ import SwiftUI
 
 extension OnboardingView {
     struct NotificationsView: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: OnboardingViewModel

@@ -22,6 +22,7 @@ enum AnalyticsViewSheet: Identifiable {
 // MARK: - AnalyticsView
 
 struct AnalyticsView: View {
+    
     // MARK: Properties
     
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()

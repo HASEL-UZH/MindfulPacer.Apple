@@ -11,6 +11,7 @@ import SwiftUI
 
 extension HomeView {
     struct ReviewReminderTypeWidget: View {
+        
         // MARK: Body
 
         var body: some View {

@@ -11,6 +11,7 @@ import SwiftUI
 
 extension EditReviewView {
     struct ActivityView: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: EditReviewViewModel

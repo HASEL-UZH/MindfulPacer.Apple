@@ -11,8 +11,13 @@ import SwiftUI
 
 extension OnboardingView {
     struct AppleWatchConnectionView: View {
+        
+        // MARK: Properties
+        
         @Bindable var viewModel: OnboardingViewModel
-
+        
+        // MARK: Body
+        
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -23,13 +28,13 @@ extension OnboardingView {
                             .scaledToFit()
                             .frame(height: 256)
                             .frame(maxWidth: .infinity, alignment: .center)
-
+                        
                         Group {
                             Text("When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you.")
                             Text("MindfulPacer is automatically installed on your Apple Watch.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-
+                        
                         IconLabelGroupBox(
                             label:
                                 IconLabel(
@@ -62,6 +67,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-
+    
     OnboardingView.AppleWatchConnectionView(viewModel: viewModel)
 }

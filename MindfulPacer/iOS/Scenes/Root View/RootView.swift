@@ -28,6 +28,7 @@ enum RootSheet: Identifiable {
 // MARK: - RootView
 
 struct RootView: View {
+    
     // MARK: Properties
     
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()

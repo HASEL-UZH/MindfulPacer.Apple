@@ -11,6 +11,7 @@ import SwiftUI
 
 extension EditReviewView {
     struct SubactivityView: View {
+        
         // MARK: Properties
 
         var activity: Activity

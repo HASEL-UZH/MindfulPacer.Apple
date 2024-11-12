@@ -11,6 +11,7 @@ import SwiftUI
 
 extension OnboardingView {
     struct AppleHealthView: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: OnboardingViewModel

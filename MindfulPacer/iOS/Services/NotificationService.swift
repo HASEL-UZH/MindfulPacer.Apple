@@ -7,7 +7,6 @@
 
 import Foundation
 import UserNotifications
-import CocoaLumberjackSwift
 
 // MARK: - NotificationServiceProtocol
 
@@ -34,14 +33,11 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
         notificationCenter.requestAuthorization(options: options) { granted, error in
             if let error = error {
                 let customError = NotificationError(type: .unknownError, underlyingError: error)
-                DDLogError("Failed to request notification authorization: \(error.localizedDescription)")
                 completion(.failure(customError))
             } else if granted {
-                DDLogInfo("Notification authorization granted")
                 completion(.success(()))
             } else {
                 let deniedError = NotificationError(type: .permissionDenied)
-                DDLogWarn("Notification authorization denied by the user")
                 completion(.failure(deniedError))
             }
         }
@@ -60,10 +56,8 @@ final class NotificationService: NSObject, NotificationServiceProtocol {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 let sendError = NotificationError(type: .failedToSendNotification, underlyingError: error)
-                DDLogError("Failed to send local notification: \(error.localizedDescription)")
                 completion(.failure(sendError))
             } else {
-                DDLogInfo("Local notification triggered successfully with title: \(title)")
                 completion(.success(()))
             }
         }

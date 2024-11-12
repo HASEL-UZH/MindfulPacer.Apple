@@ -5,7 +5,6 @@
 //  Created by Grigor Dochev on 13.09.2024.
 //
 
-import CocoaLumberjackSwift
 import Foundation
 import MessageUI
 
@@ -151,7 +150,6 @@ class SettingsViewModel {
     // MARK: - Presentation
     
     func presentSheet(_ sheet: SettingsSheet) {
-        DDLogInfo("Presenting sheet: \(sheet)")
         activeSheet = sheet
     }
     

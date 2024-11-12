@@ -9,7 +9,6 @@ import Combine
 import Foundation
 import SwiftData
 import SwiftUI
-import CocoaLumberjackSwift
 
 // MARK: - HomeViewModel
 
@@ -72,18 +71,15 @@ class HomeViewModel {
         self.fetchReviewsUseCase = fetchReviewsUseCase
         self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
         self.filterReviewsUseCase = filterReviewsUseCase
-        DDLogInfo("HomeViewModel initialized")
     }
 
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
-        DDLogInfo("onViewFirstAppear called")
         setupBindings()
     }
 
     func onViewAppear() {
-        DDLogInfo("onViewAppear called")
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchReviews()
@@ -91,7 +87,6 @@ class HomeViewModel {
     }
     
     func onSheetDismissed() {
-        DDLogInfo("onSheetDismissed called")
         fetchReviews()
         fetchReviewReminders()
     }
@@ -99,7 +94,6 @@ class HomeViewModel {
     // MARK: - User Actions
 
     func toggleFilterActivity(_ activity: Activity) {
-        DDLogInfo("toggleFilterActivity: \(activity.name)")
         updateFilter {
             if reviewFilter.selectedCategories.contains(activity) {
                 reviewFilter.selectedCategories.removeAll { $0 == activity }
@@ -110,7 +104,6 @@ class HomeViewModel {
     }
 
     func toggleFilterSubactivity(_ subactivity: Subactivity) {
-        DDLogInfo("toggleFilterSubactivity: \(subactivity.name)")
         updateFilter {
             if reviewFilter.selectedSubcategories.contains(subactivity) {
                 reviewFilter.selectedSubcategories.removeAll { $0 == subactivity }
@@ -121,7 +114,6 @@ class HomeViewModel {
     }
 
     func toggleFilterMood(_ mood: Mood) {
-        DDLogInfo("toggleFilterMood: \(mood.emoji)")
         updateFilter {
             if reviewFilter.selectedMoods.contains(mood) {
                 reviewFilter.selectedMoods.removeAll { $0 == mood }
@@ -132,7 +124,6 @@ class HomeViewModel {
     }
 
     func toggleTriggeredCrash() {
-        DDLogInfo("toggleTriggeredCrash")
         updateFilter {
             reviewFilter.triggeredCrash.toggle()
         }
@@ -141,18 +132,15 @@ class HomeViewModel {
     // MARK: - Presentation
 
     func presentSheet(_ sheet: HomeViewSheet) {
-        DDLogInfo("presentSheet: \(sheet)")
         activeSheet = sheet
     }
 
     // MARK: - Private Methods
 
     private func setupBindings() {
-        DDLogInfo("Setting up bindings")
         filterAndSortingPublisher
             .sink { [weak self] newFilter, newSorting in
                 guard let self = self else { return }
-                DDLogInfo("Filter and sorting updated")
                 self.reviewFilter = newFilter
                 self.reviewSorting = newSorting
                 self.applyFilterAndSorting(newFilter, newSorting)
@@ -161,7 +149,6 @@ class HomeViewModel {
     }
 
     private func applyFilterAndSorting(_ filter: ReviewFilter, _ sorting: ReviewSorting) {
-        DDLogInfo("Applying filter and sorting")
         filteredReviews = filterReviewsUseCase.execute(
             reviews: reviews,
             filters: filter,
@@ -170,51 +157,44 @@ class HomeViewModel {
     }
 
     private func updateFilter(_ updateBlock: () -> Void) {
-        DDLogInfo("Updating filter")
         updateBlock()
         filterAndSortingPublisher.send((reviewFilter, reviewSorting))
     }
 
     private func fetchCurrentSteps() {
-        DDLogInfo("Fetching current steps")
         fetchCurrentStepsUseCase.execute { [weak self] result in
             guard let self = self else { return }
             Task { @MainActor in
                 switch result {
                 case .success(let success):
-                    DDLogInfo("Fetched current steps successfully: \(success.stepCount)")
                     self.currentSteps = success
                 case .failure(let failure):
-                    DDLogWarn("Failed to fetch current steps: \(failure.localizedDescription)")
+                    print("Failed to fetch current steps: \(failure.localizedDescription)")
                 }
             }
         }
     }
     
     private func fetchCurrentHeartRate() {
-        DDLogInfo("Fetching current heart rate")
         fetchCurrentHeartRateUseCase.execute { [weak self] result in
             guard let self = self else { return }
             Task { @MainActor in
                 switch result {
                 case .success(let success):
-                    DDLogInfo("Fetched current heart rate successfully: \(success.heartRate)")
                     self.currentHeartRate = success
                 case .failure(let failure):
-                    DDLogWarn("Failed to fetch current heart rate: \(failure.localizedDescription)")
+                    print("Failed to fetch current heart rate: \(failure.localizedDescription)")
                 }
             }
         }
     }
 
     private func fetchReviews() {
-        DDLogInfo("Fetching reviews")
         reviews = fetchReviewsUseCase.execute() ?? []
         applyFilterAndSorting(reviewFilter, reviewSorting)
     }
 
     private func fetchReviewReminders() {
-        DDLogInfo("Fetching review reminders")
         reviewReminders = fetchReviewRemindersUseCase.execute() ?? []
     }
 }

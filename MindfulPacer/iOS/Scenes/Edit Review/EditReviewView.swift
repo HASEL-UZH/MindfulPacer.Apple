@@ -38,6 +38,9 @@ enum EditReviewAlert: Identifiable {
 
 // swiftlint:disable:next type_body_length
 struct EditReviewView: View {
+    
+    // MARK: Properties
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()

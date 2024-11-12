@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - ReviewRemindersListView
 
 struct ReviewRemindersListView: View {
+    
     // MARK: Properties
 
     @Bindable var viewModel: HomeViewModel

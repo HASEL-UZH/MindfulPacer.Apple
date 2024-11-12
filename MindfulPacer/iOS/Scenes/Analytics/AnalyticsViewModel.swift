@@ -66,6 +66,18 @@ class AnalyticsViewModel {
         chartData.map { $0.value }.average
     }
     
+    var emptyStateImage: String {
+        selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis"
+    }
+
+    var emptyStateDescription: String {
+        selectedMeasurementType == .heartRate ? "There is no heart rate data." : "There is no step count data."
+    }
+    
+    var annotationViewFormat: Date.FormatStyle {
+        selectedPeriod == .week ? .dateTime.weekday(.abbreviated).month(.abbreviated).day() : .dateTime.weekday(.abbreviated).hour().minute()
+    }
+    
     // MARK: - Initialization
     
     init(

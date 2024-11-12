@@ -20,6 +20,7 @@ struct ChartDataItem: Identifiable, Equatable {
 
 extension AnalyticsView {
     struct MeasurementChartView: View {
+        
         // MARK: Properties
         
         @Bindable var viewModel: AnalyticsViewModel
@@ -31,9 +32,9 @@ extension AnalyticsView {
             ZStack {
                 if viewModel.chartData.isEmpty {
                     EmptyStateView(
-                        image: viewModel.selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis",
+                        image: viewModel.emptyStateImage,
                         title: "No Data",
-                        description: viewModel.selectedMeasurementType == .heartRate ? "There is no heart rate data." : "There is no step count data."
+                        description: viewModel.emptyStateDescription
                     )
                 } else {
                     Chart {
@@ -161,7 +162,7 @@ extension AnalyticsView {
                             overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
                 ) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(data.date, format: viewModel.selectedPeriod == .week ? .dateTime.weekday(.abbreviated).month(.abbreviated).day() : .dateTime.weekday(.abbreviated).hour().minute())
+                        Text(data.date, format: viewModel.annotationViewFormat)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.secondary)
                         
@@ -187,9 +188,7 @@ extension AnalyticsView {
 #Preview {
     let viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
     
-    AnalyticsView.MeasurementChartView(viewModel: viewModel) { _ in
-        
-    }
+    AnalyticsView.MeasurementChartView(viewModel: viewModel) { _ in }
 }
 
 // Extend Period to provide a rounded start date

@@ -12,6 +12,7 @@ import SwiftUI
 
 // swiftlint:disable:next type_body_length
 struct ReviewsFilterView: View {
+    
     // MARK: Properties
 
     @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()

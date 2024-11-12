@@ -22,6 +22,7 @@ enum OnboardingNavigationDestination: Hashable {
 // MARK: - OnboardingView
 
 struct OnboardingView: View {
+    
     // MARK: Properties
 
     @Environment(\.dismiss) private var dismiss
