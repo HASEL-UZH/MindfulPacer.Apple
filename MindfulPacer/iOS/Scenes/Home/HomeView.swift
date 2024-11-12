@@ -47,7 +47,7 @@ struct HomeView: View {
                     ReviewsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
                     ReviewRemindersWidget(viewModel: viewModel)
-                    ReviewReminderTypeWidget()
+//                    ReviewReminderTypeWidget()
                     Spacer()
                 }
                 .padding(.horizontal)

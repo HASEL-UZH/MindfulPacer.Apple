@@ -24,9 +24,9 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     // TODO: Categories seem to be duplicated, must not be fetching from CloudKit fast enough
     /*
      Potential solution:
-     - Add a timestamp property to each Category which will reflect exactly when it was added
-     - On each app launch check if there are duplicate categories and only keep the category with the earliest timestamp
-     - Before doing that, make sure to update all reviews that may referece a newer duplicate category to now reference the oldest one
+     - Add a timestamp property to each Activity which will reflect exactly when it was added
+     - On each app launch check if there are duplicate categories and only keep the activity with the earliest timestamp
+     - Before doing that, make sure to update all reviews that may referece a newer duplicate activity to now reference the oldest one
      */
     func execute() async {
         if await categoriesExist() {
@@ -38,7 +38,7 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
 
     private func categoriesExist() async -> Bool {
         do {
-            let descriptor = FetchDescriptor<Category>()
+            let descriptor = FetchDescriptor<Activity>()
             let categories = try modelContext.fetch(descriptor)
             return !categories.isEmpty
         } catch {
@@ -49,14 +49,14 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
 
     @MainActor
     private func addDefaultCategories() async {
-        DefaultCategoryData.initializeData()
+        DefaultActivityData.initializeData()
 
-        for category in DefaultCategoryData.categories {
-            modelContext.insert(category)
+        for activity in DefaultActivityData.categories {
+            modelContext.insert(activity)
 
-            if let subcategories = category.subcategories {
-                for subcategory in subcategories {
-                    modelContext.insert(subcategory)
+            if let subcategories = activity.subcategories {
+                for subactivity in subcategories {
+                    modelContext.insert(subactivity)
                 }
             }
         }

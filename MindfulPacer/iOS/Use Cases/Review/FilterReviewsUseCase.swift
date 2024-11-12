@@ -35,14 +35,14 @@ class DefaultFilterReviewsUseCase: FilterReviewsUseCase {
                 return isWithinDateRange
             }
 
-            // Apply Category Filter (match any selected category)
+            // Apply Activity Filter (match any selected activity)
             if !filters.selectedCategories.isEmpty {
-                matches = matches || (review.category.map { filters.selectedCategories.contains($0) } ?? false)
+                matches = matches || (review.activity.map { filters.selectedCategories.contains($0) } ?? false)
             }
 
-            // Apply Subcategory Filter (match any selected subcategory)
+            // Apply Subactivity Filter (match any selected subactivity)
             if !filters.selectedSubcategories.isEmpty {
-                matches = matches || (review.subcategory.map { filters.selectedSubcategories.contains($0) } ?? false)
+                matches = matches || (review.subactivity.map { filters.selectedSubcategories.contains($0) } ?? false)
             }
 
             // Apply Mood Filter (match any selected mood)

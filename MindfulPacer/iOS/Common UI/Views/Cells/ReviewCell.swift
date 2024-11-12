@@ -37,11 +37,11 @@ struct ReviewCell: View {
     private var cellContent: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                if let subcategory = review.subcategory {
-                    IconLabel(icon: subcategory.icon, title: subcategory.name, labelColor: Color.primary)
+                if let subactivity = review.subactivity {
+                    IconLabel(icon: subactivity.icon, title: subactivity.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
-                } else if let category = review.category {
-                    IconLabel(icon: category.icon, title: category.name, labelColor: Color.primary)
+                } else if let activity = review.activity {
+                    IconLabel(icon: activity.icon, title: activity.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
                 }
 

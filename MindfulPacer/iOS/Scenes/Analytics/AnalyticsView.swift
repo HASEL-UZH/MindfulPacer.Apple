@@ -25,7 +25,7 @@ struct AnalyticsView: View {
     // MARK: Properties
     
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
-    
+
     // MARK: Body
     
     var body: some View {
@@ -41,7 +41,7 @@ struct AnalyticsView: View {
                                 background: true
                             ),
                         description:
-                            Text("Visualise your \(viewModel.selectedMeasurementType.rawValue.lowercased()) data within the last \(viewModel.selectedPeriod.description).")
+                            Text("\(viewModel.selectedMeasurementType.rawValue) data within last \(viewModel.selectedPeriod.description).")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     ) {
@@ -74,17 +74,32 @@ struct AnalyticsView: View {
                     .ignoresSafeArea()
             }
             .toolbar {
+                /// Will add back in later when there are more view options
+                //                ToolbarItem(placement: .topBarTrailing) {
+                //                    Menu {
+                //                        Picker(selection: $viewModel.selectedMeasurementType) {
+                //                            ForEach(MeasurementType.allCases, id: \.self) { measurementType in
+                //                                Label(measurementType.rawValue, systemImage: measurementType.icon)
+                //                            }
+                //                        } label: {
+                //                            Text("Measurement Type")
+                //                        }
+                //                        .pickerStyle(.menu)
+                //                        .tint(Color("BrandPrimary"))
+                //                    } label: {
+                //                        Text("View Options")
+                //                    }
+                //                    .tint(Color("BrandPrimary"))
+                //                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Picker(selection: $viewModel.selectedMeasurementType) {
-                            ForEach(MeasurementType.allCases, id: \.self) { measurementType in
+                        ForEach(MeasurementType.allCases, id: \.self) { measurementType in
+                            Button {
+                                viewModel.selectedMeasurementType = measurementType
+                            } label: {
                                 Label(measurementType.rawValue, systemImage: measurementType.icon)
                             }
-                        } label: {
-                            Text("Measurement Type")
                         }
-                        .pickerStyle(.menu)
-                        .tint(Color("BrandPrimary"))
                     } label: {
                         Text("View Options")
                     }
@@ -133,7 +148,7 @@ struct AnalyticsView: View {
                 EmptyStateView(
                     image: "book.pages",
                     title: "No Reviews",
-                    description: "There are no reviews in the selected period."
+                    description: "There are no reviews within the last \(viewModel.selectedPeriod.description)."
                 )
             } else {
                 RoundedList {

@@ -14,8 +14,8 @@ import CocoaLumberjackSwift
 // MARK: - Review Filter & Sorting
 
 struct ReviewFilter: Equatable {
-    var selectedCategories: [Category] = []
-    var selectedSubcategories: [Subcategory] = []
+    var selectedCategories: [Activity] = []
+    var selectedSubcategories: [Subactivity] = []
     var selectedMoods: [Mood] = []
     var triggeredCrash: Bool = false
 
@@ -84,8 +84,8 @@ class ReviewsFilterViewModel {
         )
     }
 
-    var categories: [Category] = []
-    var subcategories: [Subcategory] {
+    var categories: [Activity] = []
+    var subcategories: [Subactivity] {
         categories.flatMap { $0.subcategories ?? [] }
     }
     var reviewFilter = ReviewFilter()
@@ -143,15 +143,15 @@ class ReviewsFilterViewModel {
         }
     }
 
-    func toggleFilterCategory(_ category: Category) {
-        DDLogInfo("toggleFilterCategory called with category: \(category.name)")
-        toggleSelection(in: &reviewFilter.selectedCategories, item: category)
+    func toggleFilterActivity(_ activity: Activity) {
+        DDLogInfo("toggleFilterActivity called with activity: \(activity.name)")
+        toggleSelection(in: &reviewFilter.selectedCategories, item: activity)
         publishChanges()
     }
 
-    func toggleFilterSubcategory(_ subcategory: Subcategory) {
-        DDLogInfo("toggleFilterSubcategory called with subcategory: \(subcategory.name)")
-        toggleSelection(in: &reviewFilter.selectedSubcategories, item: subcategory)
+    func toggleFilterSubactivity(_ subactivity: Subactivity) {
+        DDLogInfo("toggleFilterSubactivity called with subactivity: \(subactivity.name)")
+        toggleSelection(in: &reviewFilter.selectedSubcategories, item: subactivity)
         publishChanges()
     }
 

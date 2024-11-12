@@ -31,7 +31,7 @@ class EditReviewViewModel {
     var activeSheet: EditReviewSheet?
     var activeAlert: EditReviewAlert?
 
-    var categories: [Category] = []
+    var categories: [Activity] = []
 
     var navigationTitle: String {
         switch mode {
@@ -43,13 +43,13 @@ class EditReviewViewModel {
     }
         
     var date: Date = .now
-    var selectedCategory: Category? {
+    var selectedActivity: Activity? {
         didSet {
-            selectedSubcategory = nil
+            selectedSubactivity = nil
         }
     }
     var selectedMood: Mood?
-    var selectedSubcategory: Subcategory?
+    var selectedSubactivity: Subactivity?
     var wellBeing = Symptom.wellBeing(nil)
     var fatigue = Symptom.fatigue(nil)
     var shortnessOfBreath = Symptom.shortnessOfBreath(nil)
@@ -61,12 +61,12 @@ class EditReviewViewModel {
     var additionalInformation: String = ""
 
     var isActionButtonDisabled: Bool {
-        let disabled = selectedCategory == nil
+        let disabled = selectedActivity == nil
         return disabled
     }
 
     var isSaveButtonDisabled: Bool {
-        let disabled = selectedCategory == nil
+        let disabled = selectedActivity == nil
         return disabled
     }
 
@@ -133,8 +133,8 @@ class EditReviewViewModel {
     func createReview() {
         let result = createReviewUseCase.execute(
             date: date,
-            category: selectedCategory,
-            subcategory: selectedSubcategory,
+            activity: selectedActivity,
+            subactivity: selectedSubactivity,
             mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
             wellBeing: wellBeing,
@@ -160,8 +160,8 @@ class EditReviewViewModel {
         let result = saveReviewUseCase.execute(
             existingReview: review.unsafelyUnwrapped,
             newDate: date,
-            newCategory: selectedCategory,
-            newSubcategory: selectedSubcategory,
+            newActivity: selectedActivity,
+            newSubactivity: selectedSubactivity,
             newMood: selectedMood,
             newDidTriggerCrash: didTriggerCrash,
             newWellBeing: wellBeing,
@@ -232,8 +232,8 @@ class EditReviewViewModel {
 
     private func loadReview(_ review: Review) {
         date = review.date
-        selectedCategory = review.category
-        selectedSubcategory = review.subcategory
+        selectedActivity = review.activity
+        selectedSubactivity = review.subactivity
         selectedMood = review.mood
         wellBeing.setValue(review.wellBeing?.value)
         fatigue.setValue(review.fatigue?.value)

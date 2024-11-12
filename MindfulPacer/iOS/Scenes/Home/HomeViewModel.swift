@@ -98,24 +98,24 @@ class HomeViewModel {
 
     // MARK: - User Actions
 
-    func toggleFilterCategory(_ category: Category) {
-        DDLogInfo("toggleFilterCategory: \(category.name)")
+    func toggleFilterActivity(_ activity: Activity) {
+        DDLogInfo("toggleFilterActivity: \(activity.name)")
         updateFilter {
-            if reviewFilter.selectedCategories.contains(category) {
-                reviewFilter.selectedCategories.removeAll { $0 == category }
+            if reviewFilter.selectedCategories.contains(activity) {
+                reviewFilter.selectedCategories.removeAll { $0 == activity }
             } else {
-                reviewFilter.selectedCategories.append(category)
+                reviewFilter.selectedCategories.append(activity)
             }
         }
     }
 
-    func toggleFilterSubcategory(_ subcategory: Subcategory) {
-        DDLogInfo("toggleFilterSubcategory: \(subcategory.name)")
+    func toggleFilterSubactivity(_ subactivity: Subactivity) {
+        DDLogInfo("toggleFilterSubactivity: \(subactivity.name)")
         updateFilter {
-            if reviewFilter.selectedSubcategories.contains(subcategory) {
-                reviewFilter.selectedSubcategories.removeAll { $0 == subcategory }
+            if reviewFilter.selectedSubcategories.contains(subactivity) {
+                reviewFilter.selectedSubcategories.removeAll { $0 == subactivity }
             } else {
-                reviewFilter.selectedSubcategories.append(subcategory)
+                reviewFilter.selectedSubcategories.append(subactivity)
             }
         }
     }

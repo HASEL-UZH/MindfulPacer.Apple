@@ -12,8 +12,8 @@ protocol SaveReviewUseCase {
     func execute(
         existingReview: Review,
         newDate: Date,
-        newCategory: Category?,
-        newSubcategory: Subcategory?,
+        newActivity: Activity?,
+        newSubactivity: Subactivity?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
         newWellBeing: Symptom?,
@@ -39,8 +39,8 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
     func execute(
         existingReview: Review,
         newDate: Date,
-        newCategory: Category?,
-        newSubcategory: Subcategory?,
+        newActivity: Activity?,
+        newSubactivity: Subactivity?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
         newWellBeing: Symptom?,
@@ -53,8 +53,8 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         newAdditionalInformation: String
     ) -> Result<Review, Error> {
         existingReview.date = newDate
-        existingReview.category = newCategory
-        existingReview.subcategory = newSubcategory
+        existingReview.activity = newActivity
+        existingReview.subactivity = newSubactivity
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
         existingReview.wellBeing = newWellBeing

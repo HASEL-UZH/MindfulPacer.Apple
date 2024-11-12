@@ -188,20 +188,20 @@ struct ReviewsFilterView: View {
                 columns: Array(repeating: GridItem(spacing: 16), count: 3),
                 spacing: 16
             ) {
-                ForEach(viewModel.categories) { category in
+                ForEach(viewModel.categories) { activity in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedCategories.contains(category)
+                        isSelected: viewModel.reviewFilter.selectedCategories.contains(activity)
                     ) {
-                        viewModel.toggleFilterCategory(category)
+                        viewModel.toggleFilterActivity(activity)
                     } label: {
                         VStack(spacing: 16) {
-                            Image(systemName: category.icon)
+                            Image(systemName: activity.icon)
                                 .resizable()
                                 .scaledToFit()
                                 .symbolVariant(.fill)
                                 .frame(width: 24, height: 24)
-                            Text(category.name)
+                            Text(activity.name)
                                 .font(.footnote)
                                 .lineLimit(1)
                                 .truncationMode(.middle)
@@ -223,20 +223,20 @@ struct ReviewsFilterView: View {
                 columns: Array(repeating: GridItem(spacing: 16), count: 3),
                 spacing: 16
             ) {
-                ForEach(viewModel.subcategories) { subcategory in
+                ForEach(viewModel.subcategories) { subactivity in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subcategory)
+                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subactivity)
                     ) {
-                        viewModel.toggleFilterSubcategory(subcategory)
+                        viewModel.toggleFilterSubactivity(subactivity)
                     } label: {
                         VStack(spacing: 16) {
-                            Image(systemName: subcategory.icon)
+                            Image(systemName: subactivity.icon)
                                 .resizable()
                                 .scaledToFit()
                                 .symbolVariant(.fill)
                                 .frame(width: 24, height: 24)
-                            Text(subcategory.name)
+                            Text(subactivity.name)
                                 .font(.footnote)
                                 .lineLimit(1)
                                 .truncationMode(.middle)

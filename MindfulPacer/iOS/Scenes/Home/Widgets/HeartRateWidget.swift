@@ -40,6 +40,7 @@ extension HomeView {
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text("\(Int(currentHeartRate.heartRate))")
                             .font(.title.weight(.semibold))
+                            .lineLimit(1)
                         Text("bpm")
                             .foregroundStyle(.secondary)
                     }

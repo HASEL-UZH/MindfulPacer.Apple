@@ -12,8 +12,8 @@ import SwiftUI
 // MARK: - Typealiases
 
 typealias Review = SchemaV1.Review
-typealias Category = SchemaV1.Category
-typealias Subcategory = SchemaV1.Subcategory
+typealias Activity = SchemaV1.Activity
+typealias Subactivity = SchemaV1.Subactivity
 typealias Mood = Review.Mood
 typealias Symptom = Review.Symptom
 
@@ -24,8 +24,8 @@ extension SchemaV1 {
     final class Review {
         var id: UUID = UUID()
         var date: Date = Date.now
-        @Relationship(inverse: \Category.review) var category: Category?
-        @Relationship(inverse: \Subcategory.review) var subcategory: Subcategory?
+        @Relationship(inverse: \Activity.review) var activity: Activity?
+        @Relationship(inverse: \Subactivity.review) var subactivity: Subactivity?
         var mood: Mood?
         var didTriggerCrash: Bool = false
         var wellBeing: Symptom?
@@ -45,8 +45,8 @@ extension SchemaV1 {
         init(
             id: UUID = UUID(),
             date: Date = .now,
-            category: Category? = nil,
-            subcategory: Subcategory? = nil,
+            activity: Activity? = nil,
+            subactivity: Subactivity? = nil,
             mood: Mood? = nil,
             didTriggerCrash: Bool = false,
             wellBeing: Symptom?,
@@ -64,8 +64,8 @@ extension SchemaV1 {
         ) {
             self.id = id
             self.date = date
-            self.category = category
-            self.subcategory = subcategory
+            self.activity = activity
+            self.subactivity = subactivity
             self.mood = mood
             self.didTriggerCrash = didTriggerCrash
             self.wellBeing = wellBeing
@@ -84,22 +84,22 @@ extension SchemaV1 {
     }
 }
 
-// MARK: - Category
+// MARK: - Activity
 
 extension SchemaV1 {
     @Model
-    final class Category {
+    final class Activity {
         var id: UUID = UUID()
         var name: String = ""
         var icon: String = ""
-        @Relationship(inverse: \Subcategory.category) var subcategories: [Subcategory]?
+        @Relationship(inverse: \Subactivity.activity) var subcategories: [Subactivity]?
         var review: Review?
 
         init(
             id: UUID = UUID(),
             name: String = "",
             icon: String = "",
-            subcategories: [Subcategory] = [],
+            subcategories: [Subactivity] = [],
             review: Review? = nil
         ) {
             self.id = id
@@ -111,28 +111,28 @@ extension SchemaV1 {
     }
 }
 
-// MARK: - Subcategory
+// MARK: - Subactivity
 
 extension SchemaV1 {
     @Model
-    final class Subcategory {
+    final class Subactivity {
         var id: UUID = UUID()
         var name: String = ""
         var icon: String = ""
-        var category: Category?
+        var activity: Activity?
         var review: Review?
 
         init(
             id: UUID = UUID(),
             name: String = "",
             icon: String = "",
-            category: Category? = nil,
+            activity: Activity? = nil,
             review: Review? = nil
         ) {
             self.id = id
             self.name = name
             self.icon = icon
-            self.category = category
+            self.activity = activity
             self.review = review
         }
     }
@@ -232,6 +232,13 @@ extension Review {
                 return defaultSeverityDescription(for: value)
             }
         }
+        
+        var truncationMode: Text.TruncationMode {
+            switch self {
+            case .cognitiveImpairment: .tail
+            default: .middle
+            }
+        }
 
         func color(for index: Int) -> Color {
             switch self {
@@ -296,95 +303,95 @@ extension Review {
 // MARK: - Default Categories
 
 @MainActor
-struct DefaultCategoryData {
-    static var categories: [Category] = []
+struct DefaultActivityData {
+    static var categories: [Activity] = []
 
     // swiftlint:disable:next function_body_length
     static func initializeData() {
         // MARK: Categories
-        let movement = Category(name: "Movement", icon: "figure.run")
-        let transportation = Category(name: "Transportation", icon: "tram")
-        let household = Category(name: "Household", icon: "house")
-        let selfcare = Category(name: "Selfcare", icon: "shower")
-        let cognitive = Category(name: "Cognitive", icon: "brain")
-        let interactionsAndSocial = Category(name: "Interactions & Social", icon: "rectangle.3.group.bubble")
-        let work = Category(name: "Work", icon: "briefcase")
-        let reviewReminders = Category(name: "Review Reminders", icon: "bell.badge")
-        let others = Category(name: "Others", icon: "ellipsis")
+        let movement = Activity(name: "Movement", icon: "figure.run")
+        let transportation = Activity(name: "Transportation", icon: "tram")
+        let household = Activity(name: "Household", icon: "house")
+        let selfcare = Activity(name: "Selfcare", icon: "shower")
+        let cognitive = Activity(name: "Cognitive", icon: "brain")
+        let interactionsAndSocial = Activity(name: "Interactions & Social", icon: "rectangle.3.group.bubble")
+        let work = Activity(name: "Work", icon: "briefcase")
+        let reviewReminders = Activity(name: "Review Reminders", icon: "bell.badge")
+        let others = Activity(name: "Others", icon: "ellipsis")
 
         // MARK: Movement Subcategories
-        let standUp = Subcategory(name: "Stand Up", icon: "figure.stand", category: movement)
-        let walking = Subcategory(name: "Walking", icon: "figure.walk", category: movement)
-        let running = Subcategory(name: "Running", icon: "figure.run", category: movement)
-        let walkingTheStairs = Subcategory(name: "Walking the Stairs", icon: "figure.stairs", category: movement)
-        let bikingMovement = Subcategory(name: "Biking", icon: "figure.outdoor.cycle", category: movement)
-        let hiking = Subcategory(name: "Hiking", icon: "figure.hiking", category: movement)
-        let yoga = Subcategory(name: "Yoga", icon: "figure.yoga", category: movement)
-        let stretching = Subcategory(name: "Stretching", icon: "figure.pilates", category: movement)
-        let dancing = Subcategory(name: "Dancing", icon: "figure.dance", category: movement)
-        let swimming = Subcategory(name: "Swimming", icon: "figure.pool.swim", category: movement)
-        let otherMovement = Subcategory(name: "Other Movement", icon: "ellipsis", category: movement)
+        let standUp = Subactivity(name: "Stand Up", icon: "figure.stand", activity: movement)
+        let walking = Subactivity(name: "Walking", icon: "figure.walk", activity: movement)
+        let running = Subactivity(name: "Running", icon: "figure.run", activity: movement)
+        let walkingTheStairs = Subactivity(name: "Walking the Stairs", icon: "figure.stairs", activity: movement)
+        let bikingMovement = Subactivity(name: "Biking", icon: "figure.outdoor.cycle", activity: movement)
+        let hiking = Subactivity(name: "Hiking", icon: "figure.hiking", activity: movement)
+        let yoga = Subactivity(name: "Yoga", icon: "figure.yoga", activity: movement)
+        let stretching = Subactivity(name: "Stretching", icon: "figure.pilates", activity: movement)
+        let dancing = Subactivity(name: "Dancing", icon: "figure.dance", activity: movement)
+        let swimming = Subactivity(name: "Swimming", icon: "figure.pool.swim", activity: movement)
+        let otherMovement = Subactivity(name: "Other Movement", icon: "ellipsis", activity: movement)
 
         // MARK: Transporation Subcategories
-        let drivingCar = Subcategory(name: "Driving Car", icon: "car", category: transportation)
-        let publicTransporation = Subcategory(name: "Public Transporation", icon: "bus", category: transportation)
-        let bikingTransporation = Subcategory(name: "Biking", icon: "bicycle", category: transportation)
-        let flying = Subcategory(name: "Flying", icon: "airplane", category: transportation)
-        let otherTransportation = Subcategory(name: "Other Transportation", icon: "ellipsis", category: transportation)
+        let drivingCar = Subactivity(name: "Driving Car", icon: "car", activity: transportation)
+        let publicTransporation = Subactivity(name: "Public Transporation", icon: "bus", activity: transportation)
+        let bikingTransporation = Subactivity(name: "Biking", icon: "bicycle", activity: transportation)
+        let flying = Subactivity(name: "Flying", icon: "airplane", activity: transportation)
+        let otherTransportation = Subactivity(name: "Other Transportation", icon: "ellipsis", activity: transportation)
 
         // MARK: Household Subcategories
-        let washingClothes = Subcategory(name: "Washing Clothes", icon: "washer", category: household)
-        let washingDishes = Subcategory(name: "Washing Dishes", icon: "dishwasher", category: household)
-        let cleaning = Subcategory(name: "Cleaning", icon: "bubbles.and.sparkles", category: household)
-        let cooking = Subcategory(name: "Cooking", icon: "frying.pan", category: household)
-        let tidyingUp = Subcategory(name: "Tidying Up", icon: "curtains.closed", category: household)
-        let groceryShopping = Subcategory(name: "Grocery Shopping", icon: "basket", category: household)
-        let gardening = Subcategory(name: "Gardening", icon: "sprinkler.and.droplets", category: household)
-        let fixingThings = Subcategory(name: "Fixing Things", icon: "hammer", category: household)
+        let washingClothes = Subactivity(name: "Washing Clothes", icon: "washer", activity: household)
+        let washingDishes = Subactivity(name: "Washing Dishes", icon: "dishwasher", activity: household)
+        let cleaning = Subactivity(name: "Cleaning", icon: "bubbles.and.sparkles", activity: household)
+        let cooking = Subactivity(name: "Cooking", icon: "frying.pan", activity: household)
+        let tidyingUp = Subactivity(name: "Tidying Up", icon: "curtains.closed", activity: household)
+        let groceryShopping = Subactivity(name: "Grocery Shopping", icon: "basket", activity: household)
+        let gardening = Subactivity(name: "Gardening", icon: "sprinkler.and.droplets", activity: household)
+        let fixingThings = Subactivity(name: "Fixing Things", icon: "hammer", activity: household)
 
         // MARK: Selfcare Subcategories
-        let personalHygiene = Subcategory(name: "Personal Hygiene", icon: "shower", category: selfcare)
-        let sleep = Subcategory(name: "Sleep", icon: "bed.double", category: selfcare)
-        let gettingDressed = Subcategory(name: "Getting Dress", icon: "tshirt", category: selfcare)
-        let eating = Subcategory(name: "Eating", icon: "fork.knife", category: selfcare)
-        let meditation = Subcategory(name: "Meditation", icon: "apple.meditate", category: selfcare)
-        let visitingDoctorOrTherapist = Subcategory(name: "Visiting Doctor or Therapist", icon: "cross", category: selfcare)
-        let exercising = Subcategory(name: "Exercising", icon: "figure.strengthtraining.traditional", category: selfcare)
-        let relaxation = Subcategory(name: "Relaxation", icon: "beach.umbrella", category: selfcare)
+        let personalHygiene = Subactivity(name: "Personal Hygiene", icon: "shower", activity: selfcare)
+        let sleep = Subactivity(name: "Sleep", icon: "bed.double", activity: selfcare)
+        let gettingDressed = Subactivity(name: "Getting Dress", icon: "tshirt", activity: selfcare)
+        let eating = Subactivity(name: "Eating", icon: "fork.knife", activity: selfcare)
+        let meditation = Subactivity(name: "Meditation", icon: "apple.meditate", activity: selfcare)
+        let visitingDoctorOrTherapist = Subactivity(name: "Visiting Doctor or Therapist", icon: "cross", activity: selfcare)
+        let exercising = Subactivity(name: "Exercising", icon: "figure.strengthtraining.traditional", activity: selfcare)
+        let relaxation = Subactivity(name: "Relaxation", icon: "beach.umbrella", activity: selfcare)
 
         // MARK: Cognitive Subcategories
-        let thinkingOrBrainstorming = Subcategory(name: "Thinking or Brainstorming", icon: "brain.head.profile", category: cognitive)
-        let reading = Subcategory(name: "Reading", icon: "book", category: cognitive)
-        let writing = Subcategory(name: "Writing", icon: "pencil.line", category: cognitive)
-        let watchingTV = Subcategory(name: "Watching TV", icon: "tv", category: cognitive)
-        let usingComputerTabletPhone = Subcategory(name: "Using Computer, Tablet, Phone", icon: "macbook.and.iphone", category: cognitive)
-        let gaming = Subcategory(name: "Gaming", icon: "gamecontroller", category: cognitive)
-        let readingTheNews = Subcategory(name: "Reading the News", icon: "newspaper", category: cognitive)
-        let playingMusic = Subcategory(name: "Playing Music", icon: "pianokeys", category: cognitive)
-        let learningSomething = Subcategory(name: "Learning Something", icon: "globe.desk", category: cognitive)
+        let thinkingOrBrainstorming = Subactivity(name: "Thinking or Brainstorming", icon: "brain.head.profile", activity: cognitive)
+        let reading = Subactivity(name: "Reading", icon: "book", activity: cognitive)
+        let writing = Subactivity(name: "Writing", icon: "pencil.line", activity: cognitive)
+        let watchingTV = Subactivity(name: "Watching TV", icon: "tv", activity: cognitive)
+        let usingComputerTabletPhone = Subactivity(name: "Using Computer, Tablet, Phone", icon: "macbook.and.iphone", activity: cognitive)
+        let gaming = Subactivity(name: "Gaming", icon: "gamecontroller", activity: cognitive)
+        let readingTheNews = Subactivity(name: "Reading the News", icon: "newspaper", activity: cognitive)
+        let playingMusic = Subactivity(name: "Playing Music", icon: "pianokeys", activity: cognitive)
+        let learningSomething = Subactivity(name: "Learning Something", icon: "globe.desk", activity: cognitive)
 
         // MARK: Interactions & Social Subategories
-        let meetingCloseFriends = Subcategory(name: "Meeting Close Friends", icon: "person.3", category: interactionsAndSocial)
-        let meetingNewPeople = Subcategory(name: "Meeting New People", icon: "person.line.dotted.person", category: interactionsAndSocial)
-        let meetingFamily = Subcategory(name: "Meeting Family", icon: "figure.2.and.child.holdinghands", category: interactionsAndSocial)
-        let onlineSocializing = Subcategory(name: "Online Socializing", icon: "bubble.left.and.text.bubble.right", category: interactionsAndSocial)
-        let groupActivities = Subcategory(name: "Group Activities", icon: "person.3.sequence.fill", category: interactionsAndSocial)
-        let attendingEvents = Subcategory(name: "Attending Events", icon: "theatermasks", category: interactionsAndSocial)
+        let meetingCloseFriends = Subactivity(name: "Meeting Close Friends", icon: "person.3", activity: interactionsAndSocial)
+        let meetingNewPeople = Subactivity(name: "Meeting New People", icon: "person.line.dotted.person", activity: interactionsAndSocial)
+        let meetingFamily = Subactivity(name: "Meeting Family", icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
+        let onlineSocializing = Subactivity(name: "Online Socializing", icon: "bubble.left.and.text.bubble.right", activity: interactionsAndSocial)
+        let groupActivities = Subactivity(name: "Group Activities", icon: "person.3.sequence.fill", activity: interactionsAndSocial)
+        let attendingEvents = Subactivity(name: "Attending Events", icon: "theatermasks", activity: interactionsAndSocial)
 
         // MARK: Work Subcategories
-        let workOnTasks = Subcategory(name: "Work on Tasks", icon: "desktopcomputer", category: work)
-        let researchingInformation = Subcategory(name: "Researching Information", icon: "rectangle.and.text.magnifyingglass", category: work)
-        let meetings = Subcategory(name: "Meetings", icon: "play.laptopcomputer", category: work)
-        let emailAndChat = Subcategory(name: "Email & Chat", icon: "envelope", category: work)
-        let helpingOthers = Subcategory(name: "Helping Others", icon: "person.2.badge.gearshape", category: work)
-        let networking = Subcategory(name: "Networking", icon: "phone.badge.waveform", category: work)
-        let learning = Subcategory(name: "Learning", icon: "character.book.closed", category: work)
-        let projectManagement = Subcategory(name: "Project Management", icon: "gearshape.2", category: work)
-        let breaks = Subcategory(name: "Breaks", icon: "mug", category: work)
+        let workOnTasks = Subactivity(name: "Work on Tasks", icon: "desktopcomputer", activity: work)
+        let researchingInformation = Subactivity(name: "Researching Information", icon: "rectangle.and.text.magnifyingglass", activity: work)
+        let meetings = Subactivity(name: "Meetings", icon: "play.laptopcomputer", activity: work)
+        let emailAndChat = Subactivity(name: "Email & Chat", icon: "envelope", activity: work)
+        let helpingOthers = Subactivity(name: "Helping Others", icon: "person.2.badge.gearshape", activity: work)
+        let networking = Subactivity(name: "Networking", icon: "phone.badge.waveform", activity: work)
+        let learning = Subactivity(name: "Learning", icon: "character.book.closed", activity: work)
+        let projectManagement = Subactivity(name: "Project Management", icon: "gearshape.2", activity: work)
+        let breaks = Subactivity(name: "Breaks", icon: "mug", activity: work)
 
         // MARK: Review Reminders Subcategories
-        let steps = Subcategory(name: "Steps", icon: "figure.walk", category: reviewReminders)
-        let heartRate = Subcategory(name: "Heart Rate", icon: "heart", category: reviewReminders)
+        let steps = Subactivity(name: "Steps", icon: "figure.walk", activity: reviewReminders)
+        let heartRate = Subactivity(name: "Heart Rate", icon: "heart", activity: reviewReminders)
 
         movement.subcategories = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
         transportation.subcategories = [drivingCar, publicTransporation, bikingTransporation, flying, otherTransportation]

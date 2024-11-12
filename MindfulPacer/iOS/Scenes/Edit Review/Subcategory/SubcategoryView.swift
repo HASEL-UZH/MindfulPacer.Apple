@@ -1,5 +1,5 @@
 //
-//  SubcategoryView.swift
+//  SubactivityView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 20.08.2024.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-// MARK: - SubcategoryView
+// MARK: - SubactivityView
 
 extension EditReviewView {
-    struct SubcategoryView: View {
+    struct SubactivityView: View {
         // MARK: Properties
 
-        var category: Category
+        var activity: Activity
         @Bindable var viewModel: EditReviewViewModel
 
         // MARK: Body
@@ -24,20 +24,20 @@ extension EditReviewView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 2),
                     spacing: 16
                 ) {
-                    ForEach(category.subcategories!) { subcategory in
+                    ForEach(activity.subcategories!) { subactivity in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedSubcategory == subcategory
+                            isSelected: viewModel.selectedSubactivity == subactivity
                         ) {
-                            viewModel.toggleSelection(subcategory, selectedItem: &viewModel.selectedSubcategory)
+                            viewModel.toggleSelection(subactivity, selectedItem: &viewModel.selectedSubactivity)
                         } label: {
                             VStack(spacing: 16) {
-                                Image(systemName: subcategory.icon)
+                                Image(systemName: subactivity.icon)
                                     .resizable()
                                     .scaledToFit()
                                     .symbolVariant(.fill)
                                     .frame(width: 32, height: 32)
-                                Text(subcategory.name)
+                                Text(subactivity.name)
                                     .font(.subheadline)
                                     .lineLimit(1)
                             }
@@ -46,7 +46,7 @@ extension EditReviewView {
                 }
                 .padding(.horizontal)
             }
-            .navigationTitle("Subcategory")
+            .navigationTitle("Subactivity")
             .background {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
@@ -60,6 +60,6 @@ extension EditReviewView {
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
 
-    EditReviewView.SubcategoryView(category: Category(), viewModel: viewModel)
+    EditReviewView.SubactivityView(activity: Activity(), viewModel: viewModel)
         .tint(Color("BrandPrimary"))
 }

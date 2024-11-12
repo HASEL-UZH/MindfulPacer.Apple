@@ -128,33 +128,33 @@ extension HomeView {
 
         private var reviewFilterSortingSummary: some View {
             HStack(spacing: 8) {
-                categoryFilterSummary
-                subcategoryFilterSummary
+                activityFilterSummary
+                subactivityFilterSummary
                 moodFilterSummary
                 crashFilterSummary
             }
         }
 
-        // MARK: Category Filter Summary
+        // MARK: Activity Filter Summary
 
-        private var categoryFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedCategories) { category in
+        private var activityFilterSummary: some View {
+            ForEach(viewModel.reviewFilter.selectedCategories) { activity in
                 filterItem(
-                    icon: category.icon,
-                    label: category.name,
-                    removeAction: { viewModel.toggleFilterCategory(category) }
+                    icon: activity.icon,
+                    label: activity.name,
+                    removeAction: { viewModel.toggleFilterActivity(activity) }
                 )
             }
         }
 
-        // MARK: Subcategory Filter Summary
+        // MARK: Subactivity Filter Summary
 
-        private var subcategoryFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubcategories) { subcategory in
+        private var subactivityFilterSummary: some View {
+            ForEach(viewModel.reviewFilter.selectedSubcategories) { subactivity in
                 filterItem(
-                    icon: subcategory.icon,
-                    label: subcategory.name,
-                    removeAction: { viewModel.toggleFilterSubcategory(subcategory) }
+                    icon: subactivity.icon,
+                    label: subactivity.name,
+                    removeAction: { viewModel.toggleFilterSubactivity(subactivity) }
                 )
             }
         }

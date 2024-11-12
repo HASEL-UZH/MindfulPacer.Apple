@@ -131,15 +131,15 @@ extension AnalyticsView {
                         Button {
                             onReviewSelected(review)
                         } label: {
-                            if let subcategory = review.subcategory {
+                            if let subactivity = review.subactivity {
                                 Icon(
-                                    name: subcategory.icon,
+                                    name: subactivity.icon,
                                     color: .primary,
                                     background: false
                                 )
-                            } else if let category = review.category {
+                            } else if let activity = review.activity {
                                 Icon(
-                                    name: category.icon,
+                                    name: activity.icon,
                                     color: .primary,
                                     background: false
                                 )

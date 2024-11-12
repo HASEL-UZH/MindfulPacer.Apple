@@ -11,8 +11,8 @@ import SwiftData
 protocol CreateReviewUseCase {
     func execute(
         date: Date,
-        category: Category?,
-        subcategory: Subcategory?,
+        activity: Activity?,
+        subactivity: Subactivity?,
         mood: Mood?,
         didTriggerCrash: Bool,
         wellBeing: Symptom?,
@@ -41,8 +41,8 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
     
     func execute(
         date: Date,
-        category: Category?,
-        subcategory: Subcategory?,
+        activity: Activity?,
+        subactivity: Subactivity?,
         mood: Mood?,
         didTriggerCrash: Bool,
         wellBeing: Symptom?,
@@ -60,8 +60,8 @@ class DefaulCreateReviewUseCase: CreateReviewUseCase {
     ) -> Result<Review, Error> {
         let review = Review(
             date: date,
-            category: category,
-            subcategory: subcategory,
+            activity: activity,
+            subactivity: subactivity,
             mood: mood,
             didTriggerCrash: didTriggerCrash,
             wellBeing: wellBeing,
