@@ -7,7 +7,6 @@
 
 import Combine
 import Foundation
-import CocoaLumberjackSwift
 
 // MARK: - KeyFeatureItem
 
@@ -40,10 +39,12 @@ struct ActivityPromotingFeature {
 @Observable
 @MainActor
 class OnboardingViewModel {
+    
     // MARK: - Dependencies
 
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
+    private let setModeOfUseUseCase: SetModeOfUseUseCase
     private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
 
     // MARK: - Published Properties
@@ -52,7 +53,8 @@ class OnboardingViewModel {
 
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
-
+    var selectedModeOfUse: ModeOfUse?
+    
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
             return "Continue"
@@ -66,6 +68,8 @@ class OnboardingViewModel {
         case .appleHealth:
             return didCompleteHealthAuthorization ? "Continue" : "Allow Health Access"
         case .mainFeatures:
+            return "Continue"
+        case .modeOfUse:
             return "Continue"
         case .activityPromotingFeatures:
             return "Continue"
@@ -82,6 +86,8 @@ class OnboardingViewModel {
         switch lastDestination {
         case .disclaimer:
             return !didAcceptTerms
+        case .modeOfUse:
+            return selectedModeOfUse.isNil
         default:
             return false
         }
@@ -211,24 +217,22 @@ class OnboardingViewModel {
     init(
         initializeNotificationsUseCase: InitializeNotificationsUseCase,
         requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
+        setModeOfUseUseCase: SetModeOfUseUseCase,
         toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
     ) {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
         self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
+        self.setModeOfUseUseCase = setModeOfUseUseCase
         self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
-        DDLogInfo("OnboardingViewModel initialized")
     }
 
     // MARK: - View Lifecycle
 
-    func onViewFirstAppear() {
-        DDLogInfo("onViewFirstAppear called")
-    }
+    func onViewFirstAppear() {}
 
     // MARK: - User Actions
 
     func actionButtonTapped() {
-        DDLogInfo("actionButtonTapped called")
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigationPath.append(OnboardingNavigationDestination.appleWatchConnection)
@@ -237,29 +241,25 @@ class OnboardingViewModel {
 
         switch currentDestination {
         case .appleWatchConnection:
-            DDLogInfo("Navigating to notifications")
             navigationPath.append(OnboardingNavigationDestination.notifications)
         case .notifications:
-            DDLogInfo("Requesting notification permission")
             requestNotificationPermission()
         case .appleHealth:
-            DDLogInfo("Requesting health authorization")
             requestHealthAuthorization()
         case .mainFeatures:
-            DDLogInfo("Navigating to activity promoting features")
             navigationPath.append(OnboardingNavigationDestination.activityPromotingFeatures)
         case .activityPromotingFeatures:
-            DDLogInfo("Navigating to disclaimer")
+            navigationPath.append(OnboardingNavigationDestination.modeOfUse)
+        case .modeOfUse:
             navigationPath.append(OnboardingNavigationDestination.disclaimer)
         case .disclaimer:
-            DDLogInfo("Toggling user has seen onboarding and dismissing")
             toggleUserHasSeenOnboardingUseCase.execute()
             shouldDismiss = true
+            setModeOfUseUseCase.execute(modeOfUse: selectedModeOfUse.unsafelyUnwrapped)
         }
     }
 
     func skipButtonTapped() {
-        DDLogInfo("skipButtonTapped called")
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
             navigateTo(destination: .appleWatchConnection)
@@ -276,7 +276,7 @@ class OnboardingViewModel {
         case .mainFeatures:
             navigateTo(destination: .activityPromotingFeatures)
         case .activityPromotingFeatures:
-            navigateTo(destination: .disclaimer)
+            navigateTo(destination: .modeOfUse)
         default:
             break
         }
@@ -285,20 +285,18 @@ class OnboardingViewModel {
     // MARK: - Presentation
 
     func navigateTo(destination: OnboardingNavigationDestination) {
-        DDLogInfo("Navigating to \(destination)")
         navigationPath.append(destination)
     }
 
     // MARK: - Private Methods
     
     private func requestNotificationPermission() {
-        DDLogInfo("Requesting notification permission")
         initializeNotificationsUseCase.execute { result in
             switch result {
             case .success:
-                DDLogInfo("Notifications are now authorized")
+                print("Notifications are now authorized")
             case .failure(let failure):
-                DDLogWarn("Notifications not authorized \(String(describing: failure.failureReason))")
+                print("Notifications not authorized \(String(describing: failure.failureReason))")
             }
             
             Task { @MainActor in
@@ -309,12 +307,10 @@ class OnboardingViewModel {
     }
 
     private func requestHealthAuthorization() {
-        DDLogInfo("Requesting health authorization")
         requestHealthAuthorisationUseCase.execute { success, error in
             if let error = error {
-                DDLogWarn("Health authorization failed: \(error.errorDescription ?? "Unknown error")")
+                print("Health authorization failed: \(error.errorDescription ?? "Unknown error")")
             } else if success {
-                DDLogInfo("Health authorization successful")
                 Task { @MainActor in
                     self.didCompleteHealthAuthorization = true
                     self.navigateTo(destination: .mainFeatures)

@@ -17,7 +17,7 @@ class DefaultFetchThemeUseCase: FetchThemeUseCase {
     init() {}
     
     func execute() -> Theme {
-        let storedTheme = UserDefaults.standard.string(forKey: "selectedTheme")
+        let storedTheme = UserDefaults.standard.string(forKey: Constants.UserDefaultsKeys.theme)
         return Theme(rawValue: storedTheme ?? Theme.system.rawValue) ?? .system
     }
 }

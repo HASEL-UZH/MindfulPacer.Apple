@@ -31,11 +31,3 @@ class DefaultListenToThemeChangesUseCase: ListenToThemeChangesUseCase {
         return themePublisher
     }
 }
-
-// MARK: - Extension for UserDefaults Publisher
-
-extension UserDefaults {
-    @objc dynamic var selectedTheme: String? {
-        return string(forKey: "selectedTheme")
-    }
-}

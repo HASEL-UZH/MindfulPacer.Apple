@@ -11,7 +11,9 @@ import SwiftUI
 
 extension SettingsView {
     struct ThemeSettingsView: View {
+        
         // MARK: Properties
+        
         @Bindable var viewModel: SettingsViewModel
         
         // MARK: Body

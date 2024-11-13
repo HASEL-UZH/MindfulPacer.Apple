@@ -21,6 +21,7 @@ class EditReviewViewModel {
     private let createReviewUseCase: CreateReviewUseCase
     private let deleteReviewUseCase: DeleteReviewUseCase
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
+    private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
     private let saveReviewUseCase: SaveReviewUseCase
 
     // MARK: - Published Properties (State)
@@ -70,6 +71,7 @@ class EditReviewViewModel {
     }
 
     var isReviewDeleted = false
+    var modeOfUse: ModeOfUse = .essentials
 
     // MARK: - Initialization
 
@@ -78,12 +80,14 @@ class EditReviewViewModel {
         createReviewUseCase: CreateReviewUseCase,
         deleteReviewUseCase: DeleteReviewUseCase,
         fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase,
+        fetchModeOfUseUseCase: FetchModeOfUseUseCase,
         saveReviewUseCase: SaveReviewUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewUseCase = createReviewUseCase
         self.deleteReviewUseCase = deleteReviewUseCase
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
+        self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
         self.saveReviewUseCase = saveReviewUseCase
     }
 
@@ -91,6 +95,7 @@ class EditReviewViewModel {
 
     func onViewFirstAppear() {
         fetchDefaultCategories()
+        configureModeOfUse()
     }
 
     func configureMode(with review: Review?) {
@@ -239,5 +244,9 @@ class EditReviewViewModel {
         depressionOrAnxiety.setValue(review.depressionOrAnxiety?.value)
         didTriggerCrash = review.didTriggerCrash
         additionalInformation = review.additionalInformation
+    }
+    
+    private func configureModeOfUse() {
+        modeOfUse = fetchModeOfUseUseCase.execute()
     }
 }
