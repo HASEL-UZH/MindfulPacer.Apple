@@ -161,17 +161,17 @@ struct EditReviewView: View {
                 case .wellBeing:
                     SymptomValueView(symptom: viewModel.wellBeingBinding)
                 case .fatigue:
-                    SymptomValueView(symptom: $viewModel.fatigue)
+                    SymptomValueView(symptom: viewModel.fatigueBinding)
                 case .shortnessOfBreath:
-                    SymptomValueView(symptom: $viewModel.shortnessOfBreath)
+                    SymptomValueView(symptom: viewModel.shortnessOfBreathBinding)
                 case .sleepDisorder:
-                    SymptomValueView(symptom: $viewModel.sleepDisorder)
+                    SymptomValueView(symptom: viewModel.sleepDisorderBinding)
                 case .cognitiveImpairment:
-                    SymptomValueView(symptom: $viewModel.cognitiveImpairment)
+                    SymptomValueView(symptom: viewModel.cognitiveImpairmentBinding)
                 case .physicalPain:
-                    SymptomValueView(symptom: $viewModel.physicalPain)
+                    SymptomValueView(symptom: viewModel.physicalPainBinding)
                 case .depressionOrAnxiety:
-                    SymptomValueView(symptom: $viewModel.depressionOrAnxiety)
+                    SymptomValueView(symptom: viewModel.depressionOrAnxietyBinding)
                 }
             }
             .presentationDetents([.height(220)])

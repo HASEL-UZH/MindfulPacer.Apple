@@ -67,7 +67,7 @@ class EditReviewViewModel {
             get: { self.wellBeing },
             set: { newValue in
                 if self.wellBeing == newValue {
-                    self.wellBeing.setValue(nil) // Toggle to nil if the same value is selected
+                    self.wellBeing.setValue(nil)
                 } else {
                     self.wellBeing.setValue(newValue.value)
                 }
@@ -75,83 +75,82 @@ class EditReviewViewModel {
         )
     }
     
-    //        var fatigueBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.fatigue },
-//                set: { newValue in
-//                    if let newValue = newValue, self.fatigue == newValue {
-//                        self.fatigue = nil
-//                    } else {
-//                        self.fatigue = newValue
-//                    }
-//                }
-//            )
-//        }
-//
-//        var shortnessOfBreathBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.shortnessOfBreath },
-//                set: { newValue in
-//                    if let newValue = newValue, self.shortnessOfBreath == newValue {
-//                        self.shortnessOfBreath = nil
-//                    } else {
-//                        self.shortnessOfBreath = newValue
-//                    }
-//                }
-//            )
-//        }
-//
-//        var sleepDisorderBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.sleepDisorder },
-//                set: { newValue in
-//                    if let newValue = newValue, self.sleepDisorder == newValue {
-//                        self.sleepDisorder = nil
-//                    } else {
-//                        self.sleepDisorder = newValue
-//                    }
-//                }
-//            )
-//        }
-//
-//        var cognitiveImpairmentBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.cognitiveImpairment },
-//                set: { newValue in
-//                    if let newValue = newValue, self.cognitiveImpairment == newValue {
-//                        self.cognitiveImpairment = nil
-//                    } else {
-//                        self.cognitiveImpairment = newValue
-//                    }
-//                }
-//            )
-//        }
-//
-//        var physicalPainBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.physicalPain },
-//                set: { newValue in
-//                    if let newValue = newValue, self.physicalPain == newValue {
-//                        self.physicalPain = nil
-//                    } else {
-//                        self.physicalPain = newValue
-//                    }
-//                }
-//            )
-//        }
-//
-//        var depressionOrAnxietyBinding: Binding<Symptom?> {
-//            Binding(
-//                get: { self.depressionOrAnxiety },
-//                set: { newValue in
-//                    if let newValue = newValue, self.depressionOrAnxiety == newValue {
-//                        self.depressionOrAnxiety = nil
-//                    } else {
-//                        self.depressionOrAnxiety = newValue
-//                    }
-//                }
-//            )
-//        }
+    var fatigueBinding: Binding<Symptom> {
+        Binding(
+            get: { self.fatigue },
+            set: { newValue in
+                if self.fatigue == newValue {
+                    self.fatigue.setValue(nil)
+                } else {
+                    self.fatigue.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    
+    var shortnessOfBreathBinding: Binding<Symptom> {
+        Binding(
+            get: { self.shortnessOfBreath },
+            set: { newValue in
+                if self.shortnessOfBreath == newValue {
+                    self.shortnessOfBreath.setValue(nil)
+                } else {
+                    self.shortnessOfBreath.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    
+    var sleepDisorderBinding: Binding<Symptom> {
+        Binding(
+            get: { self.sleepDisorder },
+            set: { newValue in
+                if self.sleepDisorder == newValue {
+                    self.sleepDisorder.setValue(nil)
+                } else {
+                    self.sleepDisorder.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    var cognitiveImpairmentBinding: Binding<Symptom> {
+        Binding(
+            get: { self.cognitiveImpairment },
+            set: { newValue in
+                if self.cognitiveImpairment == newValue {
+                    self.cognitiveImpairment.setValue(nil)
+                } else {
+                    self.cognitiveImpairment.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    
+    var physicalPainBinding: Binding<Symptom> {
+        Binding(
+            get: { self.physicalPain },
+            set: { newValue in
+                if self.physicalPain == newValue {
+                    self.physicalPain.setValue(nil)
+                } else {
+                    self.physicalPain.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    
+    var depressionOrAnxietyBinding: Binding<Symptom> {
+        Binding(
+            get: { self.depressionOrAnxiety },
+            set: { newValue in
+                if self.depressionOrAnxiety == newValue {
+                    self.depressionOrAnxiety.setValue(nil)
+                } else {
+                    self.depressionOrAnxiety.setValue(newValue.value)
+                }
+            }
+        )
+    }
     
     var isActionButtonDisabled: Bool {
         let disabled = selectedActivity == nil
