@@ -26,7 +26,11 @@ final class DefaultFetchHeartRateUseCase: FetchHeartRateUseCase {
             switch result {
             case .success(let samples):
                 let chartData = samples.map { sample in
-                    ChartDataItem(date: sample.startDate, value: sample.quantity.doubleValue(for: HKUnit(from: "count/min")))
+                    ChartDataItem(
+                        startDate: sample.startDate,
+                        endDate: sample.endDate,
+                        value: sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                    )
                 }
                 completion(.success(chartData))
             case .failure(let error):

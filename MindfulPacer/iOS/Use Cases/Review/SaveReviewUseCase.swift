@@ -57,13 +57,13 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         existingReview.subactivity = newSubactivity
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
-        existingReview.wellBeing = newWellBeing
-        existingReview.fatigue = newFatigue
-        existingReview.shortnessOfBreath = newShortnessOfBreath
-        existingReview.sleepDisorder = newSleepDisorder
-        existingReview.cognitiveImpairment = newCognitiveImpairment
-        existingReview.physicalPain = newPhysicalPain
-        existingReview.depressionOrAnxiety = newDepressionOrAnxiety
+        existingReview.wellBeing = newWellBeing?.value
+        existingReview.fatigue = newFatigue?.value
+        existingReview.shortnessOfBreath = newShortnessOfBreath?.value
+        existingReview.sleepDisorder = newSleepDisorder?.value
+        existingReview.cognitiveImpairment = newCognitiveImpairment.value
+        existingReview.physicalPain = newPhysicalPain?.value
+        existingReview.depressionOrAnxiety = newDepressionOrAnxiety?.value
         existingReview.additionalInformation = newAdditionalInformation
         
         do {

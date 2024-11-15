@@ -159,7 +159,7 @@ struct EditReviewView: View {
             Group {
                 switch symptom {
                 case .wellBeing:
-                    SymptomValueView(symptom: $viewModel.wellBeing)
+                    SymptomValueView(symptom: viewModel.wellBeingBinding)
                 case .fatigue:
                     SymptomValueView(symptom: $viewModel.fatigue)
                 case .shortnessOfBreath:

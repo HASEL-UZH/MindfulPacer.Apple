@@ -12,7 +12,8 @@ import Charts
 
 struct ChartDataItem: Identifiable, Equatable {
     let id = UUID()
-    let date: Date
+    let startDate: Date
+    let endDate: Date
     let value: Double
 }
 
@@ -51,62 +52,71 @@ extension AnalyticsView {
                         ForEach(viewModel.chartData) { dataPoint in
                             switch viewModel.selectedMeasurementType {
                             case .heartRate:
-                                Plot {
-                                    AreaMark(
-                                        x: .value("Time", dataPoint.date),
-                                        yStart: .value("Value", dataPoint.value),
-                                        yEnd: .value("Min Value", viewModel.minValue)
-                                    )
-                                    .foregroundStyle(Gradient(colors: [viewModel.chartColor.opacity(0.5), .clear]))
-                                    .interpolationMethod(.catmullRom)
-                                    
-                                    LineMark(
-                                        x: .value("Time", dataPoint.date),
-                                        y: .value("Value", dataPoint.value)
-                                    )
-                                    .foregroundStyle(viewModel.chartColor)
-                                    .interpolationMethod(.catmullRom)
-                                }
-                            case .steps:
-                                BarMark(
-                                    x: .value("Time", dataPoint.date),
-                                    yStart: .value("Start", 0),
-                                    yEnd: .value("Steps", max(0, dataPoint.value)),
-                                    width: .automatic
+                                AreaMark(
+                                    x: .value("Time", dataPoint.startDate),
+                                    yStart: .value("Value", dataPoint.value),
+                                    yEnd: .value("Min Value", viewModel.minValue)
+                                )
+                                .foregroundStyle(Gradient(colors: [viewModel.chartColor.opacity(0.5), .clear]))
+                                .interpolationMethod(.catmullRom)
+                                
+                                LineMark(
+                                    x: .value("Time", dataPoint.startDate),
+                                    y: .value("Value", dataPoint.value)
                                 )
                                 .foregroundStyle(viewModel.chartColor)
-                                .zIndex(0) // Ensure bars are behind other elements
-                                .opacity(viewModel.rawSelectedDate == nil || dataPoint.date == viewModel.selectedData?.date ? 1.0 : 0.3)
+                                .interpolationMethod(.catmullRom)
+                                    
+                            case .steps:
+                                let opacityValue: Double = {
+                                    if viewModel.rawSelectedDate == nil || (dataPoint.startDate == viewModel.selectedData?.startDate) {
+                                        return 1.0
+                                    } else {
+                                        return 0.3
+                                    }
+                                }()
+                                
+                                if viewModel.selectedPeriod == .week {
+                                    // Bars span the full day in week view
+                                    BarMark(
+                                        xStart: .value("Start", dataPoint.startDate),
+                                        xEnd: .value("End", dataPoint.endDate),
+                                        y: .value("Steps", max(0, dataPoint.value))
+                                    )
+                                    .foregroundStyle(viewModel.chartColor)
+                                    .opacity(opacityValue)
+                                } else {
+                                    // Use x for other periods
+                                    BarMark(
+                                        x: .value("Time", dataPoint.startDate),
+                                        yStart: .value("Start", 0),
+                                        yEnd: .value("Steps", max(0, dataPoint.value)),
+                                        width: .automatic
+                                    )
+                                    .foregroundStyle(viewModel.chartColor)
+                                    .opacity(opacityValue)
+                                }
                             }
                         }
                     }
                     .chartXSelection(value: $viewModel.rawSelectedDate)
                     .chartYScale(domain: 0...(viewModel.maxValue * 1.1))
                     .chartXAxis {
-                        switch viewModel.selectedPeriod {
-                        case .oneHour:
-                            AxisMarks(values: .stride(by: .minute, count: 10)) {  // 10-minute intervals
-                                AxisValueLabel(format: .dateTime.hour().minute())
-                                AxisTick()
-                                AxisGridLine()
-                            }
-                        case .twoHours:
-                            AxisMarks(values: .stride(by: .minute, count: 15)) {  // 15-minute intervals
-                                AxisValueLabel(format: .dateTime.hour().minute())
-                                AxisTick()
-                                AxisGridLine()
-                            }
-                        case .day:
-                            AxisMarks(values: .stride(by: .hour, count: 3)) {
-                                AxisValueLabel(format: .dateTime.hour(.twoDigits(amPM: .omitted)))
-                                AxisTick()
-                                AxisGridLine()
-                            }
-                        case .week:
-                            AxisMarks(values: .stride(by: .day)) {
-                                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-                                AxisTick()
-                                AxisGridLine()
+                        let axisDates = generateAxisMarkDates()
+                        AxisMarks(values: axisDates) { date in
+                            AxisGridLine()
+                            AxisTick()
+                            AxisValueLabel {
+                                if let dateValue = date.as(Date.self) {
+                                    switch viewModel.selectedPeriod {
+                                    case .oneHour, .twoHours:
+                                        Text(dateValue, format: .dateTime.hour().minute())
+                                    case .day:
+                                        Text(dateValue, format: .dateTime.hour(.twoDigits(amPM: .omitted)))
+                                    case .week:
+                                        Text(dateValue, format: .dateTime.weekday(.abbreviated))
+                                    }
+                                }
                             }
                         }
                     }
@@ -116,11 +126,41 @@ extension AnalyticsView {
                             AxisValueLabel()
                         }
                     }
-                    .chartXScale(domain: viewModel.selectedPeriod.roundedStartDate...Calendar.current.date(byAdding: .minute, value: 5, to: Date())!, range: .plotDimension)
-                    
+                    .chartXScale(domain: viewModel.chartStartDate...viewModel.chartEndDate)
                     reviewsOverlay
                 }
             }
+        }
+        
+        // MARK: Generate Axis Mark Dates
+        
+        func generateAxisMarkDates() -> [Date] {
+            var dates: [Date] = []
+            let calendar = Calendar.current
+            var currentDate = viewModel.chartStartDate
+
+            let intervalComponents: DateComponents
+            switch viewModel.selectedPeriod {
+            case .oneHour:
+                intervalComponents = DateComponents(minute: 10)
+            case .twoHours:
+                intervalComponents = DateComponents(minute: 15)
+            case .day:
+                intervalComponents = DateComponents(hour: 2)
+            case .week:
+                intervalComponents = DateComponents(day: 1)
+            }
+
+            while currentDate <= viewModel.chartEndDate {
+                dates.append(currentDate)
+                if let nextDate = calendar.date(byAdding: intervalComponents, to: currentDate) {
+                    currentDate = nextDate
+                } else {
+                    break
+                }
+            }
+
+            return dates
         }
         
         // MARK: Reviews Overlay
@@ -155,16 +195,22 @@ extension AnalyticsView {
         // MARK: Annotation View
         
         private func annotationView(data: ChartDataItem) -> some ChartContent {
-            RuleMark(x: .value("Measurement Type", data.date))
+            RuleMark(x: .value("Measurement Type", data.startDate))
                 .foregroundStyle(viewModel.chartColor.opacity(0.3))
                 .annotation(position: .top,
                             spacing: 0,
                             overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
                 ) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(data.date, format: viewModel.annotationViewFormat)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                        if viewModel.selectedMeasurementType == .steps {
+                            Text("\(data.startDate, format: viewModel.annotationViewFormat) - \(data.endDate, format: viewModel.annotationViewFormat)")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text(data.startDate, format: viewModel.annotationViewFormat)
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
                         
                         Text(data.value, format: .number.precision(.fractionLength(viewModel.selectedMeasurementType == .steps ? 0 : 1)))
                             .bold()
@@ -185,18 +231,11 @@ extension AnalyticsView {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     let viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
     
     AnalyticsView.MeasurementChartView(viewModel: viewModel) { _ in }
 }
 
-// Extend Period to provide a rounded start date
-extension Period {
-    var roundedStartDate: Date {
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: startDate)
-        let roundedMinute = (components.minute ?? 0) / 5 * 5
-        return calendar.date(bySetting: .minute, value: roundedMinute, of: startDate)!
-    }
-}

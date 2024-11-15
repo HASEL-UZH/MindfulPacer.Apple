@@ -132,7 +132,7 @@ struct SettingsView: View {
             IconLabel(
                 image: Image(.mindfulPacerExpandedIcon),
                 title: "MindfulPacer Expanded",
-                description: "Access all app features",
+                description: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors",
                 labelColor: Color("BrandPrimary"),
                 background: true
             )

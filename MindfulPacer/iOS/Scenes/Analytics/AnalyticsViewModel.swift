@@ -10,6 +10,13 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+extension Calendar {
+    func endOfDay(for date: Date) -> Date {
+        let startOfDay = self.startOfDay(for: date)
+        return self.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDay)!
+    }
+}
+
 @Observable
 @MainActor
 class AnalyticsViewModel {
@@ -78,6 +85,30 @@ class AnalyticsViewModel {
         selectedPeriod == .week ? .dateTime.weekday(.abbreviated).month(.abbreviated).day() : .dateTime.weekday(.abbreviated).hour().minute()
     }
     
+    var intervalMinutes: Int {
+        switch selectedPeriod {
+        case .oneHour, .twoHours:
+            return 5
+        case .day:
+            return 60
+        case .week:
+            return 1440
+        }
+    }
+    
+    var chartStartDate: Date {
+        selectedPeriod.startDate
+    }
+
+    var chartEndDate: Date {
+        switch selectedPeriod {
+        case .oneHour, .twoHours, .day:
+            return Date()
+        case .week:
+            return Calendar.current.endOfDay(for: Date())
+        }
+    }
+
     // MARK: - Initialization
     
     init(
@@ -144,8 +175,8 @@ class AnalyticsViewModel {
     }
     
     func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
-        guard let firstDate = chartData.first?.date,
-              let lastDate = chartData.last?.date else {
+        guard let firstDate = chartData.first?.startDate,
+              let lastDate = chartData.last?.startDate else {
             return nil
         }
         
@@ -214,7 +245,7 @@ class AnalyticsViewModel {
     private func parseSelectedData(from data: [ChartDataItem], in selectedDate: Date?, for period: Period) -> ChartDataItem? {
         guard let selectedDate else { return nil }
         return data.first {
-            Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: getGranularity(for: period))
+            Calendar.current.isDate($0.startDate, equalTo: selectedDate, toGranularity: getGranularity(for: period))
         }
     }
     

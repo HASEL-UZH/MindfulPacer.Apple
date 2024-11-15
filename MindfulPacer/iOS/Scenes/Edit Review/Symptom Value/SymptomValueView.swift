@@ -22,7 +22,9 @@ extension EditReviewView {
             NavigationStack {
                 VStack {
                     VStack(alignment: .leading, spacing: 16) {
-                        InfoBox(text: "Report severity of symptom.")
+                        if !symptom.isWellBeing { // TODO: Need message for wellBeing
+                            InfoBox(text: "Report severity of symptom.")
+                        }
 
                         VStack(spacing: 16) {
                             HStack(spacing: 16) {

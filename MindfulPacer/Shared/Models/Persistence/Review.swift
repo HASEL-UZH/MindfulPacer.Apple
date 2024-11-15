@@ -28,13 +28,13 @@ extension SchemaV1 {
         @Relationship(inverse: \Subactivity.review) var subactivity: Subactivity?
         var mood: Mood?
         var didTriggerCrash: Bool = false
-        var wellBeing: Symptom?
-        var fatigue: Symptom?
-        var shortnessOfBreath: Symptom?
-        var sleepDisorder: Symptom?
-        var cognitiveImpairment: Symptom?
-        var physicalPain: Symptom?
-        var depressionOrAnxiety: Symptom?
+        var wellBeing: Int?
+        var fatigue: Int?
+        var shortnessOfBreath: Int?
+        var sleepDisorder: Int?
+        var cognitiveImpairment: Int?
+        var physicalPain: Int?
+        var depressionOrAnxiety: Int?
         var additionalInformation: String = ""
         // MARK: Review Reminder Properties
         var measurementType: ReviewReminder.MeasurementType?
@@ -49,13 +49,13 @@ extension SchemaV1 {
             subactivity: Subactivity? = nil,
             mood: Mood? = nil,
             didTriggerCrash: Bool = false,
-            wellBeing: Symptom?,
-            fatigue: Symptom?,
-            shortnessOfBreath: Symptom?,
-            sleepDisorder: Symptom?,
-            cognitiveImpairment: Symptom?,
-            physicalPain: Symptom?,
-            depressionOrAnxiety: Symptom?,
+            wellBeing: Int?,
+            fatigue: Int?,
+            shortnessOfBreath: Int?,
+            sleepDisorder: Int?,
+            cognitiveImpairment: Int?,
+            physicalPain: Int?,
+            depressionOrAnxiety: Int?,
             additionalInformation: String = "",
             measurementType: ReviewReminder.MeasurementType? = nil,
             reviewReminderType: ReviewReminder.ReviewReminderType? = nil,
@@ -175,19 +175,19 @@ extension Review {
         mutating func setValue(_ newValue: Int?) {
             switch self {
             case .wellBeing:
-                self = newValue == self.value ? .wellBeing(nil) : .wellBeing(newValue)
+                self = .wellBeing(newValue)
             case .fatigue:
-                self = newValue == self.value ? .fatigue(nil) : .fatigue(newValue)
+                self = .fatigue(newValue)
             case .shortnessOfBreath:
-                self = newValue == self.value ? .shortnessOfBreath(nil) : .shortnessOfBreath(newValue)
+                self = .shortnessOfBreath(newValue)
             case .sleepDisorder:
-                self = newValue == self.value ? .sleepDisorder(nil) : .sleepDisorder(newValue)
+                self = .sleepDisorder(newValue)
             case .cognitiveImpairment:
-                self = newValue == self.value ? .cognitiveImpairment(nil) : .cognitiveImpairment(newValue)
+                self = .cognitiveImpairment(newValue)
             case .physicalPain:
-                self = newValue == self.value ? .physicalPain(nil) : .physicalPain(newValue)
+                self = .physicalPain(newValue)
             case .depressionOrAnxiety:
-                self = newValue == self.value ? .depressionOrAnxiety(nil) : .depressionOrAnxiety(newValue)
+                self = .depressionOrAnxiety(newValue)
             }
         }
 
@@ -233,10 +233,19 @@ extension Review {
             }
         }
         
+        var isWellBeing: Bool {
+            switch self {
+            case .wellBeing:
+                true
+            default:
+                false
+            }
+        }
+        
         var truncationMode: Text.TruncationMode {
             switch self {
-            case .cognitiveImpairment: .tail
-            default: .middle
+            case .cognitiveImpairment: return .tail
+            default: return .middle
             }
         }
 
