@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 // MARK: - EditReviewViewModel
 
@@ -14,25 +15,25 @@ import SwiftData
 @Observable
 class EditReviewViewModel {
     enum Mode { case create, edit }
-
+    
     // MARK: - Dependencies
-
+    
     private let modelContext: ModelContext
     private let createReviewUseCase: CreateReviewUseCase
     private let deleteReviewUseCase: DeleteReviewUseCase
     private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
     private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
     private let saveReviewUseCase: SaveReviewUseCase
-
+    
     // MARK: - Published Properties (State)
-
+    
     var mode: Mode = .create
     var navigationPath: [EditReviewNavigationDestination] = []
     var activeSheet: EditReviewSheet?
     var activeAlert: EditReviewAlert?
-
-    var categories: [Category] = []
-
+    
+    var categories: [Activity] = []
+    
     var navigationTitle: String {
         switch mode {
         case .create:
@@ -41,15 +42,16 @@ class EditReviewViewModel {
             return "Edit Review"
         }
     }
-        
+    
     var date: Date = .now
-    var selectedCategory: Category? {
+    var selectedActivity: Activity? {
         didSet {
-            selectedSubcategory = nil
+            selectedSubactivity = nil
         }
     }
     var selectedMood: Mood?
-    var selectedSubcategory: Subcategory?
+    var selectedSubactivity: Subactivity?
+    
     var wellBeing = Symptom.wellBeing(nil)
     var fatigue = Symptom.fatigue(nil)
     var shortnessOfBreath = Symptom.shortnessOfBreath(nil)
@@ -59,22 +61,113 @@ class EditReviewViewModel {
     var depressionOrAnxiety = Symptom.depressionOrAnxiety(nil)
     var didTriggerCrash: Bool = false
     var additionalInformation: String = ""
-
+    
+    var wellBeingBinding: Binding<Symptom> {
+        Binding(
+            get: { self.wellBeing },
+            set: { newValue in
+                if self.wellBeing == newValue {
+                    self.wellBeing.setValue(nil) // Toggle to nil if the same value is selected
+                } else {
+                    self.wellBeing.setValue(newValue.value)
+                }
+            }
+        )
+    }
+    
+    //        var fatigueBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.fatigue },
+//                set: { newValue in
+//                    if let newValue = newValue, self.fatigue == newValue {
+//                        self.fatigue = nil
+//                    } else {
+//                        self.fatigue = newValue
+//                    }
+//                }
+//            )
+//        }
+//
+//        var shortnessOfBreathBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.shortnessOfBreath },
+//                set: { newValue in
+//                    if let newValue = newValue, self.shortnessOfBreath == newValue {
+//                        self.shortnessOfBreath = nil
+//                    } else {
+//                        self.shortnessOfBreath = newValue
+//                    }
+//                }
+//            )
+//        }
+//
+//        var sleepDisorderBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.sleepDisorder },
+//                set: { newValue in
+//                    if let newValue = newValue, self.sleepDisorder == newValue {
+//                        self.sleepDisorder = nil
+//                    } else {
+//                        self.sleepDisorder = newValue
+//                    }
+//                }
+//            )
+//        }
+//
+//        var cognitiveImpairmentBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.cognitiveImpairment },
+//                set: { newValue in
+//                    if let newValue = newValue, self.cognitiveImpairment == newValue {
+//                        self.cognitiveImpairment = nil
+//                    } else {
+//                        self.cognitiveImpairment = newValue
+//                    }
+//                }
+//            )
+//        }
+//
+//        var physicalPainBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.physicalPain },
+//                set: { newValue in
+//                    if let newValue = newValue, self.physicalPain == newValue {
+//                        self.physicalPain = nil
+//                    } else {
+//                        self.physicalPain = newValue
+//                    }
+//                }
+//            )
+//        }
+//
+//        var depressionOrAnxietyBinding: Binding<Symptom?> {
+//            Binding(
+//                get: { self.depressionOrAnxiety },
+//                set: { newValue in
+//                    if let newValue = newValue, self.depressionOrAnxiety == newValue {
+//                        self.depressionOrAnxiety = nil
+//                    } else {
+//                        self.depressionOrAnxiety = newValue
+//                    }
+//                }
+//            )
+//        }
+    
     var isActionButtonDisabled: Bool {
-        let disabled = selectedCategory == nil
+        let disabled = selectedActivity == nil
         return disabled
     }
-
+    
     var isSaveButtonDisabled: Bool {
-        let disabled = selectedCategory == nil
+        let disabled = selectedActivity == nil
         return disabled
     }
-
+    
     var isReviewDeleted = false
     var modeOfUse: ModeOfUse = .essentials
-
+    
     // MARK: - Initialization
-
+    
     init(
         modelContext: ModelContext,
         createReviewUseCase: CreateReviewUseCase,
@@ -90,23 +183,23 @@ class EditReviewViewModel {
         self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
         self.saveReviewUseCase = saveReviewUseCase
     }
-
+    
     // MARK: - View Lifecycle
-
+    
     func onViewFirstAppear() {
         fetchDefaultCategories()
         configureModeOfUse()
     }
-
+    
     func configureMode(with review: Review?) {
         if let review {
             mode = .edit
             loadReview(review)
         }
     }
-
+    
     // MARK: - User Actions
-
+    
     func toggleSelection<T: Equatable>(_ item: T, selectedItem: inout T?) {
         if selectedItem == item {
             selectedItem = nil
@@ -118,23 +211,11 @@ class EditReviewViewModel {
         }
     }
     
-    func setSymptomValue(for symptom: Symptom, with value: Int?) {
-        switch symptom {
-        case .wellBeing: wellBeing.setValue(value)
-        case .fatigue: fatigue.setValue(value)
-        case .shortnessOfBreath: shortnessOfBreath.setValue(value)
-        case .sleepDisorder: sleepDisorder.setValue(value)
-        case .cognitiveImpairment: cognitiveImpairment.setValue(value)
-        case .physicalPain: physicalPain.setValue(value)
-        case .depressionOrAnxiety: depressionOrAnxiety.setValue(value)
-        }
-    }
-    
     func createReview() {
         let result = createReviewUseCase.execute(
             date: date,
-            category: selectedCategory,
-            subcategory: selectedSubcategory,
+            activity: selectedActivity,
+            subactivity: selectedSubactivity,
             mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
             wellBeing: wellBeing,
@@ -150,18 +231,20 @@ class EditReviewViewModel {
             threshold: nil,
             interval: nil
         )
-
+        
+        print("DEBUGY:", wellBeing)
+        
         if case .failure = result {
             presentAlert(.unableToSaveReview)
         }
     }
-
+    
     func saveReview(_ review: Review?) {
         let result = saveReviewUseCase.execute(
             existingReview: review.unsafelyUnwrapped,
             newDate: date,
-            newCategory: selectedCategory,
-            newSubcategory: selectedSubcategory,
+            newActivity: selectedActivity,
+            newSubactivity: selectedSubactivity,
             newMood: selectedMood,
             newDidTriggerCrash: didTriggerCrash,
             newWellBeing: wellBeing,
@@ -178,7 +261,7 @@ class EditReviewViewModel {
             presentAlert(.unableToSaveReview)
         }
     }
-
+    
     func deleteReview(_ review: Review?) {
         isReviewDeleted = true
         guard let review else {
@@ -205,43 +288,43 @@ class EditReviewViewModel {
     func navigateTo(destination: EditReviewNavigationDestination) {
         navigationPath.append(destination)
     }
-
+    
     func presentSymptomValueSheet(for symptom: Symptom) {
         presentSheet(.symptomValueView(symptom))
     }
-
+    
     func presentSheet(_ sheet: EditReviewSheet) {
         activeSheet = sheet
     }
-
+    
     func dismissSheet(_ sheet: EditReviewSheet) {
         activeSheet = nil
     }
-
+    
     func presentAlert(_ alert: EditReviewAlert) {
         activeAlert = alert
     }
-
+    
     // MARK: - Private Methods
-
+    
     private func fetchDefaultCategories() {
         if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
             categories = fetchedCategories
         }
     }
-
+    
     private func loadReview(_ review: Review) {
         date = review.date
-        selectedCategory = review.category
-        selectedSubcategory = review.subcategory
+        selectedActivity = review.activity
+        selectedSubactivity = review.subactivity
         selectedMood = review.mood
-        wellBeing.setValue(review.wellBeing?.value)
-        fatigue.setValue(review.fatigue?.value)
-        shortnessOfBreath.setValue(review.shortnessOfBreath?.value)
-        sleepDisorder.setValue(review.sleepDisorder?.value)
-        cognitiveImpairment.setValue(review.cognitiveImpairment?.value)
-        physicalPain.setValue(review.physicalPain?.value)
-        depressionOrAnxiety.setValue(review.depressionOrAnxiety?.value)
+        wellBeing.setValue(review.wellBeing)
+        fatigue.setValue(review.fatigue)
+        shortnessOfBreath.setValue(review.shortnessOfBreath)
+        sleepDisorder.setValue(review.sleepDisorder)
+        cognitiveImpairment.setValue(review.cognitiveImpairment)
+        physicalPain.setValue(review.physicalPain)
+        depressionOrAnxiety.setValue(review.depressionOrAnxiety)
         didTriggerCrash = review.didTriggerCrash
         additionalInformation = review.additionalInformation
     }

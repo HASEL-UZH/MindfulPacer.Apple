@@ -10,8 +10,8 @@ import SwiftUI
 // MARK: - Presentation Enums
 
 enum EditReviewNavigationDestination: Hashable {
-    case category
-    case subcategory(Category?)
+    case activity
+    case subactivity(Activity?)
     case mood
 }
 
@@ -38,6 +38,9 @@ enum EditReviewAlert: Identifiable {
 
 // swiftlint:disable:next type_body_length
 struct EditReviewView: View {
+    
+    // MARK: Properties
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
@@ -54,10 +57,10 @@ struct EditReviewView: View {
                         date
 
                         VStack(spacing: 0) {
-                            category
-                            if viewModel.selectedCategory.isNotNil {
+                            activity
+                            if viewModel.selectedActivity.isNotNil {
                                 Divider()
-                                subcategory
+                                subactivity
                             }
                         }
                         
@@ -156,7 +159,7 @@ struct EditReviewView: View {
             Group {
                 switch symptom {
                 case .wellBeing:
-                    SymptomValueView(symptom: $viewModel.wellBeing)
+                    SymptomValueView(symptom: viewModel.wellBeingBinding)
                 case .fatigue:
                     SymptomValueView(symptom: $viewModel.fatigue)
                 case .shortnessOfBreath:
@@ -182,11 +185,11 @@ struct EditReviewView: View {
     @ViewBuilder
     private func navigationDestination(for destination: EditReviewNavigationDestination) -> some View {
         switch destination {
-        case .category:
-            CategoryView(viewModel: viewModel)
-        case .subcategory(let category):
-            SubcategoryView(
-                category: category.unsafelyUnwrapped,
+        case .activity:
+            ActivityView(viewModel: viewModel)
+        case .subactivity(let activity):
+            SubactivityView(
+                activity: activity.unsafelyUnwrapped,
                 viewModel: viewModel
             )
         case .mood:
@@ -213,14 +216,14 @@ struct EditReviewView: View {
         }
     }
 
-    // MARK: Category
+    // MARK: Activity
 
-    private var category: some View {
-        NavigationLink(value: EditReviewNavigationDestination.category) {
+    private var activity: some View {
+        NavigationLink(value: EditReviewNavigationDestination.activity) {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.2x2.fill",
-                    title: "Category",
+                    title: "Activity",
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -232,8 +235,8 @@ struct EditReviewView: View {
                 Spacer(minLength: 16)
 
                 HStack(spacing: 4) {
-                    if let category = viewModel.selectedCategory {
-                        Text(category.name)
+                    if let activity = viewModel.selectedActivity {
+                        Text(activity.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
                     }
@@ -244,7 +247,7 @@ struct EditReviewView: View {
             }
             .padding()
             .background {
-                if viewModel.selectedCategory.isNil {
+                if viewModel.selectedActivity.isNil {
                     RoundedRectangle(cornerRadius: 16)
                         .foregroundStyle(Color(.secondarySystemGroupedBackground))
                 } else {
@@ -255,14 +258,14 @@ struct EditReviewView: View {
         }
     }
 
-    // MARK: Subcategory
+    // MARK: Subactivity
 
-    private var subcategory: some View {
-        NavigationLink(value: EditReviewNavigationDestination.subcategory(viewModel.selectedCategory)) {
+    private var subactivity: some View {
+        NavigationLink(value: EditReviewNavigationDestination.subactivity(viewModel.selectedActivity)) {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.3x3.fill",
-                    title: "Subcategory",
+                    title: "Subactivity",
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -274,8 +277,8 @@ struct EditReviewView: View {
                 Spacer(minLength: 16)
 
                 HStack(spacing: 4) {
-                    if let subcategory = viewModel.selectedSubcategory {
-                        Text(subcategory.name)
+                    if let subactivity = viewModel.selectedSubactivity {
+                        Text(subactivity.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
                     }
@@ -381,7 +384,8 @@ struct EditReviewView: View {
                     title: symptom.displayName,
                     labelColor: Color("BrandPrimary"),
                     background: true,
-                    axis: .vertical
+                    axis: .vertical,
+                    truncationMode: symptom.truncationMode
                 )
             ) {
                 Text(symptom.description)

@@ -12,8 +12,8 @@ protocol SaveReviewUseCase {
     func execute(
         existingReview: Review,
         newDate: Date,
-        newCategory: Category?,
-        newSubcategory: Subcategory?,
+        newActivity: Activity?,
+        newSubactivity: Subactivity?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
         newWellBeing: Symptom?,
@@ -39,8 +39,8 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
     func execute(
         existingReview: Review,
         newDate: Date,
-        newCategory: Category?,
-        newSubcategory: Subcategory?,
+        newActivity: Activity?,
+        newSubactivity: Subactivity?,
         newMood: Mood?,
         newDidTriggerCrash: Bool,
         newWellBeing: Symptom?,
@@ -53,17 +53,17 @@ class DefaultSaveReviewUseCase: SaveReviewUseCase {
         newAdditionalInformation: String
     ) -> Result<Review, Error> {
         existingReview.date = newDate
-        existingReview.category = newCategory
-        existingReview.subcategory = newSubcategory
+        existingReview.activity = newActivity
+        existingReview.subactivity = newSubactivity
         existingReview.mood = newMood
         existingReview.didTriggerCrash = newDidTriggerCrash
-        existingReview.wellBeing = newWellBeing
-        existingReview.fatigue = newFatigue
-        existingReview.shortnessOfBreath = newShortnessOfBreath
-        existingReview.sleepDisorder = newSleepDisorder
-        existingReview.cognitiveImpairment = newCognitiveImpairment
-        existingReview.physicalPain = newPhysicalPain
-        existingReview.depressionOrAnxiety = newDepressionOrAnxiety
+        existingReview.wellBeing = newWellBeing?.value
+        existingReview.fatigue = newFatigue?.value
+        existingReview.shortnessOfBreath = newShortnessOfBreath?.value
+        existingReview.sleepDisorder = newSleepDisorder?.value
+        existingReview.cognitiveImpairment = newCognitiveImpairment.value
+        existingReview.physicalPain = newPhysicalPain?.value
+        existingReview.depressionOrAnxiety = newDepressionOrAnxiety?.value
         existingReview.additionalInformation = newAdditionalInformation
         
         do {

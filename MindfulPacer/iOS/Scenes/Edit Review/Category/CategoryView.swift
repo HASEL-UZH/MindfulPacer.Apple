@@ -1,5 +1,5 @@
 //
-//  CategoryView.swift
+//  ActivityView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 20.08.2024.
@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-// MARK: - CategoryView
+// MARK: - ActivityView
 
 extension EditReviewView {
-    struct CategoryView: View {
+    struct ActivityView: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: EditReviewViewModel
@@ -23,20 +24,20 @@ extension EditReviewView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 2),
                     spacing: 16
                 ) {
-                    ForEach(viewModel.categories) { category in
+                    ForEach(viewModel.categories) { activity in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedCategory == category
+                            isSelected: viewModel.selectedActivity == activity
                         ) {
-                            viewModel.toggleSelection(category, selectedItem: &viewModel.selectedCategory)
+                            viewModel.toggleSelection(activity, selectedItem: &viewModel.selectedActivity)
                         } label: {
                             VStack(spacing: 16) {
-                                Image(systemName: category.icon)
+                                Image(systemName: activity.icon)
                                     .resizable()
                                     .scaledToFit()
                                     .symbolVariant(.fill)
                                     .frame(width: 32, height: 32)
-                                Text(category.name)
+                                Text(activity.name)
                                     .font(.subheadline)
                                     .lineLimit(2)
                             }
@@ -45,7 +46,7 @@ extension EditReviewView {
                 }
                 .padding(.horizontal)
             }
-            .navigationTitle("Category")
+            .navigationTitle("Activity")
             .background {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
@@ -60,8 +61,8 @@ extension EditReviewView {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
 
     NavigationStack {
-        EditReviewView.CategoryView(viewModel: viewModel)
-            .navigationTitle("Category")
+        EditReviewView.ActivityView(viewModel: viewModel)
+            .navigationTitle("Activity")
             .tint(Color("BrandPrimary"))
             .onAppear {
                 viewModel.onViewFirstAppear()

@@ -11,6 +11,7 @@ import SwiftUI
 
 extension HomeView {
     struct ReviewsWidget: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: HomeViewModel

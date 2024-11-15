@@ -9,13 +9,12 @@ import Combine
 import Foundation
 import SwiftData
 import SwiftUI
-import CocoaLumberjackSwift
 
 // MARK: - Review Filter & Sorting
 
 struct ReviewFilter: Equatable {
-    var selectedCategories: [Category] = []
-    var selectedSubcategories: [Subcategory] = []
+    var selectedCategories: [Activity] = []
+    var selectedSubcategories: [Subactivity] = []
     var selectedMoods: [Mood] = []
     var triggeredCrash: Bool = false
 
@@ -84,8 +83,8 @@ class ReviewsFilterViewModel {
         )
     }
 
-    var categories: [Category] = []
-    var subcategories: [Subcategory] {
+    var categories: [Activity] = []
+    var subcategories: [Subactivity] {
         categories.flatMap { $0.subcategories ?? [] }
     }
     var reviewFilter = ReviewFilter()
@@ -116,18 +115,15 @@ class ReviewsFilterViewModel {
 
     init(fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase) {
         self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
-        DDLogInfo("ReviewsFilterViewModel initialized")
     }
 
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
-        DDLogInfo("onViewFirstAppear called")
         fetchDefaultReviewCategories()
     }
 
     func setPublisher(_ publisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?) {
-        DDLogInfo("setPublisher called")
         self.filterAndSortingPublisher = publisher
         bindToPublisher()
     }
@@ -135,7 +131,6 @@ class ReviewsFilterViewModel {
     // MARK: - User Actions
 
     func resetFilters() {
-        DDLogInfo("resetFilters called")
         if reviewFilter != ReviewFilter() || reviewSorting != .dateDescending {
             reviewFilter = ReviewFilter()
             reviewSorting = .dateDescending
@@ -143,38 +138,32 @@ class ReviewsFilterViewModel {
         }
     }
 
-    func toggleFilterCategory(_ category: Category) {
-        DDLogInfo("toggleFilterCategory called with category: \(category.name)")
-        toggleSelection(in: &reviewFilter.selectedCategories, item: category)
+    func toggleFilterActivity(_ activity: Activity) {
+        toggleSelection(in: &reviewFilter.selectedCategories, item: activity)
         publishChanges()
     }
 
-    func toggleFilterSubcategory(_ subcategory: Subcategory) {
-        DDLogInfo("toggleFilterSubcategory called with subcategory: \(subcategory.name)")
-        toggleSelection(in: &reviewFilter.selectedSubcategories, item: subcategory)
+    func toggleFilterSubactivity(_ subactivity: Subactivity) {
+        toggleSelection(in: &reviewFilter.selectedSubcategories, item: subactivity)
         publishChanges()
     }
 
     func toggleFilterMood(_ mood: Mood) {
-        DDLogInfo("toggleFilterMood called with mood: \(mood.text)")
         toggleSelection(in: &reviewFilter.selectedMoods, item: mood)
         publishChanges()
     }
 
     func toggleTriggeredCrash() {
-        DDLogInfo("toggleTriggeredCrash called")
         reviewFilter.triggeredCrash.toggle()
         publishChanges()
     }
 
     func updateTriggeredCrash(_ isOn: Bool) {
-        DDLogInfo("updateTriggeredCrash called with value: \(isOn)")
         reviewFilter.triggeredCrash = isOn
         publishChanges()
     }
 
     func updateSorting(_ sorting: ReviewSorting) {
-        DDLogInfo("updateSorting called with sorting: \(sorting)")
         reviewSorting = sorting
         publishChanges()
     }
@@ -182,15 +171,12 @@ class ReviewsFilterViewModel {
     // MARK: - Private Methods
 
     private func fetchDefaultReviewCategories() {
-        DDLogInfo("fetchDefaultReviewCategories called")
         self.categories = fetchDefaultCategoriesUseCase.execute() ?? []
     }
 
     private func bindToPublisher() {
-        DDLogInfo("bindToPublisher called")
         filterAndSortingPublisher?
             .sink { [weak self] (filter, sorting) in
-                DDLogInfo("Received new filter and sorting: \(filter), \(sorting)")
                 self?.reviewFilter = filter
                 self?.reviewSorting = sorting
             }
@@ -198,28 +184,23 @@ class ReviewsFilterViewModel {
     }
 
     private func publishChanges() {
-        DDLogInfo("publishChanges called with filter: \(reviewFilter), sorting: \(reviewSorting)")
         filterAndSortingPublisher?.send((reviewFilter, reviewSorting))
     }
 
     private func toggleSelection<T: Equatable>(in list: inout [T], item: T) {
         if let index = list.firstIndex(of: item) {
-            DDLogInfo("Removing item from list: \(item)")
             list.remove(at: index)
         } else {
-            DDLogInfo("Adding item to list: \(item)")
             list.append(item)
         }
     }
 
     private func updateFromDate(_ fromDate: Date) {
-        DDLogInfo("updateFromDate called with date: \(fromDate)")
         reviewFilter.fromDate = fromDate
         publishChanges()
     }
 
     private func updateToDate(_ toDate: Date) {
-        DDLogInfo("updateToDate called with date: \(toDate)")
         reviewFilter.toDate = toDate
         publishChanges()
     }

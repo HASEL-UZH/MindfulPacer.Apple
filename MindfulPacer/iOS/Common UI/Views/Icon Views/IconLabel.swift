@@ -27,6 +27,7 @@ struct IconLabelStyleConfiguration {
     let symbolRenderingMode: SymbolRenderingMode
     let background: Bool
     let axis: Axis
+    let truncationMode: Text.TruncationMode
 }
 
 // MARK: - Type-Erased Style Wrapper
@@ -64,7 +65,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(configuration.title)
                                 .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                                .truncationMode(.middle)
+                                .truncationMode(configuration.truncationMode) // Apply truncation mode
                             Text(description)
                                 .font(.subheadline)
                                 .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
@@ -72,7 +73,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                     } else {
                         Text(configuration.title)
                             .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                            .truncationMode(.middle)
+                            .truncationMode(configuration.truncationMode) // Apply truncation mode
                     }
                 } icon: {
                     Icon(
@@ -99,7 +100,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(configuration.title)
                                 .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                                .truncationMode(.middle)
+                                .truncationMode(configuration.truncationMode) // Apply truncation mode
                             Text(description)
                                 .font(.subheadline)
                                 .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
@@ -107,7 +108,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                     } else {
                         Text(configuration.title)
                             .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                            .truncationMode(.middle)
+                            .truncationMode(configuration.truncationMode)
                     }
                 }
             }
@@ -125,7 +126,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                 Label {
                     Text(configuration.title)
                         .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(.middle)
+                        .truncationMode(configuration.truncationMode) // Apply truncation mode
                 } icon: {
                     Icon(
                         name: configuration.icon,
@@ -149,7 +150,7 @@ struct PillIconLabelStyle: IconLabelStyle {
 
                     Text(configuration.title)
                         .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(.middle)
+                        .truncationMode(configuration.truncationMode)
                 }
             }
         }
@@ -192,6 +193,7 @@ struct IconLabel: View {
     var symbolRenderingMode: SymbolRenderingMode = .monochrome
     var background: Bool = false
     var axis: Axis = .horizontal
+    var truncationMode: Text.TruncationMode = .middle
 
     @Environment(\.iconLabelStyle) private var style
 
@@ -208,7 +210,8 @@ struct IconLabel: View {
             symbolVariant: symbolVariant,
             symbolRenderingMode: symbolRenderingMode,
             background: background,
-            axis: axis
+            axis: axis,
+            truncationMode: truncationMode
         ))
     }
 }
@@ -251,7 +254,8 @@ extension View {
             image: Image(.mindfulPacerIcon),
             title: "Custom Icon",
             labelColor: .brandPrimary,
-            background: true
+            background: true,
+            truncationMode: .tail
         )
     }
 }

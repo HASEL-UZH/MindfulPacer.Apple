@@ -19,26 +19,26 @@ enum Period: String, CaseIterable {
     var startDate: Date {
         switch self {
         case .oneHour:
-            Calendar.current.date(byAdding: .hour, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date())!
         case .twoHours:
-            Calendar.current.date(byAdding: .hour, value: -2, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -2, to: Date())!
         case .day:
-            Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .day, value: -1, to: Date())!
         case .week:
-            Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())!
         }
     }
     
     var description: String {
         switch self {
         case .oneHour:
-            "one hour"
+            return "one hour"
         case .twoHours:
-            "two hours"
+            return "two hours"
         case .day:
-            "day"
+            return "day"
         case .week:
-            "week"
+            return "week"
         }
     }
 }
@@ -80,7 +80,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         let typesToRead: Set = [heartRateType, stepType]
         
         healthStore?.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
-            // Ensure the completion runs on the main thread.
             DispatchQueue.main.async {
                 if let error = error {
                     let customError = HealthKitError(type: .unknownError, underlyingError: error)
@@ -105,25 +104,104 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
         
         let predicate = HKQuery.predicateForSamples(withStart: period.startDate, end: Date(), options: .strictEndDate)
+        
+        if measurementType == .steps {
+            // Use HKStatisticsCollectionQuery for steps data
+            fetchStepsData(using: quantityType, predicate: predicate, period: period, completion: completion)
+        } else {
+            // Use HKSampleQuery for heart rate data
+            fetchHeartRateData(using: quantityType, predicate: predicate, completion: completion)
+        }
+    }
+    
+    // MARK: - Fetch Steps Data using HKStatisticsCollectionQuery
+    
+    private func fetchStepsData(using quantityType: HKQuantityType, predicate: NSPredicate, period: Period, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
+        let calendar = Calendar.current
+        
+        let intervalComponents: DateComponents
+        switch period {
+        case .oneHour:
+            intervalComponents = DateComponents(minute: 10) // 10-minute intervals
+        case .twoHours:
+            intervalComponents = DateComponents(minute: 15) // 15-minute intervals
+        case .day:
+            intervalComponents = DateComponents(hour: 2) // 2-hour intervals
+        case .week:
+            intervalComponents = DateComponents(day: 1) // Each day
+        }
+        
+        // Set up the statistics collection query
+        let query = HKStatisticsCollectionQuery(
+            quantityType: quantityType,
+            quantitySamplePredicate: predicate,
+            options: [.cumulativeSum],
+            anchorDate: period.startDate,
+            intervalComponents: intervalComponents
+        )
+        
+        query.initialResultsHandler = { query, statisticsCollection, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
+                }
+                return
+            }
+            
+            guard let statisticsCollection = statisticsCollection else {
+                DispatchQueue.main.async {
+                    completion(.failure(HealthKitError(type: .failedToFetchSamples)))
+                }
+                return
+            }
+            
+            var samples: [HKQuantitySample] = []
+            statisticsCollection.enumerateStatistics(from: period.startDate, to: Date()) { statistics, _ in
+                if let sum = statistics.sumQuantity() {
+                    let sample = HKQuantitySample(
+                        type: quantityType,
+                        quantity: sum,
+                        start: statistics.startDate,
+                        end: statistics.endDate
+                    )
+                    samples.append(sample)
+                }
+            }
+            
+            // Create an immutable copy to avoid data races
+            let samplesCopy = samples
+            
+            samplesCopy.forEach { sample in
+                print("DEBUGY:", sample.quantity, sample.startDate, sample.endDate)
+            }
+            
+            completion(.success(samplesCopy))
+        }
+        
+        healthStore?.execute(query)
+    }
+    
+    // MARK: - Fetch Heart Rate Data using HKSampleQuery
+    
+    private func fetchHeartRateData(using quantityType: HKQuantityType, predicate: NSPredicate, completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void) {
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, results, error in
             if let error = error {
-                Task { @MainActor in
+                DispatchQueue.main.async {
                     completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
                 }
                 return
             }
             
             guard let samples = results as? [HKQuantitySample] else {
-                Task { @MainActor in
+                DispatchQueue.main.async {
                     completion(.failure(HealthKitError(type: .failedToFetchSamples)))
                 }
                 return
             }
             
-            let aggregatedSamples = self.aggregateSamples(samples, for: period, measurementType: measurementType)
+            completion(.success(samples))
             
-            completion(.success(aggregatedSamples))
         }
         
         healthStore?.execute(query)
@@ -137,96 +215,63 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
-        // Define the time range as starting from the beginning of today until now
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let endOfDay = Date()
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: endOfDay, options: .strictEndDate)
         
-        let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]) { _, results, error in
-            if let error = error {
-                Task { @MainActor in
-                    completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
+        if measurementType == .steps {
+            // Use HKStatisticsQuery for current day's steps
+            let query = HKStatisticsQuery(quantityType: quantityType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
+                    }
+                    return
                 }
-                return
-            }
-            
-            guard let samples = results as? [HKQuantitySample], !samples.isEmpty else {
-                Task { @MainActor in
-                    completion(.failure(HealthKitError(type: .failedToFetchSamples)))
-                }
-                return
-            }
-            
-            switch measurementType {
-            case .steps:
-                // Aggregate steps count and get the timestamp of the last recorded sample
-                let totalSteps = samples.reduce(0) { $0 + $1.quantity.doubleValue(for: HKUnit.count()) }
-                let lastTimestamp = samples.first!.endDate  // Latest sample is at index 0 due to descending sort
-                completion(.success((totalSteps, lastTimestamp)))
                 
-            case .heartRate:
-                // Return the latest heart rate value and its timestamp
-                let latestHeartRate = samples.first!.quantity.doubleValue(for: HKUnit(from: "count/min"))
-                let lastTimestamp = samples.first!.endDate
-                completion(.success((latestHeartRate, lastTimestamp)))
+                guard let result = result, let sum = result.sumQuantity() else {
+                    DispatchQueue.main.async {
+                        completion(.failure(HealthKitError(type: .failedToFetchSamples)))
+                    }
+                    return
+                }
+                
+                let totalSteps = sum.doubleValue(for: HKUnit.count())
+                let timestamp = Date()
+                
+                DispatchQueue.main.async {
+                    completion(.success((totalSteps, timestamp)))
+                }
             }
+            
+            healthStore?.execute(query)
+        } else {
+            // For heart rate, fetch the most recent sample
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+            let query = HKSampleQuery(sampleType: quantityType, predicate: predicate, limit: 1, sortDescriptors: [sortDescriptor]) { _, results, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        completion(.failure(HealthKitError(type: .unknownError, underlyingError: error)))
+                    }
+                    return
+                }
+                
+                guard let sample = results?.first as? HKQuantitySample else {
+                    DispatchQueue.main.async {
+                        completion(.failure(HealthKitError(type: .failedToFetchSamples)))
+                    }
+                    return
+                }
+                
+                let latestHeartRate = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                let timestamp = sample.endDate
+                
+                DispatchQueue.main.async {
+                    completion(.success((latestHeartRate, timestamp)))
+                }
+            }
+            
+            healthStore?.execute(query)
         }
-        
-        healthStore?.execute(query)
-    }
-    
-    // MARK: - Aggregate Samples
-    
-    private func aggregateSamples(_ samples: [HKQuantitySample], for period: Period, measurementType: MeasurementType) -> [HKQuantitySample] {
-        var groupedSamples: [Date: [Double]] = [:]
-        let calendar = Calendar.current
-        
-        for sample in samples {
-            var normalizedDate: Date
-            
-            if period == .oneHour || period == .twoHours {
-                normalizedDate = calendar.date(bySetting: .minute, value: calendar.component(.minute, from: sample.startDate), of: sample.startDate)!
-                normalizedDate = calendar.date(bySetting: .second, value: 0, of: normalizedDate)!
-            } else if period == .day {
-                normalizedDate = calendar.date(bySetting: .hour, value: calendar.component(.hour, from: sample.startDate), of: sample.startDate)!
-                normalizedDate = calendar.date(bySetting: .minute, value: 0, of: normalizedDate)!
-                normalizedDate = calendar.date(bySetting: .second, value: 0, of: normalizedDate)!
-            } else if period == .week {
-                normalizedDate = calendar.startOfDay(for: sample.startDate)
-            } else {
-                normalizedDate = sample.startDate
-            }
-            
-            // Store values for each normalized date
-            if groupedSamples[normalizedDate] == nil {
-                groupedSamples[normalizedDate] = []
-            }
-            groupedSamples[normalizedDate]?.append(sample.quantity.doubleValue(for: measurementType == .steps ? HKUnit.count() : HKUnit(from: "count/min")))
-        }
-        
-        // Convert the grouped data back to HKQuantitySample-like structures
-        var aggregatedSamples: [HKQuantitySample] = []
-        for (normalizedDate, values) in groupedSamples {
-            let aggregatedValue: Double
-            
-            switch measurementType {
-            case .steps:
-                // Sum steps
-                aggregatedValue = values.reduce(0, +)
-            case .heartRate:
-                // Average heart rate
-                aggregatedValue = values.reduce(0, +) / Double(values.count)
-            }
-            
-            let sample = HKQuantitySample(
-                type: HKQuantityType.quantityType(forIdentifier: measurementType == .steps ? .stepCount : .heartRate)!,
-                quantity: HKQuantity(unit: measurementType == .steps ? HKUnit.count() : HKUnit(from: "count/min"), doubleValue: aggregatedValue),
-                start: normalizedDate,
-                end: normalizedDate
-            )
-            aggregatedSamples.append(sample)
-        }
-        
-        return aggregatedSamples.sorted { $0.startDate < $1.startDate }
     }
 }

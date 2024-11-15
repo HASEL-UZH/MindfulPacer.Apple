@@ -1,24 +1,6 @@
 {
-  "originHash" : "ba80d0652107b814c72b4a0338bd2e76c07552a4a3b7d4035960662141dd8e36",
+  "originHash" : "52076dacffa7f364cea74de4adf70491517e94c911cf0528312a89e5d34e198f",
   "pins" : [
-    {
-      "identity" : "bottomsheet",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/lucaszischka/BottomSheet",
-      "state" : {
-        "revision" : "720ddbd1371fef2a09cc1ab65fc503df37767f9c",
-        "version" : "3.1.1"
-      }
-    },
-    {
-      "identity" : "cocoalumberjack",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
-      "state" : {
-        "revision" : "4b8714a7fb84d42393314ce897127b3939885ec3",
-        "version" : "3.8.5"
-      }
-    },
     {
       "identity" : "collectionconcurrencykit",
       "kind" : "remoteSourceControl",
@@ -74,15 +56,6 @@
       }
     },
     {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log",
-      "state" : {
-        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
-        "version" : "1.6.1"
-      }
-    },
-    {
       "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-numerics.git",
@@ -125,15 +98,6 @@
       "state" : {
         "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
         "version" : "7.0.2"
-      }
-    },
-    {
-      "identity" : "systemnotification",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/danielsaidi/SystemNotification.git",
-      "state" : {
-        "revision" : "c0d2dbd7c0320656728a0e876bf552f959e0e5a2",
-        "version" : "1.1.1"
       }
     },
     {

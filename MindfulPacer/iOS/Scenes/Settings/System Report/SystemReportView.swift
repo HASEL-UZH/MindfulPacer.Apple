@@ -11,6 +11,7 @@ import SwiftUI
 
 extension SettingsView {
     struct SystemReportView: View {
+        
         // MARK: Properties
         
         @Bindable var viewModel: SettingsViewModel

@@ -11,6 +11,7 @@ import SwiftUI
 
 extension CreateReviewReminderView {
     struct SummaryView: View {
+        
         // MARK: Properties
         
         @Bindable var viewModel: CreateReviewReminderViewModel

@@ -30,9 +30,9 @@ extension HomeView {
                     .foregroundStyle(Color.primary)
             }
         }
-
+        
         // MARK: Steps Summary
-
+        
         @ViewBuilder
         private var stepsSummary: some View {
             if let currentSteps = viewModel.currentSteps {
@@ -40,6 +40,8 @@ extension HomeView {
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text("\(Int(currentSteps.stepCount))")
                             .font(.title.weight(.semibold))
+                            .minimumScaleFactor(0.75)
+                            .lineLimit(1)
                         Text("steps")
                             .foregroundStyle(.secondary)
                     }
@@ -70,6 +72,6 @@ extension HomeView {
 
 #Preview {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-
+    
     HomeView.StepsWidget(viewModel: viewModel)
 }

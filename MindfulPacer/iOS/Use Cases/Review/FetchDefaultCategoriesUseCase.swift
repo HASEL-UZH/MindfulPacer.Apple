@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 protocol FetchDefaultCategoriesUseCase {
-    func execute() -> [Category]?
+    func execute() -> [Activity]?
 }
 
 // MARK: - Use Case Implementation
@@ -21,9 +21,9 @@ class DefaultFetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase {
         self.modelContext = modelContext
     }
 
-    func execute() -> [Category]? {
+    func execute() -> [Activity]? {
         do {
-            let descriptor = FetchDescriptor<Category>(sortBy: [SortDescriptor(\.name)])
+            let descriptor = FetchDescriptor<Activity>(sortBy: [SortDescriptor(\.name)])
             let categories = try modelContext.fetch(descriptor)
             return categories
         } catch {

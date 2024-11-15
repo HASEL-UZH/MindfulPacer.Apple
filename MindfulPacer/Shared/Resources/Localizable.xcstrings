@@ -7,6 +7,26 @@
     "**Updated:** %@" : {
 
     },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "%@ data within last %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ data within last %2$@."
+          }
+        }
+      }
+    },
     "%lld" : {
 
     },
@@ -20,6 +40,9 @@
 
     },
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
+
+    },
+    "Activity" : {
 
     },
     "Analytics" : {
@@ -49,9 +72,6 @@
     "Categories" : {
 
     },
-    "Category" : {
-
-    },
     "Choose a review reminder type, which will be reflected in the color of the review reminder notifications you receive." : {
 
     },
@@ -77,6 +97,9 @@
 
     },
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered." : {
+
+    },
+    "End" : {
 
     },
     "Error Saving Review Reminder" : {
@@ -236,10 +259,10 @@
     "Steps" : {
 
     },
-    "Subcategories" : {
+    "Subactivity" : {
 
     },
-    "Subcategory" : {
+    "Subcategories" : {
 
     },
     "Summary of number of review reminders triggered, by review reminder type." : {
@@ -298,16 +321,6 @@
     },
     "View Options" : {
 
-    },
-    "Visualise your %@ data within the last %@." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Visualise your %1$@ data within the last %2$@."
-          }
-        }
-      }
     },
     "When in doubt, please contact an experienced physician, personal trainer or other qualified professional." : {
 
