@@ -18,6 +18,6 @@ final class DataContainer: SharedContainer, @unchecked Sendable {
 extension DataContainer {
     @MainActor
     var roadmapRepository: Factory<RoadmapRepository> {
-        self { DefaultRoadmapRepository() }
+        self { DefaultRoadmapRepository(roadmapAPI: RoadmapAPIService.shared) }
     }
 }

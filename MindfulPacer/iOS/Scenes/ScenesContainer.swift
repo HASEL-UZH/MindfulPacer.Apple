@@ -117,6 +117,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
             SettingsViewModel(
+                checkInternetConnectivityUseCase: UseCasesContainer.shared.checkInternetConnectivityUseCase(),
                 fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
                 fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase(),
                 fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),

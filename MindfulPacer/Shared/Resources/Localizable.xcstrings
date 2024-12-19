@@ -172,6 +172,9 @@
     "No data" : {
 
     },
+    "No Internet Connection" : {
+
+    },
     "No Interval Selected" : {
 
     },
@@ -329,6 +332,9 @@
 
     },
     "When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you." : {
+
+    },
+    "You are not connected to the internet. Please check your connection and try again." : {
 
     },
     "You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch" : {

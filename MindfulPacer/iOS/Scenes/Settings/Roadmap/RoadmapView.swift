@@ -45,6 +45,23 @@ extension SettingsView {
                             .tint(Color("BrandPrimary"))
                     }
                 }
+                .overlay {
+                    if !viewModel.isInternetConnected {
+                        noInternetConnectionState
+                    }
+                }
+            }
+        }
+        
+        // MARK: No Internet Connection State
+        
+        var noInternetConnectionState: some View {
+            VStack(alignment: .leading, spacing: 16) {
+                ContentUnavailableView {
+                    Label("No Internet Connection", systemImage: "wifi.slash")
+                } description: {
+                    Text("You are not connected to the internet. Please check your connection and try again.")
+                }
             }
         }
         

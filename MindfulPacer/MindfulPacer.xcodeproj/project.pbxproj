@@ -13,6 +13,8 @@
 		0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */; };
 		0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1016F12C57B229008AF31D /* HealthKitService.swift */; };
 		0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1B26B92C8CFE050086FD50 /* ReviewsFilterViewModel.swift */; };
+		0D1D71EC2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D71EB2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift */; };
+		0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */; };
 		0D1FD5162CA326C9008153A0 /* FetchReviewsInPeriodUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1FD5152CA326C9008153A0 /* FetchReviewsInPeriodUseCase.swift */; };
 		0D216EF12CC12C8F00716592 /* ListenToThemeChangesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D216EF02CC12C8F00716592 /* ListenToThemeChangesUseCase.swift */; };
 		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
@@ -194,6 +196,8 @@
 		0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabelGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		0D1B26B92C8CFE050086FD50 /* ReviewsFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterViewModel.swift; sourceTree = "<group>"; };
+		0D1D71EB2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInternetConnectivityUseCase.swift; sourceTree = "<group>"; };
+		0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorService.swift; sourceTree = "<group>"; };
 		0D1FD5152CA326C9008153A0 /* FetchReviewsInPeriodUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReviewsInPeriodUseCase.swift; sourceTree = "<group>"; };
 		0D216EF02CC12C8F00716592 /* ListenToThemeChangesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenToThemeChangesUseCase.swift; sourceTree = "<group>"; };
 		0D2F82042C46653E0004CD34 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -649,6 +653,7 @@
 		0D67F4382C919363000F6114 /* System */ = {
 			isa = PBXGroup;
 			children = (
+				0D1D71EB2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift */,
 				0D67F4392C91936D000F6114 /* InitializeNotificationsUseCase.swift */,
 			);
 			path = System;
@@ -980,6 +985,7 @@
 			children = (
 				0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */,
 				0D1016F12C57B229008AF31D /* HealthKitService.swift */,
+				0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */,
 				0D500FC32C73560A00395AEB /* NotificationService.swift */,
 				0D93514C2D12F9670028AA61 /* RoadmapAPIService.swift */,
 			);
@@ -1268,6 +1274,7 @@
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* ReviewReminder.swift in Sources */,
+				0D1D71EC2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift in Sources */,
 				0D3006D92C99823C008F11C7 /* Date+Extensions.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Review.swift in Sources */,
 				0D909E272C9043B300377589 /* OnboardingView.swift in Sources */,
@@ -1319,6 +1326,7 @@
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
 				0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */,
 				0D9AB0CF2C6E8B3600BB773F /* CreateReviewReminderViewModel.swift in Sources */,
+				0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */,
 				0D67F43F2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift in Sources */,
 				0D6AEB4F2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift in Sources */,
 				0D1FD5162CA326C9008153A0 /* FetchReviewsInPeriodUseCase.swift in Sources */,

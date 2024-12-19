@@ -160,6 +160,11 @@ extension UseCasesContainer {
     // MARK: - System
 
     @MainActor
+    var checkInternetConnectivityUseCase: Factory<DefaultCheckInternetConnectivityUseCase> {
+        self { DefaultCheckInternetConnectivityUseCase(networkMonitor: NetworkMonitorService.shared) }
+    }
+    
+    @MainActor
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
         self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }

@@ -16,9 +16,9 @@ protocol RoadmapRepository {
 // MARK: - DefaultRoadmapRepository
 
 class DefaultRoadmapRepository: RoadmapRepository {
-    private let roadmapAPI: RoadmapAPI
+    private let roadmapAPI: RoadmapAPIServiceProtocol
 
-    init(roadmapAPI: RoadmapAPI = RoadmapAPIService()) {
+    init(roadmapAPI: RoadmapAPIServiceProtocol) {
         self.roadmapAPI = roadmapAPI
     }
     

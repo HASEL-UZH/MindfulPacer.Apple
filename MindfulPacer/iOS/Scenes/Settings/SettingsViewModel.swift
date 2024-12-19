@@ -40,6 +40,28 @@ enum Theme: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - RoadmapFetchError
+
+enum RoadmapFetchError: LocalizedError {
+    case noInternetConnection
+    case serverError
+    case decodingError
+    case unknownError
+    
+    var errorDescription: String? {
+        switch self {
+        case .noInternetConnection:
+            return "No internet connection. Please check your Wi-Fi or cellular network."
+        case .serverError:
+            return "Unable to fetch the roadmap. Please try again later."
+        case .decodingError:
+            return "Failed to decode the roadmap data."
+        case .unknownError:
+            return "An unknown error occurred. Please try again."
+        }
+    }
+}
+
 // MARK: - SettingsViewModel
 
 @MainActor
@@ -48,6 +70,7 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
+    private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
     private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
     private let fetchRoadmapUseCase: FetchRoadmapUseCase
     private let fetchThemeUseCase: FetchThemeUseCase
@@ -63,6 +86,8 @@ class SettingsViewModel {
     
     var isFetchingRoadmap: Bool = false
     var roadmapItems: [RoadmapItem] = []
+    var isInternetConnected: Bool = true
+    var fetchErrorMessage: String?
     
     var selectedTheme: Theme = .system
     var isExpandedModeOfUseOn: Bool = false {
@@ -134,12 +159,14 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
+        checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase,
         fetchModeOfUseUseCase: FetchModeOfUseUseCase,
         fetchRoadmapUseCase: FetchRoadmapUseCase,
         fetchThemeUseCase: FetchThemeUseCase,
         setModeOfUseUseCase: SetModeOfUseUseCase,
         setThemeUseCase: SetThemeUseCase
     ) {
+        self.checkInternetConnectivityUseCase = checkInternetConnectivityUseCase
         self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
         self.fetchRoadmapUseCase = fetchRoadmapUseCase
         self.fetchThemeUseCase = fetchThemeUseCase
@@ -189,25 +216,34 @@ class SettingsViewModel {
     }
     
     private func fetchRoadmap() {
-        let useCase = fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
+        let fetchRoadmapUseCase = self.fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
+        let checkInternetConnectivityUseCase = self.checkInternetConnectivityUseCase // TODO: Temporary fix, find the root cause of the error
         
         Task { [weak self] in
             guard let self = self else { return }
+            
+            self.isInternetConnected = await checkInternetConnectivityUseCase.execute()
             self.isFetchingRoadmap = true
             
-            do {
-                let roadmapItems = try await useCase.execute()
-                print("DEBUGY:", roadmapItems)
-                DispatchQueue.main.async {
-                    self.roadmapItems = roadmapItems
-                }
-            } catch {
-                print("DEBUGY: Error fetching roadmap:", error)
+            guard self.isInternetConnected else {
+                self.fetchErrorMessage = RoadmapFetchError.noInternetConnection.localizedDescription
+                self.isFetchingRoadmap = false
+                return
             }
             
-            DispatchQueue.main.async {
-                self.isFetchingRoadmap = false
+            self.isFetchingRoadmap = true
+            self.fetchErrorMessage = nil
+            
+            do {
+                let roadmapItems = try await fetchRoadmapUseCase.execute()
+                self.roadmapItems = roadmapItems
+            } catch let error as RoadmapFetchError {
+                self.fetchErrorMessage = error.localizedDescription
+            } catch {
+                self.fetchErrorMessage = RoadmapFetchError.unknownError.localizedDescription
             }
+            
+            self.isFetchingRoadmap = false
         }
     }
 }

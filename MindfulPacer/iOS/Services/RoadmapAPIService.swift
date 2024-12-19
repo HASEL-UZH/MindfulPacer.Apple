@@ -9,13 +9,15 @@ import Foundation
 
 // MARK: - RoadmapAPI
 
-protocol RoadmapAPI {
+protocol RoadmapAPIServiceProtocol: Sendable {
     func fetchRoadmap() async throws -> [RoadmapItemDTO]
 }
 
 // MARK: - RoadmapAPIService
 
-class RoadmapAPIService: RoadmapAPI {
+class RoadmapAPIService: RoadmapAPIServiceProtocol, @unchecked Sendable {
+    static let shared = RoadmapAPIService()
+
     private let url = "https://www.mindfulpacer.ch/DATA/MP_Roadmap_EN.json"
     
     func fetchRoadmap() async throws -> [RoadmapItemDTO] {
