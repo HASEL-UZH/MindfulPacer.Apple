@@ -49,6 +49,7 @@ class SettingsViewModel {
     // MARK: - Dependencies
     
     private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
+    private let fetchRoadmapUseCase: FetchRoadmapUseCase
     private let fetchThemeUseCase: FetchThemeUseCase
     private let setModeOfUseUseCase: SetModeOfUseUseCase
     private let setThemeUseCase: SetThemeUseCase
@@ -59,6 +60,9 @@ class SettingsViewModel {
     var activeSheet: SettingsSheet?
     
     var mailResult: Result<MFMailComposeResult, Error>?
+    
+    var isFetchingRoadmap: Bool = false
+    var roadmapItems: [RoadmapItem] = []
     
     var selectedTheme: Theme = .system
     var isExpandedModeOfUseOn: Bool = false {
@@ -131,11 +135,13 @@ class SettingsViewModel {
     
     init(
         fetchModeOfUseUseCase: FetchModeOfUseUseCase,
+        fetchRoadmapUseCase: FetchRoadmapUseCase,
         fetchThemeUseCase: FetchThemeUseCase,
         setModeOfUseUseCase: SetModeOfUseUseCase,
         setThemeUseCase: SetThemeUseCase
     ) {
         self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
+        self.fetchRoadmapUseCase = fetchRoadmapUseCase
         self.fetchThemeUseCase = fetchThemeUseCase
         self.setModeOfUseUseCase = setModeOfUseUseCase
         self.setThemeUseCase = setThemeUseCase
@@ -145,6 +151,7 @@ class SettingsViewModel {
     
     func onViewAppear() {
         fetchCurrentSettings()
+        fetchRoadmap()
     }
     
     // MARK: - Presentation
@@ -179,5 +186,28 @@ class SettingsViewModel {
     
     private func updateModeOfUse() {
         setModeOfUseUseCase.execute(modeOfUse: isExpandedModeOfUseOn ? .expanded : .essentials)
+    }
+    
+    private func fetchRoadmap() {
+        let useCase = fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
+        
+        Task { [weak self] in
+            guard let self = self else { return }
+            self.isFetchingRoadmap = true
+            
+            do {
+                let roadmapItems = try await useCase.execute()
+                print("DEBUGY:", roadmapItems)
+                DispatchQueue.main.async {
+                    self.roadmapItems = roadmapItems
+                }
+            } catch {
+                print("DEBUGY: Error fetching roadmap:", error)
+            }
+            
+            DispatchQueue.main.async {
+                self.isFetchingRoadmap = false
+            }
+        }
     }
 }

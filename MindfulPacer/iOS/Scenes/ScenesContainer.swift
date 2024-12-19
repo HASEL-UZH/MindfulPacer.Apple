@@ -118,6 +118,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             SettingsViewModel(
                 fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
+                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase(),
                 fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),
                 setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
                 setThemeUseCase: UseCasesContainer.shared.setThemeUseCase()

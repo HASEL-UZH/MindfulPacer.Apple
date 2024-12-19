@@ -8,6 +8,8 @@
 import Factory
 import SwiftData
 
+// MARK: - UseCasesContainer
+
 final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
     var manager = ContainerManager()
@@ -123,6 +125,11 @@ extension UseCasesContainer {
     @MainActor
     var fetchModeOfUseUseCase: Factory<FetchModeOfUseUseCase> {
         self { DefaultFetchModeOfUseUseCase() }
+    }
+    
+    @MainActor
+    var fetchRoadmapUseCase: Factory<FetchRoadmapUseCase> {
+        self { DefaultFetchRoadmapUseCase(roadmapRepository: DataContainer.shared.roadmapRepository()) }
     }
     
     @MainActor
