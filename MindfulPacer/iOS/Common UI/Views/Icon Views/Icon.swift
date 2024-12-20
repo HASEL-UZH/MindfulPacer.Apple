@@ -14,7 +14,7 @@ struct Icon: View {
     // MARK: Properties
 
     var name: String?
-    var image: Image?
+    var image: String?
     var color: Color = Color("BrandPrimary")
     var variant: SymbolVariants = .fill
     var renderingMode: SymbolRenderingMode = .monochrome
@@ -25,10 +25,12 @@ struct Icon: View {
     var body: some View {
         Group {
             if let image = image {
-                image
+                Image(image)
                     .resizable()
+                    .renderingMode(.template)
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
+                    .padding(2)
             } else if let name = name {
                 Image(systemName: name)
                     .symbolVariant(variant)
@@ -56,7 +58,18 @@ struct Icon: View {
 #Preview {
     VStack(spacing: 16) {
         Icon(name: "heart")
-        Icon(name: "bell.badge", color: .green, variant: .fill, renderingMode: .hierarchical, background: true)
-        Icon(image: Image(.mindfulPacerIcon), color: .brandPrimary, background: true)
+        
+        Icon(
+            name: "apple.logo",
+            color: .gray, variant: .fill,
+            renderingMode: .hierarchical,
+            background: true
+        )
+        
+        Icon(
+            image: "android-logo",
+            color: Color(.androidGreen),
+            background: true
+        )
     }
 }

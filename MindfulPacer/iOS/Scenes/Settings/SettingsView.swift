@@ -12,6 +12,7 @@ import SwiftUI
 enum SettingsSheet: Identifiable {
     case onboardingView
     case mailView
+    case roadmap
     case systemReportView
 
     var id: Int {
@@ -52,6 +53,7 @@ struct SettingsView: View {
                 
                 Section {
                     support
+                    roadmap
                     moreInfo
                     privacyPolicy
                 } header: {
@@ -95,6 +97,10 @@ struct SettingsView: View {
         case .mailView:
             MailView(result: $viewModel.mailResult)
                 .presentationCornerRadius(16)
+        case .roadmap:
+            RoadmapView(viewModel: viewModel)
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
         case .systemReportView:
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
@@ -130,7 +136,7 @@ struct SettingsView: View {
     private var modeOfUse: some View {
         Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
             IconLabel(
-                image: Image(.mindfulPacerExpandedIcon),
+                image: "MindfulPacer Expanded Icon",
                 title: "MindfulPacer Expanded",
                 description: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors",
                 labelColor: Color("BrandPrimary"),
@@ -195,6 +201,21 @@ struct SettingsView: View {
                 icon: "square.stack",
                 title: "Onboarding",
                 description: "View the onboarding again",
+                accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+    
+    // MARK: Roadmap
+    
+    private var roadmap: some View {
+        Button {
+            viewModel.presentSheet(.roadmap)
+        } label: {
+            settingsCell(
+                icon: "map",
+                title: "Roadmap",
+                description: "View upcoming features",
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }

@@ -8,6 +8,8 @@
 import Factory
 import SwiftData
 
+// MARK: - UseCasesContainer
+
 final class UseCasesContainer: SharedContainer, @unchecked Sendable {
     static let shared = UseCasesContainer()
     var manager = ContainerManager()
@@ -126,6 +128,11 @@ extension UseCasesContainer {
     }
     
     @MainActor
+    var fetchRoadmapUseCase: Factory<FetchRoadmapUseCase> {
+        self { DefaultFetchRoadmapUseCase(roadmapRepository: DataContainer.shared.roadmapRepository()) }
+    }
+    
+    @MainActor
     var fetchThemeUseCase: Factory<FetchThemeUseCase> {
         self { DefaultFetchThemeUseCase() }
     }
@@ -152,6 +159,11 @@ extension UseCasesContainer {
     
     // MARK: - System
 
+    @MainActor
+    var checkInternetConnectivityUseCase: Factory<DefaultCheckInternetConnectivityUseCase> {
+        self { DefaultCheckInternetConnectivityUseCase(networkMonitor: NetworkMonitorService.shared) }
+    }
+    
     @MainActor
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
         self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }

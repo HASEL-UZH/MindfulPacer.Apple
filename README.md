@@ -375,7 +375,6 @@ This project follows a clean architecture approach combined with MVVM principles
 MindfulPacer
 ├── Shared
 │   ├── Common UI
-│   ├── Data
 │   ├── Errors
 │   ├── Extensions
 │   ├── Models
@@ -383,6 +382,7 @@ MindfulPacer
 ├── iOS
 │   ├── Application
 │   ├── Common UI
+│   ├── Data
 │   ├── Extensions
 │   ├── Preview Content
 │   ├── Resources
@@ -606,51 +606,3 @@ struct ExampleView: View {
         ExampleView(viewModel: ExampleViewModel())
     }
 }
-
----
-
-### CocoaLumberjack Summary for README:
-
-**CocoaLumberjack** is a powerful and flexible logging framework for iOS and macOS applications. It offers advanced logging capabilities such as asynchronous logging, log level management, and file logging, which make it a better choice for complex apps that need more control over logging compared to Swift's built-in `os_log` or `print` debugging.
-
-Here’s why CocoaLumberjack is beneficial:
-
-- **Asynchronous Logging**: Unlike `print` or other synchronous logging, CocoaLumberjack offers asynchronous logging, which is less taxing on performance, especially when logging to disk.
-- **Log Level Filtering**: It allows developers to set different log levels (e.g., verbose, info, debug, error) and easily filter logs based on the context, which improves debugging and performance tuning.
-- **Multiple Output Destinations**: Logs can be directed to multiple destinations, such as the console, files, or even external logging systems.
-- **Log Rotation**: Supports automatic log file rotation, helping to manage disk space.
-- **Custom Formatters**: CocoaLumberjack allows you to create custom formatters for your log messages.
-
----
-
-### Conventions for Logging in the Project:
-
-1. **Log Levels**:
-   - **Verbose**: For low-level, detailed information useful during development but often too verbose for general debugging.
-   - **Debug**: Information helpful for diagnosing issues, but not needed in production environments.
-   - **Info**: General-purpose logging for high-level information about app flow and state.
-   - **Warning**: When something unexpected happens, but the app can still recover.
-   - **Error**: When an error occurs that impacts functionality but doesn't crash the app.
-   
-2. **Log Tags**: Each log entry should include a tag indicating its context (e.g., `Network`, `UI`, `Data`, etc.) to help quickly locate relevant logs.
-
-3. **Log to Multiple Destinations**: 
-   - Console during development.
-   - Files for more in-depth, longer-term logging.
-   
-4. **Avoid Excessive Logging**: Avoid logging sensitive information such as passwords, PII, or large amounts of data.
-
-5. **Using CocoaLumberjack**:
-   - Always use the appropriate log level.
-   - Prefix logs with class or method names for clarity.
-   - If you expect logs to be read by other teams, aim for clarity and brevity in the log messages.
-
----
-
-### Example:
-
-```swift
-DDLogVerbose("Network request started", level: .debug)
-DDLogInfo("User logged in successfully", level: .info)
-DDLogWarn("Attempted to load an invalid file", level: .warn)
-DDLogError("API request failed with error: \(error)", level: .error)

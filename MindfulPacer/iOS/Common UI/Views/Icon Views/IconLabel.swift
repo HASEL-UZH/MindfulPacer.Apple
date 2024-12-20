@@ -16,7 +16,7 @@ protocol IconLabelStyle {
 
 struct IconLabelStyleConfiguration {
     let icon: String?
-    let image: Image?
+    let image: String?
     let title: String
     let description: String?
     let textColor: Color?
@@ -182,7 +182,7 @@ extension EnvironmentValues {
 
 struct IconLabel: View {
     var icon: String?
-    var image: Image?
+    var image: String?
     var title: String
     var description: String?
     var textColor: Color?
@@ -251,7 +251,7 @@ extension View {
         )
         
         IconLabel(
-            image: Image(.mindfulPacerIcon),
+            image: "MindfulPacer Icon",
             title: "Custom Icon",
             labelColor: .brandPrimary,
             background: true,

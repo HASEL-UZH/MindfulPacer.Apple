@@ -35,7 +35,7 @@ extension OnboardingView {
                             viewModel.selectedModeOfUse = mode
                         } label: {
                             IconLabel(
-                                image: Image(mode.icon),
+                                image: mode.icon,
                                 title: mode.name,
                                 description: mode.description,
                                 textColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
