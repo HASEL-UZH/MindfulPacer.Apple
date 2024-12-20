@@ -45,6 +45,10 @@ class HomeViewModel {
     var currentSteps: (stepCount: Double, timestamp: Date)?
     var currentHeartRate: (heartRate: Double, timestamp: Date)?
 
+    var filterDateRangeSummary: String {
+        reviewFilter.fromDate.formatted(.dateTime.day().month()) + " - " + reviewFilter.toDate.formatted(.dateTime.day().month())
+    }
+    
     var filterButtonTitle: String {
         let (filter, _) = filterAndSortingPublisher.value
         return filter.activeFilterCount == 0 ? "Filters" : "Filters (\(filter.activeFilterCount))"

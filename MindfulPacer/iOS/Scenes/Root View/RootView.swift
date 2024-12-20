@@ -37,6 +37,7 @@ struct RootView: View {
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
+            // TODO: Change to new `Tab` init
             HomeView {
                 viewModel.widgetTapped()
             }

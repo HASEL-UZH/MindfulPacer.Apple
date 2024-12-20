@@ -17,24 +17,26 @@ extension HomeView {
         @Bindable var viewModel: HomeViewModel
 
         // MARK: Body
-
+        
         var body: some View {
             VStack(spacing: 16) {
-                if viewModel.reviewFilter.activeFilterCount != 0 {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        reviewFilterSortingSummary
-                            .safeAreaPadding(.horizontal)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        reviewFilterDateRangeSummary
+                        if viewModel.reviewFilter.activeFilterCount != 0 {
+                            reviewFilterSortingSummary
+                        }
                     }
+                    .safeAreaPadding(.horizontal)
                 }
-
-                if viewModel.filteredReviews.isEmpty {
-                    if viewModel.reviewFilter.activeFilterCount > 0 {
-                        filteredReviewsEmptyState
-                            .frame(maxHeight: .infinity, alignment: .center)
-                    } else {
-                        reviewsEmptyState
-                            .frame(maxHeight: .infinity, alignment: .center)
-                    }
+                
+                if viewModel.reviews.isEmpty {
+                    reviewsEmptyState
+                        .frame(maxHeight: .infinity, alignment: .center)
+                } else if viewModel.filteredReviews.isEmpty {
+                    filteredReviewsEmptyState
+                        .frame(maxHeight: .infinity, alignment: .center)
+                    
                 } else {
                     RoundedList {
                         ForEach(viewModel.filteredReviews) { review in
@@ -124,7 +126,30 @@ extension HomeView {
                 }
             }
         }
+        
+        // MARK: Review Filter Date Range Summary
+        
+        private var reviewFilterDateRangeSummary: some View {
+            Button {
+                viewModel.presentSheet(.reviewsFilterView)
+            } label: {
+                HStack(spacing: 4) {
+                    Icon(name: "calendar")
 
+                    Text(viewModel.filterDateRangeSummary)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.accent)
+                    
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background {
+                    Capsule()
+                        .foregroundStyle(Color("BrandPrimary").opacity(0.1))
+                }
+            }
+        }
+        
         // MARK: Review Filter Sorting Summary
 
         private var reviewFilterSortingSummary: some View {
@@ -230,4 +255,5 @@ extension HomeView {
     NavigationStack {
         HomeView.ReviewsListView(viewModel: viewModel)
     }
+    .tint(.brandPrimary)
 }

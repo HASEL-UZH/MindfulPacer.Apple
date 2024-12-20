@@ -34,8 +34,8 @@ extension AnalyticsView {
                 if viewModel.chartData.isEmpty {
                     EmptyStateView(
                         image: viewModel.emptyStateImage,
-                        title: "No Data",
-                        description: viewModel.emptyStateDescription
+                        title: viewModel.emptyStateTitle,
+                        description: "Synchronize your smartwatch"
                     )
                 } else {
                     Chart {

@@ -77,8 +77,8 @@ class AnalyticsViewModel {
         selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis"
     }
 
-    var emptyStateDescription: String {
-        selectedMeasurementType == .heartRate ? "There is no heart rate data." : "There is no step count data."
+    var emptyStateTitle: String {
+        selectedMeasurementType == .heartRate ? "No heart rate data" : "No steps data"
     }
     
     var annotationViewFormat: Date.FormatStyle {

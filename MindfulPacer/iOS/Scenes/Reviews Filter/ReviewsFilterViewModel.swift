@@ -89,7 +89,7 @@ class ReviewsFilterViewModel {
     }
     var reviewFilter = ReviewFilter()
     var reviewSorting = ReviewSorting.dateDescending
-
+    
     var filterButtonTitle: String {
         reviewFilter.activeFilterCount == 0 ? "Filters" : "Filters (\(reviewFilter.activeFilterCount))"
     }

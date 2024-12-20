@@ -13,25 +13,21 @@ struct ReviewCell: View {
     // MARK: Properties
 
     var review: Review
-    var withBackground: Bool = true
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var onTap: () -> Void
 
     // MARK: Body
-
+    
     var body: some View {
         Button {
             onTap()
         } label: {
-            if withBackground {
-                cellContent
-                    .padding()
-                    .background(Color(.secondarySystemGroupedBackground))
-            } else {
-                cellContent
-            }
+            cellContent
+                .padding()
+                .background(backgroundColor)
         }
     }
-
+    
     // MARK: Cell Content
 
     private var cellContent: some View {
@@ -75,6 +71,7 @@ struct ReviewCell: View {
 
 // MARK: - Preview
 
+// TODO: Add mock review
 //#Preview {
 //    ReviewCell(review: Review()) {
 //

@@ -140,6 +140,7 @@
 		0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */; };
 		0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */; };
 		0DA6CB342C39583300FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */; };
+		0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA77E3F2D1596C50057DFA2 /* Toast.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
 		0DBA373F2C32087400209681 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA373E2C32087400209681 /* Assets.xcassets */; };
@@ -313,6 +314,7 @@
 		0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchOS.entitlements; sourceTree = "<group>"; };
 		0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
+		0DA77E3F2D1596C50057DFA2 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DBA373A2C32087300209681 /* WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOSApp.swift; sourceTree = "<group>"; };
@@ -1045,9 +1047,10 @@
 				0D7915B02CBEABE60064882D /* Icon Views */,
 				0D34C4532C82643B00928C53 /* Sheets */,
 				0DD3FDAC2C8A3ED100859A1C /* Card.swift */,
+				0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */,
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0DD3FDC32C8CC73C00859A1C /* RoundedList.swift */,
-				0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */,
+				0DA77E3F2D1596C50057DFA2 /* Toast.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1337,6 +1340,7 @@
 				0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */,
 				0DFCA1D02C623FAC0000C87C /* EditReviewView.swift in Sources */,
 				0D34C45E2C83683200928C53 /* SaveReviewUseCase.swift in Sources */,
+				0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */,
 				0D9AB09A2C6B5DFA00BB773F /* FetchDefaultCategoriesUseCase.swift in Sources */,
 				0D500FE52C749A3000395AEB /* SubcategoryView.swift in Sources */,
 				0D500FF62C75242A00395AEB /* CreateReviewReminderUseCase.swift in Sources */,
@@ -1544,7 +1548,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1562,7 +1566,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1581,7 +1585,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1599,7 +1603,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

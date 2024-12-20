@@ -52,20 +52,22 @@ extension HomeView {
         }
 
         // MARK: Recent Review Reminders Summary
-
+        
         private var recentReviewRemindersSummary: some View {
-            Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
-                        ReviewReminderCell(reviewReminder: reviewReminder, withBackground: false) {
-                            viewModel.presentSheet(.createReviewReminderView(reviewReminder))
-                        }
-                        if viewModel.recentReviewReminders.last != reviewReminder {
-                            Divider()
-                        }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
+                    ReviewReminderCell(
+                        reviewReminder: reviewReminder,
+                        backgroundColor: Color(.tertiarySystemGroupedBackground)
+                    ) {
+                        viewModel.presentSheet(.createReviewReminderView(reviewReminder))
+                    }
+                    if viewModel.recentReviewReminders.last != reviewReminder {
+                        Divider()
                     }
                 }
             }
+            .cornerRadius(16)
         }
 
         // MARK: Create Review Reminder Button
@@ -88,6 +90,7 @@ extension HomeView {
 
     ScrollView {
         HomeView.ReviewRemindersWidget(viewModel: viewModel)
+            .padding()
     }
     .background(Color(.systemGroupedBackground))
 }
