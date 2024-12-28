@@ -28,6 +28,7 @@ class HomeViewModel {
     // MARK: - Published Properties
 
     var activeSheet: HomeViewSheet?
+    var activeToast: HomeViewToast?
     var reviewFilter: ReviewFilter = ReviewFilter()
     var reviewSorting: ReviewSorting = .dateDescending
     var reviews: [Review] = []
@@ -137,6 +138,10 @@ class HomeViewModel {
 
     func presentSheet(_ sheet: HomeViewSheet) {
         activeSheet = sheet
+    }
+    
+    func presentToast(_ toast: HomeViewToast) {
+        activeToast = toast
     }
 
     // MARK: - Private Methods

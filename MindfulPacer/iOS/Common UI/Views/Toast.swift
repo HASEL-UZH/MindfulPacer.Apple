@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 // MARK: - ToastItemModifier
 
@@ -16,16 +17,16 @@ struct ToastItemModifier<Item: Identifiable, ToastContent: View>: ViewModifier {
     @State private var dragOffset = CGSize.zero
     @State private var workItem: DispatchWorkItem?
     
-    private let autoDismissDelay: TimeInterval = 2.0
+    private let autoDismissDelay: TimeInterval = 3.0
     private let dismissDragThreshold: CGFloat = 50.0
     
     func body(content view: Content) -> some View {
         ZStack {
             view
-            if let item = item {
+            if let theItem = item {
                 VStack {
                     Spacer()
-                    self.content(item)
+                    self.content(theItem)
                 }
                 .padding(.bottom)
                 .offset(y: dragOffset.height)
@@ -37,11 +38,6 @@ struct ToastItemModifier<Item: Identifiable, ToastContent: View>: ViewModifier {
             }
         }
         .animation(.spring(), value: item?.id)
-        .onChange(of: item?.id) { _, newValue in
-            if newValue == nil {
-                resetState()
-            }
-        }
     }
     
     private var dragGesture: some Gesture {
@@ -75,8 +71,7 @@ struct ToastItemModifier<Item: Identifiable, ToastContent: View>: ViewModifier {
         withAnimation {
             item = nil
         }
-        workItem?.cancel()
-        workItem = nil
+        resetState()
     }
     
     private func resetState() {
@@ -86,24 +81,111 @@ struct ToastItemModifier<Item: Identifiable, ToastContent: View>: ViewModifier {
     }
 }
 
+// MARK: - Toast Style
+
+enum ToastStyle {
+    case success
+    case failure
+    case info
+    case custom(icon: String, color: Color, feedback: UINotificationFeedbackGenerator.FeedbackType?)
+}
+
+struct ToastStyleConfiguration {
+    let icon: String?
+    let color: Color
+    let feedback: UINotificationFeedbackGenerator.FeedbackType?
+}
+
+// MARK: - ToastStyle + Extensions
+
+extension ToastStyle {
+    var configuration: ToastStyleConfiguration {
+        switch self {
+        case .success:
+            return .init(icon: "checkmark.circle", color: .green, feedback: .success)
+        case .failure:
+            return .init(icon: "xmark.circle", color: .red, feedback: .error)
+        case .info:
+            return .init(icon: "info.circle", color: .blue, feedback: .success)
+        case let .custom(icon, color, feedback):
+            return .init(icon: icon, color: color, feedback: feedback)
+        }
+    }
+}
+
+// MARK: - Environment Keys for Toast Style
+
+private struct ToastIconNameKey: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+private struct ToastColorKey: EnvironmentKey {
+    static let defaultValue: Color = .blue
+}
+
+private struct ToastFeedbackKey: EnvironmentKey {
+    static let defaultValue: UINotificationFeedbackGenerator.FeedbackType? = nil
+}
+
+extension EnvironmentValues {
+    var toastIconName: String? {
+        get { self[ToastIconNameKey.self] }
+        set { self[ToastIconNameKey.self] = newValue }
+    }
+    
+    var toastColor: Color {
+        get { self[ToastColorKey.self] }
+        set { self[ToastColorKey.self] = newValue }
+    }
+    
+    var toastFeedback: UINotificationFeedbackGenerator.FeedbackType? {
+        get { self[ToastFeedbackKey.self] }
+        set { self[ToastFeedbackKey.self] = newValue }
+    }
+}
+
+// MARK: - ToastStyleModifier
+
+struct ToastStyleModifier: ViewModifier {
+    let style: ToastStyle
+    
+    func body(content: Content) -> some View {
+        let config = style.configuration
+        content
+            .environment(\.toastIconName, config.icon)
+            .environment(\.toastColor, config.color)
+            .environment(\.toastFeedback, config.feedback)
+            .onAppear {
+                if let feedbackType = config.feedback {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.prepare()
+                    generator.notificationOccurred(feedbackType)
+                }
+            }
+    }
+}
+
 // MARK: - Toast
 
 struct Toast: View {
     let title: String
     let message: String
-    let icon: String
-    let color: Color
+    
+    @Environment(\.toastIconName) private var iconName
+    @Environment(\.toastColor) private var color
     
     var body: some View {
         HStack(spacing: 8) {
-            Icon(name: icon, color: .white)
-            
+            if let iconName = iconName {
+                Icon(name: iconName, color: .white)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline.weight(.semibold))
                 Text(message)
                     .font(.footnote)
             }
+            .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
@@ -113,7 +195,6 @@ struct Toast: View {
                 .foregroundColor(color)
                 .shadow(color: Color.black.opacity(0.1), radius: 0.1)
         }
-        .foregroundColor(.white)
         .padding(.horizontal)
     }
 }
@@ -121,51 +202,29 @@ struct Toast: View {
 // MARK: - Preview
 
 #Preview {
-    Toast(title: "Success!", message: "This is a success message.", icon: "checkmark", color: .green)
+    VStack(spacing: 16) {
+        Toast(
+            title: "Success",
+            message: "Your data was saved."
+        )
+        .toastStyle(.success)
+        
+        Toast(
+            title: "Failure",
+            message: "Couldn't save your data."
+        )
+        .toastStyle(.failure)
+        
+        Toast(
+            title: "Info",
+            message: "Saved data can be seen in Home view."
+        )
+        .toastStyle(.info)
+        
+        Toast(
+            title: "Custom",
+            message: "Custom message"
+        )
+        .toastStyle(.custom(icon: "bubble.fill", color: .gray, feedback: .success))
+    }
 }
-
-//enum HomeToast: Identifiable {
-//    case success
-//    case failure
-//
-//    var id: Int {
-//        hashValue
-//    }
-//}
-//
-//struct TestHomeView: View {
-//    @State private var toastItem: HomeToast?
-//
-//    var body: some View {
-//        NavigationStack {
-//            VStack(spacing: 20) {
-//                Button("Show Toast (Item)") {
-//                    toastItem = .failure
-//                }
-//            }
-//            .navigationTitle("Home")
-//            .toast(item: $toastItem) { toast in
-//                toastContent(for: toast)
-//            }
-//        }
-//    }
-//
-//    private func toastContent(for toast: HomeToast) -> Toast {
-//        switch toast {
-//        case .success:
-//            Toast(
-//                title: "Success",
-//                message: "You created a review",
-//                icon: "checkmark.circle.fill",
-//                color: .green
-//            )
-//        case .failure:
-//            Toast(
-//                title: "Failure",
-//                message: "Couldn't save review",
-//                icon: "xmark.circle.fill",
-//                color: .red
-//            )
-//        }
-//    }
-//}

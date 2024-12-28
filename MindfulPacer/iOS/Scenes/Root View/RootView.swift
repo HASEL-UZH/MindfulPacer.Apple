@@ -31,6 +31,7 @@ struct RootView: View {
     
     // MARK: Properties
     
+    @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
     @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
     
     // MARK: Body
@@ -58,7 +59,7 @@ struct RootView: View {
                 }
                 .tag(Tab.settings)
         }
-        .preferredColorScheme(viewModel.colorScheme)
+        .preferredColorScheme(theme.colorScheme)
         .sheet(item: $viewModel.activeSheet) { sheet in
             sheetContent(for: sheet)
         }

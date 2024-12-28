@@ -7,6 +7,7 @@
 
 import Foundation
 import MessageUI
+import SwiftUI
 
 // MARK: - Theme
 
@@ -37,6 +38,21 @@ enum Theme: String, CaseIterable, Identifiable {
         case .dark:
             "Always use dark mode"
         }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        }
+    }
+    
+    static var appStorageKey: String {
+        "theme"
     }
 }
 
@@ -71,11 +87,7 @@ class SettingsViewModel {
     // MARK: - Dependencies
     
     private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
-    private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
     private let fetchRoadmapUseCase: FetchRoadmapUseCase
-    private let fetchThemeUseCase: FetchThemeUseCase
-    private let setModeOfUseUseCase: SetModeOfUseUseCase
-    private let setThemeUseCase: SetThemeUseCase
     
     // MARK: - Published Properties
     
@@ -89,10 +101,7 @@ class SettingsViewModel {
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
     
-    var selectedTheme: Theme = .system
-    var isExpandedModeOfUseOn: Bool = false {
-        didSet { updateModeOfUse() }
-    }
+    var isExpandedModeOfUseOn: Bool = false
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -112,6 +121,19 @@ class SettingsViewModel {
     var modelName: String {
         return iPhoneModelMap[modelIdentifier] ?? "Unknown"
     }
+    
+    var systemReport: String {
+        return """
+        App Version: \(appVersion)
+        System Version: \(systemVersion)
+        Screen Size: \(screenSize)
+        Model Name: \(modelName)
+        Model Identifier: \(modelIdentifier)
+        """
+    }
+    
+    var contactSupportRecipient: String = "support@mindfulpacer.ch"
+    var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     // MARK: Private Properties
     
@@ -160,24 +182,15 @@ class SettingsViewModel {
     
     init(
         checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase,
-        fetchModeOfUseUseCase: FetchModeOfUseUseCase,
-        fetchRoadmapUseCase: FetchRoadmapUseCase,
-        fetchThemeUseCase: FetchThemeUseCase,
-        setModeOfUseUseCase: SetModeOfUseUseCase,
-        setThemeUseCase: SetThemeUseCase
+        fetchRoadmapUseCase: FetchRoadmapUseCase
     ) {
         self.checkInternetConnectivityUseCase = checkInternetConnectivityUseCase
-        self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
         self.fetchRoadmapUseCase = fetchRoadmapUseCase
-        self.fetchThemeUseCase = fetchThemeUseCase
-        self.setModeOfUseUseCase = setModeOfUseUseCase
-        self.setThemeUseCase = setThemeUseCase
     }
     
     // MARK: - View Events
     
     func onViewAppear() {
-        fetchCurrentSettings()
         fetchRoadmap()
     }
     
@@ -189,32 +202,12 @@ class SettingsViewModel {
     
     // MARK: - User Actions
     
-    func generateSystemReport() -> String {
-        return """
-        App Version: \(appVersion)
-        System Version: \(systemVersion)
-        Screen Size: \(screenSize)
-        Model Name: \(modelName)
-        Model Identifier: \(modelIdentifier)
-        """
+    func setModeOfUse(_ modeOfUse: ModeOfUse) {
+        isExpandedModeOfUseOn = modeOfUse == .expanded
     }
-    
-    func setTheme(to theme: Theme) {
-        setThemeUseCase.execute(theme: theme)
-        selectedTheme = theme
-    }
-    
+        
     // MARK: - Private Methods
-    
-    private func fetchCurrentSettings() {
-        selectedTheme = fetchThemeUseCase.execute()
-        isExpandedModeOfUseOn = fetchModeOfUseUseCase.execute() == .expanded
-    }
-    
-    private func updateModeOfUse() {
-        setModeOfUseUseCase.execute(modeOfUse: isExpandedModeOfUseOn ? .expanded : .essentials)
-    }
-    
+            
     private func fetchRoadmap() {
         let fetchRoadmapUseCase = self.fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
         let checkInternetConnectivityUseCase = self.checkInternetConnectivityUseCase // TODO: Temporary fix, find the root cause of the error

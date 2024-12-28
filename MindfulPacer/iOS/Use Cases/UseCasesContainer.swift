@@ -123,38 +123,8 @@ extension UseCasesContainer {
     // MARK: - Settings
     
     @MainActor
-    var fetchModeOfUseUseCase: Factory<FetchModeOfUseUseCase> {
-        self { DefaultFetchModeOfUseUseCase() }
-    }
-    
-    @MainActor
     var fetchRoadmapUseCase: Factory<FetchRoadmapUseCase> {
         self { DefaultFetchRoadmapUseCase(roadmapRepository: DataContainer.shared.roadmapRepository()) }
-    }
-    
-    @MainActor
-    var fetchThemeUseCase: Factory<FetchThemeUseCase> {
-        self { DefaultFetchThemeUseCase() }
-    }
-    
-    @MainActor
-    var listenToThemeChangesUseCase: Factory<ListenToThemeChangesUseCase> {
-        self { DefaultListenToThemeChangesUseCase() }
-    }
-    
-    @MainActor
-    var listenToModeOfUseChangesUseCase: Factory<ListenToModeOfUseChangesUseCase> {
-        self { DefaultListenToModeOfUseChangesUseCase() }
-    }
-    
-    @MainActor
-    var setThemeUseCase: Factory<SetThemeUseCase> {
-        self { DefaultSetThemeUseCase() }
-    }
-    
-    @MainActor
-    var setModeOfUseUseCase: Factory<SetModeOfUseUseCase> {
-        self { DefaultSetModeOfUseUseCase() }
     }
     
     // MARK: - System

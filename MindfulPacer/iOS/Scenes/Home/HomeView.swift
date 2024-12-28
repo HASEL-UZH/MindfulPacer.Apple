@@ -29,6 +29,14 @@ enum HomeViewSheet: Identifiable {
     }
 }
 
+enum HomeViewToast: Identifiable {
+    case successfullyCreatedReview
+    
+    var id: Int {
+        hashValue
+    }
+}
+
 // MARK: - HomeView
 
 struct HomeView: View {
@@ -47,7 +55,6 @@ struct HomeView: View {
                     ReviewsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
                     ReviewRemindersWidget(viewModel: viewModel)
-//                    ReviewReminderTypeWidget()
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -66,6 +73,9 @@ struct HomeView: View {
             }, content: { sheet in
                 sheetContent(for: sheet)
             })
+            .toast(item: $viewModel.activeToast) { toast in
+                toastContent(for: toast)
+            }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
             }
@@ -113,10 +123,12 @@ struct HomeView: View {
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
         case .editReviewView(let review):
-            EditReviewView(review: review)
-                .interactiveDismissDisabled(review.isNil)
-                .presentationCornerRadius(16)
-                .presentationDragIndicator(review.isNil ? .hidden : .visible)
+            EditReviewView(review: review, onReviewCreation: {
+                viewModel.presentToast(.successfullyCreatedReview)
+            })
+            .interactiveDismissDisabled(review.isNil)
+            .presentationCornerRadius(16)
+            .presentationDragIndicator(review.isNil ? .hidden : .visible)
         case .createReviewReminderView(let reviewReminder):
             CreateReviewReminderView(reviewReminder: reviewReminder)
                 .interactiveDismissDisabled(reviewReminder.isNil)
@@ -127,6 +139,19 @@ struct HomeView: View {
                 .presentationDetents([.medium, .large])
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
+        }
+    }
+    
+    // MARK: Toast Content
+    
+    private func toastContent(for toast: HomeViewToast) -> some View {
+        switch toast {
+        case .successfullyCreatedReview:
+            Toast(
+                title: "Successfully Created Review",
+                message: "Your review has been saved"
+            )
+            .toastStyle(.success)
         }
     }
 }

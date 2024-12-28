@@ -11,12 +11,17 @@ import SwiftUI
 
 enum SettingsSheet: Identifiable {
     case onboardingView
-    case mailView
+    case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
 
     var id: Int {
-        hashValue
+        switch self {
+        case .onboardingView: 0
+        case .mailView: 1
+        case .roadmap: 2
+        case .systemReportView: 3
+        }
     }
 }
 
@@ -31,6 +36,8 @@ struct SettingsView: View {
     // MARK: Properties
     
     @Environment(\.openURL) private var openURL
+    @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
+    @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
     @State private var viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
     
     // MARK: Body
@@ -39,14 +46,14 @@ struct SettingsView: View {
         NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
                 Section {
-                    modeOfUse
+                    mindfulPacerExpanded
                     viewOnboarding
                 } header: {
                     sectionHeader(title: "General")
                 }
                 
                 Section {
-                    theme
+                    themeSettings
                 } header: {
                     sectionHeader(title: "Appearance")
                 }
@@ -61,6 +68,7 @@ struct SettingsView: View {
                 }
                 
                 appVersion
+                    .padding(.bottom)
             }
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
@@ -71,6 +79,10 @@ struct SettingsView: View {
             }
             .onAppear {
                 viewModel.onViewAppear()
+                viewModel.setModeOfUse(modeOfUse)
+            }
+            .onChange(of: viewModel.isExpandedModeOfUseOn) { _, newValue in
+                modeOfUse = (newValue == true ? .expanded : .essentials)
             }
         }
     }
@@ -81,7 +93,7 @@ struct SettingsView: View {
     private func navigationDestination(for destination: SettingsNavigationDestination) -> some View {
         switch destination {
         case .theme:
-            ThemeSettingsView(viewModel: viewModel)
+            ThemeSettingsView()
         }
     }
     
@@ -94,9 +106,14 @@ struct SettingsView: View {
             OnboardingView()
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
-        case .mailView:
-            MailView(result: $viewModel.mailResult)
-                .presentationCornerRadius(16)
+        case .mailView(let recipient, let subject, let body):
+            MailView(
+                result: $viewModel.mailResult,
+                recipient: recipient,
+                subject: subject,
+                body: body
+            )
+            .presentationCornerRadius(16)
         case .roadmap:
             RoadmapView(viewModel: viewModel)
                 .presentationCornerRadius(16)
@@ -119,21 +136,21 @@ struct SettingsView: View {
     
     // MARK: Theme
     
-    private var theme: some View {
+    private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
             settingsCell(
                 icon: "circle.lefthalf.striped.horizontal.inverse",
                 title: "Theme",
                 description: "Change the app theme",
-                accessoryIndicatorText: viewModel.selectedTheme.rawValue,
+                accessoryIndicatorText: theme.rawValue,
                 accessoryIndicatorIcon: "chevron.right"
             )
         }
     }
     
-    // MARK: Mode of Use
+    // MARK: MindulPacer Expanded
     
-    private var modeOfUse: some View {
+    private var mindfulPacerExpanded: some View {
         Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
             IconLabel(
                 image: "MindfulPacer Expanded Icon",
@@ -153,7 +170,13 @@ struct SettingsView: View {
     
     private var support: some View {
         Button {
-            viewModel.presentSheet(.mailView)
+            viewModel.presentSheet(
+                .mailView(
+                    recipient: viewModel.contactSupportRecipient,
+                    subject: viewModel.contactSupportSubject,
+                    body: nil
+                )
+            )
         } label: {
             settingsCell(
                 icon: "envelope",

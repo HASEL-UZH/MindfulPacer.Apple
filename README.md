@@ -347,6 +347,8 @@ Usage:
 }
 ```
 
+### Toasts
+
 ## Dependency Injection
 
 The architecture uses a dependency injection framework, specifically the `Factory` framework, to manage dependencies and ensure loose coupling between components. Dependency injection is a design pattern that allows for the creation of dependent objects outside of the class that uses them, enabling better modularity and easier testing. Here’s how dependency injection is implemented in the project:
@@ -389,27 +391,15 @@ MindfulPacer
 │   ├── Scenes
 │   ├── Services
 │   └── Use Cases
-├── WatchOS
-│   ├── Application
-│   ├── Common UI
-│   ├── Extensions
-│   ├── Preview Content
-│   ├── Resources
-│   ├── Scenes
-│   ├── Services
-│   └── Use Cases
-├── iOSTests
-│   ├── Mocks
-│   ├── Services Tests
-│   ├── View Models Tests
-│   ├── Use Cases Tests
-│   ├── Utilities Tests
-└── WatchOSTests
-    ├── Mocks
-    ├── Services Tests
-    ├── View Models Tests
-    ├── Use Cases Tests
-    └── Utilities Tests
+└── WatchOS
+    ├── Application
+    ├── Common UI
+    ├── Extensions
+    ├── Preview Content
+    ├── Resources
+    ├── Scenes
+    ├── Services
+    └── Use Cases
 ```
 
 ## 🍏 Shared

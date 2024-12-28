@@ -52,7 +52,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             OnboardingViewModel(
                 initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase(),
                 requestHealthAuthorisationUseCase: UseCasesContainer.shared.requestHealthAuthorisationUseCase(),
-                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
                 toggleUserHasSeenOnboardingUseCase: UseCasesContainer.shared.toggleUserHasSeenOnboardingUseCase()
             )
         }
@@ -67,8 +66,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
                 checkUserHasSeenOnboardingUseCase: UseCasesContainer.shared.checkUserHasSeenOnboardingUseCase(),
-                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase(),
-                listenToThemeChangesUseCase: UseCasesContainer.shared.listenToThemeChangesUseCase()
+                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
             )
         }
     }
@@ -83,7 +81,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
                 deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
                 fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
-                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
                 saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
             )
         }
@@ -118,11 +115,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             SettingsViewModel(
                 checkInternetConnectivityUseCase: UseCasesContainer.shared.checkInternetConnectivityUseCase(),
-                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
-                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase(),
-                fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),
-                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
-                setThemeUseCase: UseCasesContainer.shared.setThemeUseCase()
+                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase()
             )
         }
     }

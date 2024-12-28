@@ -15,6 +15,7 @@ extension OnboardingView {
         // MARK: Properties
         
         @Bindable var viewModel: OnboardingViewModel
+        @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
         
         // MARK: Body
         
@@ -46,6 +47,11 @@ extension OnboardingView {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
+                }
+            }
+            .onChange(of: viewModel.selectedModeOfUse) { _, newValue in
+                if let newValue {
+                    modeOfUse = newValue
                 }
             }
         }

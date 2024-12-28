@@ -16,7 +16,6 @@ struct ReviewsFilterView: View {
     // MARK: Properties
 
     @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
-
     let filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
 
     // MARK: Body

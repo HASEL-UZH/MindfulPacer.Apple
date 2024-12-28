@@ -56,7 +56,7 @@ extension SettingsView {
                     
                     Spacer()
                     
-                    systemReportShareLink
+                    systemReportShareButton
                 }
                 .background(Color(.systemGroupedBackground))
                 .navigationTitle("System Report")
@@ -83,22 +83,18 @@ extension SettingsView {
             }
         }
         
-        // MARK: System Report Share Link
+        // MARK: System Report Share Button
         
-        private var systemReportShareLink: some View {
-            ShareLink(item: viewModel.generateSystemReport()) {
-                IconLabel(
-                    icon: "square.and.arrow.up.fill",
-                    title: "Share System Report",
-                    labelColor: .white
+        private var systemReportShareButton: some View {
+            PrimaryButton(title: "Share System Report", icon: "square.and.arrow.up.fill") {
+                viewModel.presentSheet(
+                    .mailView(
+                        recipient: viewModel.contactSupportRecipient,
+                        subject: viewModel.contactSupportRecipient,
+                        body: viewModel.systemReport
+                    )
                 )
-                .frame(height: 40)
-                .frame(maxWidth: .infinity)
-                .fontWeight(.semibold)
             }
-            .tint(Color("BrandPrimary"))
-            .buttonBorderShape(.roundedRectangle(radius: 16))
-            .buttonStyle(.borderedProminent)
             .padding(.horizontal)
         }
     }
