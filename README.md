@@ -39,7 +39,11 @@ This project follows a clean architecture approach combined with MVVM (Model-Vie
 
 Here is the high-level architecture of the project:
 
-![Architecture Diagram](./architecture-diagram.jpg)
+<picture>
+  <source srcset="architecture-diagram-dark.jpg" media="(prefers-color-scheme: dark)">
+  <source srcset="architecture-diagram-light.jpg" media="(prefers-color-scheme: light)">
+  <img src="architecture-diagram-light.png" alt="Architecture Diagram">
+</picture>
 
 The system architecture diagram below provides a high-level overview of how the various components in the application interact and work together. It illustrates the flow of data and the relationships between Views, ViewModels, Use Cases, Repositories, Services, and the Database (managed via SwiftData), as well as how the Dependency Injection framework (Factory) orchestrates dependency management throughout the architecture. Views, built with SwiftUI, serve as the entry point for user interaction and observe state changes in ViewModels, which act as a bridge by triggering Use Cases and exposing state. Use Cases encapsulate core business logic, coordinating data flow between Repositories, Services, and, when necessary, directly accessing the Database. Repositories provide a clean abstraction over data sources like APIs or local storage, while Services handle external integrations such as HealthKit and external APIs. The Database, managed with SwiftData, stores and retrieves Core Models, providing persistent storage and querying capabilities. Dependency Injection ensures loose coupling by supplying required dependencies to ViewModels, Use Cases, and Repositories, while the flexible architecture allows Use Cases to bypass Repositories and directly interact with Services or the Database when needed. This modular design ensures a scalable, maintainable, and testable system, with real-time UI updates achieved through feedback loops between Views and ViewModels.
 
