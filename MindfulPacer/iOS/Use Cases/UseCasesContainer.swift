@@ -74,8 +74,13 @@ extension UseCasesContainer {
     }
 
     @MainActor
-    var fetchDefaultCategoriesUseCase: Factory<DefaultFetchDefaultCategoriesUseCase> {
-        self { DefaultFetchDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var fetchActionedMissedReviewsUseCase: Factory<FetchActionedMissedReviewsUseCase> {
+        self { DefaultFetchActionedMissedReviewsUseCase() }
+    }
+    
+    @MainActor
+    var fetchDefaultActivitiesUseCase: Factory<DefaultFetchDefaultActivitiesUseCase> {
+        self { DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
@@ -94,12 +99,22 @@ extension UseCasesContainer {
     }
 
     @MainActor
+    var markMissedReviewAsActionedUseCase: Factory<DefaultMarkMissedReviewAsActionedUseCase> {
+        self { DefaultMarkMissedReviewAsActionedUseCase() }
+    }
+    
+    @MainActor
     var saveReviewUseCase: Factory<DefaultSaveReviewUseCase> {
         self { DefaultSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     // MARK: - Review Reminder
 
+    @MainActor
+    var checkMissedReviewsUseCase: Factory<CheckMissedReviewsUseCase> {
+        self { DefaultCheckMissedReviewsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
     @MainActor
     var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
         self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }

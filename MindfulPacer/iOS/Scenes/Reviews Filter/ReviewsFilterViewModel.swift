@@ -51,7 +51,7 @@ class ReviewsFilterViewModel {
     
     // MARK: - Dependencies
 
-    private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
+    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
 
     // MARK: - Published Properties
 
@@ -85,7 +85,7 @@ class ReviewsFilterViewModel {
 
     var categories: [Activity] = []
     var subcategories: [Subactivity] {
-        categories.flatMap { $0.subcategories ?? [] }
+        categories.flatMap { $0.subactivities ?? [] }
     }
     var reviewFilter = ReviewFilter()
     var reviewSorting = ReviewSorting.dateDescending
@@ -113,14 +113,14 @@ class ReviewsFilterViewModel {
 
     // MARK: - Initialization
 
-    init(fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase) {
-        self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
+    init(fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase) {
+        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
     }
 
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
-        fetchDefaultReviewCategories()
+        fetchDefaultReviewActivities()
     }
 
     func setPublisher(_ publisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?) {
@@ -170,8 +170,8 @@ class ReviewsFilterViewModel {
 
     // MARK: - Private Methods
 
-    private func fetchDefaultReviewCategories() {
-        self.categories = fetchDefaultCategoriesUseCase.execute() ?? []
+    private func fetchDefaultReviewActivities() {
+        self.categories = fetchDefaultActivitiesUseCase.execute() ?? []
     }
 
     private func bindToPublisher() {

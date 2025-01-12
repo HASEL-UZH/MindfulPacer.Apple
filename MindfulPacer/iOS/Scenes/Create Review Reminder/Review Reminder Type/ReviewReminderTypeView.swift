@@ -58,7 +58,7 @@ extension CreateReviewReminderView {
                         IconLabel(
                             icon: "circle.fill",
                             title: reviewReminderType.rawValue,
-                            textColor: viewModel.selectedReviewReminderType == reviewReminderType ? Color("BrandPrimary") : Color.primary,
+                            titleColor: viewModel.selectedReviewReminderType == reviewReminderType ? Color("BrandPrimary") : Color.primary,
                             iconColor: viewModel.selectedReviewReminderType == reviewReminderType ? Color("BrandPrimary") : reviewReminderType.color
                         )
                         Spacer()

@@ -33,8 +33,8 @@ extension AnalyticsView {
             ZStack {
                 if viewModel.chartData.isEmpty {
                     EmptyStateView(
-                        image: viewModel.emptyStateImage,
-                        title: viewModel.emptyStateTitle,
+                        image: viewModel.chartEmptyStateImage,
+                        title: viewModel.chartEmptyStateTitle,
                         description: "Synchronize your smartwatch"
                     )
                 } else {
@@ -76,33 +76,22 @@ extension AnalyticsView {
                                     }
                                 }()
                                 
-                                if viewModel.selectedPeriod == .week {
-                                    // Bars span the full day in week view
-                                    BarMark(
-                                        xStart: .value("Start", dataPoint.startDate),
-                                        xEnd: .value("End", dataPoint.endDate),
-                                        y: .value("Steps", max(0, dataPoint.value))
-                                    )
-                                    .foregroundStyle(viewModel.chartColor)
-                                    .opacity(opacityValue)
-                                } else {
-                                    // Use x for other periods
-                                    BarMark(
-                                        x: .value("Time", dataPoint.startDate),
-                                        yStart: .value("Start", 0),
-                                        yEnd: .value("Steps", max(0, dataPoint.value)),
-                                        width: .automatic
-                                    )
-                                    .foregroundStyle(viewModel.chartColor)
-                                    .opacity(opacityValue)
-                                }
+                                BarMark(
+                                    x: .value("Time", dataPoint.startDate),
+                                    yStart: .value("Start", 0),
+                                    yEnd: .value("Steps", max(0, dataPoint.value)),
+                                    width: .fixed(10)
+                                )
+                                .foregroundStyle(viewModel.chartColor)
+                                .opacity(opacityValue)
                             }
                         }
                     }
-                    .chartXSelection(value: $viewModel.rawSelectedDate)
+                    .chartXSelection(value: $viewModel.rawSelectedDate) // Keep drag-to-select functionality
+                    .chartXScale(domain: viewModel.calculateXDomain()) // Dynamically calculated x-axis domain
                     .chartYScale(domain: 0...(viewModel.maxValue * 1.1))
                     .chartXAxis {
-                        let axisDates = generateAxisMarkDates()
+                        let axisDates = viewModel.generateAxisMarkDates(for: viewModel.calculateXDomain())
                         AxisMarks(values: axisDates) { date in
                             AxisGridLine()
                             AxisTick()
@@ -126,48 +115,16 @@ extension AnalyticsView {
                             AxisValueLabel()
                         }
                     }
-                    .chartXScale(domain: viewModel.chartStartDate...viewModel.chartEndDate)
                     reviewsOverlay
                 }
             }
-        }
-        
-        // MARK: Generate Axis Mark Dates
-        
-        func generateAxisMarkDates() -> [Date] {
-            var dates: [Date] = []
-            let calendar = Calendar.current
-            var currentDate = viewModel.chartStartDate
-
-            let intervalComponents: DateComponents
-            switch viewModel.selectedPeriod {
-            case .oneHour:
-                intervalComponents = DateComponents(minute: 10)
-            case .twoHours:
-                intervalComponents = DateComponents(minute: 15)
-            case .day:
-                intervalComponents = DateComponents(hour: 2)
-            case .week:
-                intervalComponents = DateComponents(day: 1)
-            }
-
-            while currentDate <= viewModel.chartEndDate {
-                dates.append(currentDate)
-                if let nextDate = calendar.date(byAdding: intervalComponents, to: currentDate) {
-                    currentDate = nextDate
-                } else {
-                    break
-                }
-            }
-
-            return dates
         }
         
         // MARK: Reviews Overlay
         
         private var reviewsOverlay: some View {
             GeometryReader { proxy in
-                ForEach(viewModel.reviewsInPeriod) { review in
+                ForEach(viewModel.filteredReviewsForChartDomain()) { review in
                     if let xPosition = viewModel.xPositionForReview(review, in: proxy.size) {
                         Button {
                             onReviewSelected(review)
@@ -197,24 +154,37 @@ extension AnalyticsView {
         private func annotationView(data: ChartDataItem) -> some ChartContent {
             RuleMark(x: .value("Measurement Type", data.startDate))
                 .foregroundStyle(viewModel.chartColor.opacity(0.3))
-                .annotation(position: .top,
-                            spacing: 0,
-                            overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                .annotation(
+                    position: .top,
+                    spacing: 0,
+                    overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
                 ) {
                     VStack(alignment: .leading, spacing: 4) {
                         if viewModel.selectedMeasurementType == .steps {
-                            Text("\(data.startDate, format: viewModel.annotationViewFormat) - \(data.endDate, format: viewModel.annotationViewFormat)")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.secondary)
+                            if viewModel.selectedPeriod == .week {
+                                Text("\(data.startDate, format: viewModel.annotationViewFormat)")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("\(data.startDate, format: viewModel.annotationViewFormat) - \(data.endDate, format: viewModel.annotationViewFormat)")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                            }
                         } else {
-                            Text(data.startDate, format: viewModel.annotationViewFormat)
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.secondary)
+                            Text(
+                                data.startDate,
+                                format: viewModel.annotationViewFormat
+                            )
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
                         }
                         
-                        Text(data.value, format: .number.precision(.fractionLength(viewModel.selectedMeasurementType == .steps ? 0 : 1)))
-                            .bold()
-                            .foregroundStyle(viewModel.chartColor)
+                        Text(
+                            data.value,
+                            format: .number.precision(.fractionLength(viewModel.selectedMeasurementType == .steps ? 0 : 1))
+                        )
+                        .bold()
+                        .foregroundStyle(viewModel.chartColor)
                     }
                     .padding(8)
                     .background {
@@ -238,4 +208,3 @@ extension AnalyticsView {
     
     AnalyticsView.MeasurementChartView(viewModel: viewModel) { _ in }
 }
-

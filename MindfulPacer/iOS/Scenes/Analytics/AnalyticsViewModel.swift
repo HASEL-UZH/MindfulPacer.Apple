@@ -73,11 +73,11 @@ class AnalyticsViewModel {
         chartData.map { $0.value }.average
     }
     
-    var emptyStateImage: String {
+    var chartEmptyStateImage: String {
         selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis"
     }
 
-    var emptyStateTitle: String {
+    var chartEmptyStateTitle: String {
         selectedMeasurementType == .heartRate ? "No heart rate data" : "No steps data"
     }
     
@@ -174,6 +174,43 @@ class AnalyticsViewModel {
         }
     }
     
+    func generateAxisMarkDates(for domain: ClosedRange<Date>) -> [Date] {
+        var dates: [Date] = []
+        let calendar = Calendar.current
+        var currentDate = domain.lowerBound
+
+        let intervalComponents: DateComponents
+        switch selectedPeriod {
+        case .oneHour:
+            intervalComponents = DateComponents(minute: 10)
+        case .twoHours:
+            intervalComponents = DateComponents(minute: 15)
+        case .day:
+            intervalComponents = DateComponents(hour: 2)
+        case .week:
+            intervalComponents = DateComponents(day: 1)
+        }
+
+        while currentDate <= domain.upperBound {
+            dates.append(currentDate)
+            if let nextDate = calendar.date(byAdding: intervalComponents, to: currentDate) {
+                currentDate = nextDate
+            } else {
+                break
+            }
+        }
+
+        return dates
+    }
+    
+    func calculateXDomain() -> ClosedRange<Date> {
+        guard let firstDataPoint = chartData.first,
+              let lastDataPoint = chartData.last else {
+            return chartStartDate...chartEndDate
+        }
+        return firstDataPoint.startDate...lastDataPoint.endDate
+    }
+
     func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
         guard let firstDate = chartData.first?.startDate,
               let lastDate = chartData.last?.startDate else {
@@ -187,6 +224,16 @@ class AnalyticsViewModel {
         
         let xPercentage = reviewTimeInterval / totalTimeInterval
         return chartSize.width * CGFloat(xPercentage)
+    }
+    
+    func filteredReviewsForChartDomain() -> [Review] {
+        guard let firstDate = chartData.first?.startDate, let lastDate = chartData.last?.startDate else {
+            return []
+        }
+        
+        return reviewsInPeriod.filter { review in
+            review.date >= firstDate && review.date <= lastDate
+        }
     }
     
     // MARK: - Private Methods

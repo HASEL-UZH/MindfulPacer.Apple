@@ -8,13 +8,13 @@
 import Foundation
 import SwiftData
 
-protocol FetchDefaultCategoriesUseCase {
+protocol FetchDefaultActivitiesUseCase {
     func execute() -> [Activity]?
 }
 
 // MARK: - Use Case Implementation
 
-class DefaultFetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase {
+class DefaultFetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase {
     private let modelContext: ModelContext
 
     init(modelContext: ModelContext) {

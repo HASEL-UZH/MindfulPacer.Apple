@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - InfoSheet
 
 struct InfoSheet<Content: View>: View {
+    
     // MARK: Properties
 
     var title: String

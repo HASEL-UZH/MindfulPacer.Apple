@@ -33,7 +33,7 @@ extension SettingsView {
                                     icon: theme.icon,
                                     title: theme.rawValue,
                                     description: theme.description,
-                                    textColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
+                                    titleColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
                                     iconColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
                                     descriptionTextColor: self.theme == theme ? Color("BrandPrimary").opacity(0.7) : Color.secondary
                                 )

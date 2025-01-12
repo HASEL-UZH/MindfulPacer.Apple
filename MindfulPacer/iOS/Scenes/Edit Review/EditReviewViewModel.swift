@@ -21,7 +21,7 @@ class EditReviewViewModel {
     private let modelContext: ModelContext
     private let createReviewUseCase: CreateReviewUseCase
     private let deleteReviewUseCase: DeleteReviewUseCase
-    private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
+    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let saveReviewUseCase: SaveReviewUseCase
     
     // MARK: - Published Properties (State)
@@ -169,20 +169,20 @@ class EditReviewViewModel {
         modelContext: ModelContext,
         createReviewUseCase: CreateReviewUseCase,
         deleteReviewUseCase: DeleteReviewUseCase,
-        fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase,
+        fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
         saveReviewUseCase: SaveReviewUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewUseCase = createReviewUseCase
         self.deleteReviewUseCase = deleteReviewUseCase
-        self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
+        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
         self.saveReviewUseCase = saveReviewUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchDefaultCategories()
+        fetchDefaultActivities()
     }
     
     func configureMode(with review: Review?) {
@@ -301,8 +301,8 @@ class EditReviewViewModel {
     
     // MARK: - Private Methods
     
-    private func fetchDefaultCategories() {
-        if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
+    private func fetchDefaultActivities() {
+        if let fetchedCategories = fetchDefaultActivitiesUseCase.execute() {
             categories = fetchedCategories
         }
     }

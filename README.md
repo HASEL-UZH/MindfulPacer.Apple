@@ -362,6 +362,50 @@ Usage:
 
 ### Toasts
 
+Toasts are used to display temporary notifications to the user for various events or actions. Similar to sheets and alerts, an enum is defined to represent the different types of toasts that can be shown in a view.
+
+Example:
+
+```swift
+enum MyToast: Identifiable {
+	case success
+	case failure
+
+	var id: Int {
+		hashValue
+	}
+		
+}
+```
+
+Usage:
+
+```swift
+.toast(item: $viewModel.activeToast) { toast in
+    toastContent(for: toast)
+}
+
+...
+
+@ViewBuilder
+private func toastContent(for toast: HomeViewToast) -> some View {
+    switch toast {
+    case .succcess:
+        Toast(
+            title: "Success!",
+            message: "This is a good message!"
+        )
+        .toastStyle(.success)
+	case .failure:
+        Toast(
+            title: "Failure",
+            message: "This is a bad message :("
+        )
+        .toastStyle(.failure)
+    }
+}
+```
+
 ## Dependency Injection
 
 The architecture uses a dependency injection framework, specifically the `Factory` framework, to manage dependencies and ensure loose coupling between components. Dependency injection is a design pattern that allows for the creation of dependent objects outside of the class that uses them, enabling better modularity and easier testing. Here’s how dependency injection is implemented in the project:
