@@ -14,7 +14,7 @@ extension SettingsView {
         
         // MARK: Properties
         
-        @Bindable var viewModel: SettingsViewModel
+        @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
         
         // MARK: Body
         
@@ -24,21 +24,21 @@ extension SettingsView {
                     ForEach(Theme.allCases) { theme in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedTheme == theme
+                            isSelected: self.theme == theme
                         ) {
-                            viewModel.setTheme(to: theme)
+                            self.theme = theme
                         } label: {
                             HStack {
                                 IconLabel(
                                     icon: theme.icon,
                                     title: theme.rawValue,
                                     description: theme.description,
-                                    textColor: viewModel.selectedTheme == theme ? Color("BrandPrimary") : Color.primary,
-                                    iconColor: viewModel.selectedTheme == theme ? Color("BrandPrimary") : Color.primary,
-                                    descriptionTextColor: viewModel.selectedTheme == theme ? Color("BrandPrimary").opacity(0.7) : Color.secondary
+                                    titleColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
+                                    iconColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
+                                    descriptionTextColor: self.theme == theme ? Color("BrandPrimary").opacity(0.7) : Color.secondary
                                 )
                                 Spacer()
-                                if viewModel.selectedTheme == theme {
+                                if self.theme == theme {
                                     Image(systemName: "checkmark.circle.fill")
                                 }
                             }
@@ -56,9 +56,7 @@ extension SettingsView {
 // MARK: - Preview
 
 #Preview {
-    let viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
-    
     NavigationStack {
-        SettingsView.ThemeSettingsView(viewModel: viewModel)
+        SettingsView.ThemeSettingsView()
     }
 }

@@ -65,18 +65,20 @@ extension HomeView {
         // MARK: Recent Reviews Summary
 
         private var recentReviewsSummary: some View {
-            Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(viewModel.recentReviews) { review in
-                        ReviewCell(review: review, withBackground: false) {
-                            viewModel.presentSheet(.editReviewView(review))
-                        }
-                        if review != viewModel.recentReviews.last {
-                            Divider()
-                        }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(viewModel.recentReviews) { review in
+                    ReviewCell(
+                        review: review,
+                        backgroundColor: Color(.tertiarySystemGroupedBackground)
+                    ) {
+                        viewModel.presentSheet(.editReviewView(review))
+                    }
+                    if review != viewModel.recentReviews.last {
+                        Divider()
                     }
                 }
             }
+            .cornerRadius(16)
         }
     }
 }
@@ -88,6 +90,7 @@ extension HomeView {
 
     ScrollView {
         HomeView.ReviewsWidget(viewModel: viewModel)
+            .padding()
     }
     .background(Color(.systemGroupedBackground))
 }

@@ -21,8 +21,7 @@ class EditReviewViewModel {
     private let modelContext: ModelContext
     private let createReviewUseCase: CreateReviewUseCase
     private let deleteReviewUseCase: DeleteReviewUseCase
-    private let fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase
-    private let fetchModeOfUseUseCase: FetchModeOfUseUseCase
+    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let saveReviewUseCase: SaveReviewUseCase
     
     // MARK: - Published Properties (State)
@@ -163,7 +162,6 @@ class EditReviewViewModel {
     }
     
     var isReviewDeleted = false
-    var modeOfUse: ModeOfUse = .essentials
     
     // MARK: - Initialization
     
@@ -171,23 +169,20 @@ class EditReviewViewModel {
         modelContext: ModelContext,
         createReviewUseCase: CreateReviewUseCase,
         deleteReviewUseCase: DeleteReviewUseCase,
-        fetchDefaultCategoriesUseCase: FetchDefaultCategoriesUseCase,
-        fetchModeOfUseUseCase: FetchModeOfUseUseCase,
+        fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
         saveReviewUseCase: SaveReviewUseCase
     ) {
         self.modelContext = modelContext
         self.createReviewUseCase = createReviewUseCase
         self.deleteReviewUseCase = deleteReviewUseCase
-        self.fetchDefaultCategoriesUseCase = fetchDefaultCategoriesUseCase
-        self.fetchModeOfUseUseCase = fetchModeOfUseUseCase
+        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
         self.saveReviewUseCase = saveReviewUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchDefaultCategories()
-        configureModeOfUse()
+        fetchDefaultActivities()
     }
     
     func configureMode(with review: Review?) {
@@ -263,9 +258,7 @@ class EditReviewViewModel {
     
     func deleteReview(_ review: Review?) {
         isReviewDeleted = true
-        guard let review else {
-            return
-        }
+        guard let review else { return }
         deleteReviewUseCase.execute(review: review)
     }
     
@@ -306,8 +299,8 @@ class EditReviewViewModel {
     
     // MARK: - Private Methods
     
-    private func fetchDefaultCategories() {
-        if let fetchedCategories = fetchDefaultCategoriesUseCase.execute() {
+    private func fetchDefaultActivities() {
+        if let fetchedCategories = fetchDefaultActivitiesUseCase.execute() {
             categories = fetchedCategories
         }
     }
@@ -326,9 +319,5 @@ class EditReviewViewModel {
         depressionOrAnxiety.setValue(review.depressionOrAnxiety)
         didTriggerCrash = review.didTriggerCrash
         additionalInformation = review.additionalInformation
-    }
-    
-    private func configureModeOfUse() {
-        modeOfUse = fetchModeOfUseUseCase.execute()
     }
 }

@@ -20,13 +20,13 @@ typealias MeasurementType = SchemaV1.ReviewReminder.MeasurementType
 
 extension SchemaV1 {
     @Model
-    final class ReviewReminder {
+    final class ReviewReminder: @unchecked Sendable { // TODO: Check if it's ok to have this as un unchecked sendable
         var id: UUID = UUID()
         var measurementType: MeasurementType = MeasurementType.heartRate
         var reviewReminderType: ReviewReminderType = ReviewReminderType.light
         var threshold: Int = 0
         var interval: Interval = Interval.tenSeconds
-
+        
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
@@ -40,13 +40,22 @@ extension SchemaV1 {
             self.threshold = threshold
             self.interval = interval
         }
-
+        
         var triggerSummary: String {
             switch measurementType {
             case .heartRate:
                 "Above \(threshold) bpm for \(interval.rawValue.lowercased())"
             case .steps:
                 "Above \(threshold) steps within \(interval.rawValue.lowercased())"
+            }
+        }
+        
+        var thresholdUnits: String {
+            switch measurementType {
+            case .heartRate:
+                "bpm"
+            case .steps:
+                "steps"
             }
         }
     }
@@ -91,7 +100,7 @@ extension ReviewReminder {
         case light = "Light"
         case medium = "Medium"
         case strong = "Strong"
-
+        
         var icon: String {
             switch self {
             case .light: "sun.min"
@@ -99,7 +108,7 @@ extension ReviewReminder {
             case .strong: "lightbulb"
             }
         }
-
+        
         var description: String {
             switch self {
             case .light:
@@ -110,7 +119,7 @@ extension ReviewReminder {
                 "Shows a red color"
             }
         }
-
+        
         var color: Color {
             switch self {
             case .light: .yellow
@@ -125,13 +134,16 @@ extension ReviewReminder {
 
 extension ReviewReminder {
     enum Interval: String, Codable, CaseIterable {
+        
         // MARK: Heart Rate
+        
         case immediately = "Immediately"
         case tenSeconds = "10 Seconds"
         case thirtySeconds = "30 Seconds"
         case oneMinute = "1 Minute"
-         
+        
         // MARK: Steps
+        
         case thirtyMinutes = "30 Minutes"
         case oneHour = "1 Hour"
         case twoHours = "2 Hours"
@@ -152,6 +164,20 @@ extension ReviewReminder {
             }
         }
         
+        var timeInterval: TimeInterval {
+            switch self {
+            case .thirtyMinutes: return 30 * 60
+            case .oneHour: return 60 * 60
+            case .twoHours: return 2 * 60 * 60
+            case .fourHours: return 4 * 60 * 60
+            case .oneDay: return 24 * 60 * 60
+            case .immediately: return 0
+            case .tenSeconds: return 10
+            case .thirtySeconds: return 30
+            case .oneMinute: return 60
+            }
+        }
+        
         static var heartRateIntervals: [Interval] {
             [.immediately, .tenSeconds, .thirtySeconds, .oneMinute]
         }
@@ -160,4 +186,46 @@ extension ReviewReminder {
             [.thirtyMinutes, .oneHour, .twoHours, .fourHours, .oneDay]
         }
     }
+}
+
+// MARK: - Missed Review
+
+struct MissedReview: Identifiable {
+    let measurementType: MeasurementType
+    let reviewReminderType: ReviewReminder.ReviewReminderType
+    let threshold: Int
+    let interval: ReviewReminder.Interval
+    var date: Date
+    
+    var id: String {
+        "\(measurementType.rawValue)-\(reviewReminderType.rawValue)-\(threshold)-\(interval.rawValue)-\(date.timeIntervalSince1970)"
+    }
+    
+    var triggerSummary: String {
+        switch measurementType {
+        case .heartRate:
+            "Above \(threshold) bpm for \(interval.rawValue.lowercased())"
+        case .steps:
+            "Above \(threshold) steps within \(interval.rawValue.lowercased())"
+        }
+    }
+    
+    var thresholdUnits: String {
+        switch measurementType {
+        case .heartRate:
+            "bpm"
+        case .steps:
+            "steps"
+        }
+    }
+    
+    init(_ reviewReminder: ReviewReminder, date: Date) {
+        self.measurementType = reviewReminder.measurementType
+        self.reviewReminderType = reviewReminder.reviewReminderType
+        self.threshold = reviewReminder.threshold
+        self.interval = reviewReminder.interval
+        self.date = date
+    }
+    
+    static let actionedKey: String = "actionedMissedReviews"
 }

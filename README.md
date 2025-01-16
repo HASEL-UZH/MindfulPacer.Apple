@@ -11,7 +11,7 @@
 
 # Contents
 
-1. [Architecture Overview](#architecture-overview)
+1. [Architecture](#architecture-overview)
     - [Application Layer](#application-layer)
     - [Common UI](#common-ui)
     - [Extensions](#extensions)
@@ -31,9 +31,22 @@
 4. [Benefits of This Structure](#benefits-of-this-structure)
 5. [Best Practices for Structuring SwiftUI Views](#best-practices-for-structuring-swiftui-views)
 
-# Architecture Overview
+# Architecture
 
 This project follows a clean architecture approach combined with MVVM (Model-View-ViewModel) principles. The architecture is designed to ensure a clear separation of concerns, making the codebase scalable, maintainable, and testable. Below is an in-depth explanation of each aspect of the architecture.
+
+## System Architecture Diagram
+
+Here is the high-level architecture of the project:
+
+<picture>
+  <source srcset="architecture-diagram-dark.jpg" media="(prefers-color-scheme: dark)">
+  <source srcset="architecture-diagram-light.jpg" media="(prefers-color-scheme: light)">
+  <img src="architecture-diagram-light.png" alt="Architecture Diagram">
+</picture>
+
+The system architecture diagram below provides a high-level overview of how the various components in the application interact and work together. It illustrates the flow of data and the relationships between Views, ViewModels, Use Cases, Repositories, Services, and the Database (managed via SwiftData), as well as how the Dependency Injection framework (Factory) orchestrates dependency management throughout the architecture. Views, built with SwiftUI, serve as the entry point for user interaction and observe state changes in ViewModels, which act as a bridge by triggering Use Cases and exposing state. Use Cases encapsulate core business logic, coordinating data flow between Repositories, Services, and, when necessary, directly accessing the Database. Repositories provide a clean abstraction over data sources like APIs or local storage, while Services handle external integrations such as HealthKit and external APIs. The Database, managed with SwiftData, stores and retrieves Core Models, providing persistent storage and querying capabilities. Dependency Injection ensures loose coupling by supplying required dependencies to ViewModels, Use Cases, and Repositories, while the flexible architecture allows Use Cases to bypass Repositories and directly interact with Services or the Database when needed. This modular design ensures a scalable, maintainable, and testable system, with real-time UI updates achieved through feedback loops between Views and ViewModels.
+
 
 ## Application Layer
 
@@ -347,6 +360,52 @@ Usage:
 }
 ```
 
+### Toasts
+
+Toasts are used to display temporary notifications to the user for various events or actions. Similar to sheets and alerts, an enum is defined to represent the different types of toasts that can be shown in a view.
+
+Example:
+
+```swift
+enum MyToast: Identifiable {
+	case success
+	case failure
+
+	var id: Int {
+		hashValue
+	}
+		
+}
+```
+
+Usage:
+
+```swift
+.toast(item: $viewModel.activeToast) { toast in
+    toastContent(for: toast)
+}
+
+...
+
+@ViewBuilder
+private func toastContent(for toast: HomeViewToast) -> some View {
+    switch toast {
+    case .succcess:
+        Toast(
+            title: "Success!",
+            message: "This is a good message!"
+        )
+        .toastStyle(.success)
+	case .failure:
+        Toast(
+            title: "Failure",
+            message: "This is a bad message :("
+        )
+        .toastStyle(.failure)
+    }
+}
+```
+
 ## Dependency Injection
 
 The architecture uses a dependency injection framework, specifically the `Factory` framework, to manage dependencies and ensure loose coupling between components. Dependency injection is a design pattern that allows for the creation of dependent objects outside of the class that uses them, enabling better modularity and easier testing. Here’s how dependency injection is implemented in the project:
@@ -389,27 +448,15 @@ MindfulPacer
 │   ├── Scenes
 │   ├── Services
 │   └── Use Cases
-├── WatchOS
-│   ├── Application
-│   ├── Common UI
-│   ├── Extensions
-│   ├── Preview Content
-│   ├── Resources
-│   ├── Scenes
-│   ├── Services
-│   └── Use Cases
-├── iOSTests
-│   ├── Mocks
-│   ├── Services Tests
-│   ├── View Models Tests
-│   ├── Use Cases Tests
-│   ├── Utilities Tests
-└── WatchOSTests
-    ├── Mocks
-    ├── Services Tests
-    ├── View Models Tests
-    ├── Use Cases Tests
-    └── Utilities Tests
+└── WatchOS
+    ├── Application
+    ├── Common UI
+    ├── Extensions
+    ├── Preview Content
+    ├── Resources
+    ├── Scenes
+    ├── Services
+    └── Use Cases
 ```
 
 ## 🍏 Shared

@@ -15,6 +15,7 @@ extension OnboardingView {
         // MARK: Properties
         
         @Bindable var viewModel: OnboardingViewModel
+        @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
         
         // MARK: Body
         
@@ -38,7 +39,7 @@ extension OnboardingView {
                                 image: mode.icon,
                                 title: mode.name,
                                 description: mode.description,
-                                textColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
+                                titleColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
                                 iconColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
                                 descriptionTextColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary").opacity(0.7) : Color.secondary,
                                 background: true
@@ -46,6 +47,11 @@ extension OnboardingView {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
+                }
+            }
+            .onChange(of: viewModel.selectedModeOfUse) { _, newValue in
+                if let newValue {
+                    modeOfUse = newValue
                 }
             }
         }

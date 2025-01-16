@@ -39,6 +39,10 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
             "MindfulPacer Expanded Icon"
         }
     }
+    
+    static var appStorageKey: String {
+        "modeOfUse"
+    }
 }
 
 // MARK: - RootViewModel
@@ -52,25 +56,13 @@ class RootViewModel {
     private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
-    private let listenToThemeChangesUseCase: ListenToThemeChangesUseCase
     
     // MARK: - Published Properties
     
     var activeSheet: RootSheet?
     var selectedTab: Tab = .home
     var selectedTheme: Theme = .system
-    
-    var colorScheme: ColorScheme? {
-        switch selectedTheme {
-        case .system:
-            return nil
-        case .light:
-            return .light
-        case .dark:
-            return .dark
-        }
-    }
-    
+
     // MARK: - Private Properties
     
     private var cancellables = Set<AnyCancellable>()
@@ -81,22 +73,18 @@ class RootViewModel {
         modelContext: ModelContext,
         addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
         checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase,
-        initializeConnectivityUseCase: InitializeConnectivityUseCase,
-        listenToThemeChangesUseCase: ListenToThemeChangesUseCase
+        initializeConnectivityUseCase: InitializeConnectivityUseCase
     ) {
         self.modelContext = modelContext
         self.addDefaultCategoriesUseCase = addDefaultCategoriesUseCase
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
-        self.listenToThemeChangesUseCase = listenToThemeChangesUseCase
     }
     
     // MARK: - View Events
     
     @MainActor
     func onViewFirstAppear() {
-        listenForThemeChanges()
-
         Task {
             await addDefaultCategoriesUseCase.execute()
             initializeConnectivityUseCase.execute()
@@ -125,14 +113,5 @@ class RootViewModel {
         if !hasSeenOnboarding {
             presentSheet(.onboardingView)
         }
-    }
-    
-    private func listenForThemeChanges() {
-        listenToThemeChangesUseCase.execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] theme in
-                self?.selectedTheme = theme
-            }
-            .store(in: &cancellables)
     }
 }

@@ -43,9 +43,11 @@ struct EditReviewView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.keyboardShowing) private var keyboardShowing
+    @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReviewViewModel = ScenesContainer.shared.editReviewViewModel()
 
     var review: Review?
+    var onReviewCreation: (() -> Void)?
 
     // MARK: Body
 
@@ -64,13 +66,13 @@ struct EditReviewView: View {
                             }
                         }
                         
-                        if viewModel.modeOfUse == .expanded {
+                        if modeOfUse == .expanded {
                             mood
                         }
                         
                         wellBeing
                         
-                        if viewModel.modeOfUse == .expanded {
+                        if modeOfUse == .expanded {
                             symptoms(width: proxy.size.width / 2)
                             triggerCrash
                             additionalInformation
@@ -507,8 +509,8 @@ struct EditReviewView: View {
     private var createButton: some View {
         PrimaryButton(title: "Create") {
             viewModel.createReview()
+            onReviewCreation?()
             dismiss()
-            // TODO: Show a toast when a Review is successfully created
         }
         .padding(keyboardShowing ? [.all] : [.horizontal, .top])
         .background(.ultraThinMaterial)
@@ -571,6 +573,6 @@ struct EditReviewView: View {
 #Preview {
     let viewModel = ScenesContainer.shared.editReviewViewModel()
 
-    return EditReviewView(viewModel: viewModel)
+    return EditReviewView(viewModel: viewModel) {}
         .tint(Color("BrandPrimary"))
 }

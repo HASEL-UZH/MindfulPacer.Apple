@@ -10,10 +10,11 @@ import SwiftUI
 // MARK: - ReviewReminderCell
 
 struct ReviewReminderCell: View {
+    
     // MARK: Properties
 
     var reviewReminder: ReviewReminder
-    var withBackground: Bool = true
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var onTap: () -> Void
 
     // MARK: Body
@@ -22,13 +23,9 @@ struct ReviewReminderCell: View {
         Button {
             onTap()
         } label: {
-            if withBackground {
-                cellContent
-                    .padding()
-                    .background(Color(.secondarySystemGroupedBackground))
-            } else {
-                cellContent
-            }
+            cellContent
+                .padding()
+                .background(backgroundColor)
         }
     }
 

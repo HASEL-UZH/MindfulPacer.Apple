@@ -51,10 +51,10 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     private func addDefaultCategories() async {
         DefaultActivityData.initializeData()
 
-        for activity in DefaultActivityData.categories {
+        for activity in DefaultActivityData.activities {
             modelContext.insert(activity)
 
-            if let subcategories = activity.subcategories {
+            if let subcategories = activity.subactivities {
                 for subactivity in subcategories {
                     modelContext.insert(subactivity)
                 }

@@ -10,28 +10,26 @@ import SwiftUI
 // MARK: - ReviewCell
 
 struct ReviewCell: View {
+    
     // MARK: Properties
 
+    @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
     var review: Review
-    var withBackground: Bool = true
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var onTap: () -> Void
 
     // MARK: Body
-
+    
     var body: some View {
         Button {
             onTap()
         } label: {
-            if withBackground {
-                cellContent
-                    .padding()
-                    .background(Color(.secondarySystemGroupedBackground))
-            } else {
-                cellContent
-            }
+            cellContent
+                .padding()
+                .background(backgroundColor)
         }
     }
-
+    
     // MARK: Cell Content
 
     private var cellContent: some View {
@@ -55,19 +53,35 @@ struct ReviewCell: View {
             if review.didTriggerCrash {
                 Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
             }
-
-            if let mood = review.mood {
-                Text(mood.emoji)
-                    .frame(width: 24, height: 24)
-                    .padding(4)
-                    .background {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8)
-                                .foregroundStyle(.yellow.opacity(0.1))
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(.yellow.opacity(0.1), lineWidth: 1.5)
+            
+            if modeOfUse == .essentials {
+                if let wellBeing = review.wellBeing {
+                    Icon(
+                        name: "cross.fill",
+                        color: Symptom.wellBeing(wellBeing).color,
+                        background: true
+                    )
+                }
+            } else {
+                if let mood = review.mood {
+                    Text(mood.emoji)
+                        .frame(width: 24, height: 24)
+                        .padding(4)
+                        .background {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .foregroundStyle(.yellow.opacity(0.1))
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(.yellow.opacity(0.1), lineWidth: 1.5)
+                            }
                         }
-                    }
+                } else if let wellBeing = review.wellBeing {
+                    Icon(
+                        name: "cross.fill",
+                        color: Symptom.wellBeing(wellBeing).color,
+                        background: true
+                    )
+                }
             }
         }
     }
@@ -75,6 +89,7 @@ struct ReviewCell: View {
 
 // MARK: - Preview
 
+// TODO: Add mock review
 //#Preview {
 //    ReviewCell(review: Review()) {
 //

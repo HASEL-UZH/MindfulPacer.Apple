@@ -44,7 +44,6 @@ class OnboardingViewModel {
 
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
-    private let setModeOfUseUseCase: SetModeOfUseUseCase
     private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
 
     // MARK: - Published Properties
@@ -217,12 +216,10 @@ class OnboardingViewModel {
     init(
         initializeNotificationsUseCase: InitializeNotificationsUseCase,
         requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
-        setModeOfUseUseCase: SetModeOfUseUseCase,
         toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
     ) {
         self.initializeNotificationsUseCase = initializeNotificationsUseCase
         self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
-        self.setModeOfUseUseCase = setModeOfUseUseCase
         self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
     }
 
@@ -255,7 +252,6 @@ class OnboardingViewModel {
         case .disclaimer:
             toggleUserHasSeenOnboardingUseCase.execute()
             shouldDismiss = true
-            setModeOfUseUseCase.execute(modeOfUse: selectedModeOfUse.unsafelyUnwrapped)
         }
     }
 

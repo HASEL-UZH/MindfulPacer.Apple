@@ -185,7 +185,7 @@ struct IconLabel: View {
     var image: String?
     var title: String
     var description: String?
-    var textColor: Color?
+    var titleColor: Color?
     var iconColor: Color?
     var labelColor: Color?
     var descriptionTextColor: Color?
@@ -203,7 +203,7 @@ struct IconLabel: View {
             image: image,
             title: title,
             description: description,
-            textColor: textColor,
+            textColor: titleColor,
             iconColor: iconColor,
             labelColor: labelColor,
             descriptionTextColor: descriptionTextColor,
@@ -245,7 +245,7 @@ extension View {
             icon: "figure.walk",
             title: "Walking",
             description: "Your total step count.",
-            textColor: .blue,
+            titleColor: .blue,
             labelColor: .teal,
             background: true
         )

@@ -42,7 +42,7 @@ struct ReviewRemindersListView: View {
                 Button {
                     viewModel.presentSheet(.createReviewReminderView(nil))
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "plus.circle.fill")
                 }
             }
         }

@@ -12,13 +12,18 @@ import SwiftUI
 struct Icon: View {
     
     // MARK: Properties
+    
+    enum Shape {
+        case circle, roundedRectangle
+    }
 
     var name: String?
     var image: String?
     var color: Color = Color("BrandPrimary")
     var variant: SymbolVariants = .fill
     var renderingMode: SymbolRenderingMode = .monochrome
-    var background: Bool = false
+    var shape: Shape = .roundedRectangle
+    var background: Bool = false // TODO: make this a modifier like .iconStyle(.background)
 
     // MARK: Body
 
@@ -42,11 +47,21 @@ struct Icon: View {
         .padding(background ? 4 : 0)
         .background {
             if background {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .foregroundStyle(color.opacity(0.1))
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(color.opacity(0.1), lineWidth: 1.5)
+                switch shape {
+                case .circle:
+                    ZStack {
+                        Circle()
+                            .foregroundStyle(color.opacity(0.1))
+                        Circle()
+                            .stroke(color.opacity(0.1), lineWidth: 1.5)
+                    }
+                case .roundedRectangle:
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(color.opacity(0.1))
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(color.opacity(0.1), lineWidth: 1.5)
+                    }
                 }
             }
         }
@@ -69,6 +84,7 @@ struct Icon: View {
         Icon(
             image: "android-logo",
             color: Color(.androidGreen),
+            shape: .circle,
             background: true
         )
     }

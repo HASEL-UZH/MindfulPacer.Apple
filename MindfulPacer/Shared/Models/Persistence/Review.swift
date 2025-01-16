@@ -92,7 +92,7 @@ extension SchemaV1 {
         var id: UUID = UUID()
         var name: String = ""
         var icon: String = ""
-        @Relationship(inverse: \Subactivity.activity) var subcategories: [Subactivity]?
+        @Relationship(inverse: \Subactivity.activity) var subactivities: [Subactivity]?
         var review: Review?
 
         init(
@@ -105,7 +105,7 @@ extension SchemaV1 {
             self.id = id
             self.name = name
             self.icon = icon
-            self.subcategories = subcategories
+            self.subactivities = subcategories
             self.review = review
         }
     }
@@ -309,15 +309,15 @@ extension Review {
     }
 }
 
-// MARK: - Default Categories
+// MARK: - Default Activities
 
 @MainActor
 struct DefaultActivityData {
-    static var categories: [Activity] = []
+    static var activities: [Activity] = []
 
     // swiftlint:disable:next function_body_length
     static func initializeData() {
-        // MARK: Categories
+        // MARK: Activities
         let movement = Activity(name: "Movement", icon: "figure.run")
         let transportation = Activity(name: "Transportation", icon: "tram")
         let household = Activity(name: "Household", icon: "house")
@@ -328,7 +328,7 @@ struct DefaultActivityData {
         let reviewReminders = Activity(name: "Review Reminders", icon: "bell.badge")
         let others = Activity(name: "Others", icon: "ellipsis")
 
-        // MARK: Movement Subcategories
+        // MARK: Movement Subactivities
         let standUp = Subactivity(name: "Stand Up", icon: "figure.stand", activity: movement)
         let walking = Subactivity(name: "Walking", icon: "figure.walk", activity: movement)
         let running = Subactivity(name: "Running", icon: "figure.run", activity: movement)
@@ -341,14 +341,14 @@ struct DefaultActivityData {
         let swimming = Subactivity(name: "Swimming", icon: "figure.pool.swim", activity: movement)
         let otherMovement = Subactivity(name: "Other Movement", icon: "ellipsis", activity: movement)
 
-        // MARK: Transporation Subcategories
+        // MARK: Transporation Subactivities
         let drivingCar = Subactivity(name: "Driving Car", icon: "car", activity: transportation)
         let publicTransporation = Subactivity(name: "Public Transporation", icon: "bus", activity: transportation)
         let bikingTransporation = Subactivity(name: "Biking", icon: "bicycle", activity: transportation)
         let flying = Subactivity(name: "Flying", icon: "airplane", activity: transportation)
         let otherTransportation = Subactivity(name: "Other Transportation", icon: "ellipsis", activity: transportation)
 
-        // MARK: Household Subcategories
+        // MARK: Household Subactivities
         let washingClothes = Subactivity(name: "Washing Clothes", icon: "washer", activity: household)
         let washingDishes = Subactivity(name: "Washing Dishes", icon: "dishwasher", activity: household)
         let cleaning = Subactivity(name: "Cleaning", icon: "bubbles.and.sparkles", activity: household)
@@ -379,7 +379,7 @@ struct DefaultActivityData {
         let playingMusic = Subactivity(name: "Playing Music", icon: "pianokeys", activity: cognitive)
         let learningSomething = Subactivity(name: "Learning Something", icon: "globe.desk", activity: cognitive)
 
-        // MARK: Interactions & Social Subategories
+        // MARK: Interactions & Social Subcategories
         let meetingCloseFriends = Subactivity(name: "Meeting Close Friends", icon: "person.3", activity: interactionsAndSocial)
         let meetingNewPeople = Subactivity(name: "Meeting New People", icon: "person.line.dotted.person", activity: interactionsAndSocial)
         let meetingFamily = Subactivity(name: "Meeting Family", icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
@@ -402,16 +402,16 @@ struct DefaultActivityData {
         let steps = Subactivity(name: "Steps", icon: "figure.walk", activity: reviewReminders)
         let heartRate = Subactivity(name: "Heart Rate", icon: "heart", activity: reviewReminders)
 
-        movement.subcategories = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
-        transportation.subcategories = [drivingCar, publicTransporation, bikingTransporation, flying, otherTransportation]
-        household.subcategories = [washingClothes, washingDishes, cleaning, cooking, tidyingUp, groceryShopping, gardening, fixingThings]
-        selfcare.subcategories = [personalHygiene, sleep, gettingDressed, eating, meditation, visitingDoctorOrTherapist, exercising, relaxation]
-        cognitive.subcategories = [thinkingOrBrainstorming, reading, writing, watchingTV, usingComputerTabletPhone, gaming, readingTheNews, playingMusic, learningSomething]
-        interactionsAndSocial.subcategories = [meetingCloseFriends, meetingNewPeople, meetingFamily, onlineSocializing, groupActivities, attendingEvents]
-        work.subcategories = [workOnTasks, researchingInformation, meetings, emailAndChat, helpingOthers, networking, learning, projectManagement, breaks]
-        reviewReminders.subcategories = [steps, heartRate]
+        movement.subactivities = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
+        transportation.subactivities = [drivingCar, publicTransporation, bikingTransporation, flying, otherTransportation]
+        household.subactivities = [washingClothes, washingDishes, cleaning, cooking, tidyingUp, groceryShopping, gardening, fixingThings]
+        selfcare.subactivities = [personalHygiene, sleep, gettingDressed, eating, meditation, visitingDoctorOrTherapist, exercising, relaxation]
+        cognitive.subactivities = [thinkingOrBrainstorming, reading, writing, watchingTV, usingComputerTabletPhone, gaming, readingTheNews, playingMusic, learningSomething]
+        interactionsAndSocial.subactivities = [meetingCloseFriends, meetingNewPeople, meetingFamily, onlineSocializing, groupActivities, attendingEvents]
+        work.subactivities = [workOnTasks, researchingInformation, meetings, emailAndChat, helpingOthers, networking, learning, projectManagement, breaks]
+        reviewReminders.subactivities = [steps, heartRate]
 
-        categories = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, reviewReminders, others]
+        activities = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, reviewReminders, others]
     }
 }
 

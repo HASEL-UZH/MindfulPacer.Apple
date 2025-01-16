@@ -7,6 +7,9 @@
     "**Updated:** %@" : {
 
     },
+    "%@" : {
+
+    },
     "%@ - %@" : {
       "localizations" : {
         "en" : {
@@ -99,9 +102,6 @@
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the review reminder to be triggered." : {
 
     },
-    "End" : {
-
-    },
     "Error Saving Review Reminder" : {
       "localizations" : {
         "en" : {
@@ -158,6 +158,9 @@
 
     },
     "MindfulPacer Version %@" : {
+
+    },
+    "Missed Reviews" : {
 
     },
     "Modify Filters" : {

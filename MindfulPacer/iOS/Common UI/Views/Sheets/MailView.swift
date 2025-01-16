@@ -11,7 +11,13 @@ import MessageUI
 // MARK: - MailView
 
 struct MailView: UIViewControllerRepresentable {
+    
+    // MARK: Properties
+    
     @Binding var result: Result<MFMailComposeResult, Error>?
+    var recipient: String
+    var subject: String
+    var body: String?
     
     // MARK: Coordinator
     
@@ -29,6 +35,10 @@ struct MailView: UIViewControllerRepresentable {
             }
             
             self.result = .success(result)
+            
+            DispatchQueue.main.async {
+                controller.dismiss(animated: true)
+            }
         }
     }
     
@@ -41,8 +51,12 @@ struct MailView: UIViewControllerRepresentable {
     func makeUIViewController(context: UIViewControllerRepresentableContext<MailView>) -> MFMailComposeViewController {
         let viewController = MFMailComposeViewController()
         viewController.mailComposeDelegate = context.coordinator
-        viewController.setToRecipients(["support@mindfulpacer.ch"])
-        viewController.setSubject("MindfulPacer - Feedback/Question")
+        viewController.setToRecipients([recipient])
+        viewController.setSubject(subject)
+        
+        if let body = body {
+            viewController.setMessageBody(body, isHTML: false)
+        }
         
         return viewController
     }

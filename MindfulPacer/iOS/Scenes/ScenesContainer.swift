@@ -35,11 +35,16 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
+                checkMissedReviewsUseCase: UseCasesContainer.shared.checkMissedReviewsUseCase(),
+                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
+                fetchActionedMissedReviewsUseCase: UseCasesContainer.shared.fetchActionedMissedReviewsUseCase(),
                 fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
+                fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
                 fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
                 fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
-                filterReviewsUseCase: UseCasesContainer.shared.filterReviewsUseCase()
+                filterReviewsUseCase: UseCasesContainer.shared.filterReviewsUseCase(),
+                markMissedReviewAsActionedUseCase: UseCasesContainer.shared.markMissedReviewAsActionedUseCase()
             )
         }
     }
@@ -52,7 +57,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             OnboardingViewModel(
                 initializeNotificationsUseCase: UseCasesContainer.shared.initializeNotificationsUseCase(),
                 requestHealthAuthorisationUseCase: UseCasesContainer.shared.requestHealthAuthorisationUseCase(),
-                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
                 toggleUserHasSeenOnboardingUseCase: UseCasesContainer.shared.toggleUserHasSeenOnboardingUseCase()
             )
         }
@@ -67,8 +71,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
                 checkUserHasSeenOnboardingUseCase: UseCasesContainer.shared.checkUserHasSeenOnboardingUseCase(),
-                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase(),
-                listenToThemeChangesUseCase: UseCasesContainer.shared.listenToThemeChangesUseCase()
+                initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
             )
         }
     }
@@ -82,8 +85,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext,
                 createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
                 deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
-                fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase(),
-                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
+                fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
                 saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
             )
         }
@@ -92,7 +94,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var reviewsFilterViewModel: Factory<ReviewsFilterViewModel> {
         self {
-            ReviewsFilterViewModel(fetchDefaultCategoriesUseCase: UseCasesContainer.shared.fetchDefaultCategoriesUseCase())
+            ReviewsFilterViewModel(fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase())
         }
     }
 
@@ -118,11 +120,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             SettingsViewModel(
                 checkInternetConnectivityUseCase: UseCasesContainer.shared.checkInternetConnectivityUseCase(),
-                fetchModeOfUseUseCase: UseCasesContainer.shared.fetchModeOfUseUseCase(),
-                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase(),
-                fetchThemeUseCase: UseCasesContainer.shared.fetchThemeUseCase(),
-                setModeOfUseUseCase: UseCasesContainer.shared.setModeOfUseUseCase(),
-                setThemeUseCase: UseCasesContainer.shared.setThemeUseCase()
+                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase()
             )
         }
     }
