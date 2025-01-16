@@ -258,9 +258,7 @@ class EditReviewViewModel {
     
     func deleteReview(_ review: Review?) {
         isReviewDeleted = true
-        guard let review else {
-            return
-        }
+        guard let review else { return }
         deleteReviewUseCase.execute(review: review)
     }
     
