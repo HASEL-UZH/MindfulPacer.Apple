@@ -45,6 +45,9 @@
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
 
     },
+    "Activities" : {
+
+    },
     "Activity" : {
 
     },
@@ -70,9 +73,6 @@
 
     },
     "Cancel" : {
-
-    },
-    "Categories" : {
 
     },
     "Choose a review reminder type, which will be reflected in the color of the review reminder notifications you receive." : {
@@ -268,10 +268,10 @@
     "Steps" : {
 
     },
-    "Subactivity" : {
+    "Subactivities" : {
 
     },
-    "Subcategories" : {
+    "Subactivity" : {
 
     },
     "Summary of number of review reminders triggered, by review reminder type." : {

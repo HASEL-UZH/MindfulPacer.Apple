@@ -31,7 +31,7 @@ class EditReviewViewModel {
     var activeSheet: EditReviewSheet?
     var activeAlert: EditReviewAlert?
     
-    var categories: [Activity] = []
+    var activities: [Activity] = []
     
     var navigationTitle: String {
         switch mode {
@@ -300,8 +300,8 @@ class EditReviewViewModel {
     // MARK: - Private Methods
     
     private func fetchDefaultActivities() {
-        if let fetchedCategories = fetchDefaultActivitiesUseCase.execute() {
-            categories = fetchedCategories
+        if let fetchedActivities = fetchDefaultActivitiesUseCase.execute() {
+            activities = fetchedActivities
         }
     }
     

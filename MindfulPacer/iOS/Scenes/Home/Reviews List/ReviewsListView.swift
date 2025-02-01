@@ -149,7 +149,7 @@ extension HomeView {
         // MARK: Activity Filter Summary
 
         private var activityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedCategories) { activity in
+            ForEach(viewModel.reviewFilter.selectedActivities) { activity in
                 filterItem(
                     icon: activity.icon,
                     label: activity.name,
@@ -161,7 +161,7 @@ extension HomeView {
         // MARK: Subactivity Filter Summary
 
         private var subactivityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubcategories) { subactivity in
+            ForEach(viewModel.reviewFilter.selectedSubactivities) { subactivity in
                 filterItem(
                     icon: subactivity.icon,
                     label: subactivity.name,

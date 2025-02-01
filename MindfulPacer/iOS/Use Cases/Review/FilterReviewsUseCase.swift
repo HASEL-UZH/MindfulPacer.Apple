@@ -36,13 +36,13 @@ class DefaultFilterReviewsUseCase: FilterReviewsUseCase {
             }
 
             // Apply Activity Filter (match any selected activity)
-            if !filters.selectedCategories.isEmpty {
-                matches = matches || (review.activity.map { filters.selectedCategories.contains($0) } ?? false)
+            if !filters.selectedActivities.isEmpty {
+                matches = matches || (review.activity.map { filters.selectedActivities.contains($0) } ?? false)
             }
 
             // Apply Subactivity Filter (match any selected subactivity)
-            if !filters.selectedSubcategories.isEmpty {
-                matches = matches || (review.subactivity.map { filters.selectedSubcategories.contains($0) } ?? false)
+            if !filters.selectedSubactivities.isEmpty {
+                matches = matches || (review.subactivity.map { filters.selectedSubactivities.contains($0) } ?? false)
             }
 
             // Apply Mood Filter (match any selected mood)

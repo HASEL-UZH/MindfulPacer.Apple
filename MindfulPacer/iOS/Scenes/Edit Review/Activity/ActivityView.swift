@@ -24,7 +24,7 @@ extension EditReviewView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 2),
                     spacing: 16
                 ) {
-                    ForEach(viewModel.categories) { activity in
+                    ForEach(viewModel.activities) { activity in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
                             isSelected: viewModel.selectedActivity == activity

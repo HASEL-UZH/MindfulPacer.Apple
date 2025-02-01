@@ -99,13 +99,13 @@ extension SchemaV1 {
             id: UUID = UUID(),
             name: String = "",
             icon: String = "",
-            subcategories: [Subactivity] = [],
+            subactivities: [Subactivity] = [],
             review: Review? = nil
         ) {
             self.id = id
             self.name = name
             self.icon = icon
-            self.subactivities = subcategories
+            self.subactivities = subactivities
             self.review = review
         }
     }
@@ -358,7 +358,7 @@ struct DefaultActivityData {
         let gardening = Subactivity(name: "Gardening", icon: "sprinkler.and.droplets", activity: household)
         let fixingThings = Subactivity(name: "Fixing Things", icon: "hammer", activity: household)
 
-        // MARK: Selfcare Subcategories
+        // MARK: Selfcare Subactivities
         let personalHygiene = Subactivity(name: "Personal Hygiene", icon: "shower", activity: selfcare)
         let sleep = Subactivity(name: "Sleep", icon: "bed.double", activity: selfcare)
         let gettingDressed = Subactivity(name: "Getting Dress", icon: "tshirt", activity: selfcare)
@@ -368,7 +368,7 @@ struct DefaultActivityData {
         let exercising = Subactivity(name: "Exercising", icon: "figure.strengthtraining.traditional", activity: selfcare)
         let relaxation = Subactivity(name: "Relaxation", icon: "beach.umbrella", activity: selfcare)
 
-        // MARK: Cognitive Subcategories
+        // MARK: Cognitive Subactivities
         let thinkingOrBrainstorming = Subactivity(name: "Thinking or Brainstorming", icon: "brain.head.profile", activity: cognitive)
         let reading = Subactivity(name: "Reading", icon: "book", activity: cognitive)
         let writing = Subactivity(name: "Writing", icon: "pencil.line", activity: cognitive)
@@ -379,7 +379,7 @@ struct DefaultActivityData {
         let playingMusic = Subactivity(name: "Playing Music", icon: "pianokeys", activity: cognitive)
         let learningSomething = Subactivity(name: "Learning Something", icon: "globe.desk", activity: cognitive)
 
-        // MARK: Interactions & Social Subcategories
+        // MARK: Interactions & Social Subactivities
         let meetingCloseFriends = Subactivity(name: "Meeting Close Friends", icon: "person.3", activity: interactionsAndSocial)
         let meetingNewPeople = Subactivity(name: "Meeting New People", icon: "person.line.dotted.person", activity: interactionsAndSocial)
         let meetingFamily = Subactivity(name: "Meeting Family", icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
@@ -387,7 +387,7 @@ struct DefaultActivityData {
         let groupActivities = Subactivity(name: "Group Activities", icon: "person.3.sequence.fill", activity: interactionsAndSocial)
         let attendingEvents = Subactivity(name: "Attending Events", icon: "theatermasks", activity: interactionsAndSocial)
 
-        // MARK: Work Subcategories
+        // MARK: Work Subactivities
         let workOnTasks = Subactivity(name: "Work on Tasks", icon: "desktopcomputer", activity: work)
         let researchingInformation = Subactivity(name: "Researching Information", icon: "rectangle.and.text.magnifyingglass", activity: work)
         let meetings = Subactivity(name: "Meetings", icon: "play.laptopcomputer", activity: work)
@@ -398,7 +398,7 @@ struct DefaultActivityData {
         let projectManagement = Subactivity(name: "Project Management", icon: "gearshape.2", activity: work)
         let breaks = Subactivity(name: "Breaks", icon: "mug", activity: work)
 
-        // MARK: Review Reminders Subcategories
+        // MARK: Review Reminders Subactivities
         let steps = Subactivity(name: "Steps", icon: "figure.walk", activity: reviewReminders)
         let heartRate = Subactivity(name: "Heart Rate", icon: "heart", activity: reviewReminders)
 

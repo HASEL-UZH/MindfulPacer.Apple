@@ -59,8 +59,8 @@ extension UseCasesContainer {
     // MARK: - Review
 
     @MainActor
-    var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
-        self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var addDefaultActivitiesUseCase: Factory<DefaultAddDefaultActivitiesUseCase> {
+        self { DefaultAddDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor

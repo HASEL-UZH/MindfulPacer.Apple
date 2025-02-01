@@ -69,7 +69,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             RootViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                addDefaultCategoriesUseCase: UseCasesContainer.shared.addDefaultCategoriesUseCase(),
+                addDefaultActivitiesUseCase: UseCasesContainer.shared.addDefaultActivitiesUseCase(),
                 checkUserHasSeenOnboardingUseCase: UseCasesContainer.shared.checkUserHasSeenOnboardingUseCase(),
                 initializeConnectivityUseCase: UseCasesContainer.shared.initializeConnectivityUseCase()
             )

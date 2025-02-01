@@ -1,5 +1,5 @@
 //
-//  AddDefaultCategoriesUseCase.swift
+//  AddDefaultActivitiesUseCase.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 08.08.2024.
@@ -8,39 +8,39 @@
 import Foundation
 import SwiftData
 
-protocol AddDefaultCategoriesUseCase {
+protocol AddDefaultActivitiesUseCase {
     func execute() async
 }
 
 // MARK: - Use Case Implementation
 
-class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
+class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
     private let modelContext: ModelContext
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
 
-    // TODO: Categories seem to be duplicated, must not be fetching from CloudKit fast enough
+    // TODO: Activities seem to be duplicated, must not be fetching from CloudKit fast enough
     /*
      Potential solution:
      - Add a timestamp property to each Activity which will reflect exactly when it was added
-     - On each app launch check if there are duplicate categories and only keep the activity with the earliest timestamp
+     - On each app launch check if there are duplicate activities and only keep the activity with the earliest timestamp
      - Before doing that, make sure to update all reviews that may referece a newer duplicate activity to now reference the oldest one
      */
     func execute() async {
-        if await categoriesExist() {
+        if await activitiesExist() {
             return
         }
 
-        await addDefaultCategories()
+        await addDefaultActivities()
     }
 
-    private func categoriesExist() async -> Bool {
+    private func activitiesExist() async -> Bool {
         do {
             let descriptor = FetchDescriptor<Activity>()
-            let categories = try modelContext.fetch(descriptor)
-            return !categories.isEmpty
+            let activities = try modelContext.fetch(descriptor)
+            return !activities.isEmpty
         } catch {
             print("DEBUG: Fetch failed")
             return false
@@ -48,14 +48,14 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
     }
 
     @MainActor
-    private func addDefaultCategories() async {
+    private func addDefaultActivities() async {
         DefaultActivityData.initializeData()
 
         for activity in DefaultActivityData.activities {
             modelContext.insert(activity)
 
-            if let subcategories = activity.subactivities {
-                for subactivity in subcategories {
+            if let subactivities = activity.subactivities {
+                for subactivity in subactivities {
                     modelContext.insert(subactivity)
                 }
             }
@@ -64,7 +64,7 @@ class DefaultAddDefaultCategoriesUseCase: AddDefaultCategoriesUseCase {
         do {
             try modelContext.save()
         } catch {
-            print("Error saving default categories: \(error)")
+            print("Error saving default activities: \(error)")
         }
     }
 }

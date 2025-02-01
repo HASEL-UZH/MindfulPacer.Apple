@@ -1,5 +1,5 @@
 //
-//  FetchDefaultCategoriesUseCase.swift
+//  FetchDefaultActivitiesUseCase.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 13.08.2024.
@@ -24,8 +24,8 @@ class DefaultFetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase {
     func execute() -> [Activity]? {
         do {
             let descriptor = FetchDescriptor<Activity>(sortBy: [SortDescriptor(\.name)])
-            let categories = try modelContext.fetch(descriptor)
-            return categories
+            let activities = try modelContext.fetch(descriptor)
+            return activities
         } catch {
             print("DEBUG: Fetch failed")
             return nil

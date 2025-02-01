@@ -122,20 +122,20 @@ class HomeViewModel {
     
     func toggleFilterActivity(_ activity: Activity) {
         updateFilter {
-            if reviewFilter.selectedCategories.contains(activity) {
-                reviewFilter.selectedCategories.removeAll { $0 == activity }
+            if reviewFilter.selectedActivities.contains(activity) {
+                reviewFilter.selectedActivities.removeAll { $0 == activity }
             } else {
-                reviewFilter.selectedCategories.append(activity)
+                reviewFilter.selectedActivities.append(activity)
             }
         }
     }
     
     func toggleFilterSubactivity(_ subactivity: Subactivity) {
         updateFilter {
-            if reviewFilter.selectedSubcategories.contains(subactivity) {
-                reviewFilter.selectedSubcategories.removeAll { $0 == subactivity }
+            if reviewFilter.selectedSubactivities.contains(subactivity) {
+                reviewFilter.selectedSubactivities.removeAll { $0 == subactivity }
             } else {
-                reviewFilter.selectedSubcategories.append(subactivity)
+                reviewFilter.selectedSubactivities.append(subactivity)
             }
         }
     }

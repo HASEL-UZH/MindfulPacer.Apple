@@ -13,8 +13,8 @@ import SwiftUI
 // MARK: - Review Filter & Sorting
 
 struct ReviewFilter: Equatable {
-    var selectedCategories: [Activity] = []
-    var selectedSubcategories: [Subactivity] = []
+    var selectedActivities: [Activity] = []
+    var selectedSubactivities: [Subactivity] = []
     var selectedMoods: [Mood] = []
     var triggeredCrash: Bool = false
 
@@ -23,8 +23,8 @@ struct ReviewFilter: Equatable {
 
     var activeFilterCount: Int {
         var count = 0
-        count += selectedCategories.count
-        count += selectedSubcategories.count
+        count += selectedActivities.count
+        count += selectedSubactivities.count
         count += selectedMoods.count
         count += triggeredCrash ? 1 : 0
         return count
@@ -83,9 +83,9 @@ class ReviewsFilterViewModel {
         )
     }
 
-    var categories: [Activity] = []
-    var subcategories: [Subactivity] {
-        categories.flatMap { $0.subactivities ?? [] }
+    var activities: [Activity] = []
+    var subactivities: [Subactivity] {
+        activities.flatMap { $0.subactivities ?? [] }
     }
     var reviewFilter = ReviewFilter()
     var reviewSorting = ReviewSorting.dateDescending
@@ -94,12 +94,12 @@ class ReviewsFilterViewModel {
         reviewFilter.activeFilterCount == 0 ? "Filters" : "Filters (\(reviewFilter.activeFilterCount))"
     }
 
-    var selectedFilterCategoriesSummary: String {
-        reviewFilter.selectedCategories.map { $0.name }.joined(separator: ", ")
+    var selectedFilterActivitiesSummary: String {
+        reviewFilter.selectedActivities.map { $0.name }.joined(separator: ", ")
     }
 
-    var selectedFilterSubcategoriesSummary: String {
-        reviewFilter.selectedSubcategories.map { $0.name }.joined(separator: ", ")
+    var selectedFilterSubactivitiesSummary: String {
+        reviewFilter.selectedSubactivities.map { $0.name }.joined(separator: ", ")
     }
 
     var selectedFilterMoodsSummary: String {
@@ -139,12 +139,12 @@ class ReviewsFilterViewModel {
     }
 
     func toggleFilterActivity(_ activity: Activity) {
-        toggleSelection(in: &reviewFilter.selectedCategories, item: activity)
+        toggleSelection(in: &reviewFilter.selectedActivities, item: activity)
         publishChanges()
     }
 
     func toggleFilterSubactivity(_ subactivity: Subactivity) {
-        toggleSelection(in: &reviewFilter.selectedSubcategories, item: subactivity)
+        toggleSelection(in: &reviewFilter.selectedSubactivities, item: subactivity)
         publishChanges()
     }
 
@@ -171,7 +171,7 @@ class ReviewsFilterViewModel {
     // MARK: - Private Methods
 
     private func fetchDefaultReviewActivities() {
-        self.categories = fetchDefaultActivitiesUseCase.execute() ?? []
+        self.activities = fetchDefaultActivitiesUseCase.execute() ?? []
     }
 
     private func bindToPublisher() {
