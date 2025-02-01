@@ -12,6 +12,7 @@ import SwiftUI
 enum Tab: String {
     case home
     case analytics
+    case outreach
     case settings
 }
 
@@ -52,6 +53,12 @@ struct RootView: View {
                     Label("Analytics", systemImage: "chart.bar")
                 }
                 .tag(Tab.analytics)
+            
+            OutreachView()
+                .tabItem {
+                    Label("Outreach", systemImage: "newspaper")
+                }
+                .tag(Tab.outreach)
             
             SettingsView()
                 .tabItem {

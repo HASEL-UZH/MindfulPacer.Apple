@@ -17,6 +17,13 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 
 extension UseCasesContainer {
 
+    // MARK: - Blog
+    
+    @MainActor
+    var fetchBlogArticlesUseCase: Factory<DefaultFetchBlogArticlesUseCase> {
+        self { DefaultFetchBlogArticlesUseCase(repository: DataContainer.shared.blogRepository()) }
+    }
+    
     // MARK: - Health
 
     @MainActor

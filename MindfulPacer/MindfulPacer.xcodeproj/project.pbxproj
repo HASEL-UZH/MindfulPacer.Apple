@@ -140,6 +140,14 @@
 		0DC136A22D4E63DE00001D08 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136A12D4E63DE00001D08 /* ActivityView.swift */; };
 		0DC136A42D4E63F600001D08 /* SubactivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136A32D4E63F600001D08 /* SubactivityView.swift */; };
 		0DC136A62D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136A52D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift */; };
+		0DC136A92D4E75C400001D08 /* OutreachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136A82D4E75C400001D08 /* OutreachView.swift */; };
+		0DC136AB2D4E75DF00001D08 /* OutreachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136AA2D4E75DF00001D08 /* OutreachViewModel.swift */; };
+		0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136AC2D4E77E500001D08 /* BlogArticle.swift */; };
+		0DC136AE2D4E77E500001D08 /* BlogArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136AC2D4E77E500001D08 /* BlogArticle.swift */; };
+		0DC136B02D4E780100001D08 /* BlogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136AF2D4E780100001D08 /* BlogService.swift */; };
+		0DC136B22D4E784300001D08 /* BlogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136B12D4E784300001D08 /* BlogRepository.swift */; };
+		0DC136B52D4E78E800001D08 /* FetchBlogArticlesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136B42D4E78E800001D08 /* FetchBlogArticlesUseCase.swift */; };
+		0DC136B72D4E7DCB00001D08 /* BlogArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC136B62D4E7DCB00001D08 /* BlogArticleCell.swift */; };
 		0DC2D7E92C7C7DD7008122CC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */; };
 		0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */; };
 		0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */; };
@@ -310,6 +318,13 @@
 		0DC136A12D4E63DE00001D08 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		0DC136A32D4E63F600001D08 /* SubactivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubactivityView.swift; sourceTree = "<group>"; };
 		0DC136A52D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchActionedMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
+		0DC136A82D4E75C400001D08 /* OutreachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutreachView.swift; sourceTree = "<group>"; };
+		0DC136AA2D4E75DF00001D08 /* OutreachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutreachViewModel.swift; sourceTree = "<group>"; };
+		0DC136AC2D4E77E500001D08 /* BlogArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogArticle.swift; sourceTree = "<group>"; };
+		0DC136AF2D4E780100001D08 /* BlogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogService.swift; sourceTree = "<group>"; };
+		0DC136B12D4E784300001D08 /* BlogRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogRepository.swift; sourceTree = "<group>"; };
+		0DC136B42D4E78E800001D08 /* FetchBlogArticlesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBlogArticlesUseCase.swift; sourceTree = "<group>"; };
+		0DC136B62D4E7DCB00001D08 /* BlogArticleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogArticleCell.swift; sourceTree = "<group>"; };
 		0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0DD32DE92CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentHeartRateUseCase.swift; sourceTree = "<group>"; };
@@ -678,6 +693,7 @@
 		0D6A45072C84E014002807D3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				0DC136B62D4E7DCB00001D08 /* BlogArticleCell.swift */,
 				0D6A450A2C84E022002807D3 /* ReviewCell.swift */,
 				0D6A450C2C84E5B1002807D3 /* ReviewReminderCell.swift */,
 			);
@@ -783,6 +799,7 @@
 		0D93514E2D12F9820028AA61 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				0DC136B12D4E784300001D08 /* BlogRepository.swift */,
 				0D9351532D12F9DD0028AA61 /* DataContainer.swift */,
 				0D93514F2D12F98D0028AA61 /* RoadmapRepository.swift */,
 			);
@@ -935,6 +952,23 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		0DC136A72D4E75AA00001D08 /* Outreach */ = {
+			isa = PBXGroup;
+			children = (
+				0DC136A82D4E75C400001D08 /* OutreachView.swift */,
+				0DC136AA2D4E75DF00001D08 /* OutreachViewModel.swift */,
+			);
+			path = Outreach;
+			sourceTree = "<group>";
+		};
+		0DC136B32D4E78E000001D08 /* Blog */ = {
+			isa = PBXGroup;
+			children = (
+				0DC136B42D4E78E800001D08 /* FetchBlogArticlesUseCase.swift */,
+			);
+			path = Blog;
+			sourceTree = "<group>";
+		};
 		0DC2D7E72C7C7DCC008122CC /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -951,6 +985,7 @@
 		0DC3FDC92C2EDC8500335543 /* Use Cases */ = {
 			isa = PBXGroup;
 			children = (
+				0DC136B32D4E78E000001D08 /* Blog */,
 				0D6A45042C84CBCF002807D3 /* Health */,
 				0D67F43B2C91DBB8000F6114 /* Onboarding */,
 				0D9E5F5E2C64C7A6005BA46C /* Reflection */,
@@ -971,6 +1006,7 @@
 				0D34C44C2C822F4800928C53 /* Edit Reflection */,
 				0DC2D7E72C7C7DCC008122CC /* Home */,
 				0D909E252C9043A700377589 /* Onboarding */,
+				0DC136A72D4E75AA00001D08 /* Outreach */,
 				0D4E118B2C871F8F0023E0A0 /* Reviews Filter */,
 				0DBA37192C31EF5B00209681 /* Root View */,
 				0D3006C62C943433008F11C7 /* Settings */,
@@ -982,6 +1018,7 @@
 		0DC3FDCB2C2EDC9200335543 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0DC136AF2D4E780100001D08 /* BlogService.swift */,
 				0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */,
 				0D1016F12C57B229008AF31D /* HealthKitService.swift */,
 				0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */,
@@ -1006,6 +1043,7 @@
 				0D9AB0C62C6E093D00BB773F /* Persistence */,
 				0D500FC92C7376A700395AEB /* Message.swift */,
 				0D9351492D12F9230028AA61 /* RoadmapItem.swift */,
+				0DC136AC2D4E77E500001D08 /* BlogArticle.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1265,11 +1303,13 @@
 				0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */,
 				0D67F4372C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
+				0DC136A92D4E75C400001D08 /* OutreachView.swift in Sources */,
 				0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */,
 				0DD8F80A2D346D9B0024BFA8 /* MarkMissedReflectionAsActionedUseCase.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* Reminder.swift in Sources */,
+				0DC136B02D4E780100001D08 /* BlogService.swift in Sources */,
 				0D1D71EC2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift in Sources */,
 				0D3006D92C99823C008F11C7 /* Date+Extensions.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Reflection.swift in Sources */,
@@ -1307,8 +1347,10 @@
 				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
 				0D5947882CBE74170019BA24 /* ThemeSettingsView.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
+				0DC136B22D4E784300001D08 /* BlogRepository.swift in Sources */,
 				0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */,
 				0D67F4282C90E0A3000F6114 /* NotificationsView.swift in Sources */,
+				0DC136AE2D4E77E500001D08 /* BlogArticle.swift in Sources */,
 				0D9351482D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
 				0D9E5F602C64C7B7005BA46C /* AddDefaultActivitiesUseCase.swift in Sources */,
 				0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */,
@@ -1320,9 +1362,11 @@
 				0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */,
 				0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */,
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
+				0DC136AB2D4E75DF00001D08 /* OutreachViewModel.swift in Sources */,
 				0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */,
 				0D9AB0CF2C6E8B3600BB773F /* CreateReminderViewModel.swift in Sources */,
 				0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */,
+				0DC136B72D4E7DCB00001D08 /* BlogArticleCell.swift in Sources */,
 				0D67F43F2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift in Sources */,
 				0D6AEB4F2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift in Sources */,
 				0D1FD5162CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift in Sources */,
@@ -1346,6 +1390,7 @@
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
 				0DC136A62D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift in Sources */,
 				0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */,
+				0DC136B52D4E78E800001D08 /* FetchBlogArticlesUseCase.swift in Sources */,
 				0D4EBE342C72784A00C1865D /* ReviewReminderTypeView.swift in Sources */,
 				0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */,
 				0DD858922C71465A00061F63 /* SessionError.swift in Sources */,
@@ -1365,6 +1410,7 @@
 				0DD858952C71468700061F63 /* ConnectivityError.swift in Sources */,
 				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
+				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,

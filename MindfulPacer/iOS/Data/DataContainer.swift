@@ -16,6 +16,16 @@ final class DataContainer: SharedContainer, @unchecked Sendable {
 }
 
 extension DataContainer {
+    
+    // MARK: - Blog Repository
+    
+    @MainActor
+    var blogRepository: Factory<BlogRepository> {
+        self { DefaultBlogRepository(blogService: BlogService.shared) }
+    }
+    
+    // MARK: - Roadmap Repository
+    
     @MainActor
     var roadmapRepository: Factory<RoadmapRepository> {
         self { DefaultRoadmapRepository(roadmapAPI: RoadmapAPIService.shared) }

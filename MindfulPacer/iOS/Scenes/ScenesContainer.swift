@@ -61,6 +61,17 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
+    
+    // MARK: - Outreach
+    
+    @MainActor
+    var outreachViewModel: Factory<OutreachViewModel> {
+        self {
+            OutreachViewModel(
+                fetchBlogArticlesUseCase: UseCasesContainer.shared.fetchBlogArticlesUseCase()
+            )
+        }
+    }
 
     // MARK: - Root
 
