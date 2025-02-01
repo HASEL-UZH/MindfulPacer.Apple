@@ -108,7 +108,7 @@ extension UseCasesContainer {
         self { DefaultSaveReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
-    // MARK: - Reflection Reminder
+    // MARK: - Reminder
 
     @MainActor
     var checkMissedReflectionsUseCase: Factory<CheckMissedReflectionsUseCase> {

@@ -24,7 +24,7 @@ extension HomeView {
                         background: true
                     ),
                 description:
-                    Text("Summary of number of reflection reminders triggered, by reflection reminder type.")
+                    Text("Summary of number of Reminders triggered, by Reminder type.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             ) {

@@ -23,20 +23,20 @@ extension HomeView {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "bell.badge.fill",
-                        title: "Reflection Reminders",
+                        title: "Reminders",
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
                     description:
-                        Text("Summary of your reflection reminders.")
+                        Text("Summary of your Reminders.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
                     if viewModel.reminders.isEmpty {
                         EmptyStateView(
                             image: "bell.badge.slash",
-                            title: "No Reflection Reminders",
-                            description: "Tap the + button to create a reflection reminder."
+                            title: "No Reminders",
+                            description: "Tap the + button to create a Reminder."
                         )
                     } else {
                         recentRemindersSummary
@@ -51,7 +51,7 @@ extension HomeView {
             .foregroundStyle(.primary)
         }
 
-        // MARK: Recent Reflection Reminders Summary
+        // MARK: Recent Reminders Summary
         
         private var recentRemindersSummary: some View {
             VStack(alignment: .leading, spacing: 0) {
@@ -70,13 +70,13 @@ extension HomeView {
             .cornerRadius(16)
         }
 
-        // MARK: Create Reflection Reminder Button
+        // MARK: Create Reminder Button
 
         private var createReminderButton: some View {
             Button {
                 viewModel.presentSheet(.createReminderView(nil))
             } label: {
-                IconLabel(icon: "plus.circle", title: "Create Reflection Reminder", labelColor: Color("BrandPrimary"))
+                IconLabel(icon: "plus.circle", title: "Create Reminder", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
             }
         }

@@ -185,16 +185,16 @@ struct CreateReminderView: View {
             .frame(maxWidth: .infinity, alignment: .trailing)
 
             VStack(spacing: 32) {
-                Text("Create Reflection Reminder")
+                Text("Create Reminder")
                     .font(.largeTitle.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
 
-                Image("Create Reflection Reminder")
+                Image("Create Reminder")
                     .resizable()
                     .scaledToFit()
 
-                Text("This allows you to add a new reflection reminder which can be triggered on your Apple Watch or iPhone.")
+                Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
@@ -203,12 +203,12 @@ struct CreateReminderView: View {
         .padding()
     }
 
-    // MARK: Reflection Reminder Type Info Sheet
+    // MARK: Reminder Type Info Sheet
 
     private var reminderTypeInfoSheet: some View {
         InfoSheet(
-            title: "Reflection Reminder Type Information",
-            info: "You can choose between three different reflection reminder types.") {
+            title: "Reminder Type Information",
+            info: "You can choose between three different Reminder types.") {
                 Text(
                     """
                     1. **Light**: shows a yellow color 🟡.
@@ -238,7 +238,7 @@ struct CreateReminderView: View {
                 ) {
                     Text(
                         """
-                        The current step count, as detected by the Apple Watch, must stay at or above the threshold for a reflection reminder to be triggered.
+                        The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
                         
                         For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.
                         """
@@ -251,7 +251,7 @@ struct CreateReminderView: View {
                 ) {
                     Text(
                         """
-                        The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a reflection reminder to be triggered.
+                        The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
                         
                         Please note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.
                         
@@ -272,7 +272,7 @@ struct CreateReminderView: View {
     private var intervalInfoSheet: some View {
         InfoSheet(
             title: "Interval Information",
-            info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the reflection reminder to be triggered."
+            info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered."
         ) {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
@@ -280,7 +280,7 @@ struct CreateReminderView: View {
                 ) {
                     Text(
                         """
-                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the reflection reminder to be triggered.
+                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.
                         
                         For example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer.
                         """
@@ -292,7 +292,7 @@ struct CreateReminderView: View {
                 ) {
                     Text(
                         """
-                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the reflection reminder to be triggered.
+                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.
                         
                         For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.
                         """
@@ -307,12 +307,12 @@ struct CreateReminderView: View {
     }
     // swiftlint:enable trailing_whitespace
 
-    // MARK: Unable to Save Reflection Reminder Alert
+    // MARK: Unable to Save Reminder Alert
 
     private var unableToSaveReminderAlert: Alert {
         Alert(
-            title: Text("Error Saving Reflection Reminder"),
-            message: Text("Unable to save your reflection reminder.\nPlease try again.\nIf this problem persists, please contact us."),
+            title: Text("Error Saving Reminder"),
+            message: Text("Unable to save your Reminder.\nPlease try again.\nIf this problem persists, please contact us."),
             dismissButton: .default(Text("Ok"))
         )
     }
@@ -331,8 +331,8 @@ struct CreateReminderView: View {
 
     private var reminderDeletionConfirmationAlert: Alert {
         Alert(
-            title: Text("Delete Reflection Reminder"),
-            message: Text("Are you sure you want to delete this reflection reminder? This action cannot be undone."),
+            title: Text("Delete Reminder"),
+            message: Text("Are you sure you want to delete this Reminder? This action cannot be undone."),
             primaryButton: .destructive(Text("Delete")) {
                 viewModel.deleteReminder(reminder)
                 dismiss()

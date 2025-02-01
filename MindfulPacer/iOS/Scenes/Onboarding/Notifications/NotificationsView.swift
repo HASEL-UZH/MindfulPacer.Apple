@@ -33,7 +33,7 @@ extension OnboardingView {
                         Group {
                             Text("MindfulPacer can remind you to reflect on your activities, energy management, moods and symptoms, for example at specific times or when a biometric value (such as your heart rate or steps) reaches a certain threshold.")
 
-                            Text("Please allow MindfulPacer to send notifications to receive the reflection reminders.")
+                            Text("Please allow MindfulPacer to send notifications to receive the Reminders.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 

@@ -98,7 +98,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         }
     }
 
-    // MARK: - Reflection Reminder
+    // MARK: - Reminder
 
     @MainActor
     var createReminderViewModel: Factory<CreateReminderViewModel> {

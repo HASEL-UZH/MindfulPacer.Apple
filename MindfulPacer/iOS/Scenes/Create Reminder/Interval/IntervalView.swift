@@ -70,7 +70,7 @@ extension CreateReminderView {
 
         private var description: some View {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the reflection reminder to be triggered.")
+                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

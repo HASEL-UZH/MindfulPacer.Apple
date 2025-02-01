@@ -93,7 +93,7 @@ extension Reminder {
     }
 }
 
-// MARK: - Reflection Reminder Type
+// MARK: - Reminder Type
 
 extension Reminder {
     enum ReminderType: String, Codable, CaseIterable {

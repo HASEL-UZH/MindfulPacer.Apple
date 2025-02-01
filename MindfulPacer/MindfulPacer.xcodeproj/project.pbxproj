@@ -30,18 +30,18 @@
 		0D34C45E2C83683200928C53 /* SaveReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */; };
 		0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4602C837F4400928C53 /* StepsWidget.swift */; };
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
-		0D34C4652C837FE100928C53 /* ReviewsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4642C837FE100928C53 /* ReviewsWidget.swift */; };
-		0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */; };
-		0D379D042D22BDCD00F52849 /* MissedReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D379D032D22BDCD00F52849 /* MissedReviewsView.swift */; };
+		0D34C4652C837FE100928C53 /* ReflectionsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */; };
+		0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */; };
+		0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */; };
 		0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D4569F52D28417C00C37062 /* CheckMissedReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */; };
 		0D456AB02C7D07460014CD81 /* FetchReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */; };
 		0D456AB22C7D077C0014CD81 /* FetchRemindersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB12C7D077C0014CD81 /* FetchRemindersUseCase.swift */; };
 		0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
-		0D456ABD2C808FA40014CD81 /* ReviewsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456ABC2C808FA40014CD81 /* ReviewsListView.swift */; };
+		0D456ABD2C808FA40014CD81 /* ReflectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456ABC2C808FA40014CD81 /* ReflectionsListView.swift */; };
 		0D4AF7352C9A12B50067D24E /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4AF7342C9A12B50067D24E /* MailView.swift */; };
-		0D4E11862C85ECC80023E0A0 /* ReviewRemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */; };
+		0D4E11862C85ECC80023E0A0 /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11852C85ECC80023E0A0 /* RemindersListView.swift */; };
 		0D4E11882C85EFB80023E0A0 /* SaveReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11872C85EFB80023E0A0 /* SaveReminderUseCase.swift */; };
 		0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11892C864B450023E0A0 /* DeleteReminderUseCase.swift */; };
 		0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */; };
@@ -80,7 +80,7 @@
 		0D67F4412C92155F000F6114 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4402C92155F000F6114 /* HealthKitError.swift */; };
 		0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4402C92155F000F6114 /* HealthKitError.swift */; };
 		0D67F4442C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D67F4432C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift */; };
-		0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */; };
+		0D6A45012C83BA3C002807D3 /* RemindersWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45002C83BA3C002807D3 /* RemindersWidget.swift */; };
 		0D6A45062C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */; };
 		0D6A450B2C84E022002807D3 /* ReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A450A2C84E022002807D3 /* ReviewCell.swift */; };
 		0D6A450D2C84E5B1002807D3 /* ReviewReminderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A450C2C84E5B1002807D3 /* ReviewReminderCell.swift */; };
@@ -206,17 +206,17 @@
 		0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReflectionUseCase.swift; sourceTree = "<group>"; };
 		0D34C4602C837F4400928C53 /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
-		0D34C4642C837FE100928C53 /* ReviewsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsWidget.swift; sourceTree = "<group>"; };
-		0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReminderTypeWidget.swift; sourceTree = "<group>"; };
-		0D379D032D22BDCD00F52849 /* MissedReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReviewsView.swift; sourceTree = "<group>"; };
+		0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionsWidget.swift; sourceTree = "<group>"; };
+		0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeWidget.swift; sourceTree = "<group>"; };
+		0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsView.swift; sourceTree = "<group>"; };
 		0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D456AB12C7D077C0014CD81 /* FetchRemindersUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchRemindersUseCase.swift; sourceTree = "<group>"; };
 		0D456AB52C7D0F2B0014CD81 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
-		0D456ABC2C808FA40014CD81 /* ReviewsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsListView.swift; sourceTree = "<group>"; };
+		0D456ABC2C808FA40014CD81 /* ReflectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionsListView.swift; sourceTree = "<group>"; };
 		0D4AF7342C9A12B50067D24E /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
-		0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersListView.swift; sourceTree = "<group>"; };
+		0D4E11852C85ECC80023E0A0 /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
 		0D4E11872C85EFB80023E0A0 /* SaveReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E11892C864B450023E0A0 /* DeleteReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterView.swift; sourceTree = "<group>"; };
@@ -250,7 +250,7 @@
 		0D67F43E2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckUserHasSeenOnboardingUseCase.swift; sourceTree = "<group>"; };
 		0D67F4402C92155F000F6114 /* HealthKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitError.swift; sourceTree = "<group>"; };
 		0D67F4432C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHealthAuthorisationUseCase.swift; sourceTree = "<group>"; };
-		0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRemindersWidget.swift; sourceTree = "<group>"; };
+		0D6A45002C83BA3C002807D3 /* RemindersWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersWidget.swift; sourceTree = "<group>"; };
 		0D6A45052C84CBE1002807D3 /* FetchCurrentStepsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCurrentStepsUseCase.swift; sourceTree = "<group>"; };
 		0D6A450A2C84E022002807D3 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
 		0D6A450C2C84E5B1002807D3 /* ReviewReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReminderCell.swift; sourceTree = "<group>"; };
@@ -466,36 +466,36 @@
 			isa = PBXGroup;
 			children = (
 				0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */,
-				0D34C4642C837FE100928C53 /* ReviewsWidget.swift */,
-				0D34C4662C838BD700928C53 /* ReviewReminderTypeWidget.swift */,
-				0D6A45002C83BA3C002807D3 /* ReviewRemindersWidget.swift */,
+				0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */,
+				0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */,
+				0D6A45002C83BA3C002807D3 /* RemindersWidget.swift */,
 				0D34C4602C837F4400928C53 /* StepsWidget.swift */,
 			);
 			path = Widgets;
 			sourceTree = "<group>";
 		};
-		0D379D022D22BDBE00F52849 /* Missed Reviews */ = {
+		0D379D022D22BDBE00F52849 /* Missed Reflections */ = {
 			isa = PBXGroup;
 			children = (
-				0D379D032D22BDCD00F52849 /* MissedReviewsView.swift */,
+				0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */,
 			);
-			path = "Missed Reviews";
+			path = "Missed Reflections";
 			sourceTree = "<group>";
 		};
-		0D456ABB2C808F9B0014CD81 /* Reviews List */ = {
+		0D456ABB2C808F9B0014CD81 /* Reflections List */ = {
 			isa = PBXGroup;
 			children = (
-				0D456ABC2C808FA40014CD81 /* ReviewsListView.swift */,
+				0D456ABC2C808FA40014CD81 /* ReflectionsListView.swift */,
 			);
-			path = "Reviews List";
+			path = "Reflections List";
 			sourceTree = "<group>";
 		};
-		0D4E11842C85ECB80023E0A0 /* Review Reminders List */ = {
+		0D4E11842C85ECB80023E0A0 /* RemindersListView */ = {
 			isa = PBXGroup;
 			children = (
-				0D4E11852C85ECC80023E0A0 /* ReviewRemindersListView.swift */,
+				0D4E11852C85ECC80023E0A0 /* RemindersListView.swift */,
 			);
-			path = "Review Reminders List";
+			path = RemindersListView;
 			sourceTree = "<group>";
 		};
 		0D4E118B2C871F8F0023E0A0 /* Reviews Filter */ = {
@@ -938,9 +938,9 @@
 		0DC2D7E72C7C7DCC008122CC /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				0D379D022D22BDBE00F52849 /* Missed Reviews */,
-				0D456ABB2C808F9B0014CD81 /* Reviews List */,
-				0D4E11842C85ECB80023E0A0 /* Review Reminders List */,
+				0D379D022D22BDBE00F52849 /* Missed Reflections */,
+				0D456ABB2C808F9B0014CD81 /* Reflections List */,
+				0D4E11842C85ECB80023E0A0 /* RemindersListView */,
 				0D34C45F2C837F2900928C53 /* Widgets */,
 				0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */,
 				0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */,
@@ -1254,7 +1254,7 @@
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
 				0D456AB02C7D07460014CD81 /* FetchReflectionsUseCase.swift in Sources */,
 				0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */,
-				0D6A45012C83BA3C002807D3 /* ReviewRemindersWidget.swift in Sources */,
+				0D6A45012C83BA3C002807D3 /* RemindersWidget.swift in Sources */,
 				0DD3FDC42C8CC73D00859A1C /* RoundedList.swift in Sources */,
 				0D3006C82C943444008F11C7 /* SettingsView.swift in Sources */,
 				0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */,
@@ -1292,19 +1292,19 @@
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
 				0D67F4312C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift in Sources */,
 				0DA31AAA2CD0DCDC00C9E3EA /* SymptomValueView.swift in Sources */,
-				0D456ABD2C808FA40014CD81 /* ReviewsListView.swift in Sources */,
+				0D456ABD2C808FA40014CD81 /* ReflectionsListView.swift in Sources */,
 				0D6A450D2C84E5B1002807D3 /* ReviewReminderCell.swift in Sources */,
-				0D34C4652C837FE100928C53 /* ReviewsWidget.swift in Sources */,
+				0D34C4652C837FE100928C53 /* ReflectionsWidget.swift in Sources */,
 				0D4E11882C85EFB80023E0A0 /* SaveReminderUseCase.swift in Sources */,
 				0D456AB22C7D077C0014CD81 /* FetchRemindersUseCase.swift in Sources */,
 				0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0DDD33662C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */,
-				0D379D042D22BDCD00F52849 /* MissedReviewsView.swift in Sources */,
+				0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
-				0D34C4672C838BD700928C53 /* ReviewReminderTypeWidget.swift in Sources */,
+				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
 				0D5947882CBE74170019BA24 /* ThemeSettingsView.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
 				0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */,
@@ -1342,7 +1342,7 @@
 				0DC136A42D4E63F600001D08 /* SubactivityView.swift in Sources */,
 				0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */,
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
-				0D4E11862C85ECC80023E0A0 /* ReviewRemindersListView.swift in Sources */,
+				0D4E11862C85ECC80023E0A0 /* RemindersListView.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
 				0DC136A62D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift in Sources */,
 				0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */,

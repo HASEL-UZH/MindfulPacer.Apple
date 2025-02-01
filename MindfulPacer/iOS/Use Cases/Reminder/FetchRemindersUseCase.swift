@@ -47,7 +47,7 @@ class DefaultFetchRemindersUseCase: FetchRemindersUseCase {
 
             return groupedAndSortedReminders
         } catch {
-            print("DEBUG: Could not fetch reflection reminders: \(error.localizedDescription)")
+            print("DEBUG: Could not fetch Reminders: \(error.localizedDescription)")
             return nil
         }
     }

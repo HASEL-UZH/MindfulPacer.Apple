@@ -36,7 +36,7 @@ struct RemindersListView: View {
         }
         .background(Color(.systemGroupedBackground))
         .listStyle(.grouped)
-        .navigationTitle("Reflection Reminders")
+        .navigationTitle("Reminders")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -48,19 +48,19 @@ struct RemindersListView: View {
         }
     }
 
-    // MARK: Reflection Reminders Empty State
+    // MARK: Reminders Empty State
 
     var remindersEmptyState: some View {
         VStack(alignment: .leading, spacing: 16) {
             ContentUnavailableView {
-                Label("No Reflection Reminders", systemImage: "bell.badge.fill")
+                Label("No Reminders", systemImage: "bell.badge.fill")
             } description: {
-                Text("You have not created any reflection reminders.")
+                Text("You have not created any Reminders.")
             } actions: {
                 Button {
                     viewModel.presentSheet(.createReminderView(nil))
                 } label: {
-                    Text("Create Reflection Reminder")
+                    Text("Create Reminder")
                 }
                 .buttonBorderShape(.capsule)
                 .buttonStyle(.borderedProminent)

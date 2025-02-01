@@ -23,7 +23,7 @@ extension HomeView {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "book.pages.fill",
-                        title: "Reflections",
+                        title: "My Reflections",
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),

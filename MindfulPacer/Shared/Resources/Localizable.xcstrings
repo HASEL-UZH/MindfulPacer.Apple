@@ -57,10 +57,10 @@
     "Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these." : {
 
     },
-    "Are you sure you want to delete this reflection reminder? This action cannot be undone." : {
+    "Are you sure you want to delete this reflection? This action cannot be undone." : {
 
     },
-    "Are you sure you want to delete this reflection? This action cannot be undone." : {
+    "Are you sure you want to delete this Reminder? This action cannot be undone." : {
 
     },
     "Ascending" : {
@@ -75,13 +75,13 @@
     "Cancel" : {
 
     },
-    "Choose a reflection reminder type, which will be reflected in the color of the reflection reminder notifications you receive." : {
+    "Choose a Reminder type, which will be reflected in the color of the Reminder notifications you receive." : {
 
     },
     "Create Reflection" : {
 
     },
-    "Create Reflection Reminder" : {
+    "Create Reminder" : {
 
     },
     "Delete" : {
@@ -90,7 +90,7 @@
     "Delete Reflection" : {
 
     },
-    "Delete Reflection Reminder" : {
+    "Delete Reminder" : {
 
     },
     "Descending" : {
@@ -99,10 +99,10 @@
     "Do **NOT** solely rely on MindfulPacer for pacing and managing your activities and energy." : {
 
     },
-    "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the reflection reminder to be triggered." : {
+    "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered." : {
 
     },
-    "Error Saving Reflection Reminder" : {
+    "Error Saving Reminder" : {
 
     },
     "Error Saving Review Reminder" : {
@@ -188,16 +188,16 @@
     "No Measurement Type Selected" : {
 
     },
-    "No Reflection Reminder Type Selected" : {
-
-    },
-    "No Reflection Reminders" : {
-
-    },
     "No Reflections" : {
 
     },
     "No reflections match your current filter criteria." : {
+
+    },
+    "No Reminder Type Selected" : {
+
+    },
+    "No Reminders" : {
 
     },
     "No Results" : {
@@ -212,22 +212,22 @@
     "Please allow MindfulPacer to access your Apple Health data. Select the biometric data that you want to share (e.g. heart rate and/or steps)." : {
 
     },
-    "Please allow MindfulPacer to send notifications to receive the reflection reminders." : {
+    "Please allow MindfulPacer to send notifications to receive the Reminders." : {
 
     },
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
 
     },
-    "Reflection Reminder Triggered" : {
-
-    },
-    "Reflection Reminder Type" : {
-
-    },
-    "Reflection Reminders" : {
-
-    },
     "Reflections" : {
+
+    },
+    "Reminder Triggered" : {
+
+    },
+    "Reminder Type" : {
+
+    },
+    "Reminders" : {
 
     },
     "Reset" : {
@@ -278,37 +278,37 @@
     "Subactivity" : {
 
     },
-    "Summary of number of reflection reminders triggered, by reflection reminder type." : {
+    "Summary of number of Reminders triggered, by Reminder type." : {
 
     },
     "Summary of your most recent reflections." : {
 
     },
-    "Summary of your reflection reminders." : {
+    "Summary of your Reminders." : {
 
     },
     "System Report" : {
 
     },
-    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a reflection reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
+    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
 
     },
-    "The current step count, as detected by the Apple Watch, must stay at or above the threshold for a reflection reminder to be triggered.\n\nFor example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
+    "The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nFor example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
 
     },
-    "The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the reflection reminder to be triggered.\n\nFor example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer." : {
+    "The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.\n\nFor example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer." : {
 
     },
-    "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the reflection reminder to be triggered.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes." : {
+    "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes." : {
 
     },
-    "The reflection reminder that triggered this reflection." : {
+    "The Reminder that triggered this reflection." : {
 
     },
     "Theme" : {
 
     },
-    "This allows you to add a new reflection reminder which can be triggered on your Apple Watch or iPhone." : {
+    "This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone." : {
 
     },
     "Threshold" : {
@@ -320,10 +320,10 @@
     "To" : {
 
     },
-    "Unable to save your reflection reminder.\nPlease try again.\nIf this problem persists, please contact us." : {
+    "Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
-    "Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us." : {
+    "Unable to save your Reminder.\nPlease try again.\nIf this problem persists, please contact us." : {
 
     },
     "Unable to Send Notification" : {
@@ -350,10 +350,10 @@
     "You can write anything here" : {
 
     },
-    "You have not created any reflection reminders." : {
+    "You have not created any reflections." : {
 
     },
-    "You have not created any reflections." : {
+    "You have not created any Reminders." : {
 
     }
   },

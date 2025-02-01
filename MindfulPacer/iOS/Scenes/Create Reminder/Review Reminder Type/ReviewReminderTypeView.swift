@@ -30,7 +30,7 @@ extension CreateReminderView {
                 }
                 .padding(.horizontal)
             }
-            .navigationTitle("Reflection Reminder Type")
+            .navigationTitle("Reminder Type")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Cancel") {
@@ -40,7 +40,7 @@ extension CreateReminderView {
             }
         }
 
-        // MARK: Reflection Reminder Type Selection List
+        // MARK: Reminder Type Selection List
 
         @ViewBuilder
         private var reminderTypeSelectionList: some View {
@@ -74,7 +74,7 @@ extension CreateReminderView {
         
         private var description: some View {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Choose a reflection reminder type, which will be reflected in the color of the reflection reminder notifications you receive.")
+                Text("Choose a Reminder type, which will be reflected in the color of the Reminder notifications you receive.")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

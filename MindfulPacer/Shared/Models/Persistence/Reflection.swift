@@ -36,7 +36,7 @@ extension SchemaV1 {
         var physicalPain: Int?
         var depressionOrAnxiety: Int?
         var additionalInformation: String = ""
-        // MARK: Reflection Reminder Properties
+        // MARK: Reminder Properties
         var measurementType: Reminder.MeasurementType?
         var reminderType: Reminder.ReminderType?
         var threshold: Int?
@@ -325,7 +325,7 @@ struct DefaultActivityData {
         let cognitive = Activity(name: "Cognitive", icon: "brain")
         let interactionsAndSocial = Activity(name: "Interactions & Social", icon: "rectangle.3.group.bubble")
         let work = Activity(name: "Work", icon: "briefcase")
-        let reminders = Activity(name: "Reflection Reminders", icon: "bell.badge")
+        let reminders = Activity(name: "Reminders", icon: "bell.badge")
         let others = Activity(name: "Others", icon: "ellipsis")
 
         // MARK: Movement Subactivities
@@ -398,7 +398,7 @@ struct DefaultActivityData {
         let projectManagement = Subactivity(name: "Project Management", icon: "gearshape.2", activity: work)
         let breaks = Subactivity(name: "Breaks", icon: "mug", activity: work)
 
-        // MARK: Reflection Reminders Subactivities
+        // MARK: Reminders Subactivities
         let steps = Subactivity(name: "Steps", icon: "figure.walk", activity: reminders)
         let heartRate = Subactivity(name: "Heart Rate", icon: "heart", activity: reminders)
 

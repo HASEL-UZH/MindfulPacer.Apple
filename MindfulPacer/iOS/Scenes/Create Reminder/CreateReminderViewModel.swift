@@ -36,9 +36,9 @@ class CreateReminderViewModel {
     var summaryViewTitle: String {
         switch mode {
         case .create:
-            return "Reflection Reminder Summary"
+            return "Reminder Summary"
         case .edit:
-            return "Edit Reflection Reminder"
+            return "Edit Reminder"
         }
     }
 
@@ -109,7 +109,7 @@ class CreateReminderViewModel {
     }
 
     var notificationPreviewBodyText: String {
-        String("A reflection reminder was triggered because your \(selectedMeasurementType?.rawValue.lowercased() ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText.lowercased()) over a period of \(selectedInterval?.rawValue.lowercased() ?? "<INTERBAL>").")
+        String("A Reminder was triggered because your \(selectedMeasurementType?.rawValue.lowercased() ?? "<MEASUREMENT TYPE>") exceeded the threshold of \(threshold ?? 0) \(thresholdUnitText.lowercased()) over a period of \(selectedInterval?.rawValue.lowercased() ?? "<INTERBAL>").")
     }
 
     var selectedMeasurementType: MeasurementType? {
@@ -199,7 +199,7 @@ class CreateReminderViewModel {
     }
 
     func sendNotificationToWatch() {
-        triggerWatchNotificationUseCase.execute(title: "Reflection Reminder", body: notificationPreviewBodyText) { result in
+        triggerWatchNotificationUseCase.execute(title: "Reminder", body: notificationPreviewBodyText) { result in
             switch result {
             case .success:
                 print("Notification sent successfully")
@@ -245,7 +245,7 @@ class CreateReminderViewModel {
               let reminderType = selectedReminderType,
               let threshold,
               let interval = selectedInterval else {
-                  print("Missing required fields to create reflection reminder")
+                  print("Missing required fields to create Reminder")
                   return
               }
 

@@ -431,7 +431,7 @@ struct EditReflectionView: View {
         }
     }
 
-    // MARK: - Reflection Reminder
+    // MARK: - Reminder
 
     @ViewBuilder
     private var reminder: some View {
@@ -441,11 +441,11 @@ struct EditReflectionView: View {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "alarm",
-                        title: "Reflection Reminder",
+                        title: "Reminder",
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
-                    description: Text("The reflection reminder that triggered this reflection.")
+                    description: Text("The Reminder that triggered this reflection.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {

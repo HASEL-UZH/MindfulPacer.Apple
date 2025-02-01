@@ -158,7 +158,7 @@ class HomeViewModel {
     
     func acceptMissedReflection(_ missedReflection: MissedReflection) {
         guard let defaultActivities = fetchDefaultActivitiesUseCase.execute() else { return }
-        guard let remindersActivity = (defaultActivities.first { $0.name == "Reflection Reminders"}) else { return }
+        guard let remindersActivity = (defaultActivities.first { $0.name == "Reminders"}) else { return }
         guard let remindersSubactivities = remindersActivity.subactivities,
               let stepsActivity = (remindersSubactivities.first { $0.name == "Steps"}),
               let heartRateActivity = (remindersSubactivities.first { $0.name == "Heart Rate"}) else {

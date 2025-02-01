@@ -99,18 +99,18 @@ extension CreateReminderView {
             }
         }
         
-        // MARK: Reflection Reminder Type
+        // MARK: Reminder Type
         
         private var reminderType: some View {
             summaryWidget(
                 icon: "alarm",
-                title: "Reflection Reminder Type",
+                title: "Reminder Type",
                 destination: .reminderType
             ) {
                 if let reminderType = viewModel.selectedReminderType {
                     Text(reminderType.rawValue)
                 } else {
-                    Text("No Reflection Reminder Type Selected")
+                    Text("No Reminder Type Selected")
                         .foregroundStyle(.red)
                 }
             }
@@ -178,7 +178,7 @@ extension CreateReminderView {
                             .frame(width: 32, height: 32)
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Reflection Reminder Triggered")
+                            Text("Reminder Triggered")
                                 .font(.subheadline.weight(.semibold))
                             
                             Text(viewModel.notificationPreviewBodyText)
@@ -219,7 +219,7 @@ extension CreateReminderView {
         
         private var deleteButton: some View {
             PrimaryButton(
-                title: "Delete Reflection Reminder",
+                title: "Delete Reminder",
                 icon: "trash",
                 color: .red
             ) {
