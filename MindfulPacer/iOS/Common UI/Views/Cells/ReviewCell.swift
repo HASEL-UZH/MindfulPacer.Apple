@@ -1,5 +1,5 @@
 //
-//  ReviewCell.swift
+//  ReflectionCell.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 01.09.2024.
@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-// MARK: - ReviewCell
+// MARK: - ReflectionCell
 
-struct ReviewCell: View {
+struct ReflectionCell: View {
     
     // MARK: Properties
 
     @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
-    var review: Review
+    var reflection: Reflection
     var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var onTap: () -> Void
 
@@ -35,27 +35,27 @@ struct ReviewCell: View {
     private var cellContent: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                if let subactivity = review.subactivity {
+                if let subactivity = reflection.subactivity {
                     IconLabel(icon: subactivity.icon, title: subactivity.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
-                } else if let activity = review.activity {
+                } else if let activity = reflection.activity {
                     IconLabel(icon: activity.icon, title: activity.name, labelColor: Color.primary)
                         .font(.subheadline.weight(.semibold))
                 }
 
-                Text(review.date.formatted(.dateTime.day().month().hour().minute()))
+                Text(reflection.date.formatted(.dateTime.day().month().hour().minute()))
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
 
             Spacer()
 
-            if review.didTriggerCrash {
+            if reflection.didTriggerCrash {
                 Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
             }
             
             if modeOfUse == .essentials {
-                if let wellBeing = review.wellBeing {
+                if let wellBeing = reflection.wellBeing {
                     Icon(
                         name: "cross.fill",
                         color: Symptom.wellBeing(wellBeing).color,
@@ -63,7 +63,7 @@ struct ReviewCell: View {
                     )
                 }
             } else {
-                if let mood = review.mood {
+                if let mood = reflection.mood {
                     Text(mood.emoji)
                         .frame(width: 24, height: 24)
                         .padding(4)
@@ -75,7 +75,7 @@ struct ReviewCell: View {
                                     .stroke(.yellow.opacity(0.1), lineWidth: 1.5)
                             }
                         }
-                } else if let wellBeing = review.wellBeing {
+                } else if let wellBeing = reflection.wellBeing {
                     Icon(
                         name: "cross.fill",
                         color: Symptom.wellBeing(wellBeing).color,
@@ -89,9 +89,9 @@ struct ReviewCell: View {
 
 // MARK: - Preview
 
-// TODO: Add mock review
+// TODO: Add mock reflection
 //#Preview {
-//    ReviewCell(review: Review()) {
+//    ReflectionCell(reflection: Reflection()) {
 //
 //    }
 //}

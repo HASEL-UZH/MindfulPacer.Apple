@@ -1,5 +1,5 @@
 //
-//  ReviewsFilterViewModel.swift
+//  ReflectionsFilterViewModel.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 07.09.2024.
@@ -10,9 +10,9 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-// MARK: - Review Filter & Sorting
+// MARK: - Reflection Filter & Sorting
 
-struct ReviewFilter: Equatable {
+struct ReflectionFilter: Equatable {
     var selectedActivities: [Activity] = []
     var selectedSubactivities: [Subactivity] = []
     var selectedMoods: [Mood] = []
@@ -31,11 +31,11 @@ struct ReviewFilter: Equatable {
     }
 }
 
-enum ReviewSorting {
+enum ReflectionSorting {
     case dateAscending
     case dateDescending
 
-    var comparator: (Review, Review) -> Bool {
+    var comparator: (Reflection, Reflection) -> Bool {
         switch self {
         case .dateAscending: return { $0.date < $1.date }
         case .dateDescending: return { $0.date > $1.date }
@@ -43,11 +43,11 @@ enum ReviewSorting {
     }
 }
 
-// MARK: - ReviewsFilterViewModel
+// MARK: - ReflectionsFilterViewModel
 
 @MainActor
 @Observable
-class ReviewsFilterViewModel {
+class ReflectionsFilterViewModel {
     
     // MARK: - Dependencies
 
@@ -62,7 +62,7 @@ class ReviewsFilterViewModel {
         )
     }
 
-    var reviewSortingBinding: Binding<ReviewSorting> {
+    var reviewSortingBinding: Binding<ReflectionSorting> {
         Binding(
             get: { self.reviewSorting },
             set: { self.updateSorting($0) }
@@ -87,8 +87,8 @@ class ReviewsFilterViewModel {
     var subactivities: [Subactivity] {
         activities.flatMap { $0.subactivities ?? [] }
     }
-    var reviewFilter = ReviewFilter()
-    var reviewSorting = ReviewSorting.dateDescending
+    var reviewFilter = ReflectionFilter()
+    var reviewSorting = ReflectionSorting.dateDescending
     
     var filterButtonTitle: String {
         reviewFilter.activeFilterCount == 0 ? "Filters" : "Filters (\(reviewFilter.activeFilterCount))"
@@ -108,7 +108,7 @@ class ReviewsFilterViewModel {
 
     // MARK: - Private Properties
 
-    private var filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
+    private var filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
@@ -120,10 +120,10 @@ class ReviewsFilterViewModel {
     // MARK: - View Lifecycle
 
     func onViewFirstAppear() {
-        fetchDefaultReviewActivities()
+        fetchDefaultReflectionActivities()
     }
 
-    func setPublisher(_ publisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?) {
+    func setPublisher(_ publisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?) {
         self.filterAndSortingPublisher = publisher
         bindToPublisher()
     }
@@ -131,8 +131,8 @@ class ReviewsFilterViewModel {
     // MARK: - User Actions
 
     func resetFilters() {
-        if reviewFilter != ReviewFilter() || reviewSorting != .dateDescending {
-            reviewFilter = ReviewFilter()
+        if reviewFilter != ReflectionFilter() || reviewSorting != .dateDescending {
+            reviewFilter = ReflectionFilter()
             reviewSorting = .dateDescending
             publishChanges()
         }
@@ -163,14 +163,14 @@ class ReviewsFilterViewModel {
         publishChanges()
     }
 
-    func updateSorting(_ sorting: ReviewSorting) {
+    func updateSorting(_ sorting: ReflectionSorting) {
         reviewSorting = sorting
         publishChanges()
     }
 
     // MARK: - Private Methods
 
-    private func fetchDefaultReviewActivities() {
+    private func fetchDefaultReflectionActivities() {
         self.activities = fetchDefaultActivitiesUseCase.execute() ?? []
     }
 

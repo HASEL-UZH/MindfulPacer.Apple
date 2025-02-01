@@ -1,5 +1,5 @@
 //
-//  ReviewsListView.swift
+//  ReflectionsListView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 29.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - ReviewsListView
+// MARK: - ReflectionsListView
 
 extension HomeView {
-    struct ReviewsListView: View {
+    struct ReflectionsListView: View {
         
         // MARK: - Properties
 
@@ -30,59 +30,59 @@ extension HomeView {
                     .safeAreaPadding(.horizontal)
                 }
                 
-                if viewModel.reviews.isEmpty {
+                if viewModel.reflections.isEmpty {
                     reviewsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
-                } else if viewModel.filteredReviews.isEmpty {
-                    filteredReviewsEmptyState
+                } else if viewModel.filteredReflections.isEmpty {
+                    filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
                     
                 } else {
                     RoundedList {
-                        ForEach(viewModel.filteredReviews) { review in
-                            ReviewCell(review: review) {
-                                viewModel.presentSheet(.editReviewView(review))
+                        ForEach(viewModel.filteredReflections) { reflection in
+                            ReflectionCell(reflection: reflection) {
+                                viewModel.presentSheet(.editReflectionView(reflection))
                             }
                         }
                     }
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Reviews")
+            .navigationTitle("Reflections")
             .toolbar {
-                if !viewModel.reviews.isEmpty {
+                if !viewModel.reflections.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             viewModel.presentSheet(.reviewsFilterView)
                         } label: {
-                            Label("Filter Reviews", systemImage: "line.3.horizontal.decrease.circle.fill")
+                            Label("Filter Reflections", systemImage: "line.3.horizontal.decrease.circle.fill")
                         }
                     }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.presentSheet(.editReviewView(nil))
+                        viewModel.presentSheet(.editReflectionView(nil))
                     } label: {
-                        Label("New Review", systemImage: "plus.circle.fill")
+                        Label("New Reflection", systemImage: "plus.circle.fill")
                     }
                 }
             }
         }
         
-        // MARK: Reviews Empty State
+        // MARK: Reflections Empty State
 
         private var reviewsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
-                    Label("No Reviews", systemImage: "book.pages.fill")
+                    Label("No Reflections", systemImage: "book.pages.fill")
                 } description: {
-                    Text("You have not created any reviews.")
+                    Text("You have not created any reflections.")
                 } actions: {
                     Button {
-                        viewModel.presentSheet(.editReviewView(nil))
+                        viewModel.presentSheet(.editReflectionView(nil))
                     } label: {
-                        Text("Create Review")
+                        Text("Create Reflection")
                     }
                     .buttonBorderShape(.capsule)
                     .buttonStyle(.borderedProminent)
@@ -90,14 +90,14 @@ extension HomeView {
             }
         }
         
-        // MARK: Filtered Reviews Empty State
+        // MARK: Filtered Reflections Empty State
         
-        private var filteredReviewsEmptyState: some View {
+        private var filteredReflectionsEmptyState: some View {
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView {
                     Label("No Results", systemImage: "magnifyingglass")
                 } description: {
-                    Text("No reviews match your current filter criteria.")
+                    Text("No reflections match your current filter criteria.")
                 } actions: {
                     Button {
                         viewModel.presentSheet(.reviewsFilterView)
@@ -110,7 +110,7 @@ extension HomeView {
             }
         }
         
-        // MARK: Review Filter Date Range Summary
+        // MARK: Reflection Filter Date Range Summary
         
         private var reviewFilterDateRangeSummary: some View {
             Button {
@@ -134,7 +134,7 @@ extension HomeView {
             }
         }
         
-        // MARK: Review Filter Sorting Summary
+        // MARK: Reflection Filter Sorting Summary
 
         private var reviewFilterSortingSummary: some View {
             HStack(spacing: 8) {
@@ -238,7 +238,7 @@ extension HomeView {
     let viewModel = ScenesContainer.shared.homeViewModel()
 
     NavigationStack {
-        HomeView.ReviewsListView(viewModel: viewModel)
+        HomeView.ReflectionsListView(viewModel: viewModel)
     }
     .tint(.brandPrimary)
 }

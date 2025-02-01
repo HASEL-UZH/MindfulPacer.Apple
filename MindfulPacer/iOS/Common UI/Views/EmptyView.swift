@@ -55,9 +55,9 @@ struct EmptyStateView: View {
 #Preview {
     EmptyStateView(
         image: "book.pages",
-        title: "No Reviews",
-        description: "Tap the + button to create a review.",
-        buttonTitle: "Create Review"
+        title: "No Reflections",
+        description: "Tap the + button to create a reflection.",
+        buttonTitle: "Create Reflection"
     ) {
         
     }

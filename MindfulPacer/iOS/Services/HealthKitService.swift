@@ -391,9 +391,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
     }
     
-    // MARK: - Check Missed Reviews
+    // MARK: - Check Missed Reflections
     
-    /// Checks for all "missed reviews" in the last 24 hours for a set of `ReviewReminder`s.
+    /// Checks for all "missed reflections" in the last 24 hours for a set of `Reminder`s.
     ///
     /// - For `.steps` reminders:
     ///   - Fetches step data in the last 24 hours and applies a sliding window sum of step samples over the reminder's interval.
@@ -407,15 +407,15 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     ///   - If any merged interval meets or exceeds the reminder's interval duration, the end date is recorded as a trigger time.
     ///
     /// - Parameters:
-    ///   - reminders: A collection of `ReviewReminder` objects specifying thresholds and intervals for either steps or heart rate.
+    ///   - reminders: A collection of `Reminder` objects specifying thresholds and intervals for either steps or heart rate.
     ///   - completion: A closure returning either:
-    ///       - `.success([(ReviewReminder, Date)])`: Each matched reminder with the time it was met or exceeded.
+    ///       - `.success([(Reminder, Date)])`: Each matched reminder with the time it was met or exceeded.
     ///       - `.failure(HealthKitError)`: If there's an error during data fetching.
     ///
-    func checkMissedReviews(
-        reminders: [ReviewReminder],
-        actionedMissedReviewIDs: [String],
-        completion: @escaping @Sendable (Result<[MissedReview], HealthKitError>) -> Void
+    func checkMissedReflections(
+        reminders: [Reminder],
+        actionedMissedReflectionIDs: [String],
+        completion: @escaping @Sendable (Result<[MissedReflection], HealthKitError>) -> Void
     ) {
         let stepReminders = reminders.filter { $0.measurementType == .steps }
         let heartRateReminders = reminders.filter { $0.measurementType == .heartRate }
@@ -430,7 +430,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 let sortedStepSamples = stepSamples.sorted { $0.endDate < $1.endDate }
                 let sortedHrSamples = hrSamples.sorted { $0.endDate < $1.endDate }
                 
-                var finalResults: [MissedReview] = []
+                var finalResults: [MissedReflection] = []
                 
                 for reminder in reminders {
                     let threshold = Double(reminder.threshold)
@@ -450,7 +450,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                             }
                             
                             if currentSum >= threshold {
-                                finalResults.append(MissedReview(reminder, date: right.endDate))
+                                finalResults.append(MissedReflection(reminder, date: right.endDate))
                             }
                         }
                         
@@ -466,13 +466,13 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                         for intervalRange in merged {
                             let duration = intervalRange.end.timeIntervalSince(intervalRange.start)
                             if duration >= reminder.interval.timeInterval {
-                                finalResults.append(MissedReview(reminder, date: intervalRange.end))
+                                finalResults.append(MissedReflection(reminder, date: intervalRange.end))
                             }
                         }
                     }
                 }
                 
-                let actionedIDs = Set(actionedMissedReviewIDs)
+                let actionedIDs = Set(actionedMissedReflectionIDs)
                 let filteredResults = finalResults.filter { !actionedIDs.contains($0.id) }
                 
                 completion(.success(filteredResults))

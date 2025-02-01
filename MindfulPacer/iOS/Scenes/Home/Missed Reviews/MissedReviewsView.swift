@@ -1,5 +1,5 @@
 //
-//  MissedReviewsView.swift
+//  MissedReflectionsView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 30.12.2024.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-// MARK: - MissedReviewsView
+// MARK: - MissedReflectionsView
 
-struct MissedReviewsView: View {
+struct MissedReflectionsView: View {
     
     // MARK: Properties
         
@@ -21,8 +21,8 @@ struct MissedReviewsView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 TabView {
-                    ForEach(viewModel.missedReviews) { missedReview in
-                        missedReviewCard(missedReview)
+                    ForEach(viewModel.missedReflections) { missedReflection in
+                        missedReflectionCard(missedReflection)
                     }
                 }
                 .tabViewStyle(
@@ -33,12 +33,12 @@ struct MissedReviewsView: View {
                 
                 IconLabel(
                     icon: "arrow.left.and.line.vertical.and.arrow.right",
-                    title: "Swipe the cards to view more missed reviews",
+                    title: "Swipe the cards to view more missed reflections",
                     labelColor: .secondary
                 )
                 .font(.footnote)
             }
-            .navigationTitle("Missed Reviews")
+            .navigationTitle("Missed Reflections")
             .frame(maxHeight: .infinity, alignment: .top)
             .background(Color(.systemGroupedBackground))
             .toolbar {
@@ -49,12 +49,12 @@ struct MissedReviewsView: View {
         }
     }
     
-    @ViewBuilder func missedReviewCard(_ missedReview: MissedReview) -> some View {
+    @ViewBuilder func missedReflectionCard(_ missedReflection: MissedReflection) -> some View {
         VStack {
             VStack(spacing: 32) {
                 IconLabel(
                     icon: "bell.badge.fill",
-                    title: "Triggered at \(missedReview.date.formatted(.dateTime.month().day().hour().minute()))",
+                    title: "Triggered at \(missedReflection.date.formatted(.dateTime.month().day().hour().minute()))",
                     labelColor: .brandPrimary,
                     background: true
                 )
@@ -65,13 +65,13 @@ struct MissedReviewsView: View {
                     HStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 8) {
                             IconLabel(
-                                icon: missedReview.measurementType.icon,
-                                title: missedReview.measurementType.rawValue,
-                                labelColor: missedReview.measurementType == .heartRate ? .pink : .teal
+                                icon: missedReflection.measurementType.icon,
+                                title: missedReflection.measurementType.rawValue,
+                                labelColor: missedReflection.measurementType == .heartRate ? .pink : .teal
                             )
                             .font(.subheadline.weight(.semibold))
                             
-                            Text(missedReview.triggerSummary)
+                            Text(missedReflection.triggerSummary)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -81,7 +81,7 @@ struct MissedReviewsView: View {
                         
                         Icon(
                             name: "alarm",
-                            color: missedReview.reviewReminderType.color,
+                            color: missedReflection.reminderType.color,
                             background: true
                         )
                     }
@@ -93,7 +93,7 @@ struct MissedReviewsView: View {
 
                 HStack(spacing: 8) {
                     Button {
-                        viewModel.rejectMissedReview(missedReview)
+                        viewModel.rejectMissedReflection(missedReflection)
                     } label: {
                         ZStack {
                             UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, bottomLeading: 16))
@@ -108,7 +108,7 @@ struct MissedReviewsView: View {
                     }
                     
                     Button {
-                        viewModel.acceptMissedReview(missedReview)
+                        viewModel.acceptMissedReflection(missedReflection)
                     } label: {
                         ZStack {
                             UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 16, topTrailing: 16))
@@ -146,5 +146,5 @@ struct MissedReviewsView: View {
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
 
-    MissedReviewsView(viewModel: viewModel)
+    MissedReflectionsView(viewModel: viewModel)
 }

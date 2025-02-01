@@ -1,5 +1,5 @@
 //
-//  ReviewReminderCell.swift
+//  ReminderCell.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 01.09.2024.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-// MARK: - ReviewReminderCell
+// MARK: - ReminderCell
 
-struct ReviewReminderCell: View {
+struct ReminderCell: View {
     
     // MARK: Properties
 
-    var reviewReminder: ReviewReminder
+    var reminder: Reminder
     var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
     var onTap: () -> Void
 
@@ -35,13 +35,13 @@ struct ReviewReminderCell: View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 IconLabel(
-                    icon: reviewReminder.measurementType.icon,
-                    title: reviewReminder.measurementType.rawValue,
-                    labelColor: reviewReminder.measurementType == .heartRate ? .pink : .teal
+                    icon: reminder.measurementType.icon,
+                    title: reminder.measurementType.rawValue,
+                    labelColor: reminder.measurementType == .heartRate ? .pink : .teal
                 )
                 .font(.subheadline.weight(.semibold))
 
-                Text(reviewReminder.triggerSummary)
+                Text(reminder.triggerSummary)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -51,7 +51,7 @@ struct ReviewReminderCell: View {
 
             Icon(
                 name: "alarm",
-                color: reviewReminder.reviewReminderType.color,
+                color: reminder.reminderType.color,
                 background: true
             )
         }
@@ -63,6 +63,6 @@ struct ReviewReminderCell: View {
 
 #Preview {
     RoundedList {
-        ReviewReminderCell(reviewReminder: ReviewReminder()) {}
+        ReminderCell(reminder: Reminder()) {}
     }
 }

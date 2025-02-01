@@ -25,16 +25,16 @@ class AnalyticsViewModel {
     
     private let modelContext: ModelContext
     private let fetchHeartRateUseCase: FetchHeartRateUseCase
-    private let fetchReviewsInPeriodUseCase: FetchReviewsInPeriodUseCase
-    private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
+    private let fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase
+    private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepsUseCase: FetchStepsUseCase
     
     // MARK: - Published Properties
     
     var activeSheet: AnalyticsViewSheet?
 
-    var reviewsInPeriod: [Review] = []
-    var reviewReminders: [ReviewReminder] = []
+    var reviewsInPeriod: [Reflection] = []
+    var reminders: [Reminder] = []
     
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
@@ -47,7 +47,7 @@ class AnalyticsViewModel {
     var stepsChartData: [ChartDataItem] = []
     var rawSelectedDate: Date?
     
-    var chartThresholds: [(reviewReminderType: ReviewReminder.ReviewReminderType, threshold: Int)] = []
+    var chartThresholds: [(reminderType: Reminder.ReminderType, threshold: Int)] = []
     
     var chartData: [ChartDataItem] {
         selectedMeasurementType == .heartRate ? heartRateChartData : stepsChartData
@@ -114,24 +114,24 @@ class AnalyticsViewModel {
     init(
         modelContext: ModelContext,
         fetchHeartRateUseCase: FetchHeartRateUseCase,
-        fetchReviewsInPeriodUseCase: FetchReviewsInPeriodUseCase,
-        fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
+        fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase,
+        fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepsUseCase: FetchStepsUseCase
     ) {
         self.modelContext = modelContext
         self.fetchHeartRateUseCase = fetchHeartRateUseCase
-        self.fetchReviewsInPeriodUseCase = fetchReviewsInPeriodUseCase
-        self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
+        self.fetchReflectionsInPeriodUseCase = fetchReflectionsInPeriodUseCase
+        self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepsUseCase = fetchStepsUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchReviewReminders()
+        fetchReminders()
         fetchHeartRateChartData()
         fetchStepsChartData()
-        updateReviewsInPeriod()
+        updateReflectionsInPeriod()
     }
     
     func onViewAppear() {
@@ -159,7 +159,7 @@ class AnalyticsViewModel {
     
     // MARK: - Chart Related
     
-    func chartValueForReview(_ review: SchemaV1.Review) -> Double {
+    func chartValueForReflection(_ reflection: SchemaV1.Reflection) -> Double {
         return minValue - 10
     }
     
@@ -211,14 +211,14 @@ class AnalyticsViewModel {
         return firstDataPoint.startDate...lastDataPoint.endDate
     }
 
-    func xPositionForReview(_ review: SchemaV1.Review, in chartSize: CGSize) -> CGFloat? {
+    func xPositionForReflection(_ reflection: SchemaV1.Reflection, in chartSize: CGSize) -> CGFloat? {
         guard let firstDate = chartData.first?.startDate,
               let lastDate = chartData.last?.startDate else {
             return nil
         }
         
         let totalTimeInterval = lastDate.timeIntervalSince(firstDate)
-        let reviewTimeInterval = review.date.timeIntervalSince(firstDate)
+        let reviewTimeInterval = reflection.date.timeIntervalSince(firstDate)
         
         guard totalTimeInterval > 0 else { return nil }
         
@@ -226,20 +226,20 @@ class AnalyticsViewModel {
         return chartSize.width * CGFloat(xPercentage)
     }
     
-    func filteredReviewsForChartDomain() -> [Review] {
+    func filteredReflectionsForChartDomain() -> [Reflection] {
         guard let firstDate = chartData.first?.startDate, let lastDate = chartData.last?.startDate else {
             return []
         }
         
-        return reviewsInPeriod.filter { review in
-            review.date >= firstDate && review.date <= lastDate
+        return reviewsInPeriod.filter { reflection in
+            reflection.date >= firstDate && reflection.date <= lastDate
         }
     }
     
     // MARK: - Private Methods
     
-    private func fetchReviewReminders() {
-        reviewReminders = fetchReviewRemindersUseCase.execute() ?? []
+    private func fetchReminders() {
+        reminders = fetchRemindersUseCase.execute() ?? []
     }
     
     private func fetchHeartRateChartData() {
@@ -278,15 +278,15 @@ class AnalyticsViewModel {
             fetchStepsChartData()
         }
         
-        updateReviewsInPeriod()
+        updateReflectionsInPeriod()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.updateChartThresholds()
         }
     }
     
-    private func updateReviewsInPeriod() {
-        reviewsInPeriod = fetchReviewsInPeriodUseCase.execute(period: selectedPeriod)
+    private func updateReflectionsInPeriod() {
+        reviewsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod)
     }
     
     private func parseSelectedData(from data: [ChartDataItem], in selectedDate: Date?, for period: Period) -> ChartDataItem? {
@@ -314,10 +314,10 @@ class AnalyticsViewModel {
         // We use a different multiplier or add a base threshold to ensure visibility when it makes sense
         let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
         
-        chartThresholds = reviewReminders
+        chartThresholds = reminders
             .filter { $0.measurementType == selectedMeasurementType }
-            .map { reviewReminder in
-                (reviewReminder.reviewReminderType, reviewReminder.threshold)
+            .map { reminder in
+                (reminder.reminderType, reminder.threshold)
             }
             .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
     }

@@ -1,5 +1,5 @@
 //
-//  ReviewsWidget.swift
+//  ReflectionsWidget.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 31.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - ReviewsWidget
+// MARK: - ReflectionsWidget
 
 extension HomeView {
-    struct ReviewsWidget: View {
+    struct ReflectionsWidget: View {
         
         // MARK: Properties
 
@@ -23,57 +23,57 @@ extension HomeView {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "book.pages.fill",
-                        title: "Reviews",
+                        title: "Reflections",
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
                     description:
-                        Text("Summary of your most recent reviews.")
+                        Text("Summary of your most recent reflections.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
-                    if viewModel.reviews.isEmpty {
+                    if viewModel.reflections.isEmpty {
                         EmptyStateView(
                             image: "book.pages",
-                            title: "No Reviews",
-                            description: "Tap the + button to create a review."
+                            title: "No Reflections",
+                            description: "Tap the + button to create a reflection."
                         )
                     } else {
-                        recentReviewsSummary
+                        recentReflectionsSummary
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 } footer: {
-                    createReviewButton
+                    createReflectionButton
                 }
             }
             .foregroundStyle(.primary)
         }
 
-        // MARK: Create Review Button
+        // MARK: Create Reflection Button
 
-        private var createReviewButton: some View {
+        private var createReflectionButton: some View {
             Button {
-                viewModel.presentSheet(.editReviewView(nil))
+                viewModel.presentSheet(.editReflectionView(nil))
             } label: {
-                IconLabel(icon: "plus.circle", title: "Create Review", labelColor: Color("BrandPrimary"))
+                IconLabel(icon: "plus.circle", title: "Create Reflection", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
             }
         }
 
-        // MARK: Recent Reviews Summary
+        // MARK: Recent Reflections Summary
 
-        private var recentReviewsSummary: some View {
+        private var recentReflectionsSummary: some View {
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(viewModel.recentReviews) { review in
-                    ReviewCell(
-                        review: review,
+                ForEach(viewModel.recentReflections) { reflection in
+                    ReflectionCell(
+                        reflection: reflection,
                         backgroundColor: Color(.tertiarySystemGroupedBackground)
                     ) {
-                        viewModel.presentSheet(.editReviewView(review))
+                        viewModel.presentSheet(.editReflectionView(reflection))
                     }
-                    if review != viewModel.recentReviews.last {
+                    if reflection != viewModel.recentReflections.last {
                         Divider()
                     }
                 }
@@ -89,7 +89,7 @@ extension HomeView {
     let viewModel = ScenesContainer.shared.homeViewModel()
 
     ScrollView {
-        HomeView.ReviewsWidget(viewModel: viewModel)
+        HomeView.ReflectionsWidget(viewModel: viewModel)
             .padding()
     }
     .background(Color(.systemGroupedBackground))

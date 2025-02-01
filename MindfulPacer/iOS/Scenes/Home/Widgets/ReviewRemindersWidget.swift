@@ -1,5 +1,5 @@
 //
-//  ReviewRemindersWidget.swift
+//  RemindersWidget.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 31.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - ReviewRemindersWidget
+// MARK: - RemindersWidget
 
 extension HomeView {
-    struct ReviewRemindersWidget: View {
+    struct RemindersWidget: View {
         
         // MARK: Properties
 
@@ -19,50 +19,50 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            NavigationLink(value: HomeViewNavigationDestination.reviewRemindersList) {
+            NavigationLink(value: HomeViewNavigationDestination.remindersList) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "bell.badge.fill",
-                        title: "Review Reminders",
+                        title: "Reflection Reminders",
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
                     description:
-                        Text("Summary of your review reminders.")
+                        Text("Summary of your reflection reminders.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
-                    if viewModel.reviewReminders.isEmpty {
+                    if viewModel.reminders.isEmpty {
                         EmptyStateView(
                             image: "bell.badge.slash",
-                            title: "No Review Reminders",
-                            description: "Tap the + button to create a review reminder."
+                            title: "No Reflection Reminders",
+                            description: "Tap the + button to create a reflection reminder."
                         )
                     } else {
-                        recentReviewRemindersSummary
+                        recentRemindersSummary
                     }
                 } accessoryIndicator: {
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 } footer: {
-                    createReviewReminderButton
+                    createReminderButton
                 }
             }
             .foregroundStyle(.primary)
         }
 
-        // MARK: Recent Review Reminders Summary
+        // MARK: Recent Reflection Reminders Summary
         
-        private var recentReviewRemindersSummary: some View {
+        private var recentRemindersSummary: some View {
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(viewModel.recentReviewReminders, id: \.self) { reviewReminder in
-                    ReviewReminderCell(
-                        reviewReminder: reviewReminder,
+                ForEach(viewModel.recentReminders, id: \.self) { reminder in
+                    ReminderCell(
+                        reminder: reminder,
                         backgroundColor: Color(.tertiarySystemGroupedBackground)
                     ) {
-                        viewModel.presentSheet(.createReviewReminderView(reviewReminder))
+                        viewModel.presentSheet(.createReminderView(reminder))
                     }
-                    if viewModel.recentReviewReminders.last != reviewReminder {
+                    if viewModel.recentReminders.last != reminder {
                         Divider()
                     }
                 }
@@ -70,13 +70,13 @@ extension HomeView {
             .cornerRadius(16)
         }
 
-        // MARK: Create Review Reminder Button
+        // MARK: Create Reflection Reminder Button
 
-        private var createReviewReminderButton: some View {
+        private var createReminderButton: some View {
             Button {
-                viewModel.presentSheet(.createReviewReminderView(nil))
+                viewModel.presentSheet(.createReminderView(nil))
             } label: {
-                IconLabel(icon: "plus.circle", title: "Create Review Reminder", labelColor: Color("BrandPrimary"))
+                IconLabel(icon: "plus.circle", title: "Create Reflection Reminder", labelColor: Color("BrandPrimary"))
                     .font(.subheadline.weight(.semibold))
             }
         }
@@ -89,7 +89,7 @@ extension HomeView {
     let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
 
     ScrollView {
-        HomeView.ReviewRemindersWidget(viewModel: viewModel)
+        HomeView.RemindersWidget(viewModel: viewModel)
             .padding()
     }
     .background(Color(.systemGroupedBackground))

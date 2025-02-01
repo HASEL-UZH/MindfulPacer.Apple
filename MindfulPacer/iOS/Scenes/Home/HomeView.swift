@@ -11,28 +11,28 @@ import SwiftUI
 
 enum HomeViewNavigationDestination: Hashable {
     case reviewsList
-    case reviewRemindersList
+    case remindersList
     case analytics
 }
 
 enum HomeViewSheet: Identifiable {
-    case editReviewView(Review?)
-    case createReviewReminderView(ReviewReminder?)
+    case editReflectionView(Reflection?)
+    case createReminderView(Reminder?)
     case reviewsFilterView
-    case missedReviews
+    case missedReflections
 
     var id: Int {
         switch self {
-        case .editReviewView: 0
-        case .createReviewReminderView: 1
+        case .editReflectionView: 0
+        case .createReminderView: 1
         case .reviewsFilterView: 2
-        case .missedReviews: 3
+        case .missedReflections: 3
         }
     }
 }
 
 enum HomeViewToast: Identifiable {
-    case successfullyCreatedReview
+    case successfullyCreatedReflection
     
     var id: Int {
         hashValue
@@ -54,10 +54,10 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    missedReviewsWidget
-                    ReviewsWidget(viewModel: viewModel)
+                    missedReflectionsWidget
+                    ReflectionsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
-                    ReviewRemindersWidget(viewModel: viewModel)
+                    RemindersWidget(viewModel: viewModel)
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -88,17 +88,17 @@ struct HomeView: View {
         }
     }
     
-    // MARK: Missed Reviews Widget
+    // MARK: Missed Reflections Widget
     
     @ViewBuilder
-    private var missedReviewsWidget: some View {
-        if !viewModel.missedReviews.isEmpty {
+    private var missedReflectionsWidget: some View {
+        if !viewModel.missedReflections.isEmpty {
             Button {
-                viewModel.presentSheet(.missedReviews)
+                viewModel.presentSheet(.missedReflections)
             } label: {
                 Card {
                     Label {
-                        Text(viewModel.missedReviewsWidgetTitle)
+                        Text(viewModel.missedReflectionsWidgetTitle)
                             .font(.subheadline.weight(.semibold))
                     } icon: {
                         Image(systemName: "bell.badge.fill")
@@ -147,9 +147,9 @@ struct HomeView: View {
     private func navigationDestination(for destination: HomeViewNavigationDestination) -> some View {
         switch destination {
         case .reviewsList:
-            ReviewsListView(viewModel: viewModel)
-        case .reviewRemindersList:
-            ReviewRemindersListView(viewModel: viewModel)
+            ReflectionsListView(viewModel: viewModel)
+        case .remindersList:
+            RemindersListView(viewModel: viewModel)
         case .analytics:
             AnalyticsView()
         }
@@ -160,24 +160,24 @@ struct HomeView: View {
     @ViewBuilder
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
-        case .editReviewView(let review):
-            EditReviewView(review: review, onReviewCreation: {
-                viewModel.presentToast(.successfullyCreatedReview)
+        case .editReflectionView(let reflection):
+            EditReflectionView(reflection: reflection, onReflectionCreation: {
+                viewModel.presentToast(.successfullyCreatedReflection)
             })
-            .interactiveDismissDisabled(review.isNil)
+            .interactiveDismissDisabled(reflection.isNil)
             .presentationCornerRadius(16)
-            .presentationDragIndicator(review.isNil ? .hidden : .visible)
-        case .createReviewReminderView(let reviewReminder):
-            CreateReviewReminderView(reviewReminder: reviewReminder)
-                .interactiveDismissDisabled(reviewReminder.isNil)
+            .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
+        case .createReminderView(let reminder):
+            CreateReminderView(reminder: reminder)
+                .interactiveDismissDisabled(reminder.isNil)
                 .presentationCornerRadius(16)
-                .presentationDragIndicator(reviewReminder.isNil ? .hidden : .visible)
+                .presentationDragIndicator(reminder.isNil ? .hidden : .visible)
         case .reviewsFilterView:
-            ReviewsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
+            ReflectionsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
-        case .missedReviews:
-            MissedReviewsView(viewModel: viewModel)
+        case .missedReflections:
+            MissedReflectionsView(viewModel: viewModel)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         }
@@ -187,10 +187,10 @@ struct HomeView: View {
     
     private func toastContent(for toast: HomeViewToast) -> some View {
         switch toast {
-        case .successfullyCreatedReview:
+        case .successfullyCreatedReflection:
             Toast(
-                title: "Successfully Created Review",
-                message: "Your review has been saved"
+                title: "Successfully Created Reflection",
+                message: "Your reflection has been saved"
             )
             .toastStyle(.success)
         }

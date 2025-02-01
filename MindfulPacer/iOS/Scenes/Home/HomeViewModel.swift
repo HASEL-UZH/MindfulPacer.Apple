@@ -19,36 +19,36 @@ class HomeViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let checkMissedReviewsUseCase: CheckMissedReviewsUseCase
-    private let createReviewUseCase: CreateReviewUseCase
-    private let fetchActionedMissedReviewsUseCase: FetchActionedMissedReviewsUseCase
+    private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
+    private let createReflectionUseCase: CreateReflectionUseCase
+    private let fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-    private let fetchReviewsUseCase: FetchReviewsUseCase
-    private let fetchReviewRemindersUseCase: FetchReviewRemindersUseCase
-    private let filterReviewsUseCase: FilterReviewsUseCase
-    private let markMissedReviewAsActionedUseCase: MarkMissedReviewAsActionedUseCase
+    private let fetchReflectionsUseCase: FetchReflectionsUseCase
+    private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let filterReflectionsUseCase: FilterReflectionsUseCase
+    private let markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
     
     // MARK: - Published Properties
     
     var activeSheet: HomeViewSheet?
     var activeToast: HomeViewToast?
-    var reviewFilter: ReviewFilter = ReviewFilter()
-    var reviewSorting: ReviewSorting = .dateDescending
-    var reviews: [Review] = []
-    var filteredReviews: [Review] = []
+    var reviewFilter: ReflectionFilter = ReflectionFilter()
+    var reviewSorting: ReflectionSorting = .dateDescending
+    var reflections: [Reflection] = []
+    var filteredReflections: [Reflection] = []
     
-    var recentReviews: [Review] {
-        Array(reviews.prefix(3))
+    var recentReflections: [Reflection] {
+        Array(reflections.prefix(3))
     }
     
-    var reviewReminders: [ReviewReminder] = []
-    var recentReviewReminders: [ReviewReminder] {
-        Array(reviewReminders.prefix(3))
+    var reminders: [Reminder] = []
+    var recentReminders: [Reminder] {
+        Array(reminders.prefix(3))
     }
     
-    var missedReviews: [MissedReview] = []
+    var missedReflections: [MissedReflection] = []
     
     var currentSteps: (stepCount: Double, timestamp: Date)?
     var currentHeartRate: (heartRate: Double, timestamp: Date)?
@@ -62,41 +62,41 @@ class HomeViewModel {
         return filter.activeFilterCount == 0 ? "Filters" : "Filters (\(filter.activeFilterCount))"
     }
     
-    var missedReviewsWidgetTitle: String {
-        "\(missedReviews.count) Missed \(missedReviews.count > 1 ? "Reviews" : "Review")"
+    var missedReflectionsWidgetTitle: String {
+        "\(missedReflections.count) Missed \(missedReflections.count > 1 ? "Reflections" : "Reflection")"
     }
     
     // MARK: - Private Properties
     
-    var filterAndSortingPublisher = CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>((ReviewFilter(), .dateDescending))
+    var filterAndSortingPublisher = CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>((ReflectionFilter(), .dateDescending))
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
     init(
         modelContext: ModelContext,
-        checkMissedReviewsUseCase: CheckMissedReviewsUseCase,
-        createReviewUseCase: CreateReviewUseCase,
-        fetchActionedMissedReviewsUseCase: FetchActionedMissedReviewsUseCase,
+        checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
+        createReflectionUseCase: CreateReflectionUseCase,
+        fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase,
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
-        fetchReviewsUseCase: FetchReviewsUseCase,
-        fetchReviewRemindersUseCase: FetchReviewRemindersUseCase,
-        filterReviewsUseCase: FilterReviewsUseCase,
-        markMissedReviewAsActionedUseCase: MarkMissedReviewAsActionedUseCase
+        fetchReflectionsUseCase: FetchReflectionsUseCase,
+        fetchRemindersUseCase: FetchRemindersUseCase,
+        filterReflectionsUseCase: FilterReflectionsUseCase,
+        markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
     ) {
         self.modelContext = modelContext
-        self.checkMissedReviewsUseCase = checkMissedReviewsUseCase
-        self.createReviewUseCase = createReviewUseCase
-        self.fetchActionedMissedReviewsUseCase = fetchActionedMissedReviewsUseCase
+        self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
+        self.createReflectionUseCase = createReflectionUseCase
+        self.fetchActionedMissedReflectionsUseCase = fetchActionedMissedReflectionsUseCase
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
         self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
-        self.fetchReviewsUseCase = fetchReviewsUseCase
-        self.fetchReviewRemindersUseCase = fetchReviewRemindersUseCase
-        self.filterReviewsUseCase = filterReviewsUseCase
-        self.markMissedReviewAsActionedUseCase = markMissedReviewAsActionedUseCase
+        self.fetchReflectionsUseCase = fetchReflectionsUseCase
+        self.fetchRemindersUseCase = fetchRemindersUseCase
+        self.filterReflectionsUseCase = filterReflectionsUseCase
+        self.markMissedReflectionAsActionedUseCase = markMissedReflectionAsActionedUseCase
     }
     
     // MARK: - View Lifecycle
@@ -108,14 +108,14 @@ class HomeViewModel {
     func onViewAppear() {
         fetchCurrentSteps()
         fetchCurrentHeartRate()
-        fetchReviews()
-        fetchReviewReminders()
-        checkMissedReviews()
+        fetchReflections()
+        fetchReminders()
+        checkMissedReflections()
     }
     
     func onSheetDismissed() {
-        fetchReviews()
-        fetchReviewReminders()
+        fetchReflections()
+        fetchReminders()
     }
     
     // MARK: - User Actions
@@ -156,19 +156,19 @@ class HomeViewModel {
         }
     }
     
-    func acceptMissedReview(_ missedReview: MissedReview) {
+    func acceptMissedReflection(_ missedReflection: MissedReflection) {
         guard let defaultActivities = fetchDefaultActivitiesUseCase.execute() else { return }
-        guard let reviewRemindersActivity = (defaultActivities.first { $0.name == "Review Reminders"}) else { return }
-        guard let reviewRemindersSubactivities = reviewRemindersActivity.subactivities,
-              let stepsActivity = (reviewRemindersSubactivities.first { $0.name == "Steps"}),
-              let heartRateActivity = (reviewRemindersSubactivities.first { $0.name == "Heart Rate"}) else {
+        guard let remindersActivity = (defaultActivities.first { $0.name == "Reflection Reminders"}) else { return }
+        guard let remindersSubactivities = remindersActivity.subactivities,
+              let stepsActivity = (remindersSubactivities.first { $0.name == "Steps"}),
+              let heartRateActivity = (remindersSubactivities.first { $0.name == "Heart Rate"}) else {
             return
         }
         
-        _ = createReviewUseCase.execute(
-            date: missedReview.date,
-            activity: reviewRemindersActivity,
-            subactivity: missedReview.measurementType == .steps ? stepsActivity : heartRateActivity,
+        _ = createReflectionUseCase.execute(
+            date: missedReflection.date,
+            activity: remindersActivity,
+            subactivity: missedReflection.measurementType == .steps ? stepsActivity : heartRateActivity,
             mood: nil,
             didTriggerCrash: false,
             wellBeing: nil,
@@ -179,26 +179,26 @@ class HomeViewModel {
             physicalPain: nil,
             depressionOrAnxiety: nil,
             additionalInformation: "",
-            measurementType: missedReview.measurementType,
-            reviewReminderType: missedReview.reviewReminderType,
-            threshold: missedReview.threshold,
-            interval: missedReview.interval
+            measurementType: missedReflection.measurementType,
+            reminderType: missedReflection.reminderType,
+            threshold: missedReflection.threshold,
+            interval: missedReflection.interval
         )
         
-        markMissedReviewAsActionedUseCase.execute(missedReview: missedReview)
+        markMissedReflectionAsActionedUseCase.execute(missedReflection: missedReflection)
         
         withAnimation {
-            missedReviews.removeAll { $0.id == missedReview.id }
+            missedReflections.removeAll { $0.id == missedReflection.id }
         }
         
         // TODO: Show toast on success
     }
     
-    func rejectMissedReview(_ missedReview: MissedReview) {
-        markMissedReviewAsActionedUseCase.execute(missedReview: missedReview)
+    func rejectMissedReflection(_ missedReflection: MissedReflection) {
+        markMissedReflectionAsActionedUseCase.execute(missedReflection: missedReflection)
         
         withAnimation {
-            missedReviews.removeAll { $0.id == missedReview.id }
+            missedReflections.removeAll { $0.id == missedReflection.id }
         }
     }
     
@@ -225,9 +225,9 @@ class HomeViewModel {
             .store(in: &cancellables)
     }
     
-    private func applyFilterAndSorting(_ filter: ReviewFilter, _ sorting: ReviewSorting) {
-        filteredReviews = filterReviewsUseCase.execute(
-            reviews: reviews,
+    private func applyFilterAndSorting(_ filter: ReflectionFilter, _ sorting: ReflectionSorting) {
+        filteredReflections = filterReflectionsUseCase.execute(
+            reflections: reflections,
             filters: filter,
             sorting: sorting
         )
@@ -266,30 +266,30 @@ class HomeViewModel {
         }
     }
     
-    private func fetchReviews() {
-        reviews = fetchReviewsUseCase.execute() ?? []
+    private func fetchReflections() {
+        reflections = fetchReflectionsUseCase.execute() ?? []
         applyFilterAndSorting(reviewFilter, reviewSorting)
     }
     
-    private func fetchReviewReminders() {
-        reviewReminders = fetchReviewRemindersUseCase.execute() ?? []
+    private func fetchReminders() {
+        reminders = fetchRemindersUseCase.execute() ?? []
     }
     
-    private func checkMissedReviews() {
-        let reviewReminders = fetchReviewRemindersUseCase.execute() ?? []
-        let actionedMissedReviewIDs = fetchActionedMissedReviewsUseCase.execute()
+    private func checkMissedReflections() {
+        let reminders = fetchRemindersUseCase.execute() ?? []
+        let actionedMissedReflectionIDs = fetchActionedMissedReflectionsUseCase.execute()
         
-        checkMissedReviewsUseCase.execute(
-            reviewReminders: reviewReminders,
-            actionedMissedReviewIDs: actionedMissedReviewIDs
+        checkMissedReflectionsUseCase.execute(
+            reminders: reminders,
+            actionedMissedReflectionIDs: actionedMissedReflectionIDs
         ) { [weak self] result in
             guard let self = self else { return }
             
             Task { @MainActor in
                 switch result {
-                case .success(let missedReviews):
-                    /// 10 most recent missed reviews
-                    self.missedReviews = Array(missedReviews.sorted { $0.date > $1.date }.prefix(10))
+                case .success(let missedReflections):
+                    /// 10 most recent missed reflections
+                    self.missedReflections = Array(missedReflections.sorted { $0.date > $1.date }.prefix(10))
                 case .failure(let failure):
                     print("DEBUG:", failure)
                 }

@@ -10,11 +10,11 @@ import SwiftUI
 // MARK: - Presentation Enums
 
 enum AnalyticsViewSheet: Identifiable {
-    case editReviewView(Review?)
+    case editReflectionView(Reflection?)
 
     var id: Int {
         switch self {
-        case .editReviewView: 0
+        case .editReflectionView: 0
         }
     }
 }
@@ -47,8 +47,8 @@ struct AnalyticsView: View {
                             .foregroundStyle(.secondary)
                     ) {
                         VStack(spacing: 16) {
-                            MeasurementChartView(viewModel: viewModel) { review in
-                                viewModel.presentSheet(.editReviewView(review))
+                            MeasurementChartView(viewModel: viewModel) { reflection in
+                                viewModel.presentSheet(.editReflectionView(reflection))
                             }
                            
                             Picker(selection: $viewModel.selectedPeriod) {
@@ -123,21 +123,21 @@ struct AnalyticsView: View {
         }
     }
     
-    // MARK: Reviews in Period
+    // MARK: Reflections in Period
     
     private var reviewsInPeriod: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Reviews")
+                Text("Reflections")
                     .font(.title.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Button {
-                    viewModel.presentSheet(.editReviewView(nil))
+                    viewModel.presentSheet(.editReflectionView(nil))
                 } label: {
                     IconLabel(
                         icon: "plus.circle",
-                        title: "Create Review",
+                        title: "Create Reflection",
                         labelColor: Color("BrandPrimary")
                     )
                     .font(.subheadline.weight(.semibold))
@@ -148,14 +148,14 @@ struct AnalyticsView: View {
             if viewModel.reviewsInPeriod.isEmpty {
                 EmptyStateView(
                     image: "book.pages",
-                    title: "No Reviews",
-                    description: "There are no reviews within the last \(viewModel.selectedPeriod.description)."
+                    title: "No Reflections",
+                    description: "There are no reflections within the last \(viewModel.selectedPeriod.description)."
                 )
             } else {
                 RoundedList {
-                    ForEach(viewModel.reviewsInPeriod) { review in
-                        ReviewCell(review: review) {
-                            viewModel.presentSheet(.editReviewView(review))
+                    ForEach(viewModel.reviewsInPeriod) { reflection in
+                        ReflectionCell(reflection: reflection) {
+                            viewModel.presentSheet(.editReflectionView(reflection))
                         }
                     }
                 }
@@ -169,11 +169,11 @@ struct AnalyticsView: View {
     @ViewBuilder
     private func sheetContent(for sheet: AnalyticsViewSheet) -> some View {
         switch sheet {
-        case .editReviewView(let review):
-            EditReviewView(review: review)
-                .interactiveDismissDisabled(review.isNil)
+        case .editReflectionView(let reflection):
+            EditReflectionView(reflection: reflection)
+                .interactiveDismissDisabled(reflection.isNil)
                 .presentationCornerRadius(16)
-                .presentationDragIndicator(review.isNil ? .hidden : .visible)
+                .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
         }
     }
 }

@@ -21,8 +21,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             AnalyticsViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 fetchHeartRateUseCase: UseCasesContainer.shared.fetchHeartRateUseCase(),
-                fetchReviewsInPeriodUseCase: UseCasesContainer.shared.fetchReviewsInPeriodUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
+                fetchReflectionsInPeriodUseCase: UseCasesContainer.shared.fetchReflectionsInPeriodUseCase(),
+                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
                 fetchStepsUseCase: UseCasesContainer.shared.fetchStepsUseCase()
             )
         }
@@ -35,16 +35,16 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                checkMissedReviewsUseCase: UseCasesContainer.shared.checkMissedReviewsUseCase(),
-                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
-                fetchActionedMissedReviewsUseCase: UseCasesContainer.shared.fetchActionedMissedReviewsUseCase(),
+                checkMissedReflectionsUseCase: UseCasesContainer.shared.checkMissedReflectionsUseCase(),
+                createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
+                fetchActionedMissedReflectionsUseCase: UseCasesContainer.shared.fetchActionedMissedReflectionsUseCase(),
                 fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
-                fetchReviewsUseCase: UseCasesContainer.shared.fetchReviewsUseCase(),
-                fetchReviewRemindersUseCase: UseCasesContainer.shared.fetchReviewRemindersUseCase(),
-                filterReviewsUseCase: UseCasesContainer.shared.filterReviewsUseCase(),
-                markMissedReviewAsActionedUseCase: UseCasesContainer.shared.markMissedReviewAsActionedUseCase()
+                fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
+                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
+                filterReflectionsUseCase: UseCasesContainer.shared.filterReflectionsUseCase(),
+                markMissedReflectionAsActionedUseCase: UseCasesContainer.shared.markMissedReflectionAsActionedUseCase()
             )
         }
     }
@@ -76,38 +76,38 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         }
     }
 
-    // MARK: - Review
+    // MARK: - Reflection
 
     @MainActor
-    var editReviewViewModel: Factory<EditReviewViewModel> {
+    var editReflectionViewModel: Factory<EditReflectionViewModel> {
         self {
-            EditReviewViewModel(
+            EditReflectionViewModel(
                 modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext,
-                createReviewUseCase: UseCasesContainer.shared.createReviewUseCase(),
-                deleteReviewUseCase: UseCasesContainer.shared.deleteReviewUseCase(),
+                createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
+                deleteReflectionUseCase: UseCasesContainer.shared.deleteReflectionUseCase(),
                 fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
-                saveReviewUseCase: UseCasesContainer.shared.saveReviewUseCase()
+                saveReflectionUseCase: UseCasesContainer.shared.saveReflectionUseCase()
             )
         }
     }
 
     @MainActor
-    var reviewsFilterViewModel: Factory<ReviewsFilterViewModel> {
+    var reviewsFilterViewModel: Factory<ReflectionsFilterViewModel> {
         self {
-            ReviewsFilterViewModel(fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase())
+            ReflectionsFilterViewModel(fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase())
         }
     }
 
-    // MARK: - Review Reminder
+    // MARK: - Reflection Reminder
 
     @MainActor
-    var createReviewReminderViewModel: Factory<CreateReviewReminderViewModel> {
+    var createReminderViewModel: Factory<CreateReminderViewModel> {
         self {
-            CreateReviewReminderViewModel(
+            CreateReminderViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                createReviewReminderUseCase: UseCasesContainer.shared.createReviewReminderUseCase(),
-                deleteReviewReminderUseCase: UseCasesContainer.shared.deleteReviewReminderUseCase(),
-                saveReviewReminderUseCase: UseCasesContainer.shared.saveReviewReminderUseCase(),
+                createReminderUseCase: UseCasesContainer.shared.createReminderUseCase(),
+                deleteReminderUseCase: UseCasesContainer.shared.deleteReminderUseCase(),
+                saveReminderUseCase: UseCasesContainer.shared.saveReminderUseCase(),
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )
         }

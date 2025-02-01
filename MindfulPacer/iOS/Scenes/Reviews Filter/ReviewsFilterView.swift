@@ -1,5 +1,5 @@
 //
-//  ReviewsFilterView.swift
+//  ReflectionsFilterView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 03.09.2024.
@@ -8,15 +8,15 @@
 import Combine
 import SwiftUI
 
-// MARK: - ReviewsFilterView
+// MARK: - ReflectionsFilterView
 
 // swiftlint:disable:next type_body_length
-struct ReviewsFilterView: View {
+struct ReflectionsFilterView: View {
     
     // MARK: Properties
 
-    @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
-    let filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
+    @State private var viewModel: ReflectionsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
+    let filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
 
     // MARK: Body
 
@@ -35,7 +35,7 @@ struct ReviewsFilterView: View {
                 dateSorting
 
             }
-            .navigationTitle("Filter Reviews")
+            .navigationTitle("Filter Reflections")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -316,9 +316,9 @@ struct ReviewsFilterView: View {
 
                 Picker(String(), selection: viewModel.reviewSortingBinding) {
                     Label("Descending", systemImage: "arrow.down")
-                        .tag(ReviewSorting.dateDescending)
+                        .tag(ReflectionSorting.dateDescending)
                     Label("Ascending", systemImage: "arrow.up")
-                        .tag(ReviewSorting.dateAscending)
+                        .tag(ReflectionSorting.dateAscending)
                 }
                 .pickerStyle(.segmented)
             }
@@ -335,6 +335,6 @@ struct ReviewsFilterView: View {
 // MARK: - Preview
 
 #Preview {
-    ReviewsFilterView(filterAndSortingPublisher: nil)
+    ReflectionsFilterView(filterAndSortingPublisher: nil)
         .tint(Color("BrandPrimary"))
 }

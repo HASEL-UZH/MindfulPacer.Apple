@@ -1,5 +1,5 @@
 //
-//  ReviewReminderTypeWidget.swift
+//  ReminderTypeWidget.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 31.08.2024.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - ReviewReminderTypeWidget
+// MARK: - ReminderTypeWidget
 
 extension HomeView {
-    struct ReviewReminderTypeWidget: View {
+    struct ReminderTypeWidget: View {
         
         // MARK: Body
 
@@ -24,19 +24,19 @@ extension HomeView {
                         background: true
                     ),
                 description:
-                    Text("Summary of number of review reminders triggered, by review reminder type.")
+                    Text("Summary of number of reflection reminders triggered, by reflection reminder type.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             ) {
                 HStack(spacing: 16) {
-                    ForEach(ReviewReminder.ReviewReminderType.allCases, id: \.self) { reviewReminderType in
+                    ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
                         HStack(spacing: 16) {
                             HStack(alignment: .lastTextBaseline, spacing: 4) {
                                 Text("0")
                                     .font(.title.weight(.semibold))
 
-                                Text(reviewReminderType.rawValue.lowercased())
-                                    .foregroundStyle(reviewReminderType.color)
+                                Text(reminderType.rawValue.lowercased())
+                                    .foregroundStyle(reminderType.color)
                             }
                         }
                     }
@@ -53,7 +53,7 @@ extension HomeView {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
 
-        HomeView.ReviewReminderTypeWidget()
+        HomeView.ReminderTypeWidget()
             .padding()
     }
 }

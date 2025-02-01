@@ -25,7 +25,7 @@ extension AnalyticsView {
         // MARK: Properties
         
         @Bindable var viewModel: AnalyticsViewModel
-        var onReviewSelected: (SchemaV1.Review) -> Void
+        var onReflectionSelected: (SchemaV1.Reflection) -> Void
         
         // MARK: Body
         
@@ -45,7 +45,7 @@ extension AnalyticsView {
                         
                         ForEach(viewModel.chartThresholds, id: \.threshold) { chartThreshold in
                             RuleMark(y: .value("Goal", chartThreshold.threshold))
-                                .foregroundStyle(chartThreshold.reviewReminderType.color)
+                                .foregroundStyle(chartThreshold.reminderType.color)
                                 .lineStyle(.init(lineWidth: 1, dash: [5]))
                         }
                         
@@ -120,22 +120,22 @@ extension AnalyticsView {
             }
         }
         
-        // MARK: Reviews Overlay
+        // MARK: Reflections Overlay
         
         private var reviewsOverlay: some View {
             GeometryReader { proxy in
-                ForEach(viewModel.filteredReviewsForChartDomain()) { review in
-                    if let xPosition = viewModel.xPositionForReview(review, in: proxy.size) {
+                ForEach(viewModel.filteredReflectionsForChartDomain()) { reflection in
+                    if let xPosition = viewModel.xPositionForReflection(reflection, in: proxy.size) {
                         Button {
-                            onReviewSelected(review)
+                            onReflectionSelected(reflection)
                         } label: {
-                            if let subactivity = review.subactivity {
+                            if let subactivity = reflection.subactivity {
                                 Icon(
                                     name: subactivity.icon,
                                     color: .primary,
                                     background: false
                                 )
-                            } else if let activity = review.activity {
+                            } else if let activity = reflection.activity {
                                 Icon(
                                     name: activity.icon,
                                     color: .primary,
