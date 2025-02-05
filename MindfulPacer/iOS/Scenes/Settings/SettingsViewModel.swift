@@ -8,6 +8,7 @@
 import Foundation
 import MessageUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Theme
 
@@ -56,6 +57,78 @@ enum Theme: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - ExportFileFormat
+
+enum ExportFileFormat: String, CaseIterable, Identifiable {
+    case csv
+    
+    var description: String {
+        switch self {
+        case .csv: ".CSV"
+        }
+    }
+    
+    var fileExtension: String {
+        switch self {
+        case .csv: ".csv"
+        }
+    }
+    
+    var id: String { self.rawValue }
+}
+
+// MARK: - ExportDataModel
+
+enum ExportDataModel: String, CaseIterable, Identifiable {
+    case reflection
+    case reminder
+    
+    var id: String { self.rawValue }
+    
+    var description: String {
+        switch self {
+        case .reflection: "Reflections"
+        case .reminder: "Reminders"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .reflection: "book.pages.fill"
+        case .reminder: "bell.badge.fill"
+        }
+    }
+    
+    var fileName: String {
+        switch self {
+        case .reflection: "MindfulPacer_Reflections"
+        case .reminder: "MindfulPacer_Reminders"
+        }
+    }
+}
+
+// MARK: - ExportDocument
+
+struct ExportDocument: FileDocument {
+    static var readableContentTypes: [UTType] {
+        return [.commaSeparatedText, .spreadsheet]
+    }
+    
+    var fileURL: URL
+    
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+    
+    init(configuration: ReadConfiguration) throws {
+        fatalError("Reading not supported")
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        return try FileWrapper(url: fileURL)
+    }
+}
+
 // MARK: - SettingsViewModel
 
 @MainActor
@@ -64,6 +137,9 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
+    private let fetchReflectionsUseCase: FetchReflectionsUseCase
+    private let fetchRemindersUseCase: FetchRemindersUseCase
+    
     // MARK: - Published Properties
     
     var navigationPath: [SettingsNavigationDestination] = []
@@ -71,12 +147,18 @@ class SettingsViewModel {
     
     var mailResult: Result<MFMailComposeResult, Error>?
     
+    var reflections: [Reflection] = []
+    var reminders: [Reminder] = []
+    
     var isFetchingRoadmap: Bool = false
     var roadmapItems: [RoadmapItem] = []
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
-    
     var isExpandedModeOfUseOn: Bool = false
+    var selectedExportFileFormat: ExportFileFormat = .csv
+    var selectedExportDataModel: ExportDataModel = .reminder
+    var exportURL: URL?
+    var isExporting = false
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
     var contactSupportSubject: String = "MindfulPacer - Feedback"
@@ -155,11 +237,20 @@ class SettingsViewModel {
     
     // MARK: - Initialization
     
-    init() {}
+    init(
+        fetchReflectionsUseCase: FetchReflectionsUseCase,
+        fetchRemindersUseCase: FetchRemindersUseCase
+    ) {
+        self.fetchReflectionsUseCase = fetchReflectionsUseCase
+        self.fetchRemindersUseCase = fetchRemindersUseCase
+    }
     
     // MARK: - View Events
     
-    func onViewAppear() {}
+    func onViewAppear() {
+        fetchReflections()
+        fetchReminders()
+    }
     
     // MARK: - Presentation
     
@@ -173,5 +264,77 @@ class SettingsViewModel {
         isExpandedModeOfUseOn = modeOfUse == .expanded
     }
     
+    func onExportTapped() {
+        let exportedFileURL: URL?
+        
+        switch selectedExportDataModel {
+        case .reflection:
+            exportedFileURL = exportToCSV(reflections: reflections, reminders: [])
+        case .reminder:
+            exportedFileURL = exportToCSV(reflections: [], reminders: reminders)
+        }
+        
+        if let url = exportedFileURL {
+            exportURL = url
+            isExporting = true
+        }
+    }
+    
     // MARK: - Private Methods
+    
+    private func fetchReflections() {
+        reflections = fetchReflectionsUseCase.execute() ?? []
+    }
+    
+    private func fetchReminders() {
+        reminders = fetchRemindersUseCase.execute() ?? []
+    }
+    
+    private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
+        let fileName = selectedExportDataModel.fileName + selectedExportFileFormat.fileExtension
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        var csvText = ""
+        
+        if selectedExportDataModel == .reflection {
+            csvText.append("Date,Activity,Subactivity,Mood,DidTriggerCrash,WellBeing,Fatigue,ShortnessOfBreath,SleepDisorder,CognitiveImpairment,PhysicalPain,DepressionOrAnxiety,AdditionalInfo\n")
+            
+            for reflection in reflections {
+                let formattedDate = DateFormatter.localizedString(from: reflection.date, dateStyle: .medium, timeStyle: .short)
+                let activityName = reflection.activity?.name ?? ""
+                let subactivityName = reflection.subactivity?.name ?? ""
+                let moodText = reflection.mood?.text ?? ""
+                let moodEmoji = reflection.mood?.emoji ?? ""
+                let additionalInfo = reflection.additionalInformation.replacingOccurrences(of: "\"", with: "\"\"")
+                
+                let csvLine = """
+                \(formattedDate),\(activityName),\(subactivityName),\(moodEmoji) \(moodText),\(reflection.didTriggerCrash),\(optionalIntToString(reflection.wellBeing)),\(optionalIntToString(reflection.fatigue)),\(optionalIntToString(reflection.shortnessOfBreath)),\(optionalIntToString(reflection.sleepDisorder)),\(optionalIntToString(reflection.cognitiveImpairment)),\(optionalIntToString(reflection.physicalPain)),\(optionalIntToString(reflection.depressionOrAnxiety)),"\(additionalInfo)"
+                """
+                
+                csvText.append(csvLine + "\n")
+            }
+        } else if selectedExportDataModel == .reminder {
+            csvText.append("ID,MeasurementType,ReminderType,Threshold,Interval\n")
+            
+            for reminder in reminders {
+                let csvLine = """
+                \(reminder.id),\(reminder.measurementType.rawValue),\(reminder.reminderType.rawValue),\(reminder.threshold),\(reminder.interval.rawValue)
+                """
+                csvText.append(csvLine + "\n")
+            }
+        }
+        
+        do {
+            try csvText.write(to: path, atomically: true, encoding: .utf8)
+            print("Export successful. File saved at: \(path)")
+            return path
+        } catch {
+            print("Failed to create CSV file: \(error)")
+            return nil
+        }
+    }
+    
+    private func optionalIntToString(_ value: Int?) -> String {
+        return value.map { "\($0)" } ?? ""
+    }
 }

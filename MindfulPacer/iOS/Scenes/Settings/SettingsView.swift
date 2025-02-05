@@ -27,6 +27,7 @@ enum SettingsSheet: Identifiable {
 
 enum SettingsNavigationDestination: Hashable {
     case theme
+    case export
 }
 
 // MARK: - SettingsView
@@ -56,6 +57,12 @@ struct SettingsView: View {
                     themeSettings
                 } header: {
                     sectionHeader(title: "Appearance")
+                }
+                
+                Section {
+                    exportData
+                } header: {
+                    sectionHeader(title: "Data")
                 }
                 
                 Section {
@@ -97,6 +104,8 @@ struct SettingsView: View {
         switch destination {
         case .theme:
             ThemeSettingsView()
+        case .export:
+            ExportView(viewModel: viewModel)
         }
     }
     
@@ -167,6 +176,18 @@ struct SettingsView: View {
         .tint(.brandPrimary)
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
+    }
+    
+    // MARK: Export Data
+    
+    private var exportData: some View {
+        NavigationLink(value: SettingsNavigationDestination.export) {
+            RoundedListCell(
+                icon: "tray.and.arrow.up.fill",
+                title: "Export Data",
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
     }
     
     // MARK: Contact Us

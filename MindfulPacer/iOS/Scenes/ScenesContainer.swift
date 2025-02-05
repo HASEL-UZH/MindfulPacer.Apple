@@ -12,9 +12,9 @@ import SwiftData
 final class ScenesContainer: SharedContainer, @unchecked Sendable {
     static let shared = ScenesContainer()
     var manager = ContainerManager()
-
+    
     // MARK: - Analytics
-
+    
     @MainActor
     var analyticsViewModel: Factory<AnalyticsViewModel> {
         self {
@@ -27,9 +27,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Home
-
+    
     @MainActor
     var homeViewModel: Factory<HomeViewModel> {
         self {
@@ -48,9 +48,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Onboarding
-
+    
     @MainActor
     var onboardingViewModel: Factory<OnboardingViewModel> {
         self {
@@ -72,9 +72,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Root
-
+    
     @MainActor
     var rootViewModel: Factory<RootViewModel> {
         self {
@@ -86,9 +86,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Reflection
-
+    
     @MainActor
     var editReflectionViewModel: Factory<EditReflectionViewModel> {
         self {
@@ -101,7 +101,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     @MainActor
     var reviewsFilterViewModel: Factory<ReflectionsFilterViewModel> {
         self {
@@ -120,9 +120,9 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             )
         }
     }
-
+    
     // MARK: - Reminder
-
+    
     @MainActor
     var createReminderViewModel: Factory<CreateReminderViewModel> {
         self {
@@ -141,7 +141,10 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
-            SettingsViewModel()
+            SettingsViewModel(
+                fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
+                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase()
+            )
         }
     }
 }
