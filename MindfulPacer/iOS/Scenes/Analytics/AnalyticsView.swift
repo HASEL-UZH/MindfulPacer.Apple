@@ -159,7 +159,7 @@ struct AnalyticsView: View {
                         }
                     }
                 }
-                .safeAreaPadding(.top)
+                .safeAreaPadding(.vertical)
             }
         }
     }

@@ -82,6 +82,7 @@ struct ReflectionsFilterView: View {
                     DatePicker(
                         "From",
                         selection: viewModel.fromDateBinding,
+                        in: ...viewModel.reviewFilter.toDate,
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.compact)
@@ -89,6 +90,7 @@ struct ReflectionsFilterView: View {
                     DatePicker(
                         "To",
                         selection: viewModel.toDateBinding,
+                        in: viewModel.reviewFilter.fromDate...,
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.compact)

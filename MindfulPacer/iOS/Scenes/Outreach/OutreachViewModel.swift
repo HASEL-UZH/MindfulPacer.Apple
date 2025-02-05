@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MessageUI
 
 // MARK: - OutreachViewModel
 
@@ -19,10 +20,21 @@ class OutreachViewModel {
     
     // MARK: - Published Properties
     
+    var activeSheet: OutreachSheet?
+
     var blogArticles: [BlogArticle] = []
+    var recentArticles: [BlogArticle] = []
     var isFetchingArticles: Bool = false
     var fetchErrorMessage: String?
+    var mailResult: Result<MFMailComposeResult, Error>?
 
+    var contactSupportRecipient: String = "support@mindfulpacer.ch"
+    var contactSupportSubject: String = "MindfulPacer - Feedback"
+    
+    var isGermanLanguage: Bool {
+        Locale.current.language.languageCode?.identifier == "de"
+    }
+    
     // MARK: - Initialization
     
     init(fetchBlogArticlesUseCase: FetchBlogArticlesUseCase) {
@@ -33,6 +45,12 @@ class OutreachViewModel {
     
     func onViewFirstAppear() {
         fetchBlogArticles()
+    }
+    
+    // MARK: - Presentation
+    
+    func presentSheet(_ sheet: OutreachSheet) {
+        activeSheet = sheet
     }
     
     // MARK: - Private Methods
@@ -49,6 +67,7 @@ class OutreachViewModel {
             do {
                 let articles = try await fetchBlogArticlesUseCase.execute(category: nil)
                 self.blogArticles = articles
+                self.recentArticles = Array(self.blogArticles.prefix(2))
             } catch {
                 self.fetchErrorMessage = "DEBUG: Failed to fetch articles. Please try again."
             }

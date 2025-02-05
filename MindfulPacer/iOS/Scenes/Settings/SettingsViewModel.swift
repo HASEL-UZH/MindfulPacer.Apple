@@ -39,7 +39,7 @@ enum Theme: String, CaseIterable, Identifiable {
             "Always use dark mode"
         }
     }
-
+    
     var colorScheme: ColorScheme? {
         switch self {
         case .system:
@@ -56,28 +56,6 @@ enum Theme: String, CaseIterable, Identifiable {
     }
 }
 
-// MARK: - RoadmapFetchError
-
-enum RoadmapFetchError: LocalizedError {
-    case noInternetConnection
-    case serverError
-    case decodingError
-    case unknownError
-    
-    var errorDescription: String? {
-        switch self {
-        case .noInternetConnection:
-            return "No internet connection. Please check your Wi-Fi or cellular network."
-        case .serverError:
-            return "Unable to fetch the roadmap. Please try again later."
-        case .decodingError:
-            return "Failed to decode the roadmap data."
-        case .unknownError:
-            return "An unknown error occurred. Please try again."
-        }
-    }
-}
-
 // MARK: - SettingsViewModel
 
 @MainActor
@@ -85,9 +63,6 @@ enum RoadmapFetchError: LocalizedError {
 class SettingsViewModel {
     
     // MARK: - Dependencies
-    
-    private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
-    private let fetchRoadmapUseCase: FetchRoadmapUseCase
     
     // MARK: - Published Properties
     
@@ -102,6 +77,9 @@ class SettingsViewModel {
     var fetchErrorMessage: String?
     
     var isExpandedModeOfUseOn: Bool = false
+    
+    var contactSupportRecipient: String = "support@mindfulpacer.ch"
+    var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -131,9 +109,6 @@ class SettingsViewModel {
         Model Identifier: \(modelIdentifier)
         """
     }
-    
-    var contactSupportRecipient: String = "support@mindfulpacer.ch"
-    var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     // MARK: Private Properties
     
@@ -180,19 +155,11 @@ class SettingsViewModel {
     
     // MARK: - Initialization
     
-    init(
-        checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase,
-        fetchRoadmapUseCase: FetchRoadmapUseCase
-    ) {
-        self.checkInternetConnectivityUseCase = checkInternetConnectivityUseCase
-        self.fetchRoadmapUseCase = fetchRoadmapUseCase
-    }
+    init() {}
     
     // MARK: - View Events
     
-    func onViewAppear() {
-        fetchRoadmap()
-    }
+    func onViewAppear() {}
     
     // MARK: - Presentation
     
@@ -205,38 +172,6 @@ class SettingsViewModel {
     func setModeOfUse(_ modeOfUse: ModeOfUse) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
     }
-        
+    
     // MARK: - Private Methods
-            
-    private func fetchRoadmap() {
-        let fetchRoadmapUseCase = self.fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
-        let checkInternetConnectivityUseCase = self.checkInternetConnectivityUseCase // TODO: Temporary fix, find the root cause of the error
-        
-        Task { [weak self] in
-            guard let self = self else { return }
-            
-            self.isInternetConnected = await checkInternetConnectivityUseCase.execute()
-            self.isFetchingRoadmap = true
-            
-            guard self.isInternetConnected else {
-                self.fetchErrorMessage = RoadmapFetchError.noInternetConnection.localizedDescription
-                self.isFetchingRoadmap = false
-                return
-            }
-            
-            self.isFetchingRoadmap = true
-            self.fetchErrorMessage = nil
-            
-            do {
-                let roadmapItems = try await fetchRoadmapUseCase.execute()
-                self.roadmapItems = roadmapItems
-            } catch let error as RoadmapFetchError {
-                self.fetchErrorMessage = error.localizedDescription
-            } catch {
-                self.fetchErrorMessage = RoadmapFetchError.unknownError.localizedDescription
-            }
-            
-            self.isFetchingRoadmap = false
-        }
-    }
 }

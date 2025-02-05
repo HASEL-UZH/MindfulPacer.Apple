@@ -24,11 +24,16 @@ class DefaultFetchBlogArticlesUseCase: FetchBlogArticlesUseCase {
 
     func execute(category: BlogCategory? = nil) async throws -> [BlogArticle] {
         let articles = try await repository.getBlogArticles()
+
+        let filteredArticles: [BlogArticle]
         
         if let category = category {
-            return articles.filter { $0.category == category }
+            filteredArticles = articles.filter { $0.categories.contains(category) }
+        } else {
+            filteredArticles = articles
         }
-        
-        return articles
+
+        print("DEBUGY:", filteredArticles.map { $0.imageURL?.absoluteString })
+        return filteredArticles.sorted { $0.publicationDate > $1.publicationDate }
     }
 }

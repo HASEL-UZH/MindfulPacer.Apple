@@ -56,7 +56,7 @@ struct RootView: View {
             
             OutreachView()
                 .tabItem {
-                    Label("Outreach", systemImage: "newspaper")
+                    Label("Outreach", systemImage: "person.2.wave.2.fill")
                 }
                 .tag(Tab.outreach)
             

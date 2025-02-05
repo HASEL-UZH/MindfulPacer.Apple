@@ -108,6 +108,18 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             ReflectionsFilterViewModel(fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase())
         }
     }
+    
+    // MARK: - Roadmap
+    
+    @MainActor
+    var roadMapViewModel: Factory<RoadmapViewModel> {
+        self {
+            RoadmapViewModel(
+                checkInternetConnectivityUseCase: UseCasesContainer.shared.checkInternetConnectivityUseCase(),
+                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase()
+            )
+        }
+    }
 
     // MARK: - Reminder
 
@@ -129,10 +141,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
-            SettingsViewModel(
-                checkInternetConnectivityUseCase: UseCasesContainer.shared.checkInternetConnectivityUseCase(),
-                fetchRoadmapUseCase: UseCasesContainer.shared.fetchRoadmapUseCase()
-            )
+            SettingsViewModel()
         }
     }
 }

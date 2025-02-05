@@ -30,7 +30,6 @@ extension CreateReminderView {
                             reminderType
                             threshold
                             interval
-                            notificationPreview
                             
                             if viewModel.mode == .edit {
                                 deleteButton

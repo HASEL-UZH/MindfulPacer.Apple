@@ -17,10 +17,10 @@ struct ReflectionFilter: Equatable {
     var selectedSubactivities: [Subactivity] = []
     var selectedMoods: [Mood] = []
     var triggeredCrash: Bool = false
-
+    
     var fromDate: Date = Calendar.current.date(byAdding: .weekOfMonth, value: -2, to: Date()) ?? Date()
     var toDate: Date = Date()
-
+    
     var activeFilterCount: Int {
         var count = 0
         count += selectedActivities.count
@@ -34,7 +34,7 @@ struct ReflectionFilter: Equatable {
 enum ReflectionSorting {
     case dateAscending
     case dateDescending
-
+    
     var comparator: (Reflection, Reflection) -> Bool {
         switch self {
         case .dateAscending: return { $0.date < $1.date }
@@ -50,39 +50,39 @@ enum ReflectionSorting {
 class ReflectionsFilterViewModel {
     
     // MARK: - Dependencies
-
+    
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-
+    
     // MARK: - Published Properties
-
+    
     var triggeredCrashBinding: Binding<Bool> {
         Binding(
             get: { self.reviewFilter.triggeredCrash },
             set: { self.updateTriggeredCrash($0) }
         )
     }
-
+    
     var reviewSortingBinding: Binding<ReflectionSorting> {
         Binding(
             get: { self.reviewSorting },
             set: { self.updateSorting($0) }
         )
     }
-
+    
     var fromDateBinding: Binding<Date> {
         Binding(
             get: { self.reviewFilter.fromDate },
             set: { self.updateFromDate($0) }
         )
     }
-
+    
     var toDateBinding: Binding<Date> {
         Binding(
             get: { self.reviewFilter.toDate },
             set: { self.updateToDate($0) }
         )
     }
-
+    
     var activities: [Activity] = []
     var subactivities: [Subactivity] {
         activities.flatMap { $0.subactivities ?? [] }
@@ -93,43 +93,43 @@ class ReflectionsFilterViewModel {
     var filterButtonTitle: String {
         reviewFilter.activeFilterCount == 0 ? "Filters" : "Filters (\(reviewFilter.activeFilterCount))"
     }
-
+    
     var selectedFilterActivitiesSummary: String {
         reviewFilter.selectedActivities.map { $0.name }.joined(separator: ", ")
     }
-
+    
     var selectedFilterSubactivitiesSummary: String {
         reviewFilter.selectedSubactivities.map { $0.name }.joined(separator: ", ")
     }
-
+    
     var selectedFilterMoodsSummary: String {
         reviewFilter.selectedMoods.map { $0.text }.joined(separator: ", ")
     }
-
+    
     // MARK: - Private Properties
-
+    
     private var filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
     private var cancellables = Set<AnyCancellable>()
-
+    
     // MARK: - Initialization
-
+    
     init(fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase) {
         self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
     }
-
+    
     // MARK: - View Lifecycle
-
+    
     func onViewFirstAppear() {
         fetchDefaultReflectionActivities()
     }
-
+    
     func setPublisher(_ publisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?) {
         self.filterAndSortingPublisher = publisher
         bindToPublisher()
     }
-
+    
     // MARK: - User Actions
-
+    
     func resetFilters() {
         if reviewFilter != ReflectionFilter() || reviewSorting != .dateDescending {
             reviewFilter = ReflectionFilter()
@@ -137,43 +137,43 @@ class ReflectionsFilterViewModel {
             publishChanges()
         }
     }
-
+    
     func toggleFilterActivity(_ activity: Activity) {
         toggleSelection(in: &reviewFilter.selectedActivities, item: activity)
         publishChanges()
     }
-
+    
     func toggleFilterSubactivity(_ subactivity: Subactivity) {
         toggleSelection(in: &reviewFilter.selectedSubactivities, item: subactivity)
         publishChanges()
     }
-
+    
     func toggleFilterMood(_ mood: Mood) {
         toggleSelection(in: &reviewFilter.selectedMoods, item: mood)
         publishChanges()
     }
-
+    
     func toggleTriggeredCrash() {
         reviewFilter.triggeredCrash.toggle()
         publishChanges()
     }
-
+    
     func updateTriggeredCrash(_ isOn: Bool) {
         reviewFilter.triggeredCrash = isOn
         publishChanges()
     }
-
+    
     func updateSorting(_ sorting: ReflectionSorting) {
         reviewSorting = sorting
         publishChanges()
     }
-
+    
     // MARK: - Private Methods
-
+    
     private func fetchDefaultReflectionActivities() {
         self.activities = fetchDefaultActivitiesUseCase.execute() ?? []
     }
-
+    
     private func bindToPublisher() {
         filterAndSortingPublisher?
             .sink { [weak self] (filter, sorting) in
@@ -182,11 +182,11 @@ class ReflectionsFilterViewModel {
             }
             .store(in: &cancellables)
     }
-
+    
     private func publishChanges() {
         filterAndSortingPublisher?.send((reviewFilter, reviewSorting))
     }
-
+    
     private func toggleSelection<T: Equatable>(in list: inout [T], item: T) {
         if let index = list.firstIndex(of: item) {
             list.remove(at: index)
@@ -194,14 +194,22 @@ class ReflectionsFilterViewModel {
             list.append(item)
         }
     }
-
+    
     private func updateFromDate(_ fromDate: Date) {
-        reviewFilter.fromDate = fromDate
+        if fromDate > reviewFilter.toDate {
+            reviewFilter.fromDate = reviewFilter.toDate
+        } else {
+            reviewFilter.fromDate = fromDate
+        }
         publishChanges()
     }
-
+    
     private func updateToDate(_ toDate: Date) {
-        reviewFilter.toDate = toDate
+        if toDate < reviewFilter.fromDate {
+            reviewFilter.toDate = reviewFilter.fromDate
+        } else {
+            reviewFilter.toDate = toDate
+        }
         publishChanges()
     }
 }

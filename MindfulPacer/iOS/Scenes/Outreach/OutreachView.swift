@@ -7,45 +7,241 @@
 
 import SwiftUI
 
+// MARK: - Presentation Enums
+
+enum OutreachSheet: Identifiable {
+    case mailView(recipient: String, subject: String, body: String?)
+    case roadmap
+
+    var id: Int {
+        switch self {
+        case .mailView: 0
+        case .roadmap: 1
+        }
+    }
+}
+
+enum OutreachViewNavigationDestination: Hashable {
+    case articlesList
+}
+
 // MARK: - OutreachView
 
 struct OutreachView: View {
     
     // MARK: Properties
     
+    @Environment(\.openURL) private var openURL
     @State private var viewModel: OutreachViewModel = ScenesContainer.shared.outreachViewModel()
     
     // MARK: Body
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(viewModel.blogArticles) { article in
-                        BlogArticleCell(article: article)
+            RoundedList {
+                Section {
+                    intro
+                }
+                
+                if viewModel.isGermanLanguage {
+                    Section {
+                        community
                     }
                 }
-                .padding([.horizontal, .bottom])
+                
+                Section {
+                    articles
+                }
+                
+                Section {
+                    website
+                    roadmap
+                    contactUs
+                } header: {
+                    Text("Learn More")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
             }
             .navigationTitle("Outreach")
-            .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+            .navigationDestination(
+                for: OutreachViewNavigationDestination.self,
+                destination: navigationDestination
+            )
+            .sheet(item: $viewModel.activeSheet) { sheet in
+                sheetContent(for: sheet)
             }
-            //            .navigationDestination(for: HomeViewNavigationDestination.self, destination: navigationDestination)
-            //            .sheet(item: $viewModel.activeSheet, onDismiss: {
-            //                withAnimation {
-            //                    viewModel.onSheetDismissed()
-            //                }
-            //            }, content: { sheet in
-            //                sheetContent(for: sheet)
-            //            })
-            //            .toast(item: $viewModel.activeToast) { toast in
-            //                toastContent(for: toast)
-            //            }
-            .onViewFirstAppear {
-                viewModel.onViewFirstAppear()
+        }
+        .onViewFirstAppear {
+            viewModel.onViewFirstAppear()
+        }
+    }
+    
+    // MARK: Navigation Destination
+    
+    @ViewBuilder
+    private func navigationDestination(for destination: OutreachViewNavigationDestination) -> some View {
+        switch destination {
+        case .articlesList:
+            ArticlesListView(viewModel: viewModel)
+        }
+    }
+    
+    // MARK: Sheets
+
+    @ViewBuilder
+    private func sheetContent(for sheet: OutreachSheet) -> some View {
+        switch sheet {
+        case .mailView(let recipient, let subject, let body):
+            MailView(
+                result: $viewModel.mailResult,
+                recipient: recipient,
+                subject: subject,
+                body: body
+            )
+            .presentationCornerRadius(16)
+        case .roadmap:
+            RoadmapView()
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
+        }
+    }
+    
+    // MARK: Intro
+    
+    private var intro: some View {
+        Text("Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer.")
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground))
+    }
+    
+    // MARK: Community
+    
+    private var community: some View {
+        IconLabelGroupBox(
+            label:
+                IconLabel(
+                    icon: "person.3.fill",
+                    title: "Community",
+                    labelColor: .brandPrimary,
+                    background: true
+                ),
+            description:
+                Text("Discuss pacing strategies and insights with the community.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        ) {
+            Button {
+                openURL(URL(string: "https://www.mindfulpacer.ch/lcs-de")!)
+            } label: {
+                IconLabel(icon: "link", title: "Long Covid Schweiz", labelColor: .brandPrimary)
+                    .font(.subheadline.weight(.semibold))
             }
+
+            Button {
+                openURL(URL(string: "https://www.mindfulpacer.ch/lcs-kids-de")!)
+            } label: {
+                IconLabel(icon: "link", title: "Long Covid Kids Schweiz", labelColor: .brandPrimary)
+                    .font(.subheadline.weight(.semibold))
+            }
+        }
+    }
+    
+    // MARK: Articles
+    
+    private var articles: some View {
+        Section {
+            NavigationLink(value: OutreachViewNavigationDestination.articlesList) {
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            icon: "newspaper",
+                            title: "Articles",
+                            labelColor: .brandPrimary,
+                            background: true
+                        )
+                ) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            if viewModel.isFetchingArticles {
+                                ForEach(0 ..< 5) { _ in
+                                    BlogArticleCell(
+                                        article: BlogArticle.mockArticle,
+                                        showImage: false
+                                    )
+                                    .frame(width: 300)
+                                    .redacted(reason: .placeholder)
+                                }
+                            } else {
+                                ForEach(viewModel.recentArticles) { article in
+                                    BlogArticleCell(
+                                        article: article,
+                                        showImage: false
+                                    )
+                                    .frame(width: 300)
+                                }
+                            }
+                        }
+                        .scrollTargetLayout()
+                    }
+                    .scrollTargetBehavior(.viewAligned)
+                } accessoryIndicator: {
+                    Icon(name: "chevron.right", color: Color(.systemGray2))
+                        .font(.subheadline.weight(.semibold))
+                }
+            }
+        }
+    }
+    
+    // MARK: Website
+    
+    private var website: some View {
+        Button {
+            openURL(URL(string: "https://mindfulpacer.ch")!)
+        } label: {
+            RoundedListCell(
+                image: "MindfulPacer Icon",
+                title: "Our Website",
+                accessoryIndicatorIcon: "link"
+            )
+        }
+    }
+    
+    // MARK: Contact Us
+    
+    private var contactUs: some View {
+        Button {
+            viewModel.presentSheet(
+                .mailView(
+                    recipient: viewModel.contactSupportRecipient,
+                    subject: viewModel.contactSupportSubject,
+                    body: nil
+                )
+            )
+        } label: {
+            RoundedListCell(
+                icon: "envelope",
+                title: "Contact Us",
+                accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+    
+    // MARK: Roadmap
+    
+    private var roadmap: some View {
+        Button {
+            viewModel.presentSheet(.roadmap)
+        } label: {
+            RoundedListCell(
+                icon: "map",
+                title: "Roadmap",
+                description: "View upcoming features",
+                accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
         }
     }
 }

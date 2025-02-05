@@ -13,74 +13,93 @@ struct BlogArticleCell: View {
     
     // MARK: Properties
     
+    @Environment(\.openURL) private var openURL
+    
     let article: BlogArticle
+    var cardColor: Color = Color(.tertiarySystemGroupedBackground)
+    var showImage: Bool = true
     
     // MARK: Body
     
     var body: some View {
-        IconLabelGroupBox(
-            label:
-                IconLabel(title: article.title),
-            description:
-                Text(article.excerpt)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        ) {
+        Card(backgroundColor: cardColor) {
             VStack(spacing: 16) {
-                if let imageURL = article.imageURL {
-                    AsyncImage(url: imageURL) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 80, height: 80)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                        case .failure:
-                            placeholderImage()
-                        case .empty:
-                            ProgressView()
-                        @unknown default:
-                            placeholderImage()
+                Group {
+                    HStack {
+                        IconLabel(title: article.title)
+                            .font(.title3.weight(.semibold))
+                            .lineLimit(2)
+                        
+                        Spacer(minLength: 16)
+                        
+                        Menu {
+                            Button {
+                                openURL(article.link)
+                            } label: {
+                                Label("Read Full Article", systemImage: "link")
+                            }
+                            
+                            ShareLink(item: article.link) {
+                                Label("Share Article", systemImage: "square.and.arrow.up")
+                            }
+                        } label: {
+                            Icon(name: "ellipsis")
                         }
                     }
-                    .frame(width: 80, height: 80)
+                    
+                    Text("Published on \(article.publicationDate.formatted(.dateTime.month().year().day()))")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Color.secondary)
+                    
+                    Text(article.excerpt)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(3)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                if showImage {
+                    if let imageURL = article.imageURL {
+                        AsyncImage(url: imageURL) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxHeight: 256)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .shadow(radius: 3)
+                            case .failure:
+                                EmptyView()
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 80, height: 80)
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                        .transition(.opacity)
+                    }
                 }
                 
-                HStack(spacing: 16) {
-                    IconLabel(
-                        icon: article.category.icon,
-                        title: article.category.rawValue,
-                        labelColor: article.category.color
-                    )
-                    
-                    IconLabel(
-                        icon: "calendar",
-                        title: article.publicationDate.formatted(.dateTime.month().year().day()),
-                        labelColor: .brandPrimary
-                    )
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(article.categories, id: \.rawValue) { category in
+                            IconLabel(
+                                icon: category.icon,
+                                title: category.rawValue,
+                                labelColor: category.color
+                            )
+                        }
+                       
+                        Spacer()
+                    }
+                    .font(.footnote.weight(.semibold))
+                    .iconLabelStyle(.pill)
                 }
-                .font(.subheadline.weight(.semibold))
-                .iconLabelStyle(.pill)
             }
         }
-        .iconLabelGroupBoxStyle(.divider)
-    }
-    
-    // MARK: Placeholder Image
-    
-    @ViewBuilder
-    private func placeholderImage() -> some View {
-        RoundedRectangle(cornerRadius: 10)
-            .fill(Color.gray.opacity(0.3))
-            .frame(width: 80, height: 80)
-            .overlay {
-                Image(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.gray)
-            }
     }
 }
 
@@ -88,11 +107,15 @@ struct BlogArticleCell: View {
 
 #Preview {
     BlogArticleCell(article: BlogArticle(
-        title: "The Power of Mindfulness",
-        imageURL: URL(string: "https://example.com/image.jpg"),
-        excerpt: "Mindfulness can improve your overall well-being by reducing stress and increasing focus...",
+        title: "MindfulPacer Projekt-Statusupdate Q1'2025",
+        link: URL(string: "https://mindfulpacer.ch/mindfulpacer-projekt-statusupdate-q12025/")!,
+        author: "André Meyer",
+        imageURL: URL(string: "https://mindfulpacer.ch/wp-content/uploads/2025/01/Home-Dark-472x1024.png"),
+        excerpt: "Hallo zusammen! Gerne möchte ich die Gelegenheit nutzen, um (endlich) ein Statusupdate zum MindfulPacer-Projekt zu geben...",
+        body: "<p>Hallo zusammen!</p><p>Gerne möchte ich...</p>",
         publicationDate: Date(),
-        category: .mindfulPacer
+        categories: [.mindfulPacer, .forschung],
+        guid: "https://mindfulpacer.ch/?p=11825"
     ))
     .padding()
 }

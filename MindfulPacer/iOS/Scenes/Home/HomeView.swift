@@ -58,10 +58,8 @@ struct HomeView: View {
                     ReflectionsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
                     RemindersWidget(viewModel: viewModel)
-                    Spacer()
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
+                .padding([.horizontal, .bottom])
             }
             .navigationTitle("Home")
             .background {

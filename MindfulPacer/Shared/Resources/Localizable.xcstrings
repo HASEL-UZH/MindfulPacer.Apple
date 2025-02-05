@@ -63,6 +63,9 @@
     "Are you sure you want to delete this Reminder? This action cannot be undone." : {
 
     },
+    "Articles" : {
+
+    },
     "Ascending" : {
 
     },
@@ -94,6 +97,9 @@
 
     },
     "Descending" : {
+
+    },
+    "Discuss pacing strategies and insights with the community." : {
 
     },
     "Do **NOT** solely rely on MindfulPacer for pacing and managing your activities and energy." : {
@@ -221,6 +227,15 @@
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
 
     },
+    "Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer." : {
+
+    },
+    "Published on %@" : {
+
+    },
+    "Read Full Article" : {
+
+    },
     "Reflections" : {
 
     },
@@ -255,6 +270,9 @@
 
     },
     "Settings" : {
+
+    },
+    "Share Article" : {
 
     },
     "Share this report to help us troubleshoot issues." : {
