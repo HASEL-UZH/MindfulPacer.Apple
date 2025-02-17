@@ -32,6 +32,19 @@ enum Period: String, CaseIterable {
         }
     }
     
+    var displayName: String {
+        switch self {
+        case .oneHour:
+            "1 Hour"
+        case .twoHours:
+            "2 Hours"
+        case .day:
+            "Day"
+        case .week:
+            "Week"
+        }
+    }
+    
     var description: String {
         switch self {
         case .oneHour:
@@ -42,6 +55,15 @@ enum Period: String, CaseIterable {
             return "day"
         case .week:
             return "week"
+        }
+    }
+    
+    var granularity: ChartGranularity {
+        switch self {
+        case .oneHour: .minute
+        case .twoHours: .minute
+        case .day: .hour
+        case .week: .day
         }
     }
 }
@@ -430,11 +452,11 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 let sortedStepSamples = stepSamples.sorted { $0.endDate < $1.endDate }
                 let sortedHrSamples = hrSamples.sorted { $0.endDate < $1.endDate }
                 
-                var finalResults: [MissedReflection] = []
+                var rawResults: [MissedReflection] = []
                 
+                // Process each reminder.
                 for reminder in reminders {
                     let threshold = Double(reminder.threshold)
-                    
                     switch reminder.measurementType {
                     case .steps:
                         var leftIndex = 0
@@ -450,32 +472,49 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                             }
                             
                             if currentSum >= threshold {
-                                finalResults.append(MissedReflection(reminder, date: right.endDate))
+                                rawResults.append(MissedReflection(reminder, date: right.endDate))
                             }
                         }
                         
                     case .heartRate:
                         let aboveThreshold = sortedHrSamples.filter { $0.stepCount >= threshold }
                         var intervals: [(start: Date, end: Date)] = []
-                        
                         for sample in aboveThreshold {
                             intervals.append((sample.startDate, sample.endDate))
                         }
-                        
                         let merged = self.mergeIntervals(intervals)
                         for intervalRange in merged {
                             let duration = intervalRange.end.timeIntervalSince(intervalRange.start)
                             if duration >= reminder.interval.timeInterval {
-                                finalResults.append(MissedReflection(reminder, date: intervalRange.end))
+                                rawResults.append(MissedReflection(reminder, date: intervalRange.end))
                             }
                         }
                     }
                 }
                 
-                let actionedIDs = Set(actionedMissedReflectionIDs)
-                let filteredResults = finalResults.filter { !actionedIDs.contains($0.id) }
+                // --- Filtering Logic Starts Here ---
+                // Partition raw results by measurement type.
+                let hrResults = rawResults.filter { $0.measurementType == .heartRate }
+                let stepsResults = rawResults.filter { $0.measurementType == .steps }
                 
-                completion(.success(filteredResults))
+                // Inline helper to filter non-strong reflections:
+                // For non-strong (orange/yellow) reflections, if two occur within ¼ of the interval,
+                // keep only the one with the higher "seriousness score" (threshold * interval.timeInterval).
+                
+                let filteredHR = self.filterResults(hrResults).sorted { $0.date < $1.date }
+                let filteredSteps = self.filterResults(stepsResults).sorted { $0.date < $1.date }
+                
+                // Limit each to the last 5 reflections.
+                let finalHR = Array(filteredHR.suffix(5))
+                let finalSteps = Array(filteredSteps.suffix(5))
+                
+                let combinedResults = (finalHR + finalSteps).sorted { $0.date < $1.date }
+                // --- Filtering Logic Ends Here ---
+                
+                let actionedIDs = Set(actionedMissedReflectionIDs)
+                let finalResults = combinedResults.filter { !actionedIDs.contains($0.id) }
+                
+                completion(.success(finalResults))
             }
         }
     }
@@ -634,5 +673,32 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
         merged.append(current)
         return merged
+    }
+    
+    private func filterResults(_ reflections: [MissedReflection]) -> [MissedReflection] {
+        // Always include strong ones.
+        let strong = reflections.filter { $0.reminderType == .strong }
+        
+        // For non-strong ones, sort by date.
+        let nonStrong = reflections.filter { $0.reminderType != .strong }
+            .sorted { $0.date < $1.date }
+        var filteredNonStrong: [MissedReflection] = []
+        for reflection in nonStrong {
+            if let last = filteredNonStrong.last {
+                let quarterInterval = reflection.interval.timeInterval / 4.0
+                if reflection.date.timeIntervalSince(last.date) < quarterInterval {
+                    let lastScore = Double(last.threshold) * last.interval.timeInterval
+                    let currentScore = Double(reflection.threshold) * reflection.interval.timeInterval
+                    if currentScore > lastScore {
+                        filteredNonStrong[filteredNonStrong.count - 1] = reflection
+                    }
+                } else {
+                    filteredNonStrong.append(reflection)
+                }
+            } else {
+                filteredNonStrong.append(reflection)
+            }
+        }
+        return strong + filteredNonStrong
     }
 }

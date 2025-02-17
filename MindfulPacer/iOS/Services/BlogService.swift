@@ -21,7 +21,7 @@ class BlogService: NSObject, BlogServiceProtocol, XMLParserDelegate, @unchecked 
     
     static let shared = BlogService()
     
-    private let feedURL = URL(string: "https://mindfulpacer.ch/blog/feed/")!
+    private let feedURL = URL(string: "https://mindfulpacer.ch/feed/gn")!
     private var parsedItems: [RSSItem] = []
     private var currentItem: RSSItem?
     private var currentElementName = ""

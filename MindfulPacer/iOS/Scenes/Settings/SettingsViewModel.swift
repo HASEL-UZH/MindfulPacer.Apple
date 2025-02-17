@@ -291,7 +291,7 @@ class SettingsViewModel {
     }
     
     private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
-        let fileName = selectedExportDataModel.fileName + selectedExportFileFormat.fileExtension
+        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + selectedExportFileFormat.fileExtension
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         
         var csvText = ""

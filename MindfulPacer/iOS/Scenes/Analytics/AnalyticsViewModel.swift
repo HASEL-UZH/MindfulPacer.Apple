@@ -10,12 +10,24 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-extension Calendar {
-    func endOfDay(for date: Date) -> Date {
-        let startOfDay = self.startOfDay(for: date)
-        return self.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDay)!
-    }
+// MARK: - ChartDataItem
+
+struct ChartDataItem: Identifiable, Equatable {
+    let id = UUID()
+    let startDate: Date
+    let endDate: Date
+    let value: Double
 }
+
+// MARK: - ChartGranularity
+
+enum ChartGranularity {
+    case day
+    case hour
+    case minute
+}
+
+// MARK: - AnalyticsViewModel
 
 @Observable
 @MainActor
@@ -33,19 +45,27 @@ class AnalyticsViewModel {
     
     var activeSheet: AnalyticsViewSheet?
 
-    var reviewsInPeriod: [Reflection] = []
+    var reflectionsInPeriod: [ReflectionBucket] = []
     var reminders: [Reminder] = []
     
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
     }
-    var selectedMeasurementType: MeasurementType = .heartRate {
+    var selectedMeasurementType: MeasurementType = .steps {
         didSet { refreshChart() }
     }
     
     var heartRateChartData: [ChartDataItem] = []
     var stepsChartData: [ChartDataItem] = []
-    var rawSelectedDate: Date?
+    
+    var selectedDate: Date? {
+        didSet {
+            selectedChartDataItem = chartData.first(where: { midDate(for: $0) == selectedDate })
+        }
+    }
+    
+    var selectedChartDataItem: ChartDataItem?
+    var selectedReflectionBucket: ReflectionBucket?
     
     var chartThresholds: [(reminderType: Reminder.ReminderType, threshold: Int)] = []
     
@@ -53,24 +73,84 @@ class AnalyticsViewModel {
         selectedMeasurementType == .heartRate ? heartRateChartData : stepsChartData
     }
     
-    var chartColor: Color {
-        selectedMeasurementType == .heartRate ? .pink : .teal
-    }
-    
-    var selectedData: ChartDataItem? {
-        parseSelectedData(from: chartData, in: rawSelectedDate, for: selectedPeriod)
-    }
-    
     var minValue: Double {
         chartData.map { $0.value }.min() ?? 0
     }
     
-    var maxValue: Double {
-        chartData.map { $0.value }.max() ?? 0
+    var xAxisMarkDates: [Date] {
+        guard let firstDataPoint = chartData.first,
+              let lastDataPoint = chartData.last else {
+            return []
+        }
+        let domain = firstDataPoint.startDate...lastDataPoint.endDate
+        
+        var dates: [Date] = []
+        let calendar = Calendar.current
+        var currentDate = domain.lowerBound
+        
+        let intervalComponents: DateComponents
+        switch selectedPeriod {
+        case .oneHour:
+            intervalComponents = DateComponents(minute: 10)
+        case .twoHours:
+            intervalComponents = DateComponents(minute: 15)
+        case .day:
+            intervalComponents = DateComponents(hour: 2)
+        case .week:
+            intervalComponents = DateComponents(day: 1)
+        }
+        
+        while currentDate <= domain.upperBound {
+            dates.append(currentDate)
+            if let nextDate = calendar.date(byAdding: intervalComponents, to: currentDate) {
+                currentDate = nextDate
+            } else {
+                break
+            }
+        }
+        
+        return dates
     }
     
-    var average: Double {
-        chartData.map { $0.value }.average
+    var snappedSelectedDate: Binding<Date?> {
+        Binding<Date?>(
+            get: { self.selectedDate },
+            set: { newDate in
+                guard let newDate = newDate else {
+                    self.selectedDate = nil
+                    return
+                }
+                
+                if let nearest = self.chartData.min(by: {
+                    abs(self.midDate(for: $0).timeIntervalSince(newDate)) < abs(self.midDate(for: $1).timeIntervalSince(newDate))
+                }) {
+                    let difference = abs(self.midDate(for: nearest).timeIntervalSince(newDate))
+                    let threshold: TimeInterval
+                    switch self.granularity {
+                    case .day:
+                        threshold = 0.5 * 24 * 3600
+                    case .hour:
+                        threshold = 0.5 * 3600
+                    case .minute:
+                        threshold = 7.5 * 60
+                    }
+                    
+                    if difference <= threshold {
+                        self.selectedDate = self.midDate(for: nearest)
+                    } else {
+                        self.selectedDate = nil
+                    }
+                }
+            }
+        )
+    }
+    
+    var xDomain: ClosedRange<Date> {
+        let dates = chartData.map { midDate(for: $0) }
+        guard let minDate = dates.min(), let maxDate = dates.max() else {
+            return Date()...Date()
+        }
+        return minDate...maxDate
     }
     
     var chartEmptyStateImage: String {
@@ -85,30 +165,19 @@ class AnalyticsViewModel {
         selectedPeriod == .week ? .dateTime.weekday(.abbreviated).month(.abbreviated).day() : .dateTime.weekday(.abbreviated).hour().minute()
     }
     
-    var intervalMinutes: Int {
+    var chartDescriptionText: String {
+        "\(selectedMeasurementType.rawValue) data within last \(selectedPeriod.description)."
+    }
+    
+    var granularity: ChartGranularity {
         switch selectedPeriod {
-        case .oneHour, .twoHours:
-            return 5
-        case .day:
-            return 60
-        case .week:
-            return 1440
+        case .oneHour: .hour
+        case .twoHours: .hour
+        case .day: .hour
+        case .week: .day
         }
     }
     
-    var chartStartDate: Date {
-        selectedPeriod.startDate
-    }
-
-    var chartEndDate: Date {
-        switch selectedPeriod {
-        case .oneHour, .twoHours, .day:
-            return Date()
-        case .week:
-            return Calendar.current.endOfDay(for: Date())
-        }
-    }
-
     // MARK: - Initialization
     
     init(
@@ -140,13 +209,6 @@ class AnalyticsViewModel {
     
     // MARK: - User Actions
     
-    func selectedDateChanged(oldValue: Date?, newValue: Date?) {
-        guard let selectedDate = newValue else { return }
-        if let selectedData = parseSelectedData(from: chartData, in: selectedDate, for: selectedPeriod) {
-            print("Selected data: \(selectedData)")
-        }
-    }
-    
     // MARK: - Presentation
     
     func presentSheet(_ sheet: AnalyticsViewSheet) {
@@ -158,11 +220,7 @@ class AnalyticsViewModel {
     }
     
     // MARK: - Chart Related
-    
-    func chartValueForReflection(_ reflection: SchemaV1.Reflection) -> Double {
-        return minValue - 10
-    }
-    
+
     func getXUnitForPeriod(_ period: Period) -> Calendar.Component {
         switch period {
         case .oneHour, .twoHours:
@@ -174,66 +232,8 @@ class AnalyticsViewModel {
         }
     }
     
-    func generateAxisMarkDates(for domain: ClosedRange<Date>) -> [Date] {
-        var dates: [Date] = []
-        let calendar = Calendar.current
-        var currentDate = domain.lowerBound
-
-        let intervalComponents: DateComponents
-        switch selectedPeriod {
-        case .oneHour:
-            intervalComponents = DateComponents(minute: 10)
-        case .twoHours:
-            intervalComponents = DateComponents(minute: 15)
-        case .day:
-            intervalComponents = DateComponents(hour: 2)
-        case .week:
-            intervalComponents = DateComponents(day: 1)
-        }
-
-        while currentDate <= domain.upperBound {
-            dates.append(currentDate)
-            if let nextDate = calendar.date(byAdding: intervalComponents, to: currentDate) {
-                currentDate = nextDate
-            } else {
-                break
-            }
-        }
-
-        return dates
-    }
-    
-    func calculateXDomain() -> ClosedRange<Date> {
-        guard let firstDataPoint = chartData.first,
-              let lastDataPoint = chartData.last else {
-            return chartStartDate...chartEndDate
-        }
-        return firstDataPoint.startDate...lastDataPoint.endDate
-    }
-
-    func xPositionForReflection(_ reflection: SchemaV1.Reflection, in chartSize: CGSize) -> CGFloat? {
-        guard let firstDate = chartData.first?.startDate,
-              let lastDate = chartData.last?.startDate else {
-            return nil
-        }
-        
-        let totalTimeInterval = lastDate.timeIntervalSince(firstDate)
-        let reviewTimeInterval = reflection.date.timeIntervalSince(firstDate)
-        
-        guard totalTimeInterval > 0 else { return nil }
-        
-        let xPercentage = reviewTimeInterval / totalTimeInterval
-        return chartSize.width * CGFloat(xPercentage)
-    }
-    
-    func filteredReflectionsForChartDomain() -> [Reflection] {
-        guard let firstDate = chartData.first?.startDate, let lastDate = chartData.last?.startDate else {
-            return []
-        }
-        
-        return reviewsInPeriod.filter { reflection in
-            reflection.date >= firstDate && reflection.date <= lastDate
-        }
+    func midDate(for data: ChartDataItem) -> Date {
+        return data.startDate.addingTimeInterval(data.endDate.timeIntervalSince(data.startDate) / 2)
     }
     
     // MARK: - Private Methods
@@ -270,6 +270,7 @@ class AnalyticsViewModel {
     
     private func refreshChart() {
         chartThresholds = []
+        selectedReflectionBucket = nil
         
         switch selectedMeasurementType {
         case .heartRate:
@@ -281,37 +282,17 @@ class AnalyticsViewModel {
         updateReflectionsInPeriod()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-            self.updateChartThresholds()
+            self.updateChartThresholds() // FIXME: Not updating when you do Home -> Create Review Reminder -> Analytics, the newly added threshold doesn't show
         }
     }
     
     private func updateReflectionsInPeriod() {
-        reviewsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod)
-    }
-    
-    private func parseSelectedData(from data: [ChartDataItem], in selectedDate: Date?, for period: Period) -> ChartDataItem? {
-        guard let selectedDate else { return nil }
-        return data.first {
-            Calendar.current.isDate($0.startDate, equalTo: selectedDate, toGranularity: getGranularity(for: period))
-        }
-    }
-    
-    private func getGranularity(for period: Period) -> Calendar.Component {
-        switch period {
-        case .oneHour, .twoHours:
-            return .minute
-        case .day:
-            return .hour
-        case .week:
-            return .day
-        }
+        reflectionsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod)
     }
     
     private func updateChartThresholds() {
         let maxValue = chartData.map { $0.value }.max() ?? 0
         
-        // Adjust logic to display thresholds based on more reasonable conditions
-        // We use a different multiplier or add a base threshold to ensure visibility when it makes sense
         let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
         
         chartThresholds = reminders

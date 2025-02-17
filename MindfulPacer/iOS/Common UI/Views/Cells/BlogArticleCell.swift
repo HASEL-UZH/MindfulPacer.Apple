@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 // MARK: - BlogArticleCell
 
@@ -17,7 +18,7 @@ struct BlogArticleCell: View {
     
     let article: BlogArticle
     var cardColor: Color = Color(.tertiarySystemGroupedBackground)
-    var showImage: Bool = true
+    var isPreview: Bool = false
     
     // MARK: Body
     
@@ -51,36 +52,24 @@ struct BlogArticleCell: View {
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Color.secondary)
                     
-                    Text(article.excerpt)
-                        .font(.subheadline)
-                        .foregroundStyle(Color.secondary)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(3)
+                    if !isPreview {
+                        Text(article.excerpt)
+                            .font(.subheadline)
+                            .foregroundStyle(Color.secondary)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(3)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                if showImage {
-                    if let imageURL = article.imageURL {
-                        AsyncImage(url: imageURL) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(maxHeight: 256)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .shadow(radius: 3)
-                            case .failure:
-                                EmptyView()
-                            case .empty:
-                                ProgressView()
-                                    .frame(width: 80, height: 80)
-                            @unknown default:
-                                EmptyView()
-                            }
-                        }
+                
+                if let imageURL = article.imageURL {
+                    KFImage(imageURL)
+                        .placeholder { ProgressView().frame(width: 80, height: 80) }
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: isPreview ? 128 : 256)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                         .transition(.opacity)
-                    }
                 }
                 
                 ScrollView(.horizontal, showsIndicators: false) {

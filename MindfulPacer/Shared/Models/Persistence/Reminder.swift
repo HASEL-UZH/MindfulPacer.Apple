@@ -90,6 +90,15 @@ extension Reminder {
             case .steps: .teal
             }
         }
+        
+        var units: String {
+            switch self {
+            case .heartRate:
+                "bpm"
+            case .steps:
+                "steps"
+            }
+        }
     }
 }
 

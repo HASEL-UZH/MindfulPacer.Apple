@@ -41,7 +41,7 @@ struct RootView: View {
         TabView(selection: $viewModel.selectedTab) {
             // TODO: Change to new `Tab` init
             HomeView {
-                viewModel.widgetTapped()
+                viewModel.onWidgetTapped()
             }
             .tabItem {
                 Label("Home", systemImage: "house")

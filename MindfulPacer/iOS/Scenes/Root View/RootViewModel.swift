@@ -101,7 +101,7 @@ class RootViewModel {
     
     // MARK: - User Actions
     
-    func widgetTapped() {
+    func onWidgetTapped() {
         selectedTab = .analytics
     }
     

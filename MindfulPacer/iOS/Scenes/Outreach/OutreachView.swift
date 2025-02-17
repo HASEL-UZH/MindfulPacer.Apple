@@ -43,10 +43,8 @@ struct OutreachView: View {
                     intro
                 }
                 
-                if viewModel.isGermanLanguage {
-                    Section {
-                        community
-                    }
+                Section {
+                    community
                 }
                 
                 Section {
@@ -170,7 +168,7 @@ struct OutreachView: View {
                                 ForEach(0 ..< 5) { _ in
                                     BlogArticleCell(
                                         article: BlogArticle.mockArticle,
-                                        showImage: false
+                                        isPreview: true
                                     )
                                     .frame(width: 300)
                                     .redacted(reason: .placeholder)
@@ -179,7 +177,7 @@ struct OutreachView: View {
                                 ForEach(viewModel.recentArticles) { article in
                                     BlogArticleCell(
                                         article: article,
-                                        showImage: false
+                                        isPreview: true
                                     )
                                     .frame(width: 300)
                                 }
