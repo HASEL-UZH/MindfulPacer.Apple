@@ -482,6 +482,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                         for sample in aboveThreshold {
                             intervals.append((sample.startDate, sample.endDate))
                         }
+                        
                         let merged = self.mergeIntervals(intervals)
                         for intervalRange in merged {
                             let duration = intervalRange.end.timeIntervalSince(intervalRange.start)
@@ -498,23 +499,48 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 let stepsResults = rawResults.filter { $0.measurementType == .steps }
                 
                 // Inline helper to filter non-strong reflections:
-                // For non-strong (orange/yellow) reflections, if two occur within ¼ of the interval,
+                // For non-strong (orange/yellow) reflections, if two occur within 1/4 of the interval,
                 // keep only the one with the higher "seriousness score" (threshold * interval.timeInterval).
+                func filterResults(_ reflections: [MissedReflection]) -> [MissedReflection] {
+                    // Always include strong ones.
+                    let strong = reflections.filter { $0.reminderType == .strong }
+                    
+                    // For non-strong ones, sort by date.
+                    let nonStrong = reflections.filter { $0.reminderType != .strong }
+                        .sorted { $0.date < $1.date }
+                    var filteredNonStrong: [MissedReflection] = []
+                    for reflection in nonStrong {
+                        if let last = filteredNonStrong.last {
+                            let quarterInterval = reflection.interval.timeInterval / 4.0
+                            if reflection.date.timeIntervalSince(last.date) < quarterInterval {
+                                let lastScore = Double(last.threshold) * last.interval.timeInterval
+                                let currentScore = Double(reflection.threshold) * reflection.interval.timeInterval
+                                if currentScore > lastScore {
+                                    filteredNonStrong[filteredNonStrong.count - 1] = reflection
+                                }
+                            } else {
+                                filteredNonStrong.append(reflection)
+                            }
+                        } else {
+                            filteredNonStrong.append(reflection)
+                        }
+                    }
+                    return strong + filteredNonStrong
+                }
                 
-                let filteredHR = self.filterResults(hrResults).sorted { $0.date < $1.date }
-                let filteredSteps = self.filterResults(stepsResults).sorted { $0.date < $1.date }
+                let filteredHR = filterResults(hrResults).sorted { $0.date < $1.date }
+                let filteredSteps = filterResults(stepsResults).sorted { $0.date < $1.date }
                 
-                // Limit each to the last 5 reflections.
-                let finalHR = Array(filteredHR.suffix(5))
-                let finalSteps = Array(filteredSteps.suffix(5))
+                // Limit each to at most 5 reflections, but if there are fewer, just return them.
+                let finalHR = filteredHR.count <= 5 ? filteredHR : Array(filteredHR.suffix(5))
+                let finalSteps = filteredSteps.count <= 5 ? filteredSteps : Array(filteredSteps.suffix(5))
                 
                 let combinedResults = (finalHR + finalSteps).sorted { $0.date < $1.date }
-                // --- Filtering Logic Ends Here ---
                 
                 let actionedIDs = Set(actionedMissedReflectionIDs)
-                let finalResults = combinedResults.filter { !actionedIDs.contains($0.id) }
+                let finalResultsWithoutActioned = combinedResults.filter { !actionedIDs.contains($0.id) }
                 
-                completion(.success(finalResults))
+                completion(.success(finalResultsWithoutActioned))
             }
         }
     }
