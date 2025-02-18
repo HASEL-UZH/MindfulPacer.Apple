@@ -19,10 +19,10 @@ enum SchemaV1: VersionedSchema {
 
     static var models: [any PersistentModel.Type] {
         [
-            Review.self,
+            Reflection.self,
             Activity.self,
             Subactivity.self,
-            ReviewReminder.self
+            Reminder.self
         ]
     }
 }

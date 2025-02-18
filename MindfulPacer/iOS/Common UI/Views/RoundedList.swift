@@ -50,9 +50,12 @@ struct RoundedList<Content: View>: View {
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding([.horizontal, .bottom])
         }
-        .background(Color(.systemGroupedBackground))
+        .background {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+        }
     }
 }
 

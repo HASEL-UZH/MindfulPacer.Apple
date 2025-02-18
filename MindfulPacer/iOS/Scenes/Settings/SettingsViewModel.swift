@@ -8,6 +8,7 @@
 import Foundation
 import MessageUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Theme
 
@@ -39,7 +40,7 @@ enum Theme: String, CaseIterable, Identifiable {
             "Always use dark mode"
         }
     }
-
+    
     var colorScheme: ColorScheme? {
         switch self {
         case .system:
@@ -56,25 +57,75 @@ enum Theme: String, CaseIterable, Identifiable {
     }
 }
 
-// MARK: - RoadmapFetchError
+// MARK: - ExportFileFormat
 
-enum RoadmapFetchError: LocalizedError {
-    case noInternetConnection
-    case serverError
-    case decodingError
-    case unknownError
+enum ExportFileFormat: String, CaseIterable, Identifiable {
+    case csv
     
-    var errorDescription: String? {
+    var description: String {
         switch self {
-        case .noInternetConnection:
-            return "No internet connection. Please check your Wi-Fi or cellular network."
-        case .serverError:
-            return "Unable to fetch the roadmap. Please try again later."
-        case .decodingError:
-            return "Failed to decode the roadmap data."
-        case .unknownError:
-            return "An unknown error occurred. Please try again."
+        case .csv: ".CSV"
         }
+    }
+    
+    var fileExtension: String {
+        switch self {
+        case .csv: ".csv"
+        }
+    }
+    
+    var id: String { self.rawValue }
+}
+
+// MARK: - ExportDataModel
+
+enum ExportDataModel: String, CaseIterable, Identifiable {
+    case reflection
+    case reminder
+    
+    var id: String { self.rawValue }
+    
+    var description: String {
+        switch self {
+        case .reflection: "Reflections"
+        case .reminder: "Reminders"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .reflection: "book.pages.fill"
+        case .reminder: "bell.badge.fill"
+        }
+    }
+    
+    var fileName: String {
+        switch self {
+        case .reflection: "MindfulPacer_Reflections"
+        case .reminder: "MindfulPacer_Reminders"
+        }
+    }
+}
+
+// MARK: - ExportDocument
+
+struct ExportDocument: FileDocument {
+    static var readableContentTypes: [UTType] {
+        return [.commaSeparatedText, .spreadsheet]
+    }
+    
+    var fileURL: URL
+    
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+    
+    init(configuration: ReadConfiguration) throws {
+        fatalError("Reading not supported")
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        return try FileWrapper(url: fileURL)
     }
 }
 
@@ -86,8 +137,8 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
-    private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
-    private let fetchRoadmapUseCase: FetchRoadmapUseCase
+    private let fetchReflectionsUseCase: FetchReflectionsUseCase
+    private let fetchRemindersUseCase: FetchRemindersUseCase
     
     // MARK: - Published Properties
     
@@ -96,12 +147,21 @@ class SettingsViewModel {
     
     var mailResult: Result<MFMailComposeResult, Error>?
     
+    var reflections: [Reflection] = []
+    var reminders: [Reminder] = []
+    
     var isFetchingRoadmap: Bool = false
     var roadmapItems: [RoadmapItem] = []
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
-    
     var isExpandedModeOfUseOn: Bool = false
+    var selectedExportFileFormat: ExportFileFormat = .csv
+    var selectedExportDataModel: ExportDataModel = .reminder
+    var exportURL: URL?
+    var isExporting = false
+    
+    var contactSupportRecipient: String = "support@mindfulpacer.ch"
+    var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -131,9 +191,6 @@ class SettingsViewModel {
         Model Identifier: \(modelIdentifier)
         """
     }
-    
-    var contactSupportRecipient: String = "support@mindfulpacer.ch"
-    var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     // MARK: Private Properties
     
@@ -181,17 +238,18 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
-        checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase,
-        fetchRoadmapUseCase: FetchRoadmapUseCase
+        fetchReflectionsUseCase: FetchReflectionsUseCase,
+        fetchRemindersUseCase: FetchRemindersUseCase
     ) {
-        self.checkInternetConnectivityUseCase = checkInternetConnectivityUseCase
-        self.fetchRoadmapUseCase = fetchRoadmapUseCase
+        self.fetchReflectionsUseCase = fetchReflectionsUseCase
+        self.fetchRemindersUseCase = fetchRemindersUseCase
     }
     
     // MARK: - View Events
     
     func onViewAppear() {
-        fetchRoadmap()
+        fetchReflections()
+        fetchReminders()
     }
     
     // MARK: - Presentation
@@ -205,38 +263,78 @@ class SettingsViewModel {
     func setModeOfUse(_ modeOfUse: ModeOfUse) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
     }
+    
+    func onExportTapped() {
+        let exportedFileURL: URL?
         
-    // MARK: - Private Methods
-            
-    private func fetchRoadmap() {
-        let fetchRoadmapUseCase = self.fetchRoadmapUseCase // TODO: Temporary fix, find the root cause of the error
-        let checkInternetConnectivityUseCase = self.checkInternetConnectivityUseCase // TODO: Temporary fix, find the root cause of the error
-        
-        Task { [weak self] in
-            guard let self = self else { return }
-            
-            self.isInternetConnected = await checkInternetConnectivityUseCase.execute()
-            self.isFetchingRoadmap = true
-            
-            guard self.isInternetConnected else {
-                self.fetchErrorMessage = RoadmapFetchError.noInternetConnection.localizedDescription
-                self.isFetchingRoadmap = false
-                return
-            }
-            
-            self.isFetchingRoadmap = true
-            self.fetchErrorMessage = nil
-            
-            do {
-                let roadmapItems = try await fetchRoadmapUseCase.execute()
-                self.roadmapItems = roadmapItems
-            } catch let error as RoadmapFetchError {
-                self.fetchErrorMessage = error.localizedDescription
-            } catch {
-                self.fetchErrorMessage = RoadmapFetchError.unknownError.localizedDescription
-            }
-            
-            self.isFetchingRoadmap = false
+        switch selectedExportDataModel {
+        case .reflection:
+            exportedFileURL = exportToCSV(reflections: reflections, reminders: [])
+        case .reminder:
+            exportedFileURL = exportToCSV(reflections: [], reminders: reminders)
         }
+        
+        if let url = exportedFileURL {
+            exportURL = url
+            isExporting = true
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func fetchReflections() {
+        reflections = fetchReflectionsUseCase.execute() ?? []
+    }
+    
+    private func fetchReminders() {
+        reminders = fetchRemindersUseCase.execute() ?? []
+    }
+    
+    private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
+        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + selectedExportFileFormat.fileExtension
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        var csvText = ""
+        
+        if selectedExportDataModel == .reflection {
+            csvText.append("Date,Activity,Subactivity,Mood,DidTriggerCrash,WellBeing,Fatigue,ShortnessOfBreath,SleepDisorder,CognitiveImpairment,PhysicalPain,DepressionOrAnxiety,AdditionalInfo\n")
+            
+            for reflection in reflections {
+                let formattedDate = DateFormatter.localizedString(from: reflection.date, dateStyle: .medium, timeStyle: .short)
+                let activityName = reflection.activity?.name ?? ""
+                let subactivityName = reflection.subactivity?.name ?? ""
+                let moodText = reflection.mood?.text ?? ""
+                let moodEmoji = reflection.mood?.emoji ?? ""
+                let additionalInfo = reflection.additionalInformation.replacingOccurrences(of: "\"", with: "\"\"")
+                
+                let csvLine = """
+                \(formattedDate),\(activityName),\(subactivityName),\(moodEmoji) \(moodText),\(reflection.didTriggerCrash),\(optionalIntToString(reflection.wellBeing)),\(optionalIntToString(reflection.fatigue)),\(optionalIntToString(reflection.shortnessOfBreath)),\(optionalIntToString(reflection.sleepDisorder)),\(optionalIntToString(reflection.cognitiveImpairment)),\(optionalIntToString(reflection.physicalPain)),\(optionalIntToString(reflection.depressionOrAnxiety)),"\(additionalInfo)"
+                """
+                
+                csvText.append(csvLine + "\n")
+            }
+        } else if selectedExportDataModel == .reminder {
+            csvText.append("ID,MeasurementType,ReminderType,Threshold,Interval\n")
+            
+            for reminder in reminders {
+                let csvLine = """
+                \(reminder.id),\(reminder.measurementType.rawValue),\(reminder.reminderType.rawValue),\(reminder.threshold),\(reminder.interval.rawValue)
+                """
+                csvText.append(csvLine + "\n")
+            }
+        }
+        
+        do {
+            try csvText.write(to: path, atomically: true, encoding: .utf8)
+            print("Export successful. File saved at: \(path)")
+            return path
+        } catch {
+            print("Failed to create CSV file: \(error)")
+            return nil
+        }
+    }
+    
+    private func optionalIntToString(_ value: Int?) -> String {
+        return value.map { "\($0)" } ?? ""
     }
 }

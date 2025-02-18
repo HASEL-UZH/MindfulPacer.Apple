@@ -17,6 +17,13 @@ final class UseCasesContainer: SharedContainer, @unchecked Sendable {
 
 extension UseCasesContainer {
 
+    // MARK: - Blog
+    
+    @MainActor
+    var fetchBlogArticlesUseCase: Factory<DefaultFetchBlogArticlesUseCase> {
+        self { DefaultFetchBlogArticlesUseCase(repository: DataContainer.shared.blogRepository()) }
+    }
+    
     // MARK: - Health
 
     @MainActor
@@ -56,26 +63,26 @@ extension UseCasesContainer {
         self { DefaultToggleUserHasSeenOnboardingUseCase() }
     }
 
-    // MARK: - Review
+    // MARK: - Reflection
 
     @MainActor
-    var addDefaultCategoriesUseCase: Factory<DefaultAddDefaultCategoriesUseCase> {
-        self { DefaultAddDefaultCategoriesUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var addDefaultActivitiesUseCase: Factory<DefaultAddDefaultActivitiesUseCase> {
+        self { DefaultAddDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var createReviewUseCase: Factory<CreateReviewUseCase> {
-        self { DefaulCreateReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var createReflectionUseCase: Factory<CreateReflectionUseCase> {
+        self { DefaulCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var deleteReviewUseCase: Factory<DeleteReviewUseCase> {
-        self { DefaultDeleteReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var deleteReflectionUseCase: Factory<DeleteReflectionUseCase> {
+        self { DefaultDeleteReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var fetchActionedMissedReviewsUseCase: Factory<FetchActionedMissedReviewsUseCase> {
-        self { DefaultFetchActionedMissedReviewsUseCase() }
+    var fetchActionedMissedReflectionsUseCase: Factory<FetchActionedMissedReflectionsUseCase> {
+        self { DefaultFetchActionedMissedReflectionsUseCase() }
     }
     
     @MainActor
@@ -84,55 +91,55 @@ extension UseCasesContainer {
     }
 
     @MainActor
-    var fetchReviewsUseCase: Factory<DefaultFetchReviewsUseCase> {
-        self { DefaultFetchReviewsUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var fetchReflectionsUseCase: Factory<DefaultFetchReflectionsUseCase> {
+        self { DefaultFetchReflectionsUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
     
     @MainActor
-    var fetchReviewsInPeriodUseCase: Factory<DefaultFetchReviewsInPeriodUseCase> {
-        self { DefaultFetchReviewsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var fetchReflectionsInPeriodUseCase: Factory<DefaultFetchReflectionsInPeriodUseCase> {
+        self { DefaultFetchReflectionsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var filterReviewsUseCase: Factory<DefaultFilterReviewsUseCase> {
-        self { DefaultFilterReviewsUseCase() }
+    var filterReflectionsUseCase: Factory<DefaultFilterReflectionsUseCase> {
+        self { DefaultFilterReflectionsUseCase() }
     }
 
     @MainActor
-    var markMissedReviewAsActionedUseCase: Factory<DefaultMarkMissedReviewAsActionedUseCase> {
-        self { DefaultMarkMissedReviewAsActionedUseCase() }
+    var markMissedReflectionAsActionedUseCase: Factory<DefaultMarkMissedReflectionAsActionedUseCase> {
+        self { DefaultMarkMissedReflectionAsActionedUseCase() }
     }
     
     @MainActor
-    var saveReviewUseCase: Factory<DefaultSaveReviewUseCase> {
-        self { DefaultSaveReviewUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var saveReflectionUseCase: Factory<DefaultSaveReflectionUseCase> {
+        self { DefaultSaveReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
-    // MARK: - Review Reminder
+    // MARK: - Reminder
 
     @MainActor
-    var checkMissedReviewsUseCase: Factory<CheckMissedReviewsUseCase> {
-        self { DefaultCheckMissedReviewsUseCase(healthKitService: HealthKitService.shared) }
+    var checkMissedReflectionsUseCase: Factory<CheckMissedReflectionsUseCase> {
+        self { DefaultCheckMissedReflectionsUseCase(healthKitService: HealthKitService.shared) }
     }
     
     @MainActor
-    var createReviewReminderUseCase: Factory<CreateReviewReminderUseCase> {
-        self { DefaultCreateReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var createReminderUseCase: Factory<CreateReminderUseCase> {
+        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var deleteReviewReminderUseCase: Factory<DeleteReviewReminderUseCase> {
-        self { DefaultDeleteReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var deleteReminderUseCase: Factory<DeleteReminderUseCase> {
+        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var fetchReviewRemindersUseCase: Factory<DefaultFetchReviewRemindersUseCase> {
-        self { DefaultFetchReviewRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var fetchRemindersUseCase: Factory<DefaultFetchRemindersUseCase> {
+        self { DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
-    var saveReviewReminderUseCase: Factory<DefaultSaveReviewReminderUseCase> {
-        self { DefaultSaveReviewReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+    var saveReminderUseCase: Factory<DefaultSaveReminderUseCase> {
+        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     // MARK: - Settings

@@ -113,12 +113,12 @@ class OnboardingViewModel {
         KeyFeatureItem(
             icon: "book.pages.fill",
             title: "Diary on Activities & Energy",
-            description: "Review your activities, energy management, moods and symptoms."
+            description: "Reflection your activities, energy management, moods and symptoms."
         ),
         KeyFeatureItem(
             icon: "applewatch",
             title: "Apple Watch Sync",
-            description: "Amend your review with biometric data and receive reminders for reflection."
+            description: "Amend your reflection with biometric data and receive reminders for reflection."
         ),
         KeyFeatureItem(
             icon: "chart.xyaxis.line",
@@ -134,18 +134,18 @@ class OnboardingViewModel {
             description: "Better manage your physical and mental energy by regulating your activity levels.",
             points: [
                 "Timelines of your physical activity (steps, heart rate and others)",
-                "Overlays of your reviews on activity & energy",
-                "Visually correlate activities, energy levels and reviews"
+                "Overlays of your reflections on activity & energy",
+                "Visually correlate activities, energy levels and reflections"
             ],
             image: "Main Feature 1"
         ),
         MainFeatureItem(
             icon: "book.pages",
-            title: "Reviews of Activities & Energy Levels",
+            title: "Reflections of Activities & Energy Levels",
             description: "Add reflections on your activities, energy management, moods and symptoms.",
             points: [
                 "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day",
-                "Manually add and edit reviews anytime"
+                "Manually add and edit reflections anytime"
             ],
             image: "Main Feature 2"
         )

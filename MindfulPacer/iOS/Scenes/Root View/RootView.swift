@@ -12,6 +12,7 @@ import SwiftUI
 enum Tab: String {
     case home
     case analytics
+    case outreach
     case settings
 }
 
@@ -40,7 +41,7 @@ struct RootView: View {
         TabView(selection: $viewModel.selectedTab) {
             // TODO: Change to new `Tab` init
             HomeView {
-                viewModel.widgetTapped()
+                viewModel.onWidgetTapped()
             }
             .tabItem {
                 Label("Home", systemImage: "house")
@@ -52,6 +53,12 @@ struct RootView: View {
                     Label("Analytics", systemImage: "chart.bar")
                 }
                 .tag(Tab.analytics)
+            
+            OutreachView()
+                .tabItem {
+                    Label("Outreach", systemImage: "person.2.wave.2.fill")
+                }
+                .tag(Tab.outreach)
             
             SettingsView()
                 .tabItem {

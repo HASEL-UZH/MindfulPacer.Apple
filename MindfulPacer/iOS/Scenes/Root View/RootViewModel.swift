@@ -53,7 +53,7 @@ class RootViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase
+    private let addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     
@@ -71,12 +71,12 @@ class RootViewModel {
     
     init(
         modelContext: ModelContext,
-        addDefaultCategoriesUseCase: AddDefaultCategoriesUseCase,
+        addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase,
         checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase,
         initializeConnectivityUseCase: InitializeConnectivityUseCase
     ) {
         self.modelContext = modelContext
-        self.addDefaultCategoriesUseCase = addDefaultCategoriesUseCase
+        self.addDefaultActivitiesUseCase = addDefaultActivitiesUseCase
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
         self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
@@ -86,7 +86,7 @@ class RootViewModel {
     @MainActor
     func onViewFirstAppear() {
         Task {
-            await addDefaultCategoriesUseCase.execute()
+            await addDefaultActivitiesUseCase.execute()
             initializeConnectivityUseCase.execute()
         }
         
@@ -101,7 +101,7 @@ class RootViewModel {
     
     // MARK: - User Actions
     
-    func widgetTapped() {
+    func onWidgetTapped() {
         selectedTab = .analytics
     }
     

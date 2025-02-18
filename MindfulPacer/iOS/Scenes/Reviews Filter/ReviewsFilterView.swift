@@ -1,5 +1,5 @@
 //
-//  ReviewsFilterView.swift
+//  ReflectionsFilterView.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 03.09.2024.
@@ -8,15 +8,15 @@
 import Combine
 import SwiftUI
 
-// MARK: - ReviewsFilterView
+// MARK: - ReflectionsFilterView
 
 // swiftlint:disable:next type_body_length
-struct ReviewsFilterView: View {
+struct ReflectionsFilterView: View {
     
     // MARK: Properties
 
-    @State private var viewModel: ReviewsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
-    let filterAndSortingPublisher: CurrentValueSubject<(ReviewFilter, ReviewSorting), Never>?
+    @State private var viewModel: ReflectionsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
+    let filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
 
     // MARK: Body
 
@@ -26,8 +26,8 @@ struct ReviewsFilterView: View {
                 dateRange
 
                 Section {
-                    categories
-                    subcategories
+                    activities
+                    subactivities
                     moods
                     triggeredCrash
                 }
@@ -35,7 +35,7 @@ struct ReviewsFilterView: View {
                 dateSorting
 
             }
-            .navigationTitle("Filter Reviews")
+            .navigationTitle("Filter Reflections")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -82,6 +82,7 @@ struct ReviewsFilterView: View {
                     DatePicker(
                         "From",
                         selection: viewModel.fromDateBinding,
+                        in: ...viewModel.reviewFilter.toDate,
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.compact)
@@ -89,6 +90,7 @@ struct ReviewsFilterView: View {
                     DatePicker(
                         "To",
                         selection: viewModel.toDateBinding,
+                        in: viewModel.reviewFilter.fromDate...,
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.compact)
@@ -100,32 +102,32 @@ struct ReviewsFilterView: View {
         }
     }
 
-    // MARK: Categories
+    // MARK: Activities
 
-    private var categories: some View {
+    private var activities: some View {
         NavigationLink {
-            categoriesFilterView
+            activitiesFilterView
         } label: {
             filterItem(
                 icon: "rectangle.grid.2x2.fill",
-                title: "Categories",
-                selectedCount: viewModel.reviewFilter.selectedCategories.count,
-                selectedSummary: viewModel.selectedFilterCategoriesSummary
+                title: "Activities",
+                selectedCount: viewModel.reviewFilter.selectedActivities.count,
+                selectedSummary: viewModel.selectedFilterActivitiesSummary
             )
         }
     }
 
-    // MARK: Subcategories
+    // MARK: Subactivities
 
-    private var subcategories: some View {
+    private var subactivities: some View {
         NavigationLink {
-            subcategoriesFilterView
+            subactivitiesFilterView
         } label: {
             filterItem(
                 icon: "rectangle.grid.3x3.fill",
-                title: "Subategories",
-                selectedCount: viewModel.reviewFilter.selectedSubcategories.count,
-                selectedSummary: viewModel.selectedFilterSubcategoriesSummary
+                title: "Subactivities",
+                selectedCount: viewModel.reviewFilter.selectedSubactivities.count,
+                selectedSummary: viewModel.selectedFilterSubactivitiesSummary
             )
         }
     }
@@ -180,18 +182,18 @@ struct ReviewsFilterView: View {
         .foregroundStyle(.primary)
     }
 
-    // MARK: Categories Filter View
+    // MARK: Activities Filter View
 
-    private var categoriesFilterView: some View {
+    private var activitiesFilterView: some View {
         ScrollView {
             LazyVGrid(
                 columns: Array(repeating: GridItem(spacing: 16), count: 3),
                 spacing: 16
             ) {
-                ForEach(viewModel.categories) { activity in
+                ForEach(viewModel.activities) { activity in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedCategories.contains(activity)
+                        isSelected: viewModel.reviewFilter.selectedActivities.contains(activity)
                     ) {
                         viewModel.toggleFilterActivity(activity)
                     } label: {
@@ -211,22 +213,22 @@ struct ReviewsFilterView: View {
             }
             .padding(.horizontal)
         }
-        .navigationTitle("Categories")
+        .navigationTitle("Activities")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 
-    // MARK: Subcategories Filter View
+    // MARK: Subactivities Filter View
 
-    private var subcategoriesFilterView: some View {
+    private var subactivitiesFilterView: some View {
         ScrollView {
             LazyVGrid(
                 columns: Array(repeating: GridItem(spacing: 16), count: 3),
                 spacing: 16
             ) {
-                ForEach(viewModel.subcategories) { subactivity in
+                ForEach(viewModel.subactivities) { subactivity in
                     SelectableButton(
                         shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedSubcategories.contains(subactivity)
+                        isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
                     ) {
                         viewModel.toggleFilterSubactivity(subactivity)
                     } label: {
@@ -246,7 +248,7 @@ struct ReviewsFilterView: View {
             }
             .padding(.horizontal)
         }
-        .navigationTitle("Subcategories")
+        .navigationTitle("Subactivities")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 
@@ -316,9 +318,9 @@ struct ReviewsFilterView: View {
 
                 Picker(String(), selection: viewModel.reviewSortingBinding) {
                     Label("Descending", systemImage: "arrow.down")
-                        .tag(ReviewSorting.dateDescending)
+                        .tag(ReflectionSorting.dateDescending)
                     Label("Ascending", systemImage: "arrow.up")
-                        .tag(ReviewSorting.dateAscending)
+                        .tag(ReflectionSorting.dateAscending)
                 }
                 .pickerStyle(.segmented)
             }
@@ -335,6 +337,6 @@ struct ReviewsFilterView: View {
 // MARK: - Preview
 
 #Preview {
-    ReviewsFilterView(filterAndSortingPublisher: nil)
+    ReflectionsFilterView(filterAndSortingPublisher: nil)
         .tint(Color("BrandPrimary"))
 }

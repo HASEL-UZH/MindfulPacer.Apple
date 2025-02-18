@@ -27,6 +27,7 @@ enum SettingsSheet: Identifiable {
 
 enum SettingsNavigationDestination: Hashable {
     case theme
+    case export
 }
 
 // MARK: - SettingsView
@@ -52,21 +53,32 @@ struct SettingsView: View {
                     sectionHeader(title: "General")
                 }
                 
-                Section {
-                    themeSettings
-                } header: {
-                    sectionHeader(title: "Appearance")
-                }
+//                Section {
+//                    themeSettings
+//                } header: {
+//                    sectionHeader(title: "Appearance")
+//                }
+//                
+//                Section {
+//                    exportData
+//                } header: {
+//                    sectionHeader(title: "Data")
+//                }
+//                
+//                Section {
+//                    contactUs
+//                    roadmap
+//                    moreInfo
+//                    privacyPolicy
+//                    disclaimer
+//                } header: {
+//                    sectionHeader(title: "About")
+//                }
                 
                 Section {
-                    support
-                    roadmap
-                    moreInfo
-                    privacyPolicy
-                } header: {
-                    sectionHeader(title: "About")
+                    logos
                 }
-                
+             
                 appVersion
                     .padding(.bottom)
             }
@@ -94,6 +106,8 @@ struct SettingsView: View {
         switch destination {
         case .theme:
             ThemeSettingsView()
+        case .export:
+            ExportView(viewModel: viewModel)
         }
     }
     
@@ -115,7 +129,7 @@ struct SettingsView: View {
             )
             .presentationCornerRadius(16)
         case .roadmap:
-            RoadmapView(viewModel: viewModel)
+            RoadmapView()
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         case .systemReportView:
@@ -138,7 +152,7 @@ struct SettingsView: View {
     
     private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
-            settingsCell(
+            RoundedListCell(
                 icon: "circle.lefthalf.striped.horizontal.inverse",
                 title: "Theme",
                 description: "Change the app theme",
@@ -166,9 +180,21 @@ struct SettingsView: View {
         .background(Color(.secondarySystemGroupedBackground))
     }
     
-    // MARK: Support
+    // MARK: Export Data
     
-    private var support: some View {
+    private var exportData: some View {
+        NavigationLink(value: SettingsNavigationDestination.export) {
+            RoundedListCell(
+                icon: "tray.and.arrow.up.fill",
+                title: "Export Data",
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
+    }
+    
+    // MARK: Contact Us
+    
+    private var contactUs: some View {
         Button {
             viewModel.presentSheet(
                 .mailView(
@@ -178,7 +204,7 @@ struct SettingsView: View {
                 )
             )
         } label: {
-            settingsCell(
+            RoundedListCell(
                 icon: "envelope",
                 title: "Contact Us",
                 accessoryIndicatorIcon: "arrow.up.forward.square"
@@ -192,7 +218,7 @@ struct SettingsView: View {
         Button {
             openURL(URL(string: "https://mindfulpacer.ch")!)
         } label: {
-            settingsCell(
+            RoundedListCell(
                 icon: "info",
                 title: "More Info",
                 accessoryIndicatorIcon: "link"
@@ -206,7 +232,7 @@ struct SettingsView: View {
         Button {
             openURL(URL(string: "https://mindfulpacer.ch/privacy-policy/")!)
         } label: {
-            settingsCell(
+            RoundedListCell(
                 icon: "hand.raised",
                 title: "Privacy Policy",
                 accessoryIndicatorIcon: "link"
@@ -220,7 +246,7 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.onboardingView)
         } label: {
-            settingsCell(
+            RoundedListCell(
                 icon: "square.stack",
                 title: "Onboarding",
                 description: "View the onboarding again",
@@ -235,7 +261,7 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.roadmap)
         } label: {
-            settingsCell(
+            RoundedListCell(
                 icon: "map",
                 title: "Roadmap",
                 description: "View upcoming features",
@@ -243,58 +269,89 @@ struct SettingsView: View {
             )
         }
     }
-
+    
+    // MARK: Disclaimer
+    
+    private var disclaimer: some View {
+        RoundedListCell(
+            icon: "exclamationmark.triangle",
+            title: "Disclaimer",
+            description:
+                """
+                MindfulPacer is a spin-off project from the University of Zurich, developed in collaboration between the Human Aspects of Software Engineering Lab and the Clinic for Immunology.
+                
+                MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
+                """
+        )
+    }
+    
+    // MARK: Logos
+    
+    private var logos: some View {
+        VStack(spacing: 16) {
+            HStack {
+                IconLabel(
+                    icon: "building.columns",
+                    title: "Supported By",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .font(.subheadline.weight(.semibold))
+                
+                Spacer()
+            }
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    Group {
+                        Image(.DIZH)
+                            .resizable()
+                        Image(.UZH)
+                            .resizable()
+                        Image(.longCovid)
+                            .resizable()
+                        Image(.USZ)
+                            .resizable()
+                    }
+                    .scaledToFit()
+                    .frame(maxHeight: 128)
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        
+//        LazyVGrid(columns: [GridItem(spacing: 16), GridItem(spacing: 16)], spacing: 16) {
+//            Group {
+//                Image(.dizhLogo)
+//                    .resizable()
+//                Image(.uzhLogo)
+//                    .resizable()
+//                Image(.longCovidLogo)
+//                    .resizable()
+//                Image(.uszLogo)
+//                    .resizable()
+//            }
+//            .aspectRatio(1.0, contentMode: .fit)
+//        }
+//        .frame(maxWidth: .infinity, alignment: .center)
+//        .padding(.horizontal)
+    }
+    
     // MARK: App Version
     
     private var appVersion: some View {
         Button {
             viewModel.presentSheet(.systemReportView)
         } label: {
-            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "info.circle")
+            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
                 .font(.footnote)
                 .foregroundStyle(Color.secondary)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal)
-    }
-    
-    // MARK: Settings Cell
-    
-    @ViewBuilder
-    func settingsCell(
-        icon: String,
-        title: String,
-        description: String? = nil,
-        accessoryIndicatorText: String? = nil,
-        accessoryIndicatorIcon: String? = nil
-    ) -> some View {
-        HStack {
-            IconLabel(
-                icon: icon,
-                title: title,
-                description: description,
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-            .font(.subheadline.weight(.semibold))
-            
-            Spacer()
-            
-            HStack(spacing: 4) {
-                if let accessoryIndicatorText {
-                    Text(accessoryIndicatorText)
-                        .foregroundStyle(Color(.systemGray2))
-                        .fixedSize(horizontal: true, vertical: false)
-                }
-                
-                if let accessoryIndicatorIcon {
-                    Icon(name: accessoryIndicatorIcon, color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
     }
 }
 
