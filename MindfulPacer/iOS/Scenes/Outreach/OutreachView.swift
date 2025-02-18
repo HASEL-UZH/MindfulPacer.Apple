@@ -109,11 +109,9 @@ struct OutreachView: View {
     
     private var intro: some View {
         Text("Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer.")
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal)
     }
     
     // MARK: Community

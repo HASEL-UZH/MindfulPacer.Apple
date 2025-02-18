@@ -53,27 +53,29 @@ struct SettingsView: View {
                     sectionHeader(title: "General")
                 }
                 
-                Section {
-                    themeSettings
-                } header: {
-                    sectionHeader(title: "Appearance")
-                }
+//                Section {
+//                    themeSettings
+//                } header: {
+//                    sectionHeader(title: "Appearance")
+//                }
+//                
+//                Section {
+//                    exportData
+//                } header: {
+//                    sectionHeader(title: "Data")
+//                }
+//                
+//                Section {
+//                    contactUs
+//                    roadmap
+//                    moreInfo
+//                    privacyPolicy
+//                    disclaimer
+//                } header: {
+//                    sectionHeader(title: "About")
+//                }
                 
                 Section {
-                    exportData
-                } header: {
-                    sectionHeader(title: "Data")
-                }
-                
-                Section {
-                    contactUs
-                    roadmap
-                    moreInfo
-                    privacyPolicy
-                    disclaimer
-                } header: {
-                    sectionHeader(title: "About")
-                } footer: {
                     logos
                 }
              
@@ -286,21 +288,56 @@ struct SettingsView: View {
     // MARK: Logos
     
     private var logos: some View {
-        HStack(spacing: 16) {
-            Group {
-                Image(.dizhLogo)
-                    .resizable()
-                Image(.uzhLogo)
-                    .resizable()
-                Image(.longCovidLogo)
-                    .resizable()
-                Image(.uszLogo)
-                    .resizable()
+        VStack(spacing: 16) {
+            HStack {
+                IconLabel(
+                    icon: "building.columns",
+                    title: "Supported By",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .font(.subheadline.weight(.semibold))
+                
+                Spacer()
             }
-            .scaledToFit()
-            .frame(width: 64, height: 64)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    Group {
+                        Image(.DIZH)
+                            .resizable()
+                        Image(.UZH)
+                            .resizable()
+                        Image(.longCovid)
+                            .resizable()
+                        Image(.USZ)
+                            .resizable()
+                    }
+                    .scaledToFit()
+                    .frame(maxHeight: 128)
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        
+//        LazyVGrid(columns: [GridItem(spacing: 16), GridItem(spacing: 16)], spacing: 16) {
+//            Group {
+//                Image(.dizhLogo)
+//                    .resizable()
+//                Image(.uzhLogo)
+//                    .resizable()
+//                Image(.longCovidLogo)
+//                    .resizable()
+//                Image(.uszLogo)
+//                    .resizable()
+//            }
+//            .aspectRatio(1.0, contentMode: .fit)
+//        }
+//        .frame(maxWidth: .infinity, alignment: .center)
+//        .padding(.horizontal)
     }
     
     // MARK: App Version

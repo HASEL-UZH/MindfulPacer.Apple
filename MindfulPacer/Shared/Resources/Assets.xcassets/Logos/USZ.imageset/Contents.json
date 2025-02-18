@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "University_Hospital_of_Zurich_logo@1x.png",
+      "filename" : "USZ@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "University_Hospital_of_Zurich_logo@2x.png",
+      "filename" : "USZ@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "University_Hospital_of_Zurich_logo@3x.png",
+      "filename" : "USZ@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
