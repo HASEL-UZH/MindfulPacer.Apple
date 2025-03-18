@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Disclaimer",
+                title: String(localized: "Disclaimer"),
                 showSkipButton: false
             ) {
                 VStack(spacing: 16) {
@@ -31,11 +31,11 @@ extension OnboardingView {
                         .frame(width: 128, height: 128)
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
-
+                    
                     IconLabelGroupBox(label:
                                         IconLabel(
                                             icon: "exclamationmark.triangle",
-                                            title: "Warnings",
+                                            title: String(localized: "Warnings"),
                                             labelColor: .yellow
                                         )
                     ) {
@@ -46,10 +46,10 @@ extension OnboardingView {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     Text("When in doubt, please contact an experienced physician, personal trainer or other qualified professional.")
                         .frame(maxWidth: .infinity, alignment: .leading)
-
+                    
                     Card(backgroundColor: Color(.tertiarySystemFill)) {
                         ZStack {
                             Label {

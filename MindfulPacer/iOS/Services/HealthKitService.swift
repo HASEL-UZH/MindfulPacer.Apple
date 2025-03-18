@@ -35,26 +35,26 @@ enum Period: String, CaseIterable {
     var displayName: String {
         switch self {
         case .oneHour:
-            "1 Hour"
+            String(localized: "1 Hour")
         case .twoHours:
-            "2 Hours"
+            String(localized: "2 Hours")
         case .day:
-            "Day"
+            String(localized: "Day")
         case .week:
-            "Week"
+            String(localized: "Week")
         }
     }
     
     var description: String {
         switch self {
         case .oneHour:
-            return "one hour"
+            return String(localized: "one hour")
         case .twoHours:
-            return "two hours"
+            return String(localized: "two hours")
         case .day:
-            return "day"
+            return String(localized: "day")
         case .week:
-            return "week"
+            return String(localized: "week")
         }
     }
     
@@ -550,6 +550,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     /// - Retrieves all `.stepCount` samples within the 24-hour window preceding the current time.
     /// - Returns an array of tuples `(startDate, endDate, stepCount)`.
     /// - Each tuple corresponds to one `HKQuantitySample`.
+    /// - Saves results to a JSON file named "stepDataLast24Hours.json" in the document directory.
     ///
     /// - Parameters:
     ///   - completion: A closure called with an array of `(Date, Date, Double)` representing all samples.
@@ -602,17 +603,37 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 results.append((sample.startDate, sample.endDate, val))
             }
             
+            // Convert results to JSON-compatible dictionary array
+            let jsonData = results.map { sample in
+                [
+                    "startDate": ISO8601DateFormatter().string(from: sample.0),
+                    "endDate": ISO8601DateFormatter().string(from: sample.1),
+                    "stepCount": sample.2
+                ]
+            }
+            
+            // Save to JSON file
+            do {
+                let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                let fileURL = documentsDirectory.appendingPathComponent("stepDataLast24Hours.json")
+                let data = try JSONSerialization.data(withJSONObject: jsonData, options: [.prettyPrinted])
+                try data.write(to: fileURL, options: [.atomic])
+            } catch {
+                print("Failed to write step data to JSON: \(error)")
+            }
+            
             completion(results)
         }
         
         healthStore.execute(query)
     }
-    
+
     /// Fetches all heart rate data from the last 24 hours using `HKSampleQuery`.
     ///
     /// - Retrieves all `.heartRate` samples within the 24-hour window preceding the current time.
     /// - Returns an array of tuples `(startDate, endDate, heartRateValue)`.
     /// - Each tuple corresponds to one `HKQuantitySample` representing beats per minute (bpm).
+    /// - Saves results to a JSON file named "heartRateDataLast24Hours.json" in the document directory.
     ///
     /// - Parameters:
     ///   - completion: A closure called with an array of `(Date, Date, Double)` representing all samples.
@@ -663,6 +684,25 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             for sample in quantitySamples {
                 let val = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
                 results.append((sample.startDate, sample.endDate, val))
+            }
+            
+            // Convert results to JSON-compatible dictionary array
+            let jsonData = results.map { sample in
+                [
+                    "startDate": ISO8601DateFormatter().string(from: sample.0),
+                    "endDate": ISO8601DateFormatter().string(from: sample.1),
+                    "heartRate": sample.2
+                ]
+            }
+            
+            // Save to JSON file
+            do {
+                let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                let fileURL = documentsDirectory.appendingPathComponent("heartRateDataLast24Hours.json")
+                let data = try JSONSerialization.data(withJSONObject: jsonData, options: [.prettyPrinted])
+                try data.write(to: fileURL, options: [.atomic])
+            } catch {
+                print("Failed to write heart rate data to JSON: \(error)")
             }
             
             completion(results)

@@ -21,7 +21,7 @@ extension HomeView {
             IconLabelGroupBox(
                 label: IconLabel(
                     icon: "figure.walk",
-                    title: "Steps",
+                    title: String(localized: "Steps"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )

@@ -1,0 +1,402 @@
+[
+  {
+    "stepCount" : 279,
+    "startDate" : "2025-03-15T19:22:26Z",
+    "endDate" : "2025-03-15T19:30:46Z"
+  },
+  {
+    "endDate" : "2025-03-15T19:42:54Z",
+    "stepCount" : 147,
+    "startDate" : "2025-03-15T19:33:07Z"
+  },
+  {
+    "endDate" : "2025-03-15T19:53:27Z",
+    "stepCount" : 32,
+    "startDate" : "2025-03-15T19:43:27Z"
+  },
+  {
+    "startDate" : "2025-03-15T19:55:33Z",
+    "endDate" : "2025-03-15T20:02:00Z",
+    "stepCount" : 167
+  },
+  {
+    "endDate" : "2025-03-15T19:58:16Z",
+    "startDate" : "2025-03-15T19:57:27Z",
+    "stepCount" : 40
+  },
+  {
+    "stepCount" : 142,
+    "endDate" : "2025-03-15T20:20:32Z",
+    "startDate" : "2025-03-15T20:11:11Z"
+  },
+  {
+    "stepCount" : 36,
+    "startDate" : "2025-03-15T20:21:59Z",
+    "endDate" : "2025-03-15T20:31:59Z"
+  },
+  {
+    "startDate" : "2025-03-15T20:31:59Z",
+    "endDate" : "2025-03-15T20:38:18Z",
+    "stepCount" : 204
+  },
+  {
+    "startDate" : "2025-03-15T20:49:29Z",
+    "endDate" : "2025-03-15T20:49:32Z",
+    "stepCount" : 22
+  },
+  {
+    "startDate" : "2025-03-15T21:10:23Z",
+    "stepCount" : 51,
+    "endDate" : "2025-03-15T21:17:10Z"
+  },
+  {
+    "endDate" : "2025-03-15T21:33:24Z",
+    "startDate" : "2025-03-15T21:24:18Z",
+    "stepCount" : 108
+  },
+  {
+    "startDate" : "2025-03-15T22:38:31Z",
+    "endDate" : "2025-03-15T22:42:54Z",
+    "stepCount" : 20
+  },
+  {
+    "endDate" : "2025-03-15T23:14:24Z",
+    "startDate" : "2025-03-15T23:13:53Z",
+    "stepCount" : 22
+  },
+  {
+    "stepCount" : 64,
+    "endDate" : "2025-03-15T23:28:41Z",
+    "startDate" : "2025-03-15T23:24:08Z"
+  },
+  {
+    "startDate" : "2025-03-15T23:34:21Z",
+    "stepCount" : 11,
+    "endDate" : "2025-03-15T23:40:12Z"
+  },
+  {
+    "startDate" : "2025-03-16T00:30:46Z",
+    "endDate" : "2025-03-16T00:30:49Z",
+    "stepCount" : 8
+  },
+  {
+    "startDate" : "2025-03-16T10:28:08Z",
+    "endDate" : "2025-03-16T10:28:13Z",
+    "stepCount" : 11
+  },
+  {
+    "endDate" : "2025-03-16T10:41:09Z",
+    "stepCount" : 37,
+    "startDate" : "2025-03-16T10:38:43Z"
+  },
+  {
+    "endDate" : "2025-03-16T11:38:33Z",
+    "stepCount" : 255,
+    "startDate" : "2025-03-16T11:31:44Z"
+  },
+  {
+    "stepCount" : 108,
+    "startDate" : "2025-03-16T11:42:55Z",
+    "endDate" : "2025-03-16T11:52:55Z"
+  },
+  {
+    "stepCount" : 111,
+    "startDate" : "2025-03-16T11:53:18Z",
+    "endDate" : "2025-03-16T12:03:10Z"
+  },
+  {
+    "endDate" : "2025-03-16T12:10:11Z",
+    "stepCount" : 429,
+    "startDate" : "2025-03-16T12:03:25Z"
+  },
+  {
+    "startDate" : "2025-03-16T12:03:59Z",
+    "endDate" : "2025-03-16T12:10:33Z",
+    "stepCount" : 387
+  },
+  {
+    "stepCount" : 2,
+    "startDate" : "2025-03-16T12:15:08Z",
+    "endDate" : "2025-03-16T12:15:10Z"
+  },
+  {
+    "endDate" : "2025-03-16T12:36:39Z",
+    "stepCount" : 282,
+    "startDate" : "2025-03-16T12:27:33Z"
+  },
+  {
+    "stepCount" : 256,
+    "startDate" : "2025-03-16T12:27:34Z",
+    "endDate" : "2025-03-16T12:30:00Z"
+  },
+  {
+    "stepCount" : 25,
+    "startDate" : "2025-03-16T12:38:22Z",
+    "endDate" : "2025-03-16T12:44:16Z"
+  },
+  {
+    "stepCount" : 17,
+    "endDate" : "2025-03-16T12:56:03Z",
+    "startDate" : "2025-03-16T12:55:55Z"
+  },
+  {
+    "startDate" : "2025-03-16T13:06:38Z",
+    "endDate" : "2025-03-16T13:13:59Z",
+    "stepCount" : 38
+  },
+  {
+    "endDate" : "2025-03-16T13:24:29Z",
+    "stepCount" : 29,
+    "startDate" : "2025-03-16T13:17:09Z"
+  },
+  {
+    "startDate" : "2025-03-16T13:30:05Z",
+    "stepCount" : 875,
+    "endDate" : "2025-03-16T13:40:05Z"
+  },
+  {
+    "startDate" : "2025-03-16T13:30:06Z",
+    "stepCount" : 918,
+    "endDate" : "2025-03-16T13:40:03Z"
+  },
+  {
+    "stepCount" : 185,
+    "endDate" : "2025-03-16T13:50:02Z",
+    "startDate" : "2025-03-16T13:40:05Z"
+  },
+  {
+    "stepCount" : 217,
+    "startDate" : "2025-03-16T13:40:18Z",
+    "endDate" : "2025-03-16T13:49:44Z"
+  },
+  {
+    "startDate" : "2025-03-16T13:50:45Z",
+    "endDate" : "2025-03-16T14:00:45Z",
+    "stepCount" : 197
+  },
+  {
+    "endDate" : "2025-03-16T14:00:45Z",
+    "startDate" : "2025-03-16T13:50:46Z",
+    "stepCount" : 203
+  },
+  {
+    "endDate" : "2025-03-16T14:10:45Z",
+    "stepCount" : 572,
+    "startDate" : "2025-03-16T14:00:45Z"
+  },
+  {
+    "startDate" : "2025-03-16T14:00:45Z",
+    "stepCount" : 451,
+    "endDate" : "2025-03-16T14:05:54Z"
+  },
+  {
+    "endDate" : "2025-03-16T14:20:47Z",
+    "startDate" : "2025-03-16T14:10:50Z",
+    "stepCount" : 201
+  },
+  {
+    "endDate" : "2025-03-16T14:25:34Z",
+    "stepCount" : 48,
+    "startDate" : "2025-03-16T14:16:31Z"
+  },
+  {
+    "endDate" : "2025-03-16T14:26:22Z",
+    "startDate" : "2025-03-16T14:21:48Z",
+    "stepCount" : 137
+  },
+  {
+    "endDate" : "2025-03-16T14:42:54Z",
+    "startDate" : "2025-03-16T14:32:55Z",
+    "stepCount" : 182
+  },
+  {
+    "startDate" : "2025-03-16T14:42:57Z",
+    "endDate" : "2025-03-16T14:52:36Z",
+    "stepCount" : 183
+  },
+  {
+    "endDate" : "2025-03-16T15:01:52Z",
+    "startDate" : "2025-03-16T14:54:21Z",
+    "stepCount" : 115
+  },
+  {
+    "stepCount" : 126,
+    "startDate" : "2025-03-16T15:05:22Z",
+    "endDate" : "2025-03-16T15:15:22Z"
+  },
+  {
+    "endDate" : "2025-03-16T15:07:43Z",
+    "startDate" : "2025-03-16T15:07:38Z",
+    "stepCount" : 14
+  },
+  {
+    "stepCount" : 60,
+    "startDate" : "2025-03-16T15:15:22Z",
+    "endDate" : "2025-03-16T15:20:42Z"
+  },
+  {
+    "endDate" : "2025-03-16T15:32:14Z",
+    "stepCount" : 29,
+    "startDate" : "2025-03-16T15:28:16Z"
+  },
+  {
+    "stepCount" : 64,
+    "endDate" : "2025-03-16T15:48:38Z",
+    "startDate" : "2025-03-16T15:39:30Z"
+  },
+  {
+    "startDate" : "2025-03-16T15:45:51Z",
+    "endDate" : "2025-03-16T15:49:32Z",
+    "stepCount" : 61
+  },
+  {
+    "startDate" : "2025-03-16T15:51:09Z",
+    "endDate" : "2025-03-16T15:56:31Z",
+    "stepCount" : 27
+  },
+  {
+    "stepCount" : 113,
+    "startDate" : "2025-03-16T15:53:05Z",
+    "endDate" : "2025-03-16T16:02:08Z"
+  },
+  {
+    "startDate" : "2025-03-16T16:03:12Z",
+    "stepCount" : 74,
+    "endDate" : "2025-03-16T16:12:13Z"
+  },
+  {
+    "endDate" : "2025-03-16T16:24:46Z",
+    "stepCount" : 152,
+    "startDate" : "2025-03-16T16:14:46Z"
+  },
+  {
+    "stepCount" : 230,
+    "startDate" : "2025-03-16T16:25:40Z",
+    "endDate" : "2025-03-16T16:35:32Z"
+  },
+  {
+    "startDate" : "2025-03-16T16:35:47Z",
+    "endDate" : "2025-03-16T16:45:37Z",
+    "stepCount" : 402
+  },
+  {
+    "stepCount" : 431,
+    "startDate" : "2025-03-16T16:39:42Z",
+    "endDate" : "2025-03-16T16:49:31Z"
+  },
+  {
+    "endDate" : "2025-03-16T16:55:36Z",
+    "startDate" : "2025-03-16T16:45:37Z",
+    "stepCount" : 449
+  },
+  {
+    "endDate" : "2025-03-16T17:00:24Z",
+    "startDate" : "2025-03-16T16:50:25Z",
+    "stepCount" : 302
+  },
+  {
+    "endDate" : "2025-03-16T17:05:28Z",
+    "stepCount" : 383,
+    "startDate" : "2025-03-16T16:55:36Z"
+  },
+  {
+    "endDate" : "2025-03-16T17:10:24Z",
+    "startDate" : "2025-03-16T17:00:27Z",
+    "stepCount" : 615
+  },
+  {
+    "endDate" : "2025-03-16T17:15:36Z",
+    "startDate" : "2025-03-16T17:05:39Z",
+    "stepCount" : 360
+  },
+  {
+    "startDate" : "2025-03-16T17:10:26Z",
+    "endDate" : "2025-03-16T17:20:26Z",
+    "stepCount" : 425
+  },
+  {
+    "endDate" : "2025-03-16T17:23:14Z",
+    "stepCount" : 274,
+    "startDate" : "2025-03-16T17:15:41Z"
+  },
+  {
+    "endDate" : "2025-03-16T17:30:23Z",
+    "startDate" : "2025-03-16T17:20:26Z",
+    "stepCount" : 157
+  },
+  {
+    "endDate" : "2025-03-16T17:37:33Z",
+    "stepCount" : 266,
+    "startDate" : "2025-03-16T17:27:56Z"
+  },
+  {
+    "endDate" : "2025-03-16T17:30:51Z",
+    "stepCount" : 21,
+    "startDate" : "2025-03-16T17:30:38Z"
+  },
+  {
+    "startDate" : "2025-03-16T17:38:47Z",
+    "stepCount" : 153,
+    "endDate" : "2025-03-16T17:48:19Z"
+  },
+  {
+    "endDate" : "2025-03-16T17:44:19Z",
+    "startDate" : "2025-03-16T17:41:51Z",
+    "stepCount" : 66
+  },
+  {
+    "stepCount" : 169,
+    "startDate" : "2025-03-16T17:49:38Z",
+    "endDate" : "2025-03-16T17:59:20Z"
+  },
+  {
+    "startDate" : "2025-03-16T17:59:58Z",
+    "endDate" : "2025-03-16T18:09:27Z",
+    "stepCount" : 160
+  },
+  {
+    "endDate" : "2025-03-16T18:12:21Z",
+    "stepCount" : 34,
+    "startDate" : "2025-03-16T18:07:18Z"
+  },
+  {
+    "startDate" : "2025-03-16T18:11:48Z",
+    "stepCount" : 241,
+    "endDate" : "2025-03-16T18:20:13Z"
+  },
+  {
+    "stepCount" : 321,
+    "startDate" : "2025-03-16T18:21:50Z",
+    "endDate" : "2025-03-16T18:31:50Z"
+  },
+  {
+    "endDate" : "2025-03-16T18:28:36Z",
+    "stepCount" : 85,
+    "startDate" : "2025-03-16T18:24:26Z"
+  },
+  {
+    "startDate" : "2025-03-16T18:31:53Z",
+    "stepCount" : 178,
+    "endDate" : "2025-03-16T18:41:37Z"
+  },
+  {
+    "startDate" : "2025-03-16T18:35:31Z",
+    "stepCount" : 59,
+    "endDate" : "2025-03-16T18:38:12Z"
+  },
+  {
+    "endDate" : "2025-03-16T18:51:42Z",
+    "startDate" : "2025-03-16T18:42:05Z",
+    "stepCount" : 137
+  },
+  {
+    "endDate" : "2025-03-16T19:01:13Z",
+    "stepCount" : 99,
+    "startDate" : "2025-03-16T18:52:18Z"
+  },
+  {
+    "startDate" : "2025-03-16T19:03:14Z",
+    "endDate" : "2025-03-16T19:13:11Z",
+    "stepCount" : 194
+  }
+]

@@ -56,24 +56,24 @@ class OnboardingViewModel {
     
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
-            return "Continue"
+            return String(localized: "Continue")
         }
 
         switch lastDestination {
         case .appleWatchConnection:
-            return "Continue"
+            return String(localized: "Continue")
         case .notifications:
-            return didCompleteNotificationsRequest ? "Continue" : "Allow Notifications"
+            return didCompleteNotificationsRequest ? String(localized: "Continue") : String(localized: "Allow Notifications")
         case .appleHealth:
-            return didCompleteHealthAuthorization ? "Continue" : "Allow Health Access"
+            return didCompleteHealthAuthorization ? String(localized: "Continue") : String(localized: "Allow Health Access")
         case .mainFeatures:
-            return "Continue"
+            return String(localized: "Continue")
         case .modeOfUse:
-            return "Continue"
+            return String(localized: "Continue")
         case .activityPromotingFeatures:
-            return "Continue"
+            return String(localized: "Continue")
         case .disclaimer:
-            return "Finish"
+            return String(localized: "Finish")
         }
     }
 
@@ -107,45 +107,45 @@ class OnboardingViewModel {
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
             icon: "figure.run",
-            title: "Support for Activity Pacing",
-            description: "Better manage your physical and mental energy by regulating your activity levels."
+            title: String(localized: "Support for Activity Pacing"),
+            description: String(localized: "Better manage your physical and mental energy by regulating your activity levels.")
         ),
         KeyFeatureItem(
             icon: "book.pages.fill",
-            title: "Diary on Activities & Energy",
-            description: "Reflection your activities, energy management, moods and symptoms."
+            title: String(localized: "Diary on Activities & Energy"),
+            description: String(localized: "Reflection your activities, energy management, moods and symptoms.")
         ),
         KeyFeatureItem(
             icon: "applewatch",
-            title: "Apple Watch Sync",
-            description: "Amend your reflection with biometric data and receive reminders for reflection."
+            title: String(localized: "Apple Watch Sync"),
+            description: String(localized: "Amend your reflection with biometric data and receive reminders for reflection.")
         ),
         KeyFeatureItem(
             icon: "chart.xyaxis.line",
-            title: "Insights",
-            description: "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline."
+            title: String(localized: "Insights"),
+            description: String(localized: "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline.")
         )
     ]
 
     let mainFeatures: [MainFeatureItem] = [
         MainFeatureItem(
             icon: "flame",
-            title: "Energy & Activity Pacing",
-            description: "Better manage your physical and mental energy by regulating your activity levels.",
+            title: String(localized: "Energy & Activity Pacing"),
+            description: String(localized: "Better manage your physical and mental energy by regulating your activity levels."),
             points: [
-                "Timelines of your physical activity (steps, heart rate and others)",
-                "Overlays of your reflections on activity & energy",
-                "Visually correlate activities, energy levels and reflections"
+                String(localized: "Timelines of your physical activity (steps, heart rate and others)"),
+                String(localized: "Overlays of your reflections on activity & energy"),
+                String(localized: "Visually correlate activities, energy levels and reflections")
             ],
             image: "Main Feature 1"
         ),
         MainFeatureItem(
             icon: "book.pages",
-            title: "Reflections of Activities & Energy Levels",
-            description: "Add reflections on your activities, energy management, moods and symptoms.",
+            title: String(localized: "Reflections of Activities & Energy Levels"),
+            description: String(localized: "Add reflections on your activities, energy management, moods and symptoms."),
             points: [
-                "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day",
-                "Manually add and edit reflections anytime"
+                String(localized: "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day"),
+                String(localized: "Manually add and edit reflections anytime")
             ],
             image: "Main Feature 2"
         )
@@ -154,60 +154,60 @@ class OnboardingViewModel {
     let activityPromotingFeatures: [ActivityPromotingFeature] = [
         ActivityPromotingFeature(
             icon: "figure.stand",
-            title: "Disabling Stand Reminders",
+            title: String(localized: "Disabling Stand Reminders"),
             steps:
-                """
+                String(localized: """
                 1. Open the Watch app on your iPhone.
                 2. Tap on 'My Watch' at the bottom.
                 3. Scroll down and tap on 'Activity'.
                 4. Toggle off 'Stand Reminders'.
-                """
+                """)
         ),
         ActivityPromotingFeature(
             icon: "bell.badge",
-            title: "Disabling Activity Reminders",
+            title: String(localized: "Disabling Activity Reminders"),
             steps:
-                """
+                String(localized: """
                 1. Open the Watch app on your iPhone.
                 2. Tap on 'My Watch'.
                 3. Tap on 'Notifications'.
                 4. Select 'Activity'.
                 5. Toggle off 'Activity Reminders'.
-                """
+                """)
         ),
         ActivityPromotingFeature(
             icon: "figure.pool.swim",
-            title: "Disabling Exercise Notifications",
+            title: String(localized: "Disabling Exercise Notifications"),
             steps:
-                """
+                String(localized: """
                 1. Open the Watch app on your iPhone.
                 2. Tap on 'My Watch'.
                 3. Tap on 'Notifications'.
                 4. Select 'Activity'.
                 5. Toggle off 'Workout Reminders'.
-                """
+                """)
         ),
         ActivityPromotingFeature(
             icon: "figure.walk",
-            title: "Adjust Move Goals",
+            title: String(localized: "Adjust Move Goals"),
             steps:
-                """
+                String(localized: """
                 1. Open the Activity app on your Apple Watch.
                 2. Firmly press the display.
                 3. Tap 'Change Move Goal'.
                 4. Adjust the goal to a level that suits your current capabilities.
-                """
+                """)
         ),
         ActivityPromotingFeature(
             icon: "aqi.low",
-            title: "Disabling Breathe Reminders",
+            title: String(localized: "Disabling Breathe Reminders"),
             steps:
-                """
+                String(localized: """
                 1. Open the Activity app on your Apple Watch.
                 2. Firmly press the display.
                 3. Tap 'Change Move Goal'.
                 4. Adjust the goal to a level that suits your current capabilities.
-                """
+                """)
         )
     ]
 

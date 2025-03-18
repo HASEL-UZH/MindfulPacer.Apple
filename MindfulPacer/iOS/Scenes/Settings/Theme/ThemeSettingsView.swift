@@ -31,7 +31,7 @@ extension SettingsView {
                             HStack {
                                 IconLabel(
                                     icon: theme.icon,
-                                    title: theme.rawValue,
+                                    title: theme.localized,
                                     description: theme.description,
                                     titleColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
                                     iconColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,

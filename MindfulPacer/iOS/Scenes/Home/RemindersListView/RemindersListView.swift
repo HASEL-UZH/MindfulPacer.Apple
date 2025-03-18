@@ -55,7 +55,7 @@ struct RemindersListView: View {
             ContentUnavailableView {
                 Label("No Reminders", systemImage: "bell.badge.fill")
             } description: {
-                Text("You have not created any Reminders.")
+                Text("You have not created any reminders.")
             } actions: {
                 Button {
                     viewModel.presentSheet(.createReminderView(nil))

@@ -23,7 +23,7 @@ extension HomeView {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "bell.badge.fill",
-                        title: "Reminders",
+                        title: String(localized: "Reminders"),
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
@@ -35,8 +35,8 @@ extension HomeView {
                     if viewModel.reminders.isEmpty {
                         EmptyStateView(
                             image: "bell.badge.slash",
-                            title: "No Reminders",
-                            description: "Tap the + button to create a Reminder."
+                            title: String(localized: "No Reminders"),
+                            description: String(localized: "Tap the + button to create a reminder.")
                         )
                     } else {
                         recentRemindersSummary
@@ -71,13 +71,17 @@ extension HomeView {
         }
 
         // MARK: Create Reminder Button
-
+        
         private var createReminderButton: some View {
             Button {
                 viewModel.presentSheet(.createReminderView(nil))
             } label: {
-                IconLabel(icon: "plus.circle", title: "Create Reminder", labelColor: Color("BrandPrimary"))
-                    .font(.subheadline.weight(.semibold))
+                IconLabel(
+                    icon: "plus.circle",
+                    title: String(localized: "Create Reminder"),
+                    labelColor: Color("BrandPrimary")
+                )
+                .font(.subheadline.weight(.semibold))
             }
         }
     }

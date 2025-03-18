@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Main Features"
+                title: String(localized: "Main Features")
             ) {
                 VStack(spacing: 16) {
                     ForEach(viewModel.mainFeatures, id: \.title) { feature in

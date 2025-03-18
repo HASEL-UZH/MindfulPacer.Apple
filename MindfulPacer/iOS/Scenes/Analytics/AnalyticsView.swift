@@ -138,7 +138,7 @@ struct AnalyticsView: View {
                 } label: {
                     IconLabel(
                         icon: "plus.circle",
-                        title: "Create Reflection",
+                        title: String(localized: "Create Reflection"),
                         labelColor: Color("BrandPrimary")
                     )
                     .font(.subheadline.weight(.semibold))
@@ -149,8 +149,8 @@ struct AnalyticsView: View {
             if viewModel.reflectionsInPeriod.isEmpty {
                 EmptyStateView(
                     image: "book.pages",
-                    title: "No Reflections",
-                    description: "There are no reflections within the last \(viewModel.selectedPeriod.description)."
+                    title: String(localized: "No Reflections"),
+                    description: String(localized: "There are no reflections within the last \(viewModel.selectedPeriod.description).")
                 )
             } else {
                 RoundedList {

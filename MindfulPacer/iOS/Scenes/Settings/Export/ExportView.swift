@@ -26,7 +26,7 @@ struct ExportView: View {
             }
             
             Section {
-                PrimaryButton(title: "Export") {
+                PrimaryButton(title: String(localized: "Export")) {
                     viewModel.onExportTapped()
                 }
             }
@@ -53,7 +53,7 @@ struct ExportView: View {
         HStack {
             IconLabel(
                 icon: "externaldrive",
-                title: "Data to Export",
+                title: String(localized: "Data to Export"),
                 labelColor: .brandPrimary,
                 background: true
             )
@@ -80,7 +80,7 @@ struct ExportView: View {
         HStack {
             IconLabel(
                 icon: "document",
-                title: "File Format",
+                title: String(localized: "File Format"),
                 labelColor: .brandPrimary,
                 background: true
             )

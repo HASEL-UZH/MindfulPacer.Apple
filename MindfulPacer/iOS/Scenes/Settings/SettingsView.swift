@@ -53,27 +53,27 @@ struct SettingsView: View {
                     sectionHeader(title: "General")
                 }
                 
-//                Section {
-//                    themeSettings
-//                } header: {
-//                    sectionHeader(title: "Appearance")
-//                }
-//                
-//                Section {
-//                    exportData
-//                } header: {
-//                    sectionHeader(title: "Data")
-//                }
-//                
-//                Section {
-//                    contactUs
-//                    roadmap
-//                    moreInfo
-//                    privacyPolicy
-//                    disclaimer
-//                } header: {
-//                    sectionHeader(title: "About")
-//                }
+                Section {
+                    themeSettings
+                } header: {
+                    sectionHeader(title: "Appearance")
+                }
+                
+                Section {
+                    exportData
+                } header: {
+                    sectionHeader(title: "Data")
+                }
+                
+                Section {
+                    contactUs
+                    roadmap
+                    moreInfo
+                    privacyPolicy
+                    disclaimer
+                } header: {
+                    sectionHeader(title: "About")
+                }
                 
                 Section {
                     logos
@@ -154,8 +154,8 @@ struct SettingsView: View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
             RoundedListCell(
                 icon: "circle.lefthalf.striped.horizontal.inverse",
-                title: "Theme",
-                description: "Change the app theme",
+                title: String(localized: "Theme"),
+                description: String(localized: "Change the app theme"),
                 accessoryIndicatorText: theme.rawValue,
                 accessoryIndicatorIcon: "chevron.right"
             )
@@ -168,8 +168,8 @@ struct SettingsView: View {
         Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
             IconLabel(
                 image: "MindfulPacer Expanded Icon",
-                title: "MindfulPacer Expanded",
-                description: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors",
+                title: String(localized: "MindfulPacer Expanded"),
+                description: String(localized: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors"),
                 labelColor: Color("BrandPrimary"),
                 background: true
             )
@@ -186,7 +186,7 @@ struct SettingsView: View {
         NavigationLink(value: SettingsNavigationDestination.export) {
             RoundedListCell(
                 icon: "tray.and.arrow.up.fill",
-                title: "Export Data",
+                title: String(localized: "Export Data"),
                 accessoryIndicatorIcon: "chevron.right"
             )
         }
@@ -206,7 +206,7 @@ struct SettingsView: View {
         } label: {
             RoundedListCell(
                 icon: "envelope",
-                title: "Contact Us",
+                title: String(localized: "Contact Us"),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -216,11 +216,11 @@ struct SettingsView: View {
     
     private var moreInfo: some View {
         Button {
-            openURL(URL(string: "https://mindfulpacer.ch")!)
+            openURL(viewModel.landingPageURL)
         } label: {
             RoundedListCell(
                 icon: "info",
-                title: "More Info",
+                title: String(localized: "More Info"),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -230,11 +230,11 @@ struct SettingsView: View {
     
     private var privacyPolicy: some View {
         Button {
-            openURL(URL(string: "https://mindfulpacer.ch/privacy-policy/")!)
+            openURL(viewModel.privacyPolicyURL)
         } label: {
             RoundedListCell(
                 icon: "hand.raised",
-                title: "Privacy Policy",
+                title: String(localized: "Privacy Policy"),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -248,8 +248,8 @@ struct SettingsView: View {
         } label: {
             RoundedListCell(
                 icon: "square.stack",
-                title: "Onboarding",
-                description: "View the onboarding again",
+                title: String(localized: "Onboarding"),
+                description: String(localized: "View the onboarding again"),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -263,8 +263,8 @@ struct SettingsView: View {
         } label: {
             RoundedListCell(
                 icon: "map",
-                title: "Roadmap",
-                description: "View upcoming features",
+                title: String(localized: "Roadmap"),
+                description: String(localized: "View upcoming features"),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -275,13 +275,13 @@ struct SettingsView: View {
     private var disclaimer: some View {
         RoundedListCell(
             icon: "exclamationmark.triangle",
-            title: "Disclaimer",
+            title: String(localized: "Disclaimer"),
             description:
-                """
-                MindfulPacer is a spin-off project from the University of Zurich, developed in collaboration between the Human Aspects of Software Engineering Lab and the Clinic for Immunology.
+                String(localized: """
+                MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.
                 
                 MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
-                """
+                """)
         )
     }
     
@@ -292,7 +292,7 @@ struct SettingsView: View {
             HStack {
                 IconLabel(
                     icon: "building.columns",
-                    title: "Supported By",
+                    title: String(localized: "Supported By"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -310,8 +310,6 @@ struct SettingsView: View {
                             .resizable()
                         Image(.longCovid)
                             .resizable()
-                        Image(.USZ)
-                            .resizable()
                     }
                     .scaledToFit()
                     .frame(maxHeight: 128)
@@ -322,22 +320,6 @@ struct SettingsView: View {
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
-        
-//        LazyVGrid(columns: [GridItem(spacing: 16), GridItem(spacing: 16)], spacing: 16) {
-//            Group {
-//                Image(.dizhLogo)
-//                    .resizable()
-//                Image(.uzhLogo)
-//                    .resizable()
-//                Image(.longCovidLogo)
-//                    .resizable()
-//                Image(.uszLogo)
-//                    .resizable()
-//            }
-//            .aspectRatio(1.0, contentMode: .fit)
-//        }
-//        .frame(maxWidth: .infinity, alignment: .center)
-//        .padding(.horizontal)
     }
     
     // MARK: App Version

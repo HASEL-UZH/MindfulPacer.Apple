@@ -22,11 +22,11 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Mode of Use",
+                title: String(localized: "Mode of Use"),
                 showSkipButton: false
             ) {
                 VStack(spacing: 16) {
-                    InfoBox(text: "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings.")
+                    InfoBox(text: String(localized: "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings."))
                     
                     ForEach(ModeOfUse.allCases) { mode in
                         SelectableButton(
@@ -37,7 +37,7 @@ extension OnboardingView {
                         } label: {
                             IconLabel(
                                 image: mode.icon,
-                                title: mode.name,
+                                title: mode.localized,
                                 description: mode.description,
                                 titleColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
                                 iconColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,

@@ -22,7 +22,7 @@ extension HomeView {
             IconLabelGroupBox(
                 label: IconLabel(
                     icon: "heart.fill",
-                    title: "Heart Rate",
+                    title: String(localized: "Heart Rate"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )

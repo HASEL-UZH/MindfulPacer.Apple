@@ -57,7 +57,7 @@ extension CreateReminderView {
                     HStack {
                         IconLabel(
                             icon: "circle.fill",
-                            title: reminderType.rawValue,
+                            title: reminderType.localized,
                             titleColor: viewModel.selectedReminderType == reminderType ? Color("BrandPrimary") : Color.primary,
                             iconColor: viewModel.selectedReminderType == reminderType ? Color("BrandPrimary") : reminderType.color
                         )

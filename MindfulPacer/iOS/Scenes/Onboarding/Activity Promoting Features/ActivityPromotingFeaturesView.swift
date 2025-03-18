@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Disable Activity Promoting Features"
+                title: String(localized: "Disable Activity Promoting Features")
             ) {
                 VStack(spacing: 16) {
                     Image(systemName: "square.slash.fill")
@@ -31,7 +31,7 @@ extension OnboardingView {
                         .foregroundStyle(Color("BrandPrimary"))
                         .symbolRenderingMode(.hierarchical)
 
-                    Text("Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these.")
+                    Text("Apple has many activity-promoting features on the iPhone and Apple Watch. If you want to disable these features, follow these steps:")
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     ForEach(viewModel.activityPromotingFeatures, id: \.title) { feature in

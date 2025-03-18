@@ -80,15 +80,18 @@ struct RoadmapView: View {
                 background: true
             ),
             description:
-                Text(roadmapItem.description)
+                Text(roadmapItem.comment)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         ) {
             VStack(alignment: .leading, spacing: 16) {
-                Text(roadmapItem.comment)
-                IconLabel(title: roadmapItem.status.rawValue.capitalized, labelColor: roadmapItem.status.color)
-                    .font(.footnote).fontWeight(.semibold)
-                    .iconLabelStyle(.pill)
+                Text(roadmapItem.description)
+                IconLabel(
+                    title: roadmapItem.status.rawValue.capitalized,
+                    labelColor: roadmapItem.status.color
+                )
+                .font(.footnote).fontWeight(.semibold)
+                .iconLabelStyle(.pill)
             }
         }
         .iconLabelGroupBoxStyle(.divider)

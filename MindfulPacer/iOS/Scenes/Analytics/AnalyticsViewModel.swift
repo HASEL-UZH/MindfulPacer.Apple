@@ -158,7 +158,7 @@ class AnalyticsViewModel {
     }
 
     var chartEmptyStateTitle: String {
-        selectedMeasurementType == .heartRate ? "No heart rate data" : "No steps data"
+        selectedMeasurementType == .heartRate ? String(localized: "No heart rate data") : String(localized: "No steps data")
     }
     
     var annotationViewFormat: Date.FormatStyle {

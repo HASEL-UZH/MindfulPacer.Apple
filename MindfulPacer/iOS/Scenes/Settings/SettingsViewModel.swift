@@ -30,14 +30,18 @@ enum Theme: String, CaseIterable, Identifiable {
         }
     }
     
+    var localized: String {
+        NSLocalizedString(rawValue, comment: "Theme setting option")
+    }
+    
     var description: String {
         switch self {
         case .system:
-            "Use the same setting as your device"
+            String(localized: "Use the same setting as your device")
         case .light:
-            "Always use light mode"
+            String(localized: "Always use light mode")
         case .dark:
-            "Always use dark mode"
+            String(localized: "Always use dark mode")
         }
     }
     
@@ -162,6 +166,18 @@ class SettingsViewModel {
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
     var contactSupportSubject: String = "MindfulPacer - Feedback"
+    
+    var isGermanLanguage: Bool {
+        Locale.current.language.languageCode?.identifier == "de"
+    }
+    
+    var privacyPolicyURL: URL {
+        isGermanLanguage ? URL(string: "https://mindfulpacer.ch/datenschutzbestimmungen/")! : URL(string: "https://mindfulpacer.ch/en/privacy-policy/")!
+    }
+    
+    var landingPageURL: URL {
+        isGermanLanguage ? URL(string: "https://mindfulpacer.ch/")! : URL(string: "https://mindfulpacer.ch/en/mindfulpacer-english/")!
+    }
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"

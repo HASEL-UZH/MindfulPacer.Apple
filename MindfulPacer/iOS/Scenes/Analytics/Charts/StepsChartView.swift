@@ -24,7 +24,7 @@ struct StepsChartView: View {
                 EmptyStateView(
                     image: viewModel.chartEmptyStateImage,
                     title: viewModel.chartEmptyStateTitle,
-                    description: "Synchronize your smartwatch"
+                    description: String(localized: "Synchronize your smartwatch")
                 )
             } else {
                 Chart {

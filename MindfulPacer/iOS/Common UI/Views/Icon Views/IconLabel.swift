@@ -100,7 +100,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(configuration.title)
                                 .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                                .truncationMode(configuration.truncationMode) // Apply truncation mode
+                                .truncationMode(configuration.truncationMode)
                             Text(description)
                                 .font(.subheadline)
                                 .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
@@ -126,7 +126,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                 Label {
                     Text(configuration.title)
                         .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(configuration.truncationMode) // Apply truncation mode
+                        .truncationMode(configuration.truncationMode)
                 } icon: {
                     Icon(
                         name: configuration.icon,

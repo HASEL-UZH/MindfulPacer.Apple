@@ -193,13 +193,13 @@ extension Reflection {
 
         var displayName: String {
             switch self {
-            case .wellBeing: return "Subjective Well-being"
-            case .fatigue: return "Fatigue"
-            case .shortnessOfBreath: return "Shortness of Breath"
-            case .sleepDisorder: return "Sleep Disorder"
-            case .cognitiveImpairment: return "Cognitive Impairment"
-            case .physicalPain: return "Physical Pain"
-            case .depressionOrAnxiety: return "Depression/Anxiety"
+            case .wellBeing: return String(localized: "Subjective Well-being")
+            case .fatigue: return String(localized: "Fatigue")
+            case .shortnessOfBreath: return String(localized: "Shortness of Breath")
+            case .sleepDisorder: return String(localized: "Sleep Disorder")
+            case .cognitiveImpairment: return String(localized: "Cognitive Impairment")
+            case .physicalPain: return String(localized: "Physical Pain")
+            case .depressionOrAnxiety: return String(localized: "Depression/Anxiety")
             }
         }
         
@@ -318,92 +318,92 @@ struct DefaultActivityData {
     // swiftlint:disable:next function_body_length
     static func initializeData() {
         // MARK: Activities
-        let movement = Activity(name: "Movement", icon: "figure.run")
-        let transportation = Activity(name: "Transportation", icon: "tram")
-        let household = Activity(name: "Household", icon: "house")
-        let selfcare = Activity(name: "Selfcare", icon: "shower")
-        let cognitive = Activity(name: "Cognitive", icon: "brain")
-        let interactionsAndSocial = Activity(name: "Interactions & Social", icon: "rectangle.3.group.bubble")
-        let work = Activity(name: "Work", icon: "briefcase")
-        let reminders = Activity(name: "Reminders", icon: "bell.badge")
-        let others = Activity(name: "Others", icon: "ellipsis")
+        let movement = Activity(name: String(localized: "Movement"), icon: "figure.run")
+        let transportation = Activity(name: String(localized: "Transportation"), icon: "tram")
+        let household = Activity(name: String(localized: "Household"), icon: "house")
+        let selfcare = Activity(name: String(localized: "Selfcare"), icon: "shower")
+        let cognitive = Activity(name: String(localized: "Cognitive"), icon: "brain")
+        let interactionsAndSocial = Activity(name: String(localized: "Interactions & Social"), icon: "rectangle.3.group.bubble")
+        let work = Activity(name: String(localized: "Work"), icon: "briefcase")
+        let reminders = Activity(name: String(localized: "Reminders"), icon: "bell.badge")
+        let others = Activity(name: String(localized: "Others"), icon: "ellipsis")
 
         // MARK: Movement Subactivities
-        let standUp = Subactivity(name: "Stand Up", icon: "figure.stand", activity: movement)
-        let walking = Subactivity(name: "Walking", icon: "figure.walk", activity: movement)
-        let running = Subactivity(name: "Running", icon: "figure.run", activity: movement)
-        let walkingTheStairs = Subactivity(name: "Walking the Stairs", icon: "figure.stairs", activity: movement)
-        let bikingMovement = Subactivity(name: "Biking", icon: "figure.outdoor.cycle", activity: movement)
-        let hiking = Subactivity(name: "Hiking", icon: "figure.hiking", activity: movement)
-        let yoga = Subactivity(name: "Yoga", icon: "figure.yoga", activity: movement)
-        let stretching = Subactivity(name: "Stretching", icon: "figure.pilates", activity: movement)
-        let dancing = Subactivity(name: "Dancing", icon: "figure.dance", activity: movement)
-        let swimming = Subactivity(name: "Swimming", icon: "figure.pool.swim", activity: movement)
-        let otherMovement = Subactivity(name: "Other Movement", icon: "ellipsis", activity: movement)
+        let standUp = Subactivity(name: String(localized: "Stand Up"), icon: "figure.stand", activity: movement)
+        let walking = Subactivity(name: String(localized: "Walking"), icon: "figure.walk", activity: movement)
+        let running = Subactivity(name: String(localized: "Running"), icon: "figure.run", activity: movement)
+        let walkingTheStairs = Subactivity(name: String(localized: "Walking the Stairs"), icon: "figure.stairs", activity: movement)
+        let bikingMovement = Subactivity(name: String(localized: "Biking"), icon: "figure.outdoor.cycle", activity: movement)
+        let hiking = Subactivity(name: String(localized: "Hiking"), icon: "figure.hiking", activity: movement)
+        let yoga = Subactivity(name: String(localized: "Yoga"), icon: "figure.yoga", activity: movement)
+        let stretching = Subactivity(name: String(localized: "Stretching"), icon: "figure.pilates", activity: movement)
+        let dancing = Subactivity(name: String(localized: "Dancing"), icon: "figure.dance", activity: movement)
+        let swimming = Subactivity(name: String(localized: "Swimming"), icon: "figure.pool.swim", activity: movement)
+        let otherMovement = Subactivity(name: String(localized: "Other Movement"), icon: "ellipsis", activity: movement)
 
-        // MARK: Transporation Subactivities
-        let drivingCar = Subactivity(name: "Driving Car", icon: "car", activity: transportation)
-        let publicTransporation = Subactivity(name: "Public Transporation", icon: "bus", activity: transportation)
-        let bikingTransporation = Subactivity(name: "Biking", icon: "bicycle", activity: transportation)
-        let flying = Subactivity(name: "Flying", icon: "airplane", activity: transportation)
-        let otherTransportation = Subactivity(name: "Other Transportation", icon: "ellipsis", activity: transportation)
+        // MARK: Transportation Subactivities
+        let drivingCar = Subactivity(name: String(localized: "Driving Car"), icon: "car", activity: transportation)
+        let publicTransportation = Subactivity(name: String(localized: "Public Transportation"), icon: "bus", activity: transportation)
+        let bikingTransportation = Subactivity(name: String(localized: "Biking"), icon: "bicycle", activity: transportation)
+        let flying = Subactivity(name: String(localized: "Flying"), icon: "airplane", activity: transportation)
+        let otherTransportation = Subactivity(name: String(localized: "Other Transportation"), icon: "ellipsis", activity: transportation)
 
         // MARK: Household Subactivities
-        let washingClothes = Subactivity(name: "Washing Clothes", icon: "washer", activity: household)
-        let washingDishes = Subactivity(name: "Washing Dishes", icon: "dishwasher", activity: household)
-        let cleaning = Subactivity(name: "Cleaning", icon: "bubbles.and.sparkles", activity: household)
-        let cooking = Subactivity(name: "Cooking", icon: "frying.pan", activity: household)
-        let tidyingUp = Subactivity(name: "Tidying Up", icon: "curtains.closed", activity: household)
-        let groceryShopping = Subactivity(name: "Grocery Shopping", icon: "basket", activity: household)
-        let gardening = Subactivity(name: "Gardening", icon: "sprinkler.and.droplets", activity: household)
-        let fixingThings = Subactivity(name: "Fixing Things", icon: "hammer", activity: household)
+        let washingClothes = Subactivity(name: String(localized: "Washing Clothes"), icon: "washer", activity: household)
+        let washingDishes = Subactivity(name: String(localized: "Washing Dishes"), icon: "dishwasher", activity: household)
+        let cleaning = Subactivity(name: String(localized: "Cleaning"), icon: "bubbles.and.sparkles", activity: household)
+        let cooking = Subactivity(name: String(localized: "Cooking"), icon: "frying.pan", activity: household)
+        let tidyingUp = Subactivity(name: String(localized: "Tidying Up"), icon: "curtains.closed", activity: household)
+        let groceryShopping = Subactivity(name: String(localized: "Grocery Shopping"), icon: "basket", activity: household)
+        let gardening = Subactivity(name: String(localized: "Gardening"), icon: "sprinkler.and.droplets", activity: household)
+        let fixingThings = Subactivity(name: String(localized: "Fixing Things"), icon: "hammer", activity: household)
 
         // MARK: Selfcare Subactivities
-        let personalHygiene = Subactivity(name: "Personal Hygiene", icon: "shower", activity: selfcare)
-        let sleep = Subactivity(name: "Sleep", icon: "bed.double", activity: selfcare)
-        let gettingDressed = Subactivity(name: "Getting Dress", icon: "tshirt", activity: selfcare)
-        let eating = Subactivity(name: "Eating", icon: "fork.knife", activity: selfcare)
-        let meditation = Subactivity(name: "Meditation", icon: "apple.meditate", activity: selfcare)
-        let visitingDoctorOrTherapist = Subactivity(name: "Visiting Doctor or Therapist", icon: "cross", activity: selfcare)
-        let exercising = Subactivity(name: "Exercising", icon: "figure.strengthtraining.traditional", activity: selfcare)
-        let relaxation = Subactivity(name: "Relaxation", icon: "beach.umbrella", activity: selfcare)
+        let personalHygiene = Subactivity(name: String(localized: "Personal Hygiene"), icon: "shower", activity: selfcare)
+        let sleep = Subactivity(name: String(localized: "Sleep"), icon: "bed.double", activity: selfcare)
+        let gettingDressed = Subactivity(name: String(localized: "Getting Dressed"), icon: "tshirt", activity: selfcare)
+        let eating = Subactivity(name: String(localized: "Eating"), icon: "fork.knife", activity: selfcare)
+        let meditation = Subactivity(name: String(localized: "Meditation"), icon: "apple.meditate", activity: selfcare)
+        let visitingDoctorOrTherapist = Subactivity(name: String(localized: "Visiting Doctor or Therapist"), icon: "cross", activity: selfcare)
+        let exercising = Subactivity(name: String(localized: "Exercising"), icon: "figure.strengthtraining.traditional", activity: selfcare)
+        let relaxation = Subactivity(name: String(localized: "Relaxation"), icon: "beach.umbrella", activity: selfcare)
 
         // MARK: Cognitive Subactivities
-        let thinkingOrBrainstorming = Subactivity(name: "Thinking or Brainstorming", icon: "brain.head.profile", activity: cognitive)
-        let reading = Subactivity(name: "Reading", icon: "book", activity: cognitive)
-        let writing = Subactivity(name: "Writing", icon: "pencil.line", activity: cognitive)
-        let watchingTV = Subactivity(name: "Watching TV", icon: "tv", activity: cognitive)
-        let usingComputerTabletPhone = Subactivity(name: "Using Computer, Tablet, Phone", icon: "macbook.and.iphone", activity: cognitive)
-        let gaming = Subactivity(name: "Gaming", icon: "gamecontroller", activity: cognitive)
-        let readingTheNews = Subactivity(name: "Reading the News", icon: "newspaper", activity: cognitive)
-        let playingMusic = Subactivity(name: "Playing Music", icon: "pianokeys", activity: cognitive)
-        let learningSomething = Subactivity(name: "Learning Something", icon: "globe.desk", activity: cognitive)
+        let thinkingOrBrainstorming = Subactivity(name: String(localized: "Thinking or Brainstorming"), icon: "brain.head.profile", activity: cognitive)
+        let reading = Subactivity(name: String(localized: "Reading"), icon: "book", activity: cognitive)
+        let writing = Subactivity(name: String(localized: "Writing"), icon: "pencil.line", activity: cognitive)
+        let watchingTV = Subactivity(name: String(localized: "Watching TV"), icon: "tv", activity: cognitive)
+        let usingComputerTabletPhone = Subactivity(name: String(localized: "Using Computer, Tablet, Phone"), icon: "macbook.and.iphone", activity: cognitive)
+        let gaming = Subactivity(name: String(localized: "Gaming"), icon: "gamecontroller", activity: cognitive)
+        let readingTheNews = Subactivity(name: String(localized: "Reading the News"), icon: "newspaper", activity: cognitive)
+        let playingMusic = Subactivity(name: String(localized: "Playing Music"), icon: "pianokeys", activity: cognitive)
+        let learningSomething = Subactivity(name: String(localized: "Learning Something"), icon: "globe.desk", activity: cognitive)
 
         // MARK: Interactions & Social Subactivities
-        let meetingCloseFriends = Subactivity(name: "Meeting Close Friends", icon: "person.3", activity: interactionsAndSocial)
-        let meetingNewPeople = Subactivity(name: "Meeting New People", icon: "person.line.dotted.person", activity: interactionsAndSocial)
-        let meetingFamily = Subactivity(name: "Meeting Family", icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
-        let onlineSocializing = Subactivity(name: "Online Socializing", icon: "bubble.left.and.text.bubble.right", activity: interactionsAndSocial)
-        let groupActivities = Subactivity(name: "Group Activities", icon: "person.3.sequence.fill", activity: interactionsAndSocial)
-        let attendingEvents = Subactivity(name: "Attending Events", icon: "theatermasks", activity: interactionsAndSocial)
+        let meetingCloseFriends = Subactivity(name: String(localized: "Meeting Close Friends"), icon: "person.3", activity: interactionsAndSocial)
+        let meetingNewPeople = Subactivity(name: String(localized: "Meeting New People"), icon: "person.line.dotted.person", activity: interactionsAndSocial)
+        let meetingFamily = Subactivity(name: String(localized: "Meeting Family"), icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
+        let onlineSocializing = Subactivity(name: String(localized: "Online Socializing"), icon: "bubble.left.and.text.bubble.right", activity: interactionsAndSocial)
+        let groupActivities = Subactivity(name: String(localized: "Group Activities"), icon: "person.3.sequence.fill", activity: interactionsAndSocial)
+        let attendingEvents = Subactivity(name: String(localized: "Attending Events"), icon: "theatermasks", activity: interactionsAndSocial)
 
         // MARK: Work Subactivities
-        let workOnTasks = Subactivity(name: "Work on Tasks", icon: "desktopcomputer", activity: work)
-        let researchingInformation = Subactivity(name: "Researching Information", icon: "rectangle.and.text.magnifyingglass", activity: work)
-        let meetings = Subactivity(name: "Meetings", icon: "play.laptopcomputer", activity: work)
-        let emailAndChat = Subactivity(name: "Email & Chat", icon: "envelope", activity: work)
-        let helpingOthers = Subactivity(name: "Helping Others", icon: "person.2.badge.gearshape", activity: work)
-        let networking = Subactivity(name: "Networking", icon: "phone.badge.waveform", activity: work)
-        let learning = Subactivity(name: "Learning", icon: "character.book.closed", activity: work)
-        let projectManagement = Subactivity(name: "Project Management", icon: "gearshape.2", activity: work)
-        let breaks = Subactivity(name: "Breaks", icon: "mug", activity: work)
+        let workOnTasks = Subactivity(name: String(localized: "Work on Tasks"), icon: "desktopcomputer", activity: work)
+        let researchingInformation = Subactivity(name: String(localized: "Researching Information"), icon: "rectangle.and.text.magnifyingglass", activity: work)
+        let meetings = Subactivity(name: String(localized: "Meetings"), icon: "play.laptopcomputer", activity: work)
+        let emailAndChat = Subactivity(name: String(localized: "Email & Chat"), icon: "envelope", activity: work)
+        let helpingOthers = Subactivity(name: String(localized: "Helping Others"), icon: "person.2.badge.gearshape", activity: work)
+        let networking = Subactivity(name: String(localized: "Networking"), icon: "phone.badge.waveform", activity: work)
+        let learning = Subactivity(name: String(localized: "Learning"), icon: "character.book.closed", activity: work)
+        let projectManagement = Subactivity(name: String(localized: "Project Management"), icon: "gearshape.2", activity: work)
+        let breaks = Subactivity(name: String(localized: "Breaks"), icon: "mug", activity: work)
 
         // MARK: Reminders Subactivities
-        let steps = Subactivity(name: "Steps", icon: "figure.walk", activity: reminders)
-        let heartRate = Subactivity(name: "Heart Rate", icon: "heart", activity: reminders)
+        let steps = Subactivity(name: String(localized: "Steps"), icon: "figure.walk", activity: reminders)
+        let heartRate = Subactivity(name: String(localized: "Heart Rate"), icon: "heart", activity: reminders)
 
         movement.subactivities = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
-        transportation.subactivities = [drivingCar, publicTransporation, bikingTransporation, flying, otherTransportation]
+        transportation.subactivities = [drivingCar, publicTransportation, bikingTransportation, flying, otherTransportation]
         household.subactivities = [washingClothes, washingDishes, cleaning, cooking, tidyingUp, groceryShopping, gardening, fixingThings]
         selfcare.subactivities = [personalHygiene, sleep, gettingDressed, eating, meditation, visitingDoctorOrTherapist, exercising, relaxation]
         cognitive.subactivities = [thinkingOrBrainstorming, reading, writing, watchingTV, usingComputerTabletPhone, gaming, readingTheNews, playingMusic, learningSomething]
@@ -420,25 +420,25 @@ struct DefaultActivityData {
 @MainActor
 struct DefaultMoodData {
     static var moods: [Mood] = [
-        Mood(emoji: "😊", text: "Happy"),
-        Mood(emoji: "😢", text: "Sad"),
-        Mood(emoji: "😡", text: "Angry"),
-        Mood(emoji: "😍", text: "In love"),
-        Mood(emoji: "😨", text: "Scared"),
-        Mood(emoji: "😅", text: "Nervous"),
-        Mood(emoji: "🤔", text: "Thinking"),
-        Mood(emoji: "😴", text: "Tired"),
-        Mood(emoji: "😎", text: "Cool/Confident"),
-        Mood(emoji: "😭", text: "Crying/Overwhelmed"),
-        Mood(emoji: "🤗", text: "Hugging/Supportive"),
-        Mood(emoji: "😕", text: "Confused"),
-        Mood(emoji: "😏", text: "Smirking"),
-        Mood(emoji: "😱", text: "Shocked"),
-        Mood(emoji: "🤩", text: "Excited"),
-        Mood(emoji: "😒", text: "Unimpressed"),
-        Mood(emoji: "😜", text: "Playful/Teasing"),
-        Mood(emoji: "😔", text: "Disappointed"),
-        Mood(emoji: "🤒", text: "Sick"),
-        Mood(emoji: "😤", text: "Frustrated")
+        Mood(emoji: "😊", text: String(localized: "Happy")),
+        Mood(emoji: "😢", text: String(localized: "Sad")),
+        Mood(emoji: "😡", text: String(localized: "Angry")),
+        Mood(emoji: "😍", text: String(localized: "In love")),
+        Mood(emoji: "😨", text: String(localized: "Scared")),
+        Mood(emoji: "😅", text: String(localized: "Nervous")),
+        Mood(emoji: "🤔", text: String(localized: "Thinking")),
+        Mood(emoji: "😴", text: String(localized: "Tired")),
+        Mood(emoji: "😎", text: String(localized: "Cool/Confident")),
+        Mood(emoji: "😭", text: String(localized: "Crying/Overwhelmed")),
+        Mood(emoji: "🤗", text: String(localized: "Hugging/Supportive")),
+        Mood(emoji: "😕", text: String(localized: "Confused")),
+        Mood(emoji: "😏", text: String(localized: "Smirking")),
+        Mood(emoji: "😱", text: String(localized: "Shocked")),
+        Mood(emoji: "🤩", text: String(localized: "Excited")),
+        Mood(emoji: "😒", text: String(localized: "Unimpressed")),
+        Mood(emoji: "😜", text: String(localized: "Playful/Teasing")),
+        Mood(emoji: "😔", text: String(localized: "Disappointed")),
+        Mood(emoji: "🤒", text: String(localized: "Sick")),
+        Mood(emoji: "😤", text: String(localized: "Frustrated"))
     ]
 }

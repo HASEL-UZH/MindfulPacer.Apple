@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Connect to Apple Health"
+                title: String(localized: "Connect to Apple Health")
             ) {
                 VStack(spacing: 16) {
                     Image("Apple Health Icon Official")
@@ -35,7 +35,7 @@ extension OnboardingView {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                    InfoBox(text: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer.")
+                    InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."))
                 }
             }
         }

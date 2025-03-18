@@ -108,10 +108,8 @@ struct OutreachView: View {
     // MARK: Intro
     
     private var intro: some View {
-        Text("Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer.")
-            .font(.subheadline)
+        InfoBox(text: String(localized: "Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer."))
             .foregroundStyle(.secondary)
-            .padding(.horizontal)
     }
     
     // MARK: Community
@@ -121,7 +119,7 @@ struct OutreachView: View {
             label:
                 IconLabel(
                     icon: "person.3.fill",
-                    title: "Community",
+                    title: String(localized: "Community"),
                     labelColor: .brandPrimary,
                     background: true
                 ),
@@ -136,12 +134,16 @@ struct OutreachView: View {
                 IconLabel(icon: "link", title: "Long Covid Schweiz", labelColor: .brandPrimary)
                     .font(.subheadline.weight(.semibold))
             }
-
+            
             Button {
                 openURL(URL(string: "https://www.mindfulpacer.ch/lcs-kids-de")!)
             } label: {
-                IconLabel(icon: "link", title: "Long Covid Kids Schweiz", labelColor: .brandPrimary)
-                    .font(.subheadline.weight(.semibold))
+                IconLabel(
+                    icon: "link",
+                    title: String(localized: "Long Covid Kids Schweiz"),
+                    labelColor: .brandPrimary
+                )
+                .font(.subheadline.weight(.semibold))
             }
         }
     }
@@ -155,7 +157,7 @@ struct OutreachView: View {
                     label:
                         IconLabel(
                             icon: "newspaper",
-                            title: "Articles",
+                            title: String(localized: "Articles"),
                             labelColor: .brandPrimary,
                             background: true
                         )
@@ -200,7 +202,7 @@ struct OutreachView: View {
         } label: {
             RoundedListCell(
                 image: "MindfulPacer Icon",
-                title: "Our Website",
+                title: String(localized: "Our Website"),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -220,7 +222,7 @@ struct OutreachView: View {
         } label: {
             RoundedListCell(
                 icon: "envelope",
-                title: "Contact Us",
+                title: String(localized: "Contact Us"),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -234,8 +236,8 @@ struct OutreachView: View {
         } label: {
             RoundedListCell(
                 icon: "map",
-                title: "Roadmap",
-                description: "View upcoming features",
+                title: String(localized: "Roadmap"),
+                description: String(localized: "View upcoming features"),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }

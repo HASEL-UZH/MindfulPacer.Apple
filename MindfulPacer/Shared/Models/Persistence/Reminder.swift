@@ -94,9 +94,9 @@ extension Reminder {
         var units: String {
             switch self {
             case .heartRate:
-                "bpm"
+                String(localized: "bpm")
             case .steps:
-                "steps"
+                String(localized: "steps")
             }
         }
     }
@@ -110,6 +110,14 @@ extension Reminder {
         case medium = "Medium"
         case strong = "Strong"
         
+        var localized: String {
+            switch self {
+            case .light: String(localized: "Light")
+            case .medium: String(localized: "Medium")
+            case .strong: String(localized: "Light")
+            }
+        }
+        
         var icon: String {
             switch self {
             case .light: "sun.min"
@@ -121,11 +129,11 @@ extension Reminder {
         var description: String {
             switch self {
             case .light:
-                "Shows a yellow color"
+                String(localized: "Shows a yellow color")
             case .medium:
-                "Shows an orange color"
+                String(localized: "Shows an orange color")
             case .strong:
-                "Shows a red color"
+                String(localized: "Shows a red color")
             }
         }
         
@@ -158,6 +166,10 @@ extension Reminder {
         case twoHours = "2 Hours"
         case fourHours = "4 Hours"
         case oneDay = "1 Day"
+        
+        var localized: String {
+            NSLocalizedString(rawValue, comment: "Time interval for reminders")
+        }
         
         var icon: String {
             switch self {

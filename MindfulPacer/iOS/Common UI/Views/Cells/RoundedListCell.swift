@@ -61,7 +61,8 @@ struct RoundedListCell: View {
             
             RoundedListCell(
                 image: "MindfulPacer Icon",
-                title: "MinfdulPacer"
+                title: "MinfdulPacer",
+                description: "Here is a description"
             )
         }
     }

@@ -42,7 +42,7 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.keyboardShowing) private var keyboardShowing
+//    @Environment(\.keyboardShowing) private var keyboardShowing
     @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
 
@@ -403,7 +403,7 @@ struct EditReflectionView: View {
             Toggle(isOn: $viewModel.didTriggerCrash) {
                 IconLabel(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Did this trigger a crash?",
+                    title: String(localized: "Did this trigger a crash?"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -422,7 +422,7 @@ struct EditReflectionView: View {
         IconLabelGroupBox(
             label: IconLabel(
                 icon: "pencil.line",
-                title: "Additional Information",
+                title: String(localized: "Additional Information"),
                 labelColor: Color("BrandPrimary"),
                 background: true
             )
@@ -441,7 +441,7 @@ struct EditReflectionView: View {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "alarm",
-                        title: "Reminder",
+                        title: String(localized: "Reminder"),
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
@@ -493,7 +493,7 @@ struct EditReflectionView: View {
         Card(backgroundColor: Color(.tertiarySystemFill)) {
             IconLabel(
                 icon: "person",
-                title: "Manually Created Reflection",
+                title: String(localized: "Manually Created Reflection"),
                 labelColor: .secondary,
                 background: true
             )
@@ -512,7 +512,8 @@ struct EditReflectionView: View {
             onReflectionCreation?()
             dismiss()
         }
-        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
+//        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
+        .padding([.horizontal, .top])
         .background(.ultraThinMaterial)
         .disabled(viewModel.isActionButtonDisabled)
         .overlay(alignment: .top) {

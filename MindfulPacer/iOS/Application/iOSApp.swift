@@ -18,7 +18,7 @@ struct IOSApp: App {
         WindowGroup {
             RootView()
                 .tint(Color("BrandPrimary"))
-                .addKeyboardVisibilityToEnvironment()
+//                .addKeyboardVisibilityToEnvironment()
         }
         .modelContainer(.prod)
     }
