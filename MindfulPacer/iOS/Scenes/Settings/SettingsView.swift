@@ -14,6 +14,7 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
+    case missedReflectionsListView
 
     var id: Int {
         switch self {
@@ -21,6 +22,7 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
+        case .missedReflectionsListView: 4
         }
     }
 }
@@ -50,19 +52,19 @@ struct SettingsView: View {
                     mindfulPacerExpanded
                     viewOnboarding
                 } header: {
-                    sectionHeader(title: "General")
+                    sectionHeader(title: String(localized: "General"))
                 }
                 
                 Section {
                     themeSettings
                 } header: {
-                    sectionHeader(title: "Appearance")
+                    sectionHeader(title: String(localized: "Appearance"))
                 }
                 
                 Section {
                     exportData
                 } header: {
-                    sectionHeader(title: "Data")
+                    sectionHeader(title: String(localized: "Data"))
                 }
                 
                 Section {
@@ -72,7 +74,7 @@ struct SettingsView: View {
                     privacyPolicy
                     disclaimer
                 } header: {
-                    sectionHeader(title: "About")
+                    sectionHeader(title: String(localized: "About"))
                 }
                 
                 Section {
@@ -134,6 +136,10 @@ struct SettingsView: View {
                 .presentationDragIndicator(.visible)
         case .systemReportView:
             SystemReportView(viewModel: viewModel)
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
+        case .missedReflectionsListView:
+            MissedReflectionsListView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
         }
@@ -325,15 +331,17 @@ struct SettingsView: View {
     // MARK: App Version
     
     private var appVersion: some View {
-        Button {
-            viewModel.presentSheet(.systemReportView)
-        } label: {
-            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
-                .font(.footnote)
-                .foregroundStyle(Color.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.horizontal)
+        Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
+            .font(.footnote)
+            .foregroundStyle(Color.secondary)
+            .onTapGesture(count: 1) {
+                viewModel.presentSheet(.systemReportView)
+            }
+            .onTapGesture(count: 2) {
+                viewModel.presentSheet(.missedReflectionsListView)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal)
     }
 }
 

@@ -166,7 +166,7 @@ class AnalyticsViewModel {
     }
     
     var chartDescriptionText: String {
-        "\(selectedMeasurementType.rawValue) data within last \(selectedPeriod.description)."
+        selectedMeasurementType.localized + " " + String(localized: "data within") + " " + String(localized: "the last") + " " + "\(selectedPeriod.description)."
     }
     
     var granularity: ChartGranularity {

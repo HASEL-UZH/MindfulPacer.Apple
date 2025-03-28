@@ -26,10 +26,10 @@ struct BlogArticleCell: View {
         Card(backgroundColor: cardColor) {
             VStack(spacing: 16) {
                 Group {
-                    HStack {
+                    HStack(alignment: .top) {
                         IconLabel(title: article.title)
                             .font(.title3.weight(.semibold))
-                            .lineLimit(2)
+                            .lineLimit(isPreview ? 2 : .max)
                         
                         Spacer(minLength: 16)
                         

@@ -10,7 +10,7 @@ import Foundation
 protocol CheckMissedReflectionsUseCase {
     func execute(
         reminders: [Reminder],
-        actionedMissedReflectionIDs: [String],
+        isDeveloperMode: Bool,
         completion: @escaping @Sendable (Result<[MissedReflection], HealthKitError>) -> Void
     )
 }
@@ -26,12 +26,12 @@ final class DefaultCheckMissedReflectionsUseCase: CheckMissedReflectionsUseCase 
     
     func execute(
         reminders: [Reminder],
-        actionedMissedReflectionIDs: [String],
+        isDeveloperMode: Bool = false,
         completion: @escaping @Sendable (Result<[MissedReflection], HealthKitError>) -> Void
     ) {
         healthKitService.checkMissedReflections(
             reminders: reminders,
-            actionedMissedReflectionIDs: actionedMissedReflectionIDs,
+            isDeveloperMode: isDeveloperMode,
             completion: completion
         )
     }

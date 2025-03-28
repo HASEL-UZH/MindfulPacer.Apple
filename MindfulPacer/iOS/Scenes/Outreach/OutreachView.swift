@@ -175,11 +175,15 @@ struct OutreachView: View {
                                 }
                             } else {
                                 ForEach(viewModel.recentArticles) { article in
-                                    BlogArticleCell(
-                                        article: article,
-                                        isPreview: true
-                                    )
-                                    .frame(width: 300)
+                                    Button {
+                                        openURL(article.link)
+                                    } label: {
+                                        BlogArticleCell(
+                                            article: article,
+                                            isPreview: true
+                                        )
+                                        .frame(width: 300)
+                                    }
                                 }
                             }
                         }

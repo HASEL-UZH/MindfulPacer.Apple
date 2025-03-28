@@ -50,6 +50,16 @@ extension UseCasesContainer {
     var requestHealthAuthorisationUseCase: Factory<DefaultRequestHealthAuthorisationUseCase> {
         self { DefaultRequestHealthAuthorisationUseCase(healthKitService: HealthKitService.shared) }
     }
+    
+    @MainActor
+    var fetchStepDataLast24HoursUseCase: Factory<DefaultFetchStepsDataLast24HoursUseCase> {
+        self { DefaultFetchStepsDataLast24HoursUseCase(healthKitService: HealthKitService.shared)}
+    }
+    
+    @MainActor
+    var fetchHeartRateDataLast24HoursUseCase: Factory<DefaultFetchHeartRateDataLast24HoursUseCase> {
+        self { DefaultFetchHeartRateDataLast24HoursUseCase(healthKitService: HealthKitService.shared)}
+    }
 
     // MARK: - Onboarding
 

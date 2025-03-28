@@ -17,6 +17,7 @@ import WatchKit
 
 typealias Reminder = SchemaV1.Reminder
 typealias MeasurementType = SchemaV1.Reminder.MeasurementType
+typealias Interval = SchemaV1.Reminder.Interval
 
 extension SchemaV1 {
     @Model
@@ -25,14 +26,14 @@ extension SchemaV1 {
         var measurementType: MeasurementType = MeasurementType.heartRate
         var reminderType: ReminderType = ReminderType.light
         var threshold: Int = 0
-        var interval: Interval = Interval.tenSeconds
+        var interval: Interval = Interval.immediately
         
         init(
             id: UUID = UUID(),
             measurementType: MeasurementType = MeasurementType.heartRate,
             reminderType: ReminderType = ReminderType.light,
             threshold: Int = 0,
-            interval: Interval = Interval.tenSeconds
+            interval: Interval = Interval.immediately
         ) {
             self.id = id
             self.measurementType = measurementType
@@ -44,18 +45,18 @@ extension SchemaV1 {
         var triggerSummary: String {
             switch measurementType {
             case .heartRate:
-                "Above \(threshold) bpm for \(interval.rawValue.lowercased())"
+                String(localized: "Above \(threshold) bpm for \(interval.rawValue.lowercased())")
             case .steps:
-                "Above \(threshold) steps within \(interval.rawValue.lowercased())"
+                String(localized: "Above \(threshold) steps within \(interval.rawValue.lowercased())")
             }
         }
         
         var thresholdUnits: String {
             switch measurementType {
             case .heartRate:
-                "bpm"
+                String(localized: "bpm")
             case .steps:
-                "steps"
+                String(localized: "steps")
             }
         }
     }
@@ -74,6 +75,15 @@ extension Reminder {
                 return .heartRate
             case .steps:
                 return .stepCount
+            }
+        }
+        
+        var localized: String {
+            switch self {
+            case .heartRate:
+                String(localized: "Heart Rate")
+            case .steps:
+                String(localized: "Steps")
             }
         }
         
@@ -114,7 +124,7 @@ extension Reminder {
             switch self {
             case .light: String(localized: "Light")
             case .medium: String(localized: "Medium")
-            case .strong: String(localized: "Light")
+            case .strong: String(localized: "Strong")
             }
         }
         
@@ -155,9 +165,9 @@ extension Reminder {
         // MARK: Heart Rate
         
         case immediately = "Immediately"
-        case tenSeconds = "10 Seconds"
-        case thirtySeconds = "30 Seconds"
-        case oneMinute = "1 Minute"
+        case fiveMinutes = "5 Minutes"
+        case tenMinutes = "10 Minutes"
+        case fifteenMinutes = "15 Minutes"
         
         // MARK: Steps
         
@@ -168,15 +178,25 @@ extension Reminder {
         case oneDay = "1 Day"
         
         var localized: String {
-            NSLocalizedString(rawValue, comment: "Time interval for reminders")
+            switch self {
+            case .immediately: String(localized: "Immediately")
+            case .fiveMinutes: String(localized: "5 Minutes")
+            case .tenMinutes: String(localized: "10 Minutes")
+            case .fifteenMinutes: String(localized: "15 Minutes")
+            case .thirtyMinutes: String(localized: "30 Minutes")
+            case .oneHour: String(localized: "1 Hour")
+            case .twoHours: String(localized: "2 Hours")
+            case .fourHours: String(localized: "4 Hours")
+            case .oneDay: String(localized: "1 Day")
+            }
         }
         
         var icon: String {
             switch self {
             case .immediately: "alarm"
-            case .tenSeconds: "10.circle"
-            case .thirtySeconds: "30.circle"
-            case .oneMinute: "1.circle"
+            case .fiveMinutes: "5.circle"
+            case .tenMinutes: "10.circle"
+            case .fifteenMinutes: "15.circle"
             case .thirtyMinutes: "30.circle"
             case .oneHour: "1.circle"
             case .twoHours: "2.circle"
@@ -185,22 +205,36 @@ extension Reminder {
             }
         }
         
-        var timeInterval: TimeInterval {
-            switch self {
+        static func timeInterval(_ interval: Interval) -> TimeInterval {
+            switch interval {
+            case .immediately: return 0
+            case .fiveMinutes: return 5 * 60
+            case .tenMinutes: return 10 * 60
+            case .fifteenMinutes: return 15 * 60
             case .thirtyMinutes: return 30 * 60
             case .oneHour: return 60 * 60
             case .twoHours: return 2 * 60 * 60
             case .fourHours: return 4 * 60 * 60
             case .oneDay: return 24 * 60 * 60
+            }
+        }
+        
+        static func buffer(_ interval: Interval) -> TimeInterval {
+            switch interval {
             case .immediately: return 0
-            case .tenSeconds: return 10
-            case .thirtySeconds: return 30
-            case .oneMinute: return 60
+            case .fiveMinutes: return 1
+            case .tenMinutes: return 2
+            case .fifteenMinutes: return 3
+            case .thirtyMinutes: return 6
+            case .oneHour: return 12
+            case .twoHours: return 30
+            case .fourHours: return 60
+            case .oneDay: return 0
             }
         }
         
         static var heartRateIntervals: [Interval] {
-            [.immediately, .tenSeconds, .thirtySeconds, .oneMinute]
+            [.immediately, .fiveMinutes, .tenMinutes, .fifteenMinutes, .thirtyMinutes, .oneHour]
         }
         
         static var stepsIntervals: [Interval] {
@@ -209,9 +243,16 @@ extension Reminder {
     }
 }
 
+// MARK: - Reflection Action State Enum
+
+enum ReflectionAction: String, Codable {
+    case accepted
+    case rejected
+}
+
 // MARK: - Missed Reflection
 
-struct MissedReflection: Identifiable {
+struct MissedReflection: Identifiable, Equatable {
     let measurementType: MeasurementType
     let reminderType: Reminder.ReminderType
     let threshold: Int
@@ -240,6 +281,8 @@ struct MissedReflection: Identifiable {
         }
     }
     
+    static let actionedKey: String = "actionedMissedReflections"
+    
     init(_ reminder: Reminder, date: Date) {
         self.measurementType = reminder.measurementType
         self.reminderType = reminder.reminderType
@@ -248,5 +291,55 @@ struct MissedReflection: Identifiable {
         self.date = date
     }
     
-    static let actionedKey: String = "actionedMissedReflections"
+    // MARK: - Equatable Conformance
+    
+    static func == (lhs: MissedReflection, rhs: MissedReflection) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    // MARK: - Action Tracking Methods
+    
+    /// Checks if this MissedReflection has been actioned (accepted or rejected).
+    var isActioned: Bool {
+        return actionState != nil
+    }
+    
+    /// Retrieves the action state (accepted or rejected) for this MissedReflection, if any.
+    var actionState: ReflectionAction? {
+        let actionedReflections = Self.loadActionedReflections()
+        return actionedReflections[id]
+    }
+    
+    /// Marks this MissedReflection as accepted.
+    func accept() {
+        markAction(.accepted)
+    }
+    
+    /// Marks this MissedReflection as rejected.
+    func reject() {
+        markAction(.rejected)
+    }
+    
+    /// Private helper to mark this MissedReflection with a specific action.
+    private func markAction(_ action: ReflectionAction) {
+        var actionedReflections = Self.loadActionedReflections()
+        actionedReflections[id] = action
+        Self.saveActionedReflections(actionedReflections)
+    }
+    
+    /// Loads the dictionary of actioned MissedReflections from UserDefaults.
+    private static func loadActionedReflections() -> [String: ReflectionAction] {
+        guard let data = UserDefaults.standard.data(forKey: actionedKey),
+              let dictionary = try? JSONDecoder().decode([String: ReflectionAction].self, from: data) else {
+            return [:]
+        }
+        return dictionary
+    }
+    
+    /// Saves the dictionary of actioned MissedReflections to UserDefaults.
+    private static func saveActionedReflections(_ dictionary: [String: ReflectionAction]) {
+        if let data = try? JSONEncoder().encode(dictionary) {
+            UserDefaults.standard.set(data, forKey: actionedKey)
+        }
+    }
 }

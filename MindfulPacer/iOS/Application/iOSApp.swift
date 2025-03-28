@@ -13,6 +13,7 @@ struct IOSApp: App {
     init() {
         // FIXME: This is a temporary workaround due to the bug that causes alert items to not have the tint color provided upstream
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "BrandPrimary")
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brandPrimary
     }
     var body: some Scene {
         WindowGroup {

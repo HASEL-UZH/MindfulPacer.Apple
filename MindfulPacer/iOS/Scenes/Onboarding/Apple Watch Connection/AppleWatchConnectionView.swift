@@ -39,7 +39,7 @@ extension OnboardingView {
                             label:
                                 IconLabel(
                                     icon: "arrow.down.applewatch",
-                                    title: "Installing on Apple Watch",
+                                    title: String(localized: "Installing on Apple Watch"),
                                     labelColor: Color("BrandPrimary")
                                 ),
                             description:

@@ -22,8 +22,8 @@ extension EditReflectionView {
             NavigationStack {
                 VStack {
                     VStack(alignment: .leading, spacing: 16) {
-                        if !symptom.isWellBeing { // TODO: Need message for wellBeing
-                            InfoBox(text: "Report severity of symptom.")
+                        if !symptom.isWellBeing {
+                            InfoBox(text: String(localized: "Report severity of symptom."))
                         }
 
                         VStack(spacing: 16) {

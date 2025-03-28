@@ -23,7 +23,12 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
     }
     
     var localized: String {
-        NSLocalizedString(rawValue.capitalized, comment: "Mode of use option")
+        switch self {
+        case .essentials:
+            String(localized: "Essentials")
+        case .expanded:
+            String(localized: "Expanded")
+        }
     }
     
     var description: String {

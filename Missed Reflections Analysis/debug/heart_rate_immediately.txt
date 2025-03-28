@@ -1,0 +1,2478 @@
+Heart Rate Missed Reflections Debug Log - Interval: Immediately
+=====================================
+
+Reminder Details:
+  Interval: Immediately
+  Threshold: 70 bpm
+--------------------------------------------------
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:11:49+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: None
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:17:27+00:00
+  Heart Rate: 89 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:11:49+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:21:22+00:00
+  Heart Rate: 84 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:17:27+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:26:10+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:21:22+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:30:10+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:26:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-24 21:32:37+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:30:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:12:54+00:00
+  Heart Rate: 86 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-24 21:32:37+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:15:29+00:00
+  Heart Rate: 86 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:12:54+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:23:07+00:00
+  Heart Rate: 82 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:15:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:25:45+00:00
+  Heart Rate: 88 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:23:07+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:30:40+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:25:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:31:29+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:30:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:31:33+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:31:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:31:39+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:31:33+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:31:40+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:31:39+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:37:12+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:31:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:40:38+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:37:12+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:44:19+00:00
+  Heart Rate: 79 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:40:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 08:58:47+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:44:19+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:03:07+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 08:58:47+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:05:28+00:00
+  Heart Rate: 135 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:03:07+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:06:48+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:05:28+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:06:55+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:06:48+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:07+00:00
+  Heart Rate: 119 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:06:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:11+00:00
+  Heart Rate: 122 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:07+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:13+00:00
+  Heart Rate: 124.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:11+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:22+00:00
+  Heart Rate: 121 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:24+00:00
+  Heart Rate: 121 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:22+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:28+00:00
+  Heart Rate: 121 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:36+00:00
+  Heart Rate: 122 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:28+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:38+00:00
+  Heart Rate: 122.99999999999999 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:36+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:48+00:00
+  Heart Rate: 117 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:56+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:48+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:07:58+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:07+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:07:58+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:13+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:07+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:14+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:22+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:14+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:28+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:22+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:29+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:28+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:37+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:43+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:37+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:45+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:43+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:49+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:08:58+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:49+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:01+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:08:58+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:08+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:01+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:10+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:08+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:14+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:19+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:14+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:28+00:00
+  Heart Rate: 105 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:19+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:29+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:28+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:38+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:43+00:00
+  Heart Rate: 101 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:44+00:00
+  Heart Rate: 101 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:43+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:53+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:44+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:09:58+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:53+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:02+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:09:58+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:05+00:00
+  Heart Rate: 102 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:02+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:09+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:18+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:09+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:33+00:00
+  Heart Rate: 105 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:18+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:10:38+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:33+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:17:13+00:00
+  Heart Rate: 97 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:10:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:24:09+00:00
+  Heart Rate: 125.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:17:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:12+00:00
+  Heart Rate: 102 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:24:09+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:18+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:12+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:24+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:18+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:25+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:32+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:25+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:38+00:00
+  Heart Rate: 97 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:32+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:44+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:49+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:44+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:54+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:49+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:25:58+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:54+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:00+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:25:58+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:09+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:00+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:11+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:09+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:17+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:11+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:22+00:00
+  Heart Rate: 115 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:17+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:29+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:22+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:32+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:35+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:32+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:40+00:00
+  Heart Rate: 105 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:35+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:45+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:54+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:26:55+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:54+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:13+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:26:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:29+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:34+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:35+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:34+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:43+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:35+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:49+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:43+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:52+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:49+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:27:55+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:52+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:03+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:27:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:05+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:03+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:24+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:26+00:00
+  Heart Rate: 115 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:30+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:26+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:36+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:44+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:36+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:48+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:44+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:28:50+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:48+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:29:15+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:28:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:29:25+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:29:15+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:29:30+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:29:25+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:31:40+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:29:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:31:42+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:31:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:31:46+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:31:42+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:31:51+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:31:46+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:31:56+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:31:51+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:03+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:31:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:09+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:03+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:15+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:09+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:17+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:15+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:21+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:17+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:30+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:21+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:33+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:40+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:33+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:45+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:49+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:52+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:49+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:32:56+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:52+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:05+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:32:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:10+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:13+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:19+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:21+00:00
+  Heart Rate: 105 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:19+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:26+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:21+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:31+00:00
+  Heart Rate: 101 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:26+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:37+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:31+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:45+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:37+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:50+00:00
+  Heart Rate: 101 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:55+00:00
+  Heart Rate: 102 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:33:56+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:05+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:33:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:06+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:11+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:06+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:17+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:11+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:24+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:17+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:27+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:32+00:00
+  Heart Rate: 116 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:27+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:36+00:00
+  Heart Rate: 117 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:32+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:42+00:00
+  Heart Rate: 116 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:36+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:50+00:00
+  Heart Rate: 115 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:42+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:55+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:34:56+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:03+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:34:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:06+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:03+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:14+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:06+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:17+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:14+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:25+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:17+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:30+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:25+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:31+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:40+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:31+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:45+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:48+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:35:51+00:00
+  Heart Rate: 114 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:48+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:00+00:00
+  Heart Rate: 116 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:35:51+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:03+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:00+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:08+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:03+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:11+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:08+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:20+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:11+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:23+00:00
+  Heart Rate: 111 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:20+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:26+00:00
+  Heart Rate: 113 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:23+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:31+00:00
+  Heart Rate: 112 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:26+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:39+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:31+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:44+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:39+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:46+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:44+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:52+00:00
+  Heart Rate: 107.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:46+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:36:56+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:52+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:05+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:36:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:16+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:21+00:00
+  Heart Rate: 110 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:16+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:26+00:00
+  Heart Rate: 109 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:21+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:34+00:00
+  Heart Rate: 105 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:26+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:39+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:34+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:41+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:39+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:50+00:00
+  Heart Rate: 108 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:41+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:37:55+00:00
+  Heart Rate: 106 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:00+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:37:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:01+00:00
+  Heart Rate: 100 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:00+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:10+00:00
+  Heart Rate: 104 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:01+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:14+00:00
+  Heart Rate: 102 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:20+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:14+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:24+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:20+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:27+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:34+00:00
+  Heart Rate: 97 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:27+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:38+00:00
+  Heart Rate: 99 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:34+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:42+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:48+00:00
+  Heart Rate: 103 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:42+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:38:55+00:00
+  Heart Rate: 97 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:48+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:00+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:38:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:03+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:00+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:08+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:03+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:15+00:00
+  Heart Rate: 89 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:08+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:19+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:15+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:22+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:19+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:30+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:22+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:35+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:39+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:35+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:42+00:00
+  Heart Rate: 90 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:39+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:50+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:42+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:51+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:39:56+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:51+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:04+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:39:56+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:10+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:04+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:15+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:10+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:18+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:15+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:25+00:00
+  Heart Rate: 90 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:18+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:26+00:00
+  Heart Rate: 90 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:25+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:35+00:00
+  Heart Rate: 89 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:26+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:40+00:00
+  Heart Rate: 94 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:35+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:41+00:00
+  Heart Rate: 94 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:40+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:46+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:41+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:55+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:46+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:40:58+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:55+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:01+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:40:58+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:07+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:01+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:12+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:07+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:20+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:12+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:24+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:20+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:30+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:31+00:00
+  Heart Rate: 95 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:30+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:38+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:31+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:45+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:47+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:45+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:41:51+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:47+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:00+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:41:51+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:04+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:00+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:08+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:04+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:13+00:00
+  Heart Rate: 91 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:08+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:19+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:13+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:24+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:19+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:29+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:24+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:31+00:00
+  Heart Rate: 98 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:29+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:38+00:00
+  Heart Rate: 90 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:31+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:43+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:38+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:50+00:00
+  Heart Rate: 97 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:43+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:53+00:00
+  Heart Rate: 96 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:50+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:42:59+00:00
+  Heart Rate: 93 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:53+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:43:02+00:00
+  Heart Rate: 92.00000000000001 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:42:59+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:43:08+00:00
+  Heart Rate: 88 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:43:02+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:43:14+00:00
+  Heart Rate: 85 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:43:08+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:49:05+00:00
+  Heart Rate: 85 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:43:14+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+
+Sample Evaluation:
+  Timestamp: 2025-03-25 09:51:36+00:00
+  Heart Rate: 85 bpm
+  Exceeds Threshold: True (Threshold: 70 bpm)
+  Delay Check:
+    Last Trigger: 2025-03-25 09:49:05+00:00
+    Delay: 0:00:00
+    Delay Passed: True
+  Outcome: Reflection Triggered
+

@@ -269,21 +269,21 @@ extension Reflection {
         
         private func wellBeingDescription(for value: Int?) -> String {
             switch value {
-            case 0: return "Very Low"
-            case 1: return "Low"
-            case 2: return "High"
-            case 3: return "Very High"
-            default: return "Not Set"
+            case 0: return String(localized: "Very Low")
+            case 1: return String(localized: "Low")
+            case 2: return String(localized: "High")
+            case 3: return String(localized: "Very High")
+            default: return String(localized: "Not Set")
             }
         }
         
         private func defaultSeverityDescription(for value: Int?) -> String {
             switch value {
-            case 0: return "Absent"
-            case 1: return "Mild"
-            case 2: return "Moderate"
-            case 3: return "Severe"
-            default: return "Not Set"
+            case 0: return String(localized: "Absent")
+            case 1: return String(localized: "Mild")
+            case 2: return String(localized: "Moderate")
+            case 3: return String(localized: "Severe")
+            default: return String(localized: "Not Set")
             }
         }
         
@@ -325,7 +325,6 @@ struct DefaultActivityData {
         let cognitive = Activity(name: String(localized: "Cognitive"), icon: "brain")
         let interactionsAndSocial = Activity(name: String(localized: "Interactions & Social"), icon: "rectangle.3.group.bubble")
         let work = Activity(name: String(localized: "Work"), icon: "briefcase")
-        let reminders = Activity(name: String(localized: "Reminders"), icon: "bell.badge")
         let others = Activity(name: String(localized: "Others"), icon: "ellipsis")
 
         // MARK: Movement Subactivities
@@ -398,10 +397,6 @@ struct DefaultActivityData {
         let projectManagement = Subactivity(name: String(localized: "Project Management"), icon: "gearshape.2", activity: work)
         let breaks = Subactivity(name: String(localized: "Breaks"), icon: "mug", activity: work)
 
-        // MARK: Reminders Subactivities
-        let steps = Subactivity(name: String(localized: "Steps"), icon: "figure.walk", activity: reminders)
-        let heartRate = Subactivity(name: String(localized: "Heart Rate"), icon: "heart", activity: reminders)
-
         movement.subactivities = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
         transportation.subactivities = [drivingCar, publicTransportation, bikingTransportation, flying, otherTransportation]
         household.subactivities = [washingClothes, washingDishes, cleaning, cooking, tidyingUp, groceryShopping, gardening, fixingThings]
@@ -409,9 +404,8 @@ struct DefaultActivityData {
         cognitive.subactivities = [thinkingOrBrainstorming, reading, writing, watchingTV, usingComputerTabletPhone, gaming, readingTheNews, playingMusic, learningSomething]
         interactionsAndSocial.subactivities = [meetingCloseFriends, meetingNewPeople, meetingFamily, onlineSocializing, groupActivities, attendingEvents]
         work.subactivities = [workOnTasks, researchingInformation, meetings, emailAndChat, helpingOthers, networking, learning, projectManagement, breaks]
-        reminders.subactivities = [steps, heartRate]
 
-        activities = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, reminders, others]
+        activities = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, others]
     }
 }
 

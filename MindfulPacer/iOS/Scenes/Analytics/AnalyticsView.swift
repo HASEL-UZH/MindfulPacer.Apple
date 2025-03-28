@@ -59,7 +59,7 @@ struct AnalyticsView: View {
                             Button {
                                 viewModel.selectedMeasurementType = measurementType
                             } label: {
-                                Label(measurementType.rawValue, systemImage: measurementType.icon)
+                                Label(measurementType.localized, systemImage: measurementType.icon)
                             }
                         }
                     } label: {
@@ -91,7 +91,7 @@ struct AnalyticsView: View {
             label:
                 IconLabel(
                     icon: viewModel.selectedMeasurementType.icon,
-                    title: viewModel.selectedMeasurementType.rawValue,
+                    title: viewModel.selectedMeasurementType.localized,
                     labelColor: viewModel.selectedMeasurementType.color,
                     background: true
                 ),
