@@ -100,9 +100,9 @@ class CreateReminderViewModel {
     var thresholdUnitText: String {
         switch selectedMeasurementType {
         case .heartRate:
-            return "bpm"
+            return String(localized: "bpm")
         case .steps:
-            return "steps"
+            return String(localized: "steps")
         case nil:
             return ""
         }

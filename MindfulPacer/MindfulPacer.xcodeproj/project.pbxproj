@@ -136,6 +136,7 @@
 		0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */; };
 		0DA6CB342C39583300FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */; };
 		0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA77E3F2D1596C50057DFA2 /* Toast.swift */; };
+		0DAC64D92DA2A3B400BBB741 /* AlgorithmsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
 		0DBA373F2C32087400209681 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DBA373E2C32087400209681 /* Assets.xcassets */; };
@@ -330,6 +331,7 @@
 		0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA77E3F2D1596C50057DFA2 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
+		0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmsView.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DBA373A2C32087300209681 /* WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOSApp.swift; sourceTree = "<group>"; };
@@ -445,6 +447,7 @@
 		0D3006C62C943433008F11C7 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0DAC64D72DA2A3AE00BBB741 /* Algorithms */,
 				0DF93A812D53B3D100121308 /* Export */,
 				0DE097C32D96AA9300BE3D6A /* Missed Reflections List */,
 				0D876BCD2CB6D228007EEEDE /* System Report */,
@@ -936,6 +939,14 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		0DAC64D72DA2A3AE00BBB741 /* Algorithms */ = {
+			isa = PBXGroup;
+			children = (
+				0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */,
+			);
+			path = Algorithms;
+			sourceTree = "<group>";
+		};
 		0DBA37192C31EF5B00209681 /* Root View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1248,7 +1259,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */,
 				0DBA37442C32087400209681 /* PBXTargetDependency */,
 			);
 			name = iOS;
@@ -1274,7 +1284,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0D2590242C92FEAA000EA518 /* PBXTargetDependency */,
 			);
 			name = WatchOS;
 			packageProductDependencies = (
@@ -1316,7 +1325,6 @@
 			mainGroup = 0D8C66272C2DA96000853EDE;
 			packageReferences = (
 				0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */,
-				0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 				0D3006D22C998025008F11C7 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				0D36471D2D53862C000F85EF /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				0DF2C3CF2D6218BC0036D50E /* XCRemoteSwiftPackageReference "Kingfisher" */,
@@ -1440,6 +1448,7 @@
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
+				0DAC64D92DA2A3B400BBB741 /* AlgorithmsView.swift in Sources */,
 				0D5947882CBE74170019BA24 /* ThemeSettingsView.swift in Sources */,
 				0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */,
 				0DC136B22D4E784300001D08 /* BlogRepository.swift in Sources */,
@@ -1539,18 +1548,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0D2590242C92FEAA000EA518 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */;
-		};
 		0DBA37442C32087400209681 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
 			targetProxy = 0DBA37432C32087400209681 /* PBXContainerItemProxy */;
-		};
-		0DF4C1582C922BFC00AF3D88 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1684,7 +1685,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1692,11 +1693,12 @@
 				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1706,10 +1708,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1721,7 +1727,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1729,11 +1735,12 @@
 				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1743,10 +1750,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1891,14 +1902,6 @@
 				minimumVersion = 8.2.0;
 			};
 		};
-		0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/SwiftLint.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.57.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1911,11 +1914,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0D0DE2D42C32DEB100C54B0C /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
-		};
-		0D2590232C92FEAA000EA518 /* SwiftLintBuildToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
-			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 		0D3006D32C998025008F11C7 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1936,11 +1934,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0DF2C3CF2D6218BC0036D50E /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		0DF4C1572C922BFC00AF3D88 /* SwiftLintBuildToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0DF4C1522C922B6400AF3D88 /* XCRemoteSwiftPackageReference "SwiftLint" */;
-			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

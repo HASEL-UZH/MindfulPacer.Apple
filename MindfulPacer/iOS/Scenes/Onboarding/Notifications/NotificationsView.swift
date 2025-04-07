@@ -37,7 +37,7 @@ extension OnboardingView {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Notifications > MindfulPacer."))
+                        InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Notifications > MindfulPacer."))
                     }
                 }
         }

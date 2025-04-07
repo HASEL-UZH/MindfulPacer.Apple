@@ -176,18 +176,6 @@ class OnboardingViewModel {
                 """)
         ),
         ActivityPromotingFeature(
-            icon: "figure.pool.swim",
-            title: String(localized: "Disabling Exercise Notifications"),
-            steps:
-                String(localized: """
-                1. Open the Watch app on your iPhone.
-                2. Tap on 'My Watch'.
-                3. Tap on 'Notifications'.
-                4. Select 'Activity'.
-                5. Toggle off 'Workout Reminders'.
-                """)
-        ),
-        ActivityPromotingFeature(
             icon: "figure.walk",
             title: String(localized: "Adjust Move Goals"),
             steps:

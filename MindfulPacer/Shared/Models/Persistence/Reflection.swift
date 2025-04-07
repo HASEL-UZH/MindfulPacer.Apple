@@ -24,8 +24,8 @@ extension SchemaV1 {
     final class Reflection {
         var id: UUID = UUID()
         var date: Date = Date.now
-        @Relationship(inverse: \Activity.reflection) var activity: Activity?
-        @Relationship(inverse: \Subactivity.reflection) var subactivity: Subactivity?
+        var activity: Activity?
+        var subactivity: Subactivity?
         var mood: Mood?
         var didTriggerCrash: Bool = false
         var wellBeing: Int?
@@ -93,20 +93,20 @@ extension SchemaV1 {
         var name: String = ""
         var icon: String = ""
         @Relationship(inverse: \Subactivity.activity) var subactivities: [Subactivity]?
-        var reflection: Reflection?
+        @Relationship(inverse: \Reflection.activity) var reflections: [Reflection]? = []
 
         init(
             id: UUID = UUID(),
             name: String = "",
             icon: String = "",
             subactivities: [Subactivity] = [],
-            reflection: Reflection? = nil
+            reflections: [Reflection] = []
         ) {
             self.id = id
             self.name = name
             self.icon = icon
             self.subactivities = subactivities
-            self.reflection = reflection
+            self.reflections = reflections
         }
     }
 }
@@ -120,20 +120,20 @@ extension SchemaV1 {
         var name: String = ""
         var icon: String = ""
         var activity: Activity?
-        var reflection: Reflection?
+        @Relationship(inverse: \Reflection.subactivity) var reflections: [Reflection]? = []
 
         init(
             id: UUID = UUID(),
             name: String = "",
             icon: String = "",
             activity: Activity? = nil,
-            reflection: Reflection? = nil
+            reflections: [Reflection] = []
         ) {
             self.id = id
             self.name = name
             self.icon = icon
             self.activity = activity
-            self.reflection = reflection
+            self.reflections = reflections
         }
     }
 }

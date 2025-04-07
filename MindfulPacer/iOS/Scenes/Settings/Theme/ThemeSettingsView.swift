@@ -33,10 +33,11 @@ extension SettingsView {
                                     icon: theme.icon,
                                     title: theme.localized,
                                     description: theme.description,
-                                    titleColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
-                                    iconColor: self.theme == theme ? Color("BrandPrimary") : Color.primary,
-                                    descriptionTextColor: self.theme == theme ? Color("BrandPrimary").opacity(0.7) : Color.secondary
+                                    labelColor: self.theme == theme ? .brandPrimary : theme.labelColor,
+                                    descriptionTextColor: self.theme == theme ? .brandPrimary : theme.labelColor.opacity(0.7),
+                                    background: true
                                 )
+                                .font(.subheadline.weight(.semibold))
                                 Spacer()
                                 if self.theme == theme {
                                     Image(systemName: "checkmark.circle.fill")

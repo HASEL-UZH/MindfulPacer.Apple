@@ -45,9 +45,13 @@ extension SchemaV1 {
         var triggerSummary: String {
             switch measurementType {
             case .heartRate:
-                String(localized: "Above \(threshold) bpm for \(interval.rawValue.lowercased())")
+                let context = IntervalContext.heartRate
+                let timeString = interval.timeInterval < 60 ? "\(Int(interval.timeInterval)) sec" : "\(Int(interval.timeInterval / 60)) min"
+                return String(localized: "Above \(threshold) bpm for \(timeString)")
             case .steps:
-                String(localized: "Above \(threshold) steps within \(interval.rawValue.lowercased())")
+                let context = IntervalContext.steps
+                let timeString = interval.timeInterval < 3600 ? "\(Int(interval.timeInterval / 60)) min" : "\(Int(interval.timeInterval / 3600)) hr"
+                return String(localized: "Above \(threshold) steps within \(timeString)")
             }
         }
         
@@ -205,32 +209,12 @@ extension Reminder {
             }
         }
         
-        static func timeInterval(_ interval: Interval) -> TimeInterval {
-            switch interval {
-            case .immediately: return 0
-            case .fiveMinutes: return 5 * 60
-            case .tenMinutes: return 10 * 60
-            case .fifteenMinutes: return 15 * 60
-            case .thirtyMinutes: return 30 * 60
-            case .oneHour: return 60 * 60
-            case .twoHours: return 2 * 60 * 60
-            case .fourHours: return 4 * 60 * 60
-            case .oneDay: return 24 * 60 * 60
-            }
+        var timeInterval: TimeInterval {
+            IntervalSettingsManager.shared.timeInterval(for: self)
         }
         
-        static func buffer(_ interval: Interval) -> TimeInterval {
-            switch interval {
-            case .immediately: return 0
-            case .fiveMinutes: return 1
-            case .tenMinutes: return 2
-            case .fifteenMinutes: return 3
-            case .thirtyMinutes: return 6
-            case .oneHour: return 12
-            case .twoHours: return 30
-            case .fourHours: return 60
-            case .oneDay: return 0
-            }
+        func buffer(for context: IntervalContext) -> TimeInterval {
+            IntervalSettingsManager.shared.buffer(for: self, context: context)
         }
         
         static var heartRateIntervals: [Interval] {
@@ -341,5 +325,117 @@ struct MissedReflection: Identifiable, Equatable {
         if let data = try? JSONEncoder().encode(dictionary) {
             UserDefaults.standard.set(data, forKey: actionedKey)
         }
+    }
+}
+
+// MARK: - IntervalContext
+
+enum IntervalContext {
+    case heartRate
+    case steps
+}
+
+// MARK: - IntervalSettingsManager
+
+class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
+    static let shared = IntervalSettingsManager()
+    
+    // Default values for each interval (used as fixed values for timeInterval and fallback for buffer)
+    private let defaultTimeIntervals: [Reminder.Interval: TimeInterval] = [
+        .immediately: 0,
+        .fiveMinutes: 5 * 60,
+        .tenMinutes: 10 * 60,
+        .fifteenMinutes: 15 * 60,
+        .thirtyMinutes: 30 * 60,
+        .oneHour: 60 * 60,
+        .twoHours: 2 * 60 * 60,
+        .fourHours: 4 * 60 * 60,
+        .oneDay: 24 * 60 * 60
+    ]
+    
+    // Updated default buffers based on DELAY_MAPPING (converted from minutes to seconds)
+    private let defaultBuffers: [Reminder.Interval: TimeInterval] = [
+        .immediately: 0,         // None (0 seconds)
+        .fiveMinutes: 60,        // 1 minute = 60 seconds
+        .tenMinutes: 120,        // 2 minutes = 120 seconds
+        .fifteenMinutes: 180,    // 3 minutes = 180 seconds
+        .thirtyMinutes: 450,     // 7.5 minutes = 450 seconds (steps); HR uses 360 seconds (6 minutes)
+        .oneHour: 900,           // 15 minutes = 900 seconds (steps); HR uses 720 seconds (12 minutes)
+        .twoHours: 1800,         // 30 minutes = 1800 seconds
+        .fourHours: 3600,        // 60 minutes = 3600 seconds
+        .oneDay: 0               // 0 minutes = 0 seconds
+    ]
+    
+    // AppStorage properties for heart rate buffers (using HR-specific values)
+    @AppStorage("hr_immediately_buffer") private var hr_immediatelyBuffer: Double = 0      // 0 seconds
+    @AppStorage("hr_fiveMinutes_buffer") private var hr_fiveMinutesBuffer: Double = 60      // 1 minute
+    @AppStorage("hr_tenMinutes_buffer") private var hr_tenMinutesBuffer: Double = 120       // 2 minutes
+    @AppStorage("hr_fifteenMinutes_buffer") private var hr_fifteenMinutesBuffer: Double = 180  // 3 minutes
+    @AppStorage("hr_thirtyMinutes_buffer") private var hr_thirtyMinutesBuffer: Double = 360   // 6 minutes
+    @AppStorage("hr_oneHour_buffer") private var hr_oneHourBuffer: Double = 720             // 12 minutes
+    
+    // AppStorage properties for steps buffers (using steps-specific values)
+    @AppStorage("steps_thirtyMinutes_buffer") private var steps_thirtyMinutesBuffer: Double = 450  // 7.5 minutes
+    @AppStorage("steps_oneHour_buffer") private var steps_oneHourBuffer: Double = 900        // 15 minutes
+    @AppStorage("steps_twoHours_buffer") private var steps_twoHoursBuffer: Double = 1800     // 30 minutes
+    @AppStorage("steps_fourHours_buffer") private var steps_fourHoursBuffer: Double = 3600   // 60 minutes
+    @AppStorage("steps_oneDay_buffer") private var steps_oneDayBuffer: Double = 0            // 0 minutes
+    
+    private init() {}
+    
+    // Get the timeInterval for a given interval (fixed value, no context needed since it's not editable)
+    func timeInterval(for interval: Reminder.Interval) -> TimeInterval {
+        return defaultTimeIntervals[interval] ?? 0
+    }
+    
+    // Get the buffer for a given interval and context
+    func buffer(for interval: Reminder.Interval, context: IntervalContext) -> TimeInterval {
+        switch (interval, context) {
+        case (.immediately, .heartRate): return hr_immediatelyBuffer
+        case (.fiveMinutes, .heartRate): return hr_fiveMinutesBuffer
+        case (.tenMinutes, .heartRate): return hr_tenMinutesBuffer
+        case (.fifteenMinutes, .heartRate): return hr_fifteenMinutesBuffer
+        case (.thirtyMinutes, .heartRate): return hr_thirtyMinutesBuffer
+        case (.oneHour, .heartRate): return hr_oneHourBuffer
+        case (.thirtyMinutes, .steps): return steps_thirtyMinutesBuffer
+        case (.oneHour, .steps): return steps_oneHourBuffer
+        case (.twoHours, .steps): return steps_twoHoursBuffer
+        case (.fourHours, .steps): return steps_fourHoursBuffer
+        case (.oneDay, .steps): return steps_oneDayBuffer
+        default: return defaultBuffers[interval] ?? 0 // Fallback
+        }
+    }
+    
+    // Set the buffer for a given interval and context
+    func setBuffer(_ value: Double, for interval: Reminder.Interval, context: IntervalContext) {
+        switch (interval, context) {
+        case (.immediately, .heartRate): hr_immediatelyBuffer = value
+        case (.fiveMinutes, .heartRate): hr_fiveMinutesBuffer = value
+        case (.tenMinutes, .heartRate): hr_tenMinutesBuffer = value
+        case (.fifteenMinutes, .heartRate): hr_fifteenMinutesBuffer = value
+        case (.thirtyMinutes, .heartRate): hr_thirtyMinutesBuffer = value
+        case (.oneHour, .heartRate): hr_oneHourBuffer = value
+        case (.thirtyMinutes, .steps): steps_thirtyMinutesBuffer = value
+        case (.oneHour, .steps): steps_oneHourBuffer = value
+        case (.twoHours, .steps): steps_twoHoursBuffer = value
+        case (.fourHours, .steps): steps_fourHoursBuffer = value
+        case (.oneDay, .steps): steps_oneDayBuffer = value
+        default: break // Invalid combination
+        }
+    }
+    
+    // Reset buffers to default values
+    func resetToDefaults() {
+        hr_immediatelyBuffer = defaultBuffers[.immediately]!
+        hr_fiveMinutesBuffer = defaultBuffers[.fiveMinutes]!
+        hr_tenMinutesBuffer = defaultBuffers[.tenMinutes]!
+        hr_fifteenMinutesBuffer = defaultBuffers[.fifteenMinutes]!
+        hr_thirtyMinutesBuffer = defaultBuffers[.thirtyMinutes]! // Uses HR value (360 seconds)
+        hr_oneHourBuffer = defaultBuffers[.oneHour]!            // Uses HR value (720 seconds)
+        steps_thirtyMinutesBuffer = defaultBuffers[.thirtyMinutes]! // Uses steps value (450 seconds)
+        steps_oneHourBuffer = defaultBuffers[.oneHour]!         // Uses steps value (900 seconds)
+        steps_twoHoursBuffer = defaultBuffers[.twoHours]!
+        steps_fourHoursBuffer = defaultBuffers[.fourHours]!
+        steps_oneDayBuffer = defaultBuffers[.oneDay]!
     }
 }

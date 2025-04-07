@@ -30,7 +30,8 @@ extension OnboardingView {
                                 IconLabel(
                                     icon: feature.icon,
                                     title: feature.title,
-                                    labelColor: Color("BrandPrimary")
+                                    labelColor: Color("BrandPrimary"),
+                                    background: true
                                 ),
                             description:
                                 Text(feature.description)

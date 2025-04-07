@@ -12,7 +12,8 @@ import Charts
 
 struct StepDataPoint: Identifiable {
     let id = UUID()
-    let date: Date
+    let startDate: Date
+    let endDate: Date
     let stepCount: Double
 }
 
@@ -25,11 +26,46 @@ struct HeartRateDataPoint: Identifiable {
 // MARK: - ReflectionChartView
 
 struct ReflectionChartView: View {
+    
     // MARK: Properties
     
     let reflection: MissedReflection
     let stepData: [(startDate: Date, endDate: Date, stepCount: Double)]
     let heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)]
+    
+    // Precompute data points
+    private var precomputedStepPoints: [StepDataPoint] {
+        stepData
+            .filter { $0.startDate >= plotStart && $0.startDate <= plotEnd }
+            .map { StepDataPoint(startDate: $0.startDate, endDate: $0.endDate, stepCount: $0.stepCount) }
+    }
+    
+    private var precomputedHeartRatePoints: [HeartRateDataPoint] {
+        heartRateData
+            .filter { $0.startDate >= plotStart && $0.startDate <= plotEnd }
+            .map { HeartRateDataPoint(date: $0.startDate, heartRate: $0.stepCount) }
+    }
+    
+    private var plotStart: Date {
+        let baseStart = windowStart.addingTimeInterval(-reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
+        let extensionDuration = xAxisLabelFrequencyDuration
+        return baseStart.addingTimeInterval(-extensionDuration)
+    }
+    
+    private var plotEnd: Date {
+        let baseEnd = reflection.date.addingTimeInterval(reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
+        let extensionDuration = xAxisLabelFrequencyDuration
+        return baseEnd.addingTimeInterval(extensionDuration)
+    }
+    
+    private var windowStart: Date {
+        if reflection.interval == .oneDay && reflection.measurementType == .steps {
+            return stepData.min(by: { $0.startDate < $1.startDate })?.startDate ?? reflection.date
+        } else if reflection.interval == .immediately && reflection.measurementType == .heartRate {
+            return reflection.date
+        }
+        return reflection.date.addingTimeInterval(-reflection.interval.timeInterval)
+    }
     
     // MARK: Body
     
@@ -46,7 +82,7 @@ struct ReflectionChartView: View {
         }
         .chartXAxis {
             // Determine the stride based on the interval and measurement type
-            let (strideUnit, strideCount) = xAxisStride()
+            let (strideUnit, strideCount) = xAxisStride
             AxisMarks(values: .stride(by: strideUnit, count: strideCount)) { value in
                 AxisGridLine()
                 AxisTick()
@@ -60,7 +96,7 @@ struct ReflectionChartView: View {
                 AxisValueLabel()
             }
         }
-        .chartXScale(domain: plotStart()...plotEnd())
+        .chartXScale(domain: plotStart...plotEnd)
         .chartYScale(domain: yMin...yMax)
         .padding(.horizontal)
         .frame(maxHeight: 300)
@@ -73,9 +109,9 @@ struct ReflectionChartView: View {
     private func stepsChart(yMin: Int, yMax: Int) -> some View {
         Chart {
             // Step chart for steps
-            ForEach(stepPoints()) { point in
+            ForEach(precomputedStepPoints) { point in
                 LineMark(
-                    x: .value("Time", point.date),
+                    x: .value("Time", point.startDate),
                     y: .value("Steps", point.stepCount)
                 )
                 .interpolationMethod(.stepCenter)
@@ -85,7 +121,7 @@ struct ReflectionChartView: View {
             // Trigger window, aligned with the actual reflection window
             if reflection.interval != .oneDay {
                 RectangleMark(
-                    xStart: .value("Window Start", windowStart()),
+                    xStart: .value("Window Start", windowStart),
                     xEnd: .value("Window End", reflection.date),
                     yStart: .value("Y Start", yMin),
                     yEnd: .value("Y End", yMax)
@@ -98,13 +134,42 @@ struct ReflectionChartView: View {
     @ViewBuilder
     private func heartRateChart(yMin: Int, yMax: Int) -> some View {
         Chart {
-            // Line chart for heart rate
-            ForEach(heartRatePoints()) { point in
-                LineMark(
-                    x: .value("Time", point.date),
-                    y: .value("Heart Rate", point.heartRate)
+            if precomputedHeartRatePoints.count == 1 {
+                // For any HR case with only 1 data point, use a PointMark to highlight the single point
+                ForEach(precomputedHeartRatePoints) { point in
+                    PointMark(
+                        x: .value("Time", point.date),
+                        y: .value("Heart Rate", point.heartRate)
+                    )
+                    .foregroundStyle(.pink)
+                    .symbolSize(100) // Make the point prominent
+                    .annotation(position: .top) {
+                        Text("\(Int(point.heartRate)) bpm")
+                            .font(.caption)
+                            .foregroundColor(.pink)
+                    }
+                }
+            } else {
+                // For 2 or more points, use LineMark as before
+                ForEach(precomputedHeartRatePoints) { point in
+                    LineMark(
+                        x: .value("Time", point.date),
+                        y: .value("Heart Rate", point.heartRate)
+                    )
+                    .foregroundStyle(.pink)
+                }
+            }
+            
+            // Trigger window, aligned with the actual reflection window
+            // Show for all non-immediately intervals, regardless of point count
+            if reflection.interval != .immediately {
+                RectangleMark(
+                    xStart: .value("Window Start", windowStart),
+                    xEnd: .value("Window End", reflection.date),
+                    yStart: .value("Y Start", yMin),
+                    yEnd: .value("Y End", yMax)
                 )
-                .foregroundStyle(.pink)
+                .foregroundStyle(.pink.opacity(0.3))
             }
             
             // Threshold line
@@ -116,65 +181,19 @@ struct ReflectionChartView: View {
                         .font(.caption)
                         .foregroundColor(Color.primary)
                 }
-            
-            // Trigger window, aligned with the actual reflection window
-            if reflection.interval != .immediately {
-                RectangleMark(
-                    xStart: .value("Window Start", windowStart()),
-                    xEnd: .value("Window End", reflection.date),
-                    yStart: .value("Y Start", yMin),
-                    yEnd: .value("Y End", yMax)
-                )
-                .foregroundStyle(.pink.opacity(0.3))
-            }
         }
     }
     
     // MARK: - Chart Data Helpers
     
-    private func windowStart() -> Date {
-        if reflection.interval == .oneDay && reflection.measurementType == .steps {
-            return stepData.min(by: { $0.startDate < $1.startDate })?.startDate ?? reflection.date
-        } else if reflection.interval == .immediately && reflection.measurementType == .heartRate {
-            return reflection.date
-        }
-        return reflection.date.addingTimeInterval(-Interval.timeInterval(reflection.interval))
-    }
-    
-    private func plotStart() -> Date {
-        let baseStart = windowStart().addingTimeInterval(-Interval.buffer(reflection.interval))
-        let extensionDuration = xAxisLabelFrequencyDuration()
-        return baseStart.addingTimeInterval(-extensionDuration)
-    }
-    
-    private func plotEnd() -> Date {
-        let baseEnd = reflection.date.addingTimeInterval(Interval.buffer(reflection.interval))
-        let extensionDuration = xAxisLabelFrequencyDuration()
-        return baseEnd.addingTimeInterval(extensionDuration)
-    }
-    
-    private func stepPoints() -> [StepDataPoint] {
-        stepData
-            .filter { $0.startDate >= plotStart() && $0.startDate <= plotEnd() }
-            .map { StepDataPoint(date: $0.startDate, stepCount: $0.stepCount) }
-    }
-    
-    private func heartRatePoints() -> [HeartRateDataPoint] {
-        heartRateData
-            .filter { $0.startDate >= plotStart() && $0.startDate <= plotEnd() }
-            .map { HeartRateDataPoint(date: $0.startDate, heartRate: $0.stepCount) }
-    }
-    
-    // MARK: - Y-Axis Helper
-    
     private func yAxisRange() -> (min: Int, max: Int) {
         if reflection.measurementType == .steps {
             // For steps, keep the range starting at 0
-            let maxSteps = stepPoints().map { Int($0.stepCount) }.max() ?? reflection.threshold
+            let maxSteps = precomputedStepPoints.map { Int($0.stepCount) }.max() ?? reflection.threshold
             return (0, maxSteps)
         } else {
             // For heart rate, set the range based on the data with a 5-unit buffer
-            let heartRates = heartRatePoints().map { Int($0.heartRate) }
+            let heartRates = precomputedHeartRatePoints.map { Int($0.heartRate) }
             let minHeartRate = heartRates.min() ?? reflection.threshold
             let maxHeartRate = max(heartRates.max() ?? reflection.threshold, reflection.threshold)
             
@@ -187,7 +206,7 @@ struct ReflectionChartView: View {
     
     // MARK: - X-Axis Helpers
     
-    private func xAxisStride() -> (unit: Calendar.Component, count: Int) {
+    private var xAxisStride: (unit: Calendar.Component, count: Int) {
         switch (reflection.measurementType, reflection.interval) {
         // Heart Rate Intervals
         case (.heartRate, .immediately):
@@ -218,8 +237,8 @@ struct ReflectionChartView: View {
         }
     }
     
-    private func xAxisLabelFrequencyDuration() -> TimeInterval {
-        let (unit, count) = xAxisStride()
+    private var xAxisLabelFrequencyDuration: TimeInterval {
+        let (unit, count) = xAxisStride
         switch unit {
         case .minute:
             return TimeInterval(count * 60) // Convert minutes to seconds

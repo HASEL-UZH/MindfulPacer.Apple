@@ -80,9 +80,9 @@ struct MissedReflectionsListView: View {
                                                     .foregroundStyle(.secondary)
                                             } else {
                                                 ForEach(stepPoints) { point in
-                                                    let isWithinWindow = point.date >= windowStart(for: missedReflection) && point.date <= missedReflection.date
+                                                    let isWithinWindow = point.startDate >= windowStart(for: missedReflection) && point.startDate <= missedReflection.date
                                                     HStack {
-                                                        Text(point.date.formatted(.dateTime.month().day().hour().minute().second()))
+                                                        Text(point.startDate.formatted(.dateTime.month().day().hour().minute().second()))
                                                             .foregroundStyle(isWithinWindow ? .primary : .secondary)
                                                             .fontWeight(isWithinWindow ? .bold : .regular)
                                                         Spacer()
@@ -158,17 +158,17 @@ struct MissedReflectionsListView: View {
         } else if reflection.interval == .immediately && reflection.measurementType == .heartRate {
             return reflection.date
         }
-        return reflection.date.addingTimeInterval(-Interval.timeInterval(reflection.interval))
+        return reflection.date.addingTimeInterval(-reflection.interval.timeInterval)
     }
     
     private func plotStart(for reflection: MissedReflection) -> Date {
-        let baseStart = windowStart(for: reflection).addingTimeInterval(-Interval.buffer(reflection.interval))
+        let baseStart = windowStart(for: reflection).addingTimeInterval(-reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration(for: reflection)
         return baseStart.addingTimeInterval(-extensionDuration)
     }
     
     private func plotEnd(for reflection: MissedReflection) -> Date {
-        let baseEnd = reflection.date.addingTimeInterval(Interval.buffer(reflection.interval))
+        let baseEnd = reflection.date.addingTimeInterval(reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration(for: reflection)
         return baseEnd.addingTimeInterval(extensionDuration)
     }
@@ -176,7 +176,7 @@ struct MissedReflectionsListView: View {
     private func stepPoints(for reflection: MissedReflection) -> [StepDataPoint] {
         viewModel.stepData
             .filter { $0.startDate >= plotStart(for: reflection) && $0.startDate <= plotEnd(for: reflection) }
-            .map { StepDataPoint(date: $0.startDate, stepCount: $0.stepCount) }
+            .map { StepDataPoint(startDate: $0.startDate, endDate: $0.endDate, stepCount: $0.stepCount) }
     }
     
     private func heartRatePoints(for reflection: MissedReflection) -> [HeartRateDataPoint] {

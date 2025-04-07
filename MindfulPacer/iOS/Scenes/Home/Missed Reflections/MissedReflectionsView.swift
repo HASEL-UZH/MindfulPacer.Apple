@@ -16,6 +16,8 @@ struct MissedReflectionsView: View {
     // MARK: Properties
     
     @Bindable var viewModel: HomeViewModel
+    @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
+    @State private var selectedMissedReflection: MissedReflection?
     
     // MARK: Body
     
@@ -42,10 +44,36 @@ struct MissedReflectionsView: View {
                     CloseButton()
                 }
             }
+            .sheet(item: $selectedMissedReflection) { missedReflection in
+                NavigationStack {
+                    VStack(spacing: 32) {
+                        ReflectionChartView(
+                            reflection: missedReflection,
+                            stepData: viewModel.stepData,
+                            heartRateData: viewModel.heartRateData
+                        )
+                        
+                        rawData(for: missedReflection)
+                            .navigationTitle("Raw Data")
+                            .background(
+                                Color(.systemGroupedBackground)
+                                    .ignoresSafeArea()
+                            )
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    CloseButton()
+                                }
+                            }
+                    }
+                    .background(Color(.systemGroupedBackground).ignoresSafeArea())
+                }
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
+            }
         }
     }
     
-    // MARK: - Missed Reflection Card
+    // MARK: Missed Reflection Card
     
     // swiftlint:disable:next function_body_length
     @ViewBuilder func missedReflectionCard(_ missedReflection: MissedReflection) -> some View {
@@ -65,7 +93,7 @@ struct MissedReflectionsView: View {
                                 Text(missedReflection.triggerSummary)
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                                    .lineLimit(2)
                             }
                             
                             Spacer()
@@ -95,6 +123,17 @@ struct MissedReflectionsView: View {
                     heartRateData: viewModel.heartRateData
                 )
                 
+                if modeOfUse == .expanded {
+                    Button {
+                        selectedMissedReflection = missedReflection
+                    } label: {
+                        Label("View Raw Data", systemImage: "ellipsis.curlybraces")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                }
+                
                 Spacer()
                 
                 actionButtons(for: missedReflection)
@@ -113,6 +152,67 @@ struct MissedReflectionsView: View {
         )
         .padding()
         .padding(.bottom, 32)
+    }
+    
+    // MARK: Raw Data
+    
+    @ViewBuilder
+    private func rawData(for missedReflection: MissedReflection) -> some View {
+        RoundedList {
+            if missedReflection.measurementType == .steps {
+                let stepPoints = stepPoints(for: missedReflection)
+                if stepPoints.isEmpty {
+                    Text("No step data available")
+                        .foregroundStyle(.secondary)
+                } else {
+                    Section {
+                        ForEach(stepPoints) { point in
+                            let isWithinWindow = point.startDate >= windowStart(for: missedReflection) && point.startDate <= missedReflection.date
+                            
+                            RoundedListCell(
+                                label: IconLabel(
+                                    icon: "figure.walk",
+                                    title: "\(Int(point.stepCount)) steps",
+                                    description: point.startDate.formatted(.dateTime.month().day().hour().minute().second()) + " - " + point.endDate.formatted(.dateTime.month().day().hour().minute().second()),
+                                    labelColor: isWithinWindow ? Color.teal : Color.secondary,
+                                    background: true
+                                )
+                            )
+                        }
+                    } header: {
+                        Text("**NOTE:** Only highlighted points are considered for the missed reflection.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } else {
+                let heartRatePoints = heartRatePoints(for: missedReflection)
+                if heartRatePoints.isEmpty {
+                    Text("No heart rate data available")
+                        .foregroundStyle(.secondary)
+                } else {
+                    Section {
+                        ForEach(heartRatePoints) { point in
+                            let isWithinWindow = point.date >= windowStart(for: missedReflection) && point.date <= missedReflection.date
+                            
+                            RoundedListCell(
+                                label: IconLabel(
+                                    icon: "heart",
+                                    title: "\(Int(point.heartRate)) bpm",
+                                    description: point.date.formatted(.dateTime.month().day().hour().minute().second()),
+                                    labelColor: isWithinWindow ? Color.pink : Color.secondary,
+                                    background: true
+                                )
+                            )
+                        }
+                    } header: {
+                        Text("**NOTE:** Only highlighted points are considered for the missed reflection.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
     
     // MARK: Action Buttons
@@ -161,17 +261,29 @@ struct MissedReflectionsView: View {
         } else if reflection.interval == .immediately && reflection.measurementType == .heartRate {
             return reflection.date
         }
-        return reflection.date.addingTimeInterval(-Interval.timeInterval(reflection.interval))
+        return reflection.date.addingTimeInterval(-reflection.interval.timeInterval)
     }
     
     private func plotStart(for reflection: MissedReflection) -> Date {
-        let baseStart = windowStart(for: reflection).addingTimeInterval(-Interval.buffer(reflection.interval))
+        let baseStart = windowStart(for: reflection).addingTimeInterval(-reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration(for: reflection)
         return baseStart.addingTimeInterval(-extensionDuration)
     }
     
+    private func stepPoints(for reflection: MissedReflection) -> [StepDataPoint] {
+        viewModel.stepData
+            .filter { $0.startDate >= plotStart(for: reflection) && $0.startDate <= plotEnd(for: reflection) }
+            .map { StepDataPoint(startDate: $0.startDate, endDate: $0.endDate, stepCount: $0.stepCount) }
+    }
+    
+    private func heartRatePoints(for reflection: MissedReflection) -> [HeartRateDataPoint] {
+        viewModel.heartRateData
+            .filter { $0.startDate >= plotStart(for: reflection) && $0.startDate <= plotEnd(for: reflection) }
+            .map { HeartRateDataPoint(date: $0.startDate, heartRate: $0.stepCount) }
+    }
+    
     private func plotEnd(for reflection: MissedReflection) -> Date {
-        let baseEnd = reflection.date.addingTimeInterval(Interval.buffer(reflection.interval))
+        let baseEnd = reflection.date.addingTimeInterval(reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration(for: reflection)
         return baseEnd.addingTimeInterval(extensionDuration)
     }

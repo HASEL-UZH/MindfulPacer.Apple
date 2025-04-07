@@ -86,11 +86,11 @@ extension CreateReminderView {
         private var measurementType: some View {
             summaryWidget(
                 icon: "ruler",
-                title: "Measurement Type",
+                title: String(localized: "Measurement Type"),
                 destination: viewModel.mode == .create ? .measurementType : nil
             ) {
                 if let measurementType = viewModel.selectedMeasurementType {
-                    Text(measurementType.rawValue)
+                    Text(measurementType.localized)
                 } else {
                     Text("No Measurement Type Selected")
                         .foregroundStyle(.red)
@@ -103,11 +103,11 @@ extension CreateReminderView {
         private var reminderType: some View {
             summaryWidget(
                 icon: "alarm",
-                title: "Reminder Type",
+                title: String(localized: "Reminder Type"),
                 destination: .reminderType
             ) {
                 if let reminderType = viewModel.selectedReminderType {
-                    Text(reminderType.rawValue)
+                    Text(reminderType.localized)
                 } else {
                     Text("No Reminder Type Selected")
                         .foregroundStyle(.red)
@@ -120,7 +120,7 @@ extension CreateReminderView {
         private var threshold: some View {
             summaryWidget(
                 icon: "chart.line.flattrend.xyaxis",
-                title: "Threshold",
+                title: String(localized: "Threshold"),
                 destination: .threshold
             ) {
                 if let threshold = viewModel.threshold {
@@ -142,11 +142,11 @@ extension CreateReminderView {
         private var interval: some View {
             summaryWidget(
                 icon: "timer",
-                title: "Interval",
+                title: String(localized: "Interval"),
                 destination: .interval
             ) {
                 if let interval = viewModel.selectedInterval {
-                    Text(interval.rawValue)
+                    Text(interval.localized)
                 } else {
                     Text("No Interval Selected")
                         .foregroundStyle(.red)
@@ -160,7 +160,7 @@ extension CreateReminderView {
             IconLabelGroupBox(
                 label: IconLabel(
                     icon: "eye",
-                    title: "Preview Notification",
+                    title: String(localized: "Preview Notification"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 ),
@@ -206,7 +206,7 @@ extension CreateReminderView {
             } label: {
                 IconLabel(
                     icon: "bell.badge",
-                    title: "Test on Apple Watch",
+                    title: String(localized: "Test on Apple Watch"),
                     labelColor: viewModel.isActionButtonDisabled ? Color.secondary : Color("BrandPrimary")
                 )
                 .font(.subheadline.weight(.semibold))
@@ -218,7 +218,7 @@ extension CreateReminderView {
         
         private var deleteButton: some View {
             PrimaryButton(
-                title: "Delete Reminder",
+                title: String(localized: "Delete Reminder"),
                 icon: "trash",
                 color: .red
             ) {

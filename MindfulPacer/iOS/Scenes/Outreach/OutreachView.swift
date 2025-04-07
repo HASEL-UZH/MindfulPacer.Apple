@@ -205,8 +205,12 @@ struct OutreachView: View {
             openURL(URL(string: "https://mindfulpacer.ch")!)
         } label: {
             RoundedListCell(
-                image: "MindfulPacer Icon",
-                title: String(localized: "Our Website"),
+                label: IconLabel(
+                    image: "MindfulPacer Icon",
+                    title: String(localized: "Our Website"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -225,8 +229,12 @@ struct OutreachView: View {
             )
         } label: {
             RoundedListCell(
-                icon: "envelope",
-                title: String(localized: "Contact Us"),
+                label: IconLabel(
+                    icon: "envelope",
+                    title: String(localized: "Contact Us"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -239,9 +247,13 @@ struct OutreachView: View {
             viewModel.presentSheet(.roadmap)
         } label: {
             RoundedListCell(
-                icon: "map",
-                title: String(localized: "Roadmap"),
-                description: String(localized: "View upcoming features"),
+                label: IconLabel(
+                    icon: "map",
+                    title: String(localized: "Roadmap"),
+                    description: String(localized: "View upcoming features"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }

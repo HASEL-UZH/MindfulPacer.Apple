@@ -56,8 +56,51 @@ enum Theme: String, CaseIterable, Identifiable {
         }
     }
     
+    var labelColor: Color {
+        switch self {
+        case .system: Color.primary
+        case .light: .yellow
+        case .dark: .purple
+        }
+    }
+    
     static var appStorageKey: String {
         "theme"
+    }
+}
+
+// MARK: - SupportingInstitute
+
+enum SupportingInstitute: String, CaseIterable, Identifiable {
+    case uzh, dizh, longCovid
+    
+    var id: String { name }
+    
+    var name: String {
+        switch self {
+        case .uzh: "UZH"
+        case .dizh: "DIZH"
+        case .longCovid: "Long Covid Switzerland"
+        }
+    }
+    
+    var logo: Image {
+        switch self {
+        case .uzh: Image(.UZH)
+        case .dizh: Image(.DIZH)
+        case .longCovid: Image(.longCovid)
+        }
+    }
+    
+    var url: URL {
+        switch self {
+        case .uzh:
+            URL(string: Locale.current.language.languageCode?.identifier == "de" ? "https://www.uzh.ch/de.html" : "https://www.uzh.ch/en.html")!
+        case .dizh:
+            URL(string: Locale.current.language.languageCode?.identifier == "de" ? "https://www.dizh.uzh.ch/de/home-2/" : "https://www.dizh.uzh.ch/en/home-2/")!
+        case .longCovid:
+            URL(string: "https://www.long-covid-info.ch/")!
+        }
     }
 }
 

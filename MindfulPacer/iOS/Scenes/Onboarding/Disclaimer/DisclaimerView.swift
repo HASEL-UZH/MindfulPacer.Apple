@@ -36,7 +36,8 @@ extension OnboardingView {
                                         IconLabel(
                                             icon: "exclamationmark.triangle",
                                             title: String(localized: "Warnings"),
-                                            labelColor: .yellow
+                                            labelColor: .yellow,
+                                            background: true
                                         )
                     ) {
                         Group {
