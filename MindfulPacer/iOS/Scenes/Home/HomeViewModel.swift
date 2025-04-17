@@ -262,7 +262,7 @@ class HomeViewModel {
                 case .success(let success):
                     self.currentHeartRate = success
                 case .failure(let failure):
-                    print("Failed to fetch current heart rate: \(failure.localizedDescription)")
+                    print("DEBUGY: Failed to fetch current heart rate: \(failure.localizedDescription)")
                 }
             }
         }

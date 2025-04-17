@@ -22,7 +22,7 @@ extension HomeView {
                 label: IconLabel(
                     icon: "figure.walk",
                     title: String(localized: "Steps"),
-                    labelColor: Color("BrandPrimary"),
+                    labelColor: .teal,
                     background: true
                 )
             ) {

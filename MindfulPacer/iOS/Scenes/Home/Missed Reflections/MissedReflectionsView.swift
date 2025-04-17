@@ -23,53 +23,74 @@ struct MissedReflectionsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                CardStack(viewModel.missedReflections) { missedReflection in
-                    missedReflectionCard(missedReflection)
-                }
-                .padding(.horizontal)
-                
-                IconLabel(
-                    icon: "arrow.left.and.line.vertical.and.arrow.right",
-                    title: "Swipe the cards to view more missed reflections",
-                    labelColor: .secondary
-                )
-                .font(.footnote)
+            if viewModel.missedReflections.isEmpty {
+                emptyState
+                    .navigationTitle("Missed Reflections")
+            } else {
+                cardStack
             }
-            .navigationTitle("Missed Reflections")
-            .frame(maxHeight: .infinity, alignment: .top)
-            .background(Color(.systemGroupedBackground))
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    CloseButton()
-                }
+        }
+    }
+    
+    // MARK: Card Stack
+    
+    private var cardStack: some View {
+        VStack(spacing: 16) {
+            CardStack(viewModel.missedReflections) { missedReflection in
+                missedReflectionCard(missedReflection)
             }
-            .sheet(item: $selectedMissedReflection) { missedReflection in
-                NavigationStack {
-                    VStack(spacing: 32) {
-                        ReflectionChartView(
-                            reflection: missedReflection,
-                            stepData: viewModel.stepData,
-                            heartRateData: viewModel.heartRateData
+            .padding(.horizontal)
+            
+            IconLabel(
+                icon: "arrow.left.and.line.vertical.and.arrow.right",
+                title: "Swipe the cards to view more missed reflections",
+                labelColor: .secondary
+            )
+            .font(.footnote)
+        }
+        .navigationTitle("Missed Reflections")
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(Color(.systemGroupedBackground))
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                CloseButton()
+            }
+        }
+        .sheet(item: $selectedMissedReflection) { missedReflection in
+            NavigationStack {
+                VStack(spacing: 32) {
+                    ReflectionChartView(
+                        reflection: missedReflection,
+                        stepData: viewModel.stepData,
+                        heartRateData: viewModel.heartRateData
+                    )
+                    
+                    rawData(for: missedReflection)
+                        .navigationTitle("Raw Data")
+                        .background(
+                            Color(.systemGroupedBackground)
+                                .ignoresSafeArea()
                         )
-                        
-                        rawData(for: missedReflection)
-                            .navigationTitle("Raw Data")
-                            .background(
-                                Color(.systemGroupedBackground)
-                                    .ignoresSafeArea()
-                            )
-                            .toolbar {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    CloseButton()
-                                }
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                CloseButton()
                             }
-                    }
-                    .background(Color(.systemGroupedBackground).ignoresSafeArea())
+                        }
                 }
-                .presentationCornerRadius(16)
-                .presentationDragIndicator(.visible)
+                .background(Color(.systemGroupedBackground).ignoresSafeArea())
             }
+            .presentationCornerRadius(16)
+            .presentationDragIndicator(.visible)
+        }
+    }
+    
+    // MARK: Empty State
+    
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label("No Missed Reflections", systemImage: "square.stack.fill")
+        } description: {
+            Text("You do not have any missed reflection.")
         }
     }
     
@@ -111,6 +132,18 @@ struct MissedReflectionsView: View {
                         IconLabel(title: String(localized: "Triggered on \(missedReflection.date.formatted(.dateTime.month().day().hour().minute()))"))
                             .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                                                
+                        if modeOfUse == .expanded {
+                            Divider()
+
+                            Button {
+                                selectedMissedReflection = missedReflection
+                            } label: {
+                                Label("View Raw Data", systemImage: "ellipsis.curlybraces")
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
                 }
                 .padding()
@@ -122,17 +155,6 @@ struct MissedReflectionsView: View {
                     stepData: viewModel.stepData,
                     heartRateData: viewModel.heartRateData
                 )
-                
-                if modeOfUse == .expanded {
-                    Button {
-                        selectedMissedReflection = missedReflection
-                    } label: {
-                        Label("View Raw Data", systemImage: "ellipsis.curlybraces")
-                            .font(.subheadline.weight(.semibold))
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                }
                 
                 Spacer()
                 
@@ -225,9 +247,9 @@ struct MissedReflectionsView: View {
             } label: {
                 ZStack {
                     UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, bottomLeading: 16))
-                        .foregroundStyle(.red.opacity(0.7))
+                        .foregroundStyle(.red.opacity(0.1))
                     
-                    IconLabel(icon: "xmark", title: String(localized: "Reject"))
+                    IconLabel(icon: "xmark", title: String(localized: "Reject"), labelColor: .red)
                         .font(.body.weight(.semibold))
                     
                     UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, bottomLeading: 16))
@@ -240,9 +262,9 @@ struct MissedReflectionsView: View {
             } label: {
                 ZStack {
                     UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 16, topTrailing: 16))
-                        .foregroundStyle(.green.opacity(0.7))
+                        .foregroundStyle(.green.opacity(0.1))
                     
-                    IconLabel(icon: "checkmark", title: String(localized: "Accept"))
+                    IconLabel(icon: "checkmark", title: String(localized: "Accept"), labelColor: .green)
                         .font(.body.weight(.semibold))
                     
                     UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 16, topTrailing: 16))
@@ -257,7 +279,15 @@ struct MissedReflectionsView: View {
     
     private func windowStart(for reflection: MissedReflection) -> Date {
         if reflection.interval == .oneDay && reflection.measurementType == .steps {
-            return viewModel.stepData.min(by: { $0.startDate < $1.startDate })?.startDate ?? reflection.date
+            let now = Date()
+            let calendar = Calendar.current
+            var components = calendar.dateComponents([.year, .month, .day], from: now)
+            components.hour = 0
+            components.minute = 0
+            components.second = 0
+            components.timeZone = TimeZone.current
+            
+            return calendar.date(from: components) ?? reflection.date
         } else if reflection.interval == .immediately && reflection.measurementType == .heartRate {
             return reflection.date
         }

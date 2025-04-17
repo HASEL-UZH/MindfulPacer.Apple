@@ -23,7 +23,7 @@ extension HomeView {
                 label: IconLabel(
                     icon: "heart.fill",
                     title: String(localized: "Heart Rate"),
-                    labelColor: Color("BrandPrimary"),
+                    labelColor: .pink,
                     background: true
                 )
             ) {

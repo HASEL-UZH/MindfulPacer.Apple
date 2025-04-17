@@ -47,12 +47,22 @@ struct ReflectionChartView: View {
     }
     
     private var plotStart: Date {
+        if reflection.measurementType == .steps && reflection.interval == .oneDay {
+            // For steps with oneDay interval, start at midnight of the current day
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.year, .month, .day], from: reflection.date)
+            return calendar.date(from: components) ?? reflection.date
+        }
         let baseStart = windowStart.addingTimeInterval(-reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration
         return baseStart.addingTimeInterval(-extensionDuration)
     }
     
     private var plotEnd: Date {
+        if reflection.measurementType == .steps && reflection.interval == .oneDay {
+            // For steps with oneDay interval, end at the reflection date
+            return reflection.date
+        }
         let baseEnd = reflection.date.addingTimeInterval(reflection.interval.buffer(for: reflection.measurementType == .steps ? .steps : .heartRate))
         let extensionDuration = xAxisLabelFrequencyDuration
         return baseEnd.addingTimeInterval(extensionDuration)
@@ -169,7 +179,7 @@ struct ReflectionChartView: View {
                     yStart: .value("Y Start", yMin),
                     yEnd: .value("Y End", yMax)
                 )
-                .foregroundStyle(.pink.opacity(0.3))
+                .foregroundStyle(.pink.opacity(0.1))
             }
             
             // Threshold line
@@ -210,27 +220,27 @@ struct ReflectionChartView: View {
         switch (reflection.measurementType, reflection.interval) {
         // Heart Rate Intervals
         case (.heartRate, .immediately):
-            return (.minute, 1) // Labels every 1 minute
+            return (.minute, 1)
         case (.heartRate, .fiveMinutes):
-            return (.minute, 1) // Labels every 1 minute
+            return (.minute, 1)
         case (.heartRate, .tenMinutes):
-            return (.minute, 2) // Labels every 2 minutes
+            return (.minute, 2)
         case (.heartRate, .fifteenMinutes):
-            return (.minute, 3) // Labels every 3 minutes
+            return (.minute, 3)
         case (.heartRate, .thirtyMinutes):
-            return (.minute, 5) // Labels every 5 minutes
+            return (.minute, 5)
         case (.heartRate, .oneHour):
-            return (.minute, 5) // Labels every 5 minutes
+            return (.minute, 5)
             
         // Steps Intervals
         case (.steps, .oneHour):
-            return (.minute, 10) // Labels every 10 minutes
+            return (.minute, 15)
         case (.steps, .twoHours):
-            return (.minute, 20) // Labels every 15 minutes
+            return (.minute, 30)
         case (.steps, .fourHours):
-            return (.minute, 30) // Labels every 30 minutes
+            return (.minute, 45)
         case (.steps, .oneDay):
-            return (.hour, 6) // Labels every 3 hours
+            return (.hour, 4)
             
         default:
             return (.minute, 15)

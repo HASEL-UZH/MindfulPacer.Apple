@@ -33,19 +33,15 @@
       },
       "shouldTranslate" : false
     },
-    "**Important: Limited integration with the Apple Watch.**\nNot all Apple Watch functions are available yet. Biometric data is already being retrieved from the Apple Watch, but you cannot yet receive automatic review reminders on it." : {
-      "extractionState" : "stale",
+    "**NOTE:** Only highlighted points are considered for the missed reflection." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "**Wichtig: eingeschränkte Integration mit der Apple Watch.** Aktuell sind noch nicht alle Funktionen der Apple Watch verfügbar. Die biometrischen Daten werden zwar bereits von der Apple Watch geladen, aber du kriegst darauf noch keine automatischen Erinnerungen."
+            "value" : "**HINWEIS:** Nur die markierten Datenpunkte wurden für die verpassten Reflexionen verwendet."
           }
         }
       }
-    },
-    "**NOTE:** Only highlighted points are considered for the missed reflection." : {
-
     },
     "**Updated:** %@" : {
       "localizations" : {
@@ -399,7 +395,14 @@
       }
     },
     "Algorithms" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algorithmen"
+          }
+        }
+      }
     },
     "All Missed Reflections" : {
       "shouldTranslate" : false
@@ -1387,7 +1390,14 @@
       }
     },
     "Important: Limited integration with the Apple Watch." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wichtig: eingeschränkte Integration mit der Apple Watch."
+          }
+        }
+      }
     },
     "In love" : {
       "localizations" : {
@@ -1904,6 +1914,16 @@
         }
       }
     },
+    "No Missed Reflections" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine verpassten Reflexionen"
+          }
+        }
+      }
+    },
     "No Reflections" : {
       "localizations" : {
         "de" : {
@@ -1978,7 +1998,14 @@
       }
     },
     "Not all Apple Watch functions are available yet. Biometric data is already being retrieved from the Apple Watch, but you cannot yet receive automatic review reminders on it." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuell sind noch nicht alle Funktionen der Apple Watch verfügbar. Die biometrischen Daten werden zwar bereits von der Apple Watch geladen, aber du kriegst darauf noch keine automatischen Erinnerungen."
+          }
+        }
+      }
     },
     "Not Set" : {
       "localizations" : {
@@ -2227,7 +2254,14 @@
       }
     },
     "Raw Data" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rohdaten"
+          }
+        }
+      }
     },
     "Read Full Article" : {
       "localizations" : {
@@ -2853,7 +2887,14 @@
 
     },
     "The buffer sets the minimum time between repeated missed reflection triggers for the same reminder." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Puffer legt die Mindestzeit zwischen wiederholten Benachrichtigungen zu verpassten Reflexionen fest."
+          }
+        }
+      }
     },
     "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
       "localizations" : {
@@ -3196,7 +3237,14 @@
       }
     },
     "View Raw Data" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rohdaten anzeigen"
+          }
+        }
+      }
     },
     "View the onboarding again" : {
       "localizations" : {
@@ -3447,6 +3495,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weitere Informationen hinzufügen"
+          }
+        }
+      }
+    },
+    "You do not have any missed reflection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast derzeit keine verpassten Reflexionen."
           }
         }
       }

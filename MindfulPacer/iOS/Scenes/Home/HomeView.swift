@@ -101,7 +101,7 @@ struct HomeView: View {
                             .font(.subheadline.weight(.semibold))
                     } icon: {
                         Icon(
-                            name: "bell.badge.fill",
+                            image: "book.pages.fill.badge.exclamationmark",
                             color: .red,
                             background: true
                         )
