@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Main Features"
+                title: String(localized: "Main Features")
             ) {
                 VStack(spacing: 16) {
                     ForEach(viewModel.mainFeatures, id: \.title) { feature in
@@ -30,7 +30,8 @@ extension OnboardingView {
                                 IconLabel(
                                     icon: feature.icon,
                                     title: feature.title,
-                                    labelColor: Color("BrandPrimary")
+                                    labelColor: Color("BrandPrimary"),
+                                    background: true
                                 ),
                             description:
                                 Text(feature.description)

@@ -25,8 +25,10 @@ class HomeViewModel {
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
+    private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     private let filterReflectionsUseCase: FilterReflectionsUseCase
     private let markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
     
@@ -49,6 +51,8 @@ class HomeViewModel {
     }
     
     var missedReflections: [MissedReflection] = []
+    var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+    var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     
     var currentSteps: (stepCount: Double, timestamp: Date)?
     var currentHeartRate: (heartRate: Double, timestamp: Date)?
@@ -81,8 +85,10 @@ class HomeViewModel {
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
+        fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
         fetchRemindersUseCase: FetchRemindersUseCase,
+        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
         filterReflectionsUseCase: FilterReflectionsUseCase,
         markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
     ) {
@@ -93,8 +99,10 @@ class HomeViewModel {
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
         self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
+        self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
+        self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
         self.filterReflectionsUseCase = filterReflectionsUseCase
         self.markMissedReflectionAsActionedUseCase = markMissedReflectionAsActionedUseCase
     }
@@ -111,11 +119,13 @@ class HomeViewModel {
         fetchReflections()
         fetchReminders()
         checkMissedReflections()
+        fetchHealthData()
     }
     
     func onSheetDismissed() {
         fetchReflections()
         fetchReminders()
+        checkMissedReflections()
     }
     
     // MARK: - User Actions
@@ -157,18 +167,16 @@ class HomeViewModel {
     }
     
     func acceptMissedReflection(_ missedReflection: MissedReflection) {
-        guard let defaultActivities = fetchDefaultActivitiesUseCase.execute() else { return }
-        guard let remindersActivity = (defaultActivities.first { $0.name == "Reminders"}) else { return }
-        guard let remindersSubactivities = remindersActivity.subactivities,
-              let stepsActivity = (remindersSubactivities.first { $0.name == "Steps"}),
-              let heartRateActivity = (remindersSubactivities.first { $0.name == "Heart Rate"}) else {
-            return
+        missedReflection.accept()
+    
+        withAnimation {
+            missedReflections.removeAll { $0.id == missedReflection.id }
         }
         
         _ = createReflectionUseCase.execute(
             date: missedReflection.date,
-            activity: remindersActivity,
-            subactivity: missedReflection.measurementType == .steps ? stepsActivity : heartRateActivity,
+            activity: nil,
+            subactivity: nil,
             mood: nil,
             didTriggerCrash: false,
             wellBeing: nil,
@@ -184,18 +192,12 @@ class HomeViewModel {
             threshold: missedReflection.threshold,
             interval: missedReflection.interval
         )
-        
-        markMissedReflectionAsActionedUseCase.execute(missedReflection: missedReflection)
-        
-        withAnimation {
-            missedReflections.removeAll { $0.id == missedReflection.id }
-        }
-        
-        // TODO: Show toast on success
+       
+        presentToast(.successfullyCreatedReflection)
     }
     
     func rejectMissedReflection(_ missedReflection: MissedReflection) {
-        markMissedReflectionAsActionedUseCase.execute(missedReflection: missedReflection)
+        missedReflection.reject()
         
         withAnimation {
             missedReflections.removeAll { $0.id == missedReflection.id }
@@ -260,8 +262,24 @@ class HomeViewModel {
                 case .success(let success):
                     self.currentHeartRate = success
                 case .failure(let failure):
-                    print("Failed to fetch current heart rate: \(failure.localizedDescription)")
+                    print("DEBUGY: Failed to fetch current heart rate: \(failure.localizedDescription)")
                 }
+            }
+        }
+    }
+    
+    private func fetchHealthData() {
+        fetchStepDataLast24HoursUseCase.execute { [weak self] stepData in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.stepData = stepData
+            }
+        }
+        
+        fetchHeartRateDataLast24HoursUseCase.execute { [weak self] heartRateData in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.heartRateData = heartRateData
             }
         }
     }
@@ -277,19 +295,17 @@ class HomeViewModel {
     
     private func checkMissedReflections() {
         let reminders = fetchRemindersUseCase.execute() ?? []
-        let actionedMissedReflectionIDs = fetchActionedMissedReflectionsUseCase.execute()
         
         checkMissedReflectionsUseCase.execute(
             reminders: reminders,
-            actionedMissedReflectionIDs: actionedMissedReflectionIDs
+            isDeveloperMode: false
         ) { [weak self] result in
             guard let self = self else { return }
             
             Task { @MainActor in
                 switch result {
                 case .success(let missedReflections):
-                    /// 10 most recent missed reflections
-                    self.missedReflections = Array(missedReflections.sorted { $0.date > $1.date }.prefix(10))
+                    self.missedReflections = missedReflections
                 case .failure(let failure):
                     print("DEBUG:", failure)
                 }

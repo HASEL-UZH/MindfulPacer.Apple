@@ -57,7 +57,7 @@ extension CreateReminderView {
                     HStack {
                         IconLabel(
                             icon: measurementType.icon,
-                            title: measurementType.rawValue,
+                            title: measurementType.localized,
                             labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
                         )
                         Spacer()

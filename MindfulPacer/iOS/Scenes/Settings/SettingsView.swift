@@ -14,6 +14,7 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
+    case missedReflectionsListView
 
     var id: Int {
         switch self {
@@ -21,11 +22,13 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
+        case .missedReflectionsListView: 4
         }
     }
 }
 
 enum SettingsNavigationDestination: Hashable {
+    case algorithms
     case theme
     case export
 }
@@ -50,30 +53,33 @@ struct SettingsView: View {
                     mindfulPacerExpanded
                     viewOnboarding
                 } header: {
-                    sectionHeader(title: "General")
+                    sectionHeader(title: String(localized: "General"))
                 }
                 
-//                Section {
-//                    themeSettings
-//                } header: {
-//                    sectionHeader(title: "Appearance")
-//                }
-//                
-//                Section {
-//                    exportData
-//                } header: {
-//                    sectionHeader(title: "Data")
-//                }
-//                
-//                Section {
-//                    contactUs
-//                    roadmap
-//                    moreInfo
-//                    privacyPolicy
-//                    disclaimer
-//                } header: {
-//                    sectionHeader(title: "About")
-//                }
+                Section {
+                    themeSettings
+                } header: {
+                    sectionHeader(title: String(localized: "Appearance"))
+                }
+                
+                Section {
+                    exportData
+                    if modeOfUse == .expanded {
+                        algorithms
+                    }
+                } header: {
+                    sectionHeader(title: String(localized: "Data"))
+                }
+                
+                Section {
+                    contactUs
+                    roadmap
+                    moreInfo
+                    privacyPolicy
+                    disclaimer
+                } header: {
+                    sectionHeader(title: String(localized: "About"))
+                }
                 
                 Section {
                     logos
@@ -104,6 +110,8 @@ struct SettingsView: View {
     @ViewBuilder
     private func navigationDestination(for destination: SettingsNavigationDestination) -> some View {
         switch destination {
+        case .algorithms:
+            AlgorithmsView()
         case .theme:
             ThemeSettingsView()
         case .export:
@@ -136,6 +144,10 @@ struct SettingsView: View {
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
+        case .missedReflectionsListView:
+            MissedReflectionsListView(viewModel: viewModel)
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
         }
     }
     
@@ -153,9 +165,13 @@ struct SettingsView: View {
     private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
             RoundedListCell(
-                icon: "circle.lefthalf.striped.horizontal.inverse",
-                title: "Theme",
-                description: "Change the app theme",
+                label: IconLabel(
+                    icon: "circle.lefthalf.striped.horizontal.inverse",
+                    title: String(localized: "Theme"),
+                    description: String(localized: "Change the app theme"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorText: theme.rawValue,
                 accessoryIndicatorIcon: "chevron.right"
             )
@@ -165,19 +181,41 @@ struct SettingsView: View {
     // MARK: MindulPacer Expanded
     
     private var mindfulPacerExpanded: some View {
-        Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
-            IconLabel(
-                image: "MindfulPacer Expanded Icon",
-                title: "MindfulPacer Expanded",
-                description: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors",
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-            .font(.subheadline.weight(.semibold))
+        DisclosureGroup {
+            Text(String(localized: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors"))
+                .font(.subheadline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top)
+        } label: {
+            Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
+                IconLabel(
+                    image: "MindfulPacer Expanded Icon",
+                    title: String(localized: "MindfulPacer Expanded"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
+                .font(.subheadline.weight(.semibold))
+            }
         }
-        .tint(.brandPrimary)
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
+        .tint(Color.brandPrimary)
+    }
+    
+    // MARK: Algorithms
+    
+    private var algorithms: some View {
+        NavigationLink(value: SettingsNavigationDestination.algorithms) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "curlybraces",
+                    title: String(localized: "Algorithms"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
     }
     
     // MARK: Export Data
@@ -185,8 +223,12 @@ struct SettingsView: View {
     private var exportData: some View {
         NavigationLink(value: SettingsNavigationDestination.export) {
             RoundedListCell(
-                icon: "tray.and.arrow.up.fill",
-                title: "Export Data",
+                label: IconLabel(
+                    icon: "tray.and.arrow.up.fill",
+                    title: String(localized: "Export Data"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "chevron.right"
             )
         }
@@ -205,8 +247,12 @@ struct SettingsView: View {
             )
         } label: {
             RoundedListCell(
-                icon: "envelope",
-                title: "Contact Us",
+                label: IconLabel(
+                    icon: "envelope",
+                    title: String(localized: "Contact Us"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -216,11 +262,15 @@ struct SettingsView: View {
     
     private var moreInfo: some View {
         Button {
-            openURL(URL(string: "https://mindfulpacer.ch")!)
+            openURL(viewModel.landingPageURL)
         } label: {
             RoundedListCell(
-                icon: "info",
-                title: "More Info",
+                label: IconLabel(
+                    icon: "info",
+                    title: String(localized: "More Info"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -230,11 +280,15 @@ struct SettingsView: View {
     
     private var privacyPolicy: some View {
         Button {
-            openURL(URL(string: "https://mindfulpacer.ch/privacy-policy/")!)
+            openURL(viewModel.privacyPolicyURL)
         } label: {
             RoundedListCell(
-                icon: "hand.raised",
-                title: "Privacy Policy",
+                label: IconLabel(
+                    icon: "hand.raised",
+                    title: String(localized: "Privacy Policy"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "link"
             )
         }
@@ -247,9 +301,13 @@ struct SettingsView: View {
             viewModel.presentSheet(.onboardingView)
         } label: {
             RoundedListCell(
-                icon: "square.stack",
-                title: "Onboarding",
-                description: "View the onboarding again",
+                label: IconLabel(
+                    icon: "square.stack",
+                    title: String(localized: "Onboarding"),
+                    description: String(localized: "View the onboarding again"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -262,9 +320,13 @@ struct SettingsView: View {
             viewModel.presentSheet(.roadmap)
         } label: {
             RoundedListCell(
-                icon: "map",
-                title: "Roadmap",
-                description: "View upcoming features",
+                label: IconLabel(
+                    icon: "map",
+                    title: String(localized: "Roadmap"),
+                    description: String(localized: "View upcoming features"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
             )
         }
@@ -274,14 +336,17 @@ struct SettingsView: View {
     
     private var disclaimer: some View {
         RoundedListCell(
-            icon: "exclamationmark.triangle",
-            title: "Disclaimer",
-            description:
-                """
-                MindfulPacer is a spin-off project from the University of Zurich, developed in collaboration between the Human Aspects of Software Engineering Lab and the Clinic for Immunology.
-                
-                MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
-                """
+            label: IconLabel(
+                icon: "exclamationmark.triangle",
+                title: String(localized: "Disclaimer"),
+                description:  String(localized: """
+                    MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.
+                    
+                    MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
+                    """),
+                labelColor: .yellow,
+                background: true
+            )
         )
     }
     
@@ -292,7 +357,7 @@ struct SettingsView: View {
             HStack {
                 IconLabel(
                     icon: "building.columns",
-                    title: "Supported By",
+                    title: String(localized: "Supported By"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -304,54 +369,43 @@ struct SettingsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     Group {
-                        Image(.DIZH)
-                            .resizable()
-                        Image(.UZH)
-                            .resizable()
-                        Image(.longCovid)
-                            .resizable()
-                        Image(.USZ)
-                            .resizable()
+                        ForEach(SupportingInstitute.allCases) { institute in
+                            Button {
+                                openURL(institute.url)
+                            } label: {
+                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                                    institute.logo
+                                        .resizable()
+                                        .scaledToFill()
+                                }
+                            }
+                        }
                     }
-                    .scaledToFit()
-                    .frame(maxHeight: 128)
+                    .frame(maxWidth: 256)
                 }
                 .scrollTargetLayout()
+                .frame(maxHeight: 128)
             }
             .scrollTargetBehavior(.viewAligned)
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
-        
-//        LazyVGrid(columns: [GridItem(spacing: 16), GridItem(spacing: 16)], spacing: 16) {
-//            Group {
-//                Image(.dizhLogo)
-//                    .resizable()
-//                Image(.uzhLogo)
-//                    .resizable()
-//                Image(.longCovidLogo)
-//                    .resizable()
-//                Image(.uszLogo)
-//                    .resizable()
-//            }
-//            .aspectRatio(1.0, contentMode: .fit)
-//        }
-//        .frame(maxWidth: .infinity, alignment: .center)
-//        .padding(.horizontal)
     }
     
     // MARK: App Version
     
     private var appVersion: some View {
-        Button {
-            viewModel.presentSheet(.systemReportView)
-        } label: {
-            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
-                .font(.footnote)
-                .foregroundStyle(Color.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.horizontal)
+        Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
+            .font(.footnote)
+            .foregroundStyle(Color.secondary)
+            .onTapGesture(count: 1) {
+                viewModel.presentSheet(.systemReportView)
+            }
+            .onTapGesture(count: 2) {
+                viewModel.presentSheet(.missedReflectionsListView)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal)
     }
 }
 

@@ -30,14 +30,18 @@ enum Theme: String, CaseIterable, Identifiable {
         }
     }
     
+    var localized: String {
+        NSLocalizedString(rawValue, comment: "Theme setting option")
+    }
+    
     var description: String {
         switch self {
         case .system:
-            "Use the same setting as your device"
+            String(localized: "Use the same setting as your device")
         case .light:
-            "Always use light mode"
+            String(localized: "Always use light mode")
         case .dark:
-            "Always use dark mode"
+            String(localized: "Always use dark mode")
         }
     }
     
@@ -52,8 +56,51 @@ enum Theme: String, CaseIterable, Identifiable {
         }
     }
     
+    var labelColor: Color {
+        switch self {
+        case .system: Color.primary
+        case .light: .yellow
+        case .dark: .purple
+        }
+    }
+    
     static var appStorageKey: String {
         "theme"
+    }
+}
+
+// MARK: - SupportingInstitute
+
+enum SupportingInstitute: String, CaseIterable, Identifiable {
+    case uzh, dizh, longCovid
+    
+    var id: String { name }
+    
+    var name: String {
+        switch self {
+        case .uzh: "UZH"
+        case .dizh: "DIZH"
+        case .longCovid: "Long Covid Switzerland"
+        }
+    }
+    
+    var logo: Image {
+        switch self {
+        case .uzh: Image(.UZH)
+        case .dizh: Image(.DIZH)
+        case .longCovid: Image(.longCovid)
+        }
+    }
+    
+    var url: URL {
+        switch self {
+        case .uzh:
+            URL(string: Locale.current.language.languageCode?.identifier == "de" ? "https://www.uzh.ch/de.html" : "https://www.uzh.ch/en.html")!
+        case .dizh:
+            URL(string: Locale.current.language.languageCode?.identifier == "de" ? "https://www.dizh.uzh.ch/de/home-2/" : "https://www.dizh.uzh.ch/en/home-2/")!
+        case .longCovid:
+            URL(string: "https://www.long-covid-info.ch/")!
+        }
     }
 }
 
@@ -61,16 +108,19 @@ enum Theme: String, CaseIterable, Identifiable {
 
 enum ExportFileFormat: String, CaseIterable, Identifiable {
     case csv
+    case json
     
     var description: String {
         switch self {
         case .csv: ".CSV"
+        case .json: ".JSON"
         }
     }
     
     var fileExtension: String {
         switch self {
         case .csv: ".csv"
+        case .json: ".json"
         }
     }
     
@@ -82,6 +132,8 @@ enum ExportFileFormat: String, CaseIterable, Identifiable {
 enum ExportDataModel: String, CaseIterable, Identifiable {
     case reflection
     case reminder
+    case heartRateLast24Hours
+    case stepsLast24Hours
     
     var id: String { self.rawValue }
     
@@ -89,6 +141,8 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "Reflections"
         case .reminder: "Reminders"
+        case .heartRateLast24Hours: "Heart Rate (24 Hours)"
+        case .stepsLast24Hours: "Steps (24 Hours)"
         }
     }
     
@@ -96,6 +150,8 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "book.pages.fill"
         case .reminder: "bell.badge.fill"
+        case .heartRateLast24Hours: "heart.fill"
+        case .stepsLast24Hours: "figure.walk"
         }
     }
     
@@ -103,6 +159,17 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "MindfulPacer_Reflections"
         case .reminder: "MindfulPacer_Reminders"
+        case .heartRateLast24Hours: "MindfulPacer_HeartRate_24_Hours"
+        case .stepsLast24Hours: "MindfulPacer_Steps_24_Hours"
+        }
+    }
+    
+    var allowedExportFormats: [ExportFileFormat] {
+        switch self {
+        case .reflection, .reminder:
+            return [.csv]
+        case .heartRateLast24Hours, .stepsLast24Hours:
+            return [.json]
         }
     }
 }
@@ -111,7 +178,7 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
 
 struct ExportDocument: FileDocument {
     static var readableContentTypes: [UTType] {
-        return [.commaSeparatedText, .spreadsheet]
+        return [.commaSeparatedText, .spreadsheet, .json]
     }
     
     var fileURL: URL
@@ -137,8 +204,11 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
+    private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
+    private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     
     // MARK: - Published Properties
     
@@ -162,6 +232,22 @@ class SettingsViewModel {
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
     var contactSupportSubject: String = "MindfulPacer - Feedback"
+    
+    var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+    var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+    var missedReflections: [MissedReflection] = []
+
+    var isGermanLanguage: Bool {
+        Locale.current.language.languageCode?.identifier == "de"
+    }
+    
+    var privacyPolicyURL: URL {
+        isGermanLanguage ? URL(string: "https://mindfulpacer.ch/datenschutzbestimmungen/")! : URL(string: "https://mindfulpacer.ch/en/privacy-policy/")!
+    }
+    
+    var landingPageURL: URL {
+        isGermanLanguage ? URL(string: "https://mindfulpacer.ch/")! : URL(string: "https://mindfulpacer.ch/en/mindfulpacer-english/")!
+    }
     
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
@@ -238,11 +324,17 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
+        checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
+        fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase
+        fetchRemindersUseCase: FetchRemindersUseCase,
+        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     ) {
+        self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
+        self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
+        self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
     }
     
     // MARK: - View Events
@@ -250,6 +342,8 @@ class SettingsViewModel {
     func onViewAppear() {
         fetchReflections()
         fetchReminders()
+        fetchHealthData()
+        checkMissedReflections()
     }
     
     // MARK: - Presentation
@@ -267,11 +361,16 @@ class SettingsViewModel {
     func onExportTapped() {
         let exportedFileURL: URL?
         
+        // Set the export format based on the data model
         switch selectedExportDataModel {
-        case .reflection:
-            exportedFileURL = exportToCSV(reflections: reflections, reminders: [])
-        case .reminder:
-            exportedFileURL = exportToCSV(reflections: [], reminders: reminders)
+        case .reflection, .reminder:
+            selectedExportFileFormat = .csv
+            exportedFileURL = exportToCSV(reflections: selectedExportDataModel == .reflection ? reflections : [],
+                                         reminders: selectedExportDataModel == .reminder ? reminders : [])
+        case .heartRateLast24Hours, .stepsLast24Hours:
+            selectedExportFileFormat = .json
+            exportedFileURL = exportToJSON(heartRateData: selectedExportDataModel == .heartRateLast24Hours ? heartRateData : [],
+                                          stepData: selectedExportDataModel == .stepsLast24Hours ? stepData : [])
         }
         
         if let url = exportedFileURL {
@@ -290,8 +389,24 @@ class SettingsViewModel {
         reminders = fetchRemindersUseCase.execute() ?? []
     }
     
+    private func fetchHealthData() {
+        fetchStepDataLast24HoursUseCase.execute { [weak self] stepData in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.stepData = stepData
+            }
+        }
+        
+        fetchHeartRateDataLast24HoursUseCase.execute { [weak self] heartRateData in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.heartRateData = heartRateData
+            }
+        }
+    }
+    
     private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
-        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + selectedExportFileFormat.fileExtension
+        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + ExportFileFormat.csv.fileExtension
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         
         var csvText = ""
@@ -334,7 +449,62 @@ class SettingsViewModel {
         }
     }
     
+    private func exportToJSON(heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)], stepData: [(startDate: Date, endDate: Date, stepCount: Double)]) -> URL? {
+        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + ExportFileFormat.json.fileExtension
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        var jsonArray: [[String: Any]] = []
+        
+        if selectedExportDataModel == .heartRateLast24Hours {
+            jsonArray = heartRateData.map { entry in
+                [
+                    "startDate": ISO8601DateFormatter().string(from: entry.startDate),
+                    "endDate": ISO8601DateFormatter().string(from: entry.endDate),
+                    "heartRate": Int(entry.stepCount)
+                ]
+            }
+        } else if selectedExportDataModel == .stepsLast24Hours {
+            jsonArray = stepData.map { entry in
+                [
+                    "startDate": ISO8601DateFormatter().string(from: entry.startDate),
+                    "endDate": ISO8601DateFormatter().string(from: entry.endDate),
+                    "stepCount": Int(entry.stepCount)
+                ]
+            }
+        }
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
+            try jsonData.write(to: path, options: .atomic)
+            print("Export successful. File saved at: \(path)")
+            return path
+        } catch {
+            print("Failed to create JSON file: \(error)")
+            return nil
+        }
+    }
+    
     private func optionalIntToString(_ value: Int?) -> String {
         return value.map { "\($0)" } ?? ""
+    }
+    
+    private func checkMissedReflections() {
+        let reminders = fetchRemindersUseCase.execute() ?? []
+        
+        checkMissedReflectionsUseCase.execute(
+            reminders: reminders,
+            isDeveloperMode: true
+        ) { [weak self] result in
+            guard let self = self else { return }
+            
+            Task { @MainActor in
+                switch result {
+                case .success(let missedReflections):
+                    self.missedReflections = missedReflections
+                case .failure(let failure):
+                    print("DEBUG:", failure)
+                }
+            }
+        }
     }
 }

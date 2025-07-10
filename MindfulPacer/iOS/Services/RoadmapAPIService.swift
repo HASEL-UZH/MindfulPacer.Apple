@@ -18,7 +18,7 @@ protocol RoadmapAPIServiceProtocol: Sendable {
 class RoadmapAPIService: RoadmapAPIServiceProtocol, @unchecked Sendable {
     static let shared = RoadmapAPIService()
 
-    private let url = "https://www.mindfulpacer.ch/DATA/MP_Roadmap_EN.json"
+    private let url = Locale.current.language.languageCode?.identifier == "de" ? "https://www.mindfulpacer.ch/DATA/MP_Roadmap_DE.json" : "https://www.mindfulpacer.ch/DATA/MP_Roadmap_EN.json"
     
     func fetchRoadmap() async throws -> [RoadmapItemDTO] {
         return try await fetchGenericJSONData(urlString: url)

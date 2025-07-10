@@ -97,21 +97,14 @@ struct HomeView: View {
                 Card {
                     Label {
                         Text(viewModel.missedReflectionsWidgetTitle)
+                            .foregroundStyle(Color.red)
                             .font(.subheadline.weight(.semibold))
                     } icon: {
-                        Image(systemName: "bell.badge.fill")
-                            .symbolRenderingMode(.palette)
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.red, Color.brandPrimary)
-                            .padding(4)
-                            .background {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .foregroundStyle(Color.brandPrimary.opacity(0.1))
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.brandPrimary.opacity(0.1), lineWidth: 1.5)
-                                }
-                            }
+                        Icon(
+                            image: "book.pages.fill.badge.exclamationmark",
+                            color: .red,
+                            background: true
+                        )
                     }
                 }
             }

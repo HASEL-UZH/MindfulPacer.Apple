@@ -23,7 +23,7 @@ extension HomeView {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "book.pages.fill",
-                        title: "My Reflections",
+                        title: String(localized: "My Reflections"),
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
@@ -36,7 +36,7 @@ extension HomeView {
                         EmptyStateView(
                             image: "book.pages",
                             title: "No Reflections",
-                            description: "Tap the + button to create a reflection."
+                            description: String(localized: "Tap the + button to create a reflection.")
                         )
                     } else {
                         recentReflectionsSummary
@@ -57,7 +57,11 @@ extension HomeView {
             Button {
                 viewModel.presentSheet(.editReflectionView(nil))
             } label: {
-                IconLabel(icon: "plus.circle", title: "Create Reflection", labelColor: Color("BrandPrimary"))
+                IconLabel(
+                    icon: "plus.circle",
+                    title: String(localized: "Create Reflection"),
+                    labelColor: Color("BrandPrimary")
+                )
                     .font(.subheadline.weight(.semibold))
             }
         }

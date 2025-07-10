@@ -1,0 +1,927 @@
+[
+  {
+    "heartRate" : 74,
+    "endDate" : "2025-03-26T12:20:48Z",
+    "startDate" : "2025-03-26T12:20:48Z"
+  },
+  {
+    "startDate" : "2025-03-26T12:25:44Z",
+    "endDate" : "2025-03-26T12:25:44Z",
+    "heartRate" : 67
+  },
+  {
+    "heartRate" : 74,
+    "endDate" : "2025-03-26T12:30:27Z",
+    "startDate" : "2025-03-26T12:30:27Z"
+  },
+  {
+    "heartRate" : 76,
+    "endDate" : "2025-03-26T12:37:48Z",
+    "startDate" : "2025-03-26T12:37:48Z"
+  },
+  {
+    "endDate" : "2025-03-26T12:46:30Z",
+    "startDate" : "2025-03-26T12:46:30Z",
+    "heartRate" : 77
+  },
+  {
+    "heartRate" : 110,
+    "startDate" : "2025-03-26T12:56:25Z",
+    "endDate" : "2025-03-26T12:56:25Z"
+  },
+  {
+    "endDate" : "2025-03-26T12:59:35Z",
+    "heartRate" : 110,
+    "startDate" : "2025-03-26T12:59:35Z"
+  },
+  {
+    "endDate" : "2025-03-26T12:59:40Z",
+    "startDate" : "2025-03-26T12:59:40Z",
+    "heartRate" : 118
+  },
+  {
+    "heartRate" : 119,
+    "endDate" : "2025-03-26T12:59:45Z",
+    "startDate" : "2025-03-26T12:59:45Z"
+  },
+  {
+    "endDate" : "2025-03-26T12:59:48Z",
+    "heartRate" : 119,
+    "startDate" : "2025-03-26T12:59:48Z"
+  },
+  {
+    "heartRate" : 120,
+    "startDate" : "2025-03-26T12:59:51Z",
+    "endDate" : "2025-03-26T12:59:51Z"
+  },
+  {
+    "startDate" : "2025-03-26T12:59:58Z",
+    "endDate" : "2025-03-26T12:59:58Z",
+    "heartRate" : 113
+  },
+  {
+    "heartRate" : 111,
+    "endDate" : "2025-03-26T13:00:02Z",
+    "startDate" : "2025-03-26T13:00:02Z"
+  },
+  {
+    "endDate" : "2025-03-26T13:00:10Z",
+    "startDate" : "2025-03-26T13:00:10Z",
+    "heartRate" : 105
+  },
+  {
+    "heartRate" : 106,
+    "startDate" : "2025-03-26T13:00:14Z",
+    "endDate" : "2025-03-26T13:00:14Z"
+  },
+  {
+    "endDate" : "2025-03-26T13:00:17Z",
+    "heartRate" : 104,
+    "startDate" : "2025-03-26T13:00:17Z"
+  },
+  {
+    "startDate" : "2025-03-26T13:03:30Z",
+    "endDate" : "2025-03-26T13:03:30Z",
+    "heartRate" : 83
+  },
+  {
+    "startDate" : "2025-03-26T13:05:57Z",
+    "endDate" : "2025-03-26T13:05:57Z",
+    "heartRate" : 76
+  },
+  {
+    "heartRate" : 76,
+    "endDate" : "2025-03-26T13:13:34Z",
+    "startDate" : "2025-03-26T13:13:34Z"
+  },
+  {
+    "startDate" : "2025-03-26T13:17:43Z",
+    "endDate" : "2025-03-26T13:17:43Z",
+    "heartRate" : 74
+  },
+  {
+    "startDate" : "2025-03-26T13:19:42Z",
+    "endDate" : "2025-03-26T13:19:42Z",
+    "heartRate" : 72
+  },
+  {
+    "heartRate" : 73,
+    "endDate" : "2025-03-26T13:24:43Z",
+    "startDate" : "2025-03-26T13:24:43Z"
+  },
+  {
+    "startDate" : "2025-03-26T13:30:57Z",
+    "endDate" : "2025-03-26T13:30:57Z",
+    "heartRate" : 71
+  },
+  {
+    "heartRate" : 68,
+    "startDate" : "2025-03-26T13:36:45Z",
+    "endDate" : "2025-03-26T13:36:45Z"
+  },
+  {
+    "startDate" : "2025-03-26T13:41:42Z",
+    "endDate" : "2025-03-26T13:41:42Z",
+    "heartRate" : 72
+  },
+  {
+    "endDate" : "2025-03-26T13:46:25Z",
+    "startDate" : "2025-03-26T13:46:25Z",
+    "heartRate" : 75
+  },
+  {
+    "heartRate" : 71,
+    "startDate" : "2025-03-26T13:54:01Z",
+    "endDate" : "2025-03-26T13:54:01Z"
+  },
+  {
+    "endDate" : "2025-03-26T13:56:02Z",
+    "heartRate" : 70,
+    "startDate" : "2025-03-26T13:56:02Z"
+  },
+  {
+    "endDate" : "2025-03-26T14:04:11Z",
+    "startDate" : "2025-03-26T14:04:11Z",
+    "heartRate" : 91
+  },
+  {
+    "heartRate" : 90,
+    "startDate" : "2025-03-26T14:04:16Z",
+    "endDate" : "2025-03-26T14:04:16Z"
+  },
+  {
+    "startDate" : "2025-03-26T14:04:17Z",
+    "endDate" : "2025-03-26T14:04:17Z",
+    "heartRate" : 90
+  },
+  {
+    "startDate" : "2025-03-26T14:04:24Z",
+    "endDate" : "2025-03-26T14:04:24Z",
+    "heartRate" : 91
+  },
+  {
+    "startDate" : "2025-03-26T14:04:31Z",
+    "endDate" : "2025-03-26T14:04:31Z",
+    "heartRate" : 93
+  },
+  {
+    "startDate" : "2025-03-26T14:04:35Z",
+    "endDate" : "2025-03-26T14:04:35Z",
+    "heartRate" : 95
+  },
+  {
+    "startDate" : "2025-03-26T14:04:41Z",
+    "endDate" : "2025-03-26T14:04:41Z",
+    "heartRate" : 91
+  },
+  {
+    "heartRate" : 77,
+    "endDate" : "2025-03-26T14:14:06Z",
+    "startDate" : "2025-03-26T14:14:06Z"
+  },
+  {
+    "heartRate" : 70,
+    "startDate" : "2025-03-26T14:15:48Z",
+    "endDate" : "2025-03-26T14:15:48Z"
+  },
+  {
+    "startDate" : "2025-03-26T14:20:04Z",
+    "endDate" : "2025-03-26T14:20:04Z",
+    "heartRate" : 70
+  },
+  {
+    "endDate" : "2025-03-26T14:27:18Z",
+    "startDate" : "2025-03-26T14:27:18Z",
+    "heartRate" : 94
+  },
+  {
+    "endDate" : "2025-03-26T14:27:23Z",
+    "heartRate" : 91,
+    "startDate" : "2025-03-26T14:27:23Z"
+  },
+  {
+    "endDate" : "2025-03-26T14:27:27Z",
+    "startDate" : "2025-03-26T14:27:27Z",
+    "heartRate" : 91
+  },
+  {
+    "startDate" : "2025-03-26T14:27:32Z",
+    "endDate" : "2025-03-26T14:27:32Z",
+    "heartRate" : 89
+  },
+  {
+    "endDate" : "2025-03-26T14:27:35Z",
+    "startDate" : "2025-03-26T14:27:35Z",
+    "heartRate" : 87
+  },
+  {
+    "heartRate" : 87,
+    "endDate" : "2025-03-26T14:27:41Z",
+    "startDate" : "2025-03-26T14:27:41Z"
+  },
+  {
+    "endDate" : "2025-03-26T14:27:44Z",
+    "heartRate" : 87,
+    "startDate" : "2025-03-26T14:27:44Z"
+  },
+  {
+    "heartRate" : 92,
+    "startDate" : "2025-03-26T14:27:49Z",
+    "endDate" : "2025-03-26T14:27:49Z"
+  },
+  {
+    "heartRate" : 90,
+    "endDate" : "2025-03-26T14:27:58Z",
+    "startDate" : "2025-03-26T14:27:58Z"
+  },
+  {
+    "heartRate" : 64,
+    "startDate" : "2025-03-26T14:33:33Z",
+    "endDate" : "2025-03-26T14:33:33Z"
+  },
+  {
+    "endDate" : "2025-03-26T14:36:48Z",
+    "startDate" : "2025-03-26T14:36:48Z",
+    "heartRate" : 72
+  },
+  {
+    "heartRate" : 73,
+    "startDate" : "2025-03-26T14:41:36Z",
+    "endDate" : "2025-03-26T14:41:36Z"
+  },
+  {
+    "endDate" : "2025-03-26T14:46:50Z",
+    "startDate" : "2025-03-26T14:46:50Z",
+    "heartRate" : 60
+  },
+  {
+    "endDate" : "2025-03-26T14:47:21Z",
+    "startDate" : "2025-03-26T14:47:21Z",
+    "heartRate" : 60
+  },
+  {
+    "heartRate" : 63,
+    "startDate" : "2025-03-26T14:49:43Z",
+    "endDate" : "2025-03-26T14:49:43Z"
+  },
+  {
+    "heartRate" : 72,
+    "startDate" : "2025-03-26T14:58:07Z",
+    "endDate" : "2025-03-26T14:58:07Z"
+  },
+  {
+    "heartRate" : 68,
+    "startDate" : "2025-03-26T15:01:58Z",
+    "endDate" : "2025-03-26T15:01:58Z"
+  },
+  {
+    "startDate" : "2025-03-26T15:16:49Z",
+    "endDate" : "2025-03-26T15:16:49Z",
+    "heartRate" : 99
+  },
+  {
+    "startDate" : "2025-03-26T15:16:55Z",
+    "heartRate" : 103,
+    "endDate" : "2025-03-26T15:16:55Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:16:56Z",
+    "startDate" : "2025-03-26T15:16:56Z",
+    "heartRate" : 103
+  },
+  {
+    "startDate" : "2025-03-26T15:17:05Z",
+    "endDate" : "2025-03-26T15:17:05Z",
+    "heartRate" : 104
+  },
+  {
+    "startDate" : "2025-03-26T15:17:09Z",
+    "endDate" : "2025-03-26T15:17:09Z",
+    "heartRate" : 104
+  },
+  {
+    "heartRate" : 108,
+    "endDate" : "2025-03-26T15:17:15Z",
+    "startDate" : "2025-03-26T15:17:15Z"
+  },
+  {
+    "heartRate" : 108,
+    "startDate" : "2025-03-26T15:17:16Z",
+    "endDate" : "2025-03-26T15:17:16Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:17:22Z",
+    "startDate" : "2025-03-26T15:17:22Z",
+    "heartRate" : 107
+  },
+  {
+    "endDate" : "2025-03-26T15:17:27Z",
+    "heartRate" : 100,
+    "startDate" : "2025-03-26T15:17:27Z"
+  },
+  {
+    "startDate" : "2025-03-26T15:17:31Z",
+    "endDate" : "2025-03-26T15:17:31Z",
+    "heartRate" : 95
+  },
+  {
+    "endDate" : "2025-03-26T15:19:34Z",
+    "startDate" : "2025-03-26T15:19:34Z",
+    "heartRate" : 74
+  },
+  {
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T15:19:38Z",
+    "endDate" : "2025-03-26T15:19:38Z"
+  },
+  {
+    "heartRate" : 75,
+    "endDate" : "2025-03-26T15:20:22Z",
+    "startDate" : "2025-03-26T15:20:22Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:20:23Z",
+    "startDate" : "2025-03-26T15:20:23Z",
+    "heartRate" : 75
+  },
+  {
+    "endDate" : "2025-03-26T15:20:29Z",
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T15:20:29Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:21:38Z",
+    "heartRate" : 75,
+    "startDate" : "2025-03-26T15:21:38Z"
+  },
+  {
+    "heartRate" : 72,
+    "startDate" : "2025-03-26T15:21:43Z",
+    "endDate" : "2025-03-26T15:21:43Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:21:44Z",
+    "heartRate" : 73,
+    "startDate" : "2025-03-26T15:21:44Z"
+  },
+  {
+    "startDate" : "2025-03-26T15:21:50Z",
+    "endDate" : "2025-03-26T15:21:50Z",
+    "heartRate" : 73
+  },
+  {
+    "heartRate" : 73,
+    "startDate" : "2025-03-26T15:21:55Z",
+    "endDate" : "2025-03-26T15:21:55Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:22:02Z",
+    "startDate" : "2025-03-26T15:22:02Z",
+    "heartRate" : 73
+  },
+  {
+    "startDate" : "2025-03-26T15:22:08Z",
+    "endDate" : "2025-03-26T15:22:08Z",
+    "heartRate" : 73
+  },
+  {
+    "endDate" : "2025-03-26T15:22:13Z",
+    "startDate" : "2025-03-26T15:22:13Z",
+    "heartRate" : 73
+  },
+  {
+    "startDate" : "2025-03-26T15:22:18Z",
+    "endDate" : "2025-03-26T15:22:18Z",
+    "heartRate" : 73
+  },
+  {
+    "endDate" : "2025-03-26T15:22:20Z",
+    "startDate" : "2025-03-26T15:22:20Z",
+    "heartRate" : 73
+  },
+  {
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T15:22:24Z",
+    "endDate" : "2025-03-26T15:22:24Z"
+  },
+  {
+    "startDate" : "2025-03-26T15:22:33Z",
+    "heartRate" : 75,
+    "endDate" : "2025-03-26T15:22:33Z"
+  },
+  {
+    "startDate" : "2025-03-26T15:22:38Z",
+    "heartRate" : 74,
+    "endDate" : "2025-03-26T15:22:38Z"
+  },
+  {
+    "endDate" : "2025-03-26T15:22:42Z",
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T15:22:42Z"
+  },
+  {
+    "startDate" : "2025-03-26T17:54:35Z",
+    "heartRate" : 95,
+    "endDate" : "2025-03-26T17:54:35Z"
+  },
+  {
+    "startDate" : "2025-03-26T17:54:37Z",
+    "endDate" : "2025-03-26T17:54:37Z",
+    "heartRate" : 96
+  },
+  {
+    "heartRate" : 97,
+    "startDate" : "2025-03-26T17:54:46Z",
+    "endDate" : "2025-03-26T17:54:46Z"
+  },
+  {
+    "endDate" : "2025-03-26T17:54:47Z",
+    "heartRate" : 97,
+    "startDate" : "2025-03-26T17:54:47Z"
+  },
+  {
+    "heartRate" : 95,
+    "startDate" : "2025-03-26T17:54:52Z",
+    "endDate" : "2025-03-26T17:54:52Z"
+  },
+  {
+    "endDate" : "2025-03-26T17:55:00Z",
+    "heartRate" : 95,
+    "startDate" : "2025-03-26T17:55:00Z"
+  },
+  {
+    "startDate" : "2025-03-26T17:55:02Z",
+    "heartRate" : 94,
+    "endDate" : "2025-03-26T17:55:02Z"
+  },
+  {
+    "endDate" : "2025-03-26T17:55:07Z",
+    "startDate" : "2025-03-26T17:55:07Z",
+    "heartRate" : 93
+  },
+  {
+    "startDate" : "2025-03-26T17:55:14Z",
+    "endDate" : "2025-03-26T17:55:14Z",
+    "heartRate" : 92
+  },
+  {
+    "startDate" : "2025-03-26T17:55:21Z",
+    "endDate" : "2025-03-26T17:55:21Z",
+    "heartRate" : 92
+  },
+  {
+    "endDate" : "2025-03-26T17:55:22Z",
+    "heartRate" : 91,
+    "startDate" : "2025-03-26T17:55:22Z"
+  },
+  {
+    "heartRate" : 107,
+    "startDate" : "2025-03-26T20:02:32Z",
+    "endDate" : "2025-03-26T20:02:32Z"
+  },
+  {
+    "heartRate" : 105,
+    "endDate" : "2025-03-26T20:02:36Z",
+    "startDate" : "2025-03-26T20:02:36Z"
+  },
+  {
+    "heartRate" : 107,
+    "startDate" : "2025-03-26T20:02:38Z",
+    "endDate" : "2025-03-26T20:02:38Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:02:47Z",
+    "heartRate" : 108,
+    "startDate" : "2025-03-26T20:02:47Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:02:50Z",
+    "endDate" : "2025-03-26T20:02:50Z",
+    "heartRate" : 107
+  },
+  {
+    "startDate" : "2025-03-26T20:02:53Z",
+    "endDate" : "2025-03-26T20:02:53Z",
+    "heartRate" : 107
+  },
+  {
+    "heartRate" : 105,
+    "startDate" : "2025-03-26T20:03:02Z",
+    "endDate" : "2025-03-26T20:03:02Z"
+  },
+  {
+    "heartRate" : 103,
+    "endDate" : "2025-03-26T20:03:07Z",
+    "startDate" : "2025-03-26T20:03:07Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:03:12Z",
+    "endDate" : "2025-03-26T20:03:12Z",
+    "heartRate" : 101
+  },
+  {
+    "startDate" : "2025-03-26T20:03:15Z",
+    "endDate" : "2025-03-26T20:03:15Z",
+    "heartRate" : 101
+  },
+  {
+    "heartRate" : 100,
+    "startDate" : "2025-03-26T20:03:37Z",
+    "endDate" : "2025-03-26T20:03:37Z"
+  },
+  {
+    "heartRate" : 100,
+    "startDate" : "2025-03-26T20:03:42Z",
+    "endDate" : "2025-03-26T20:03:42Z"
+  },
+  {
+    "heartRate" : 100,
+    "endDate" : "2025-03-26T20:03:47Z",
+    "startDate" : "2025-03-26T20:03:47Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:03:49Z",
+    "endDate" : "2025-03-26T20:03:49Z",
+    "heartRate" : 102
+  },
+  {
+    "endDate" : "2025-03-26T20:03:55Z",
+    "heartRate" : 102,
+    "startDate" : "2025-03-26T20:03:55Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:03:58Z",
+    "startDate" : "2025-03-26T20:03:58Z",
+    "heartRate" : 101
+  },
+  {
+    "heartRate" : 94,
+    "startDate" : "2025-03-26T20:08:23Z",
+    "endDate" : "2025-03-26T20:08:23Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:08:27Z",
+    "endDate" : "2025-03-26T20:08:27Z",
+    "heartRate" : 92
+  },
+  {
+    "endDate" : "2025-03-26T20:08:29Z",
+    "heartRate" : 92,
+    "startDate" : "2025-03-26T20:08:29Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:08:38Z",
+    "heartRate" : 93,
+    "endDate" : "2025-03-26T20:08:38Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:08:42Z",
+    "heartRate" : 93,
+    "endDate" : "2025-03-26T20:08:42Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:08:46Z",
+    "endDate" : "2025-03-26T20:08:46Z",
+    "heartRate" : 91
+  },
+  {
+    "endDate" : "2025-03-26T20:08:53Z",
+    "heartRate" : 91,
+    "startDate" : "2025-03-26T20:08:53Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:11:23Z",
+    "heartRate" : 90,
+    "startDate" : "2025-03-26T20:11:23Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:11:27Z",
+    "heartRate" : 85,
+    "startDate" : "2025-03-26T20:11:27Z"
+  },
+  {
+    "heartRate" : 84,
+    "startDate" : "2025-03-26T20:11:29Z",
+    "endDate" : "2025-03-26T20:11:29Z"
+  },
+  {
+    "heartRate" : 88,
+    "startDate" : "2025-03-26T20:11:34Z",
+    "endDate" : "2025-03-26T20:11:34Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:11:50Z",
+    "heartRate" : 91,
+    "startDate" : "2025-03-26T20:11:50Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:11:58Z",
+    "endDate" : "2025-03-26T20:11:58Z",
+    "heartRate" : 90
+  },
+  {
+    "endDate" : "2025-03-26T20:12:00Z",
+    "startDate" : "2025-03-26T20:12:00Z",
+    "heartRate" : 90
+  },
+  {
+    "startDate" : "2025-03-26T20:12:05Z",
+    "endDate" : "2025-03-26T20:12:05Z",
+    "heartRate" : 92
+  },
+  {
+    "heartRate" : 94,
+    "startDate" : "2025-03-26T20:12:11Z",
+    "endDate" : "2025-03-26T20:12:11Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:12:53Z",
+    "startDate" : "2025-03-26T20:12:53Z",
+    "heartRate" : 83
+  },
+  {
+    "heartRate" : 82,
+    "startDate" : "2025-03-26T20:12:59Z",
+    "endDate" : "2025-03-26T20:12:59Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:13:00Z",
+    "heartRate" : 81,
+    "startDate" : "2025-03-26T20:13:00Z"
+  },
+  {
+    "heartRate" : 75,
+    "startDate" : "2025-03-26T20:13:09Z",
+    "endDate" : "2025-03-26T20:13:09Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:13:12Z",
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T20:13:12Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:13:15Z",
+    "endDate" : "2025-03-26T20:13:15Z",
+    "heartRate" : 73
+  },
+  {
+    "startDate" : "2025-03-26T20:13:20Z",
+    "endDate" : "2025-03-26T20:13:20Z",
+    "heartRate" : 72
+  },
+  {
+    "startDate" : "2025-03-26T20:13:25Z",
+    "endDate" : "2025-03-26T20:13:25Z",
+    "heartRate" : 73
+  },
+  {
+    "startDate" : "2025-03-26T20:13:30Z",
+    "endDate" : "2025-03-26T20:13:30Z",
+    "heartRate" : 73
+  },
+  {
+    "endDate" : "2025-03-26T20:13:39Z",
+    "heartRate" : 71,
+    "startDate" : "2025-03-26T20:13:39Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:13:40Z",
+    "heartRate" : 72,
+    "startDate" : "2025-03-26T20:13:40Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:13:49Z",
+    "endDate" : "2025-03-26T20:13:49Z",
+    "heartRate" : 73
+  },
+  {
+    "heartRate" : 72,
+    "startDate" : "2025-03-26T20:13:51Z",
+    "endDate" : "2025-03-26T20:13:51Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:13:55Z",
+    "startDate" : "2025-03-26T20:13:55Z",
+    "heartRate" : 72
+  },
+  {
+    "endDate" : "2025-03-26T20:14:02Z",
+    "startDate" : "2025-03-26T20:14:02Z",
+    "heartRate" : 73
+  },
+  {
+    "endDate" : "2025-03-26T20:14:06Z",
+    "startDate" : "2025-03-26T20:14:06Z",
+    "heartRate" : 73
+  },
+  {
+    "endDate" : "2025-03-26T20:14:12Z",
+    "startDate" : "2025-03-26T20:14:12Z",
+    "heartRate" : 72
+  },
+  {
+    "startDate" : "2025-03-26T20:14:15Z",
+    "heartRate" : 73,
+    "endDate" : "2025-03-26T20:14:15Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:14:28Z",
+    "endDate" : "2025-03-26T20:14:28Z",
+    "heartRate" : 73
+  },
+  {
+    "startDate" : "2025-03-26T20:14:31Z",
+    "endDate" : "2025-03-26T20:14:31Z",
+    "heartRate" : 73
+  },
+  {
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T20:14:38Z",
+    "endDate" : "2025-03-26T20:14:38Z"
+  },
+  {
+    "heartRate" : 74,
+    "endDate" : "2025-03-26T20:14:42Z",
+    "startDate" : "2025-03-26T20:14:42Z"
+  },
+  {
+    "heartRate" : 74,
+    "startDate" : "2025-03-26T20:14:46Z",
+    "endDate" : "2025-03-26T20:14:46Z"
+  },
+  {
+    "heartRate" : 75,
+    "startDate" : "2025-03-26T20:14:54Z",
+    "endDate" : "2025-03-26T20:14:54Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:14:59Z",
+    "endDate" : "2025-03-26T20:14:59Z",
+    "heartRate" : 76
+  },
+  {
+    "endDate" : "2025-03-26T20:15:02Z",
+    "heartRate" : 76,
+    "startDate" : "2025-03-26T20:15:02Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:15:10Z",
+    "heartRate" : 76,
+    "startDate" : "2025-03-26T20:15:10Z"
+  },
+  {
+    "heartRate" : 75,
+    "startDate" : "2025-03-26T20:15:15Z",
+    "endDate" : "2025-03-26T20:15:15Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:15:16Z",
+    "heartRate" : 75,
+    "startDate" : "2025-03-26T20:15:16Z"
+  },
+  {
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:15:24Z",
+    "endDate" : "2025-03-26T20:15:24Z"
+  },
+  {
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:15:26Z",
+    "endDate" : "2025-03-26T20:15:26Z"
+  },
+  {
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:15:31Z",
+    "endDate" : "2025-03-26T20:15:31Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:15:39Z",
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:15:39Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:15:45Z",
+    "endDate" : "2025-03-26T20:15:45Z",
+    "heartRate" : 77
+  },
+  {
+    "heartRate" : 77,
+    "endDate" : "2025-03-26T20:15:49Z",
+    "startDate" : "2025-03-26T20:15:49Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:15:54Z",
+    "heartRate" : 76,
+    "endDate" : "2025-03-26T20:15:54Z"
+  },
+  {
+    "heartRate" : 76,
+    "endDate" : "2025-03-26T20:15:56Z",
+    "startDate" : "2025-03-26T20:15:56Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:16:01Z",
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:16:01Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:16:06Z",
+    "heartRate" : 77,
+    "startDate" : "2025-03-26T20:16:06Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:16:11Z",
+    "startDate" : "2025-03-26T20:16:11Z",
+    "heartRate" : 78
+  },
+  {
+    "heartRate" : 88,
+    "startDate" : "2025-03-26T20:16:31Z",
+    "endDate" : "2025-03-26T20:16:31Z"
+  },
+  {
+    "heartRate" : 82,
+    "endDate" : "2025-03-26T20:16:38Z",
+    "startDate" : "2025-03-26T20:16:38Z"
+  },
+  {
+    "heartRate" : 84,
+    "endDate" : "2025-03-26T20:16:44Z",
+    "startDate" : "2025-03-26T20:16:44Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:16:47Z",
+    "endDate" : "2025-03-26T20:16:47Z",
+    "heartRate" : 82
+  },
+  {
+    "heartRate" : 82,
+    "startDate" : "2025-03-26T20:17:07Z",
+    "endDate" : "2025-03-26T20:17:07Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:17:13Z",
+    "heartRate" : 80,
+    "startDate" : "2025-03-26T20:17:13Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:17:25Z",
+    "endDate" : "2025-03-26T20:17:25Z",
+    "heartRate" : 81
+  },
+  {
+    "heartRate" : 78,
+    "startDate" : "2025-03-26T20:17:30Z",
+    "endDate" : "2025-03-26T20:17:30Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:17:31Z",
+    "startDate" : "2025-03-26T20:17:31Z",
+    "heartRate" : 79
+  },
+  {
+    "heartRate" : 79,
+    "startDate" : "2025-03-26T20:17:39Z",
+    "endDate" : "2025-03-26T20:17:39Z"
+  },
+  {
+    "heartRate" : 76,
+    "startDate" : "2025-03-26T20:17:41Z",
+    "endDate" : "2025-03-26T20:17:41Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:17:48Z",
+    "heartRate" : 78,
+    "endDate" : "2025-03-26T20:17:48Z"
+  },
+  {
+    "startDate" : "2025-03-26T20:17:52Z",
+    "endDate" : "2025-03-26T20:17:52Z",
+    "heartRate" : 79
+  },
+  {
+    "heartRate" : 79,
+    "startDate" : "2025-03-26T20:17:56Z",
+    "endDate" : "2025-03-26T20:17:56Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:18:03Z",
+    "heartRate" : 79,
+    "startDate" : "2025-03-26T20:18:03Z"
+  },
+  {
+    "endDate" : "2025-03-26T20:18:08Z",
+    "heartRate" : 79,
+    "startDate" : "2025-03-26T20:18:08Z"
+  },
+  {
+    "heartRate" : 79,
+    "startDate" : "2025-03-26T20:18:15Z",
+    "endDate" : "2025-03-26T20:18:15Z"
+  },
+  {
+    "heartRate" : 79,
+    "endDate" : "2025-03-26T20:18:16Z",
+    "startDate" : "2025-03-26T20:18:16Z"
+  }
+]

@@ -5,6 +5,13 @@
 //  Created by Grigor Dochev on 18.08.2024.
 //
 
+//
+//  ThresholdView.swift
+//  iOS
+//
+//  Created by Grigor Dochev on 18.08.2024.
+//
+
 import SwiftUI
 
 // MARK: - ThresholdView
@@ -15,7 +22,10 @@ extension CreateReminderView {
         // MARK: Properties
 
         @Bindable var viewModel: CreateReminderViewModel
-
+        @FocusState private var isThresholdFocused: Bool
+        
+        let onFocusChange: (Bool) -> Void
+        
         // MARK: Body
 
         var body: some View {
@@ -53,8 +63,12 @@ extension CreateReminderView {
                     .foregroundStyle(Color("BrandPrimary"))
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
+                    .focused($isThresholdFocused)
+                    .onChange(of: isThresholdFocused) { _, newValue in
+                        onFocusChange(newValue)
+                    }
 
-                Text(viewModel.thresholdUnitText)
+                Text(viewModel.selectedMeasurementType!.units)
                     .foregroundStyle(.secondary)
             }
             .padding()
@@ -85,7 +99,8 @@ extension CreateReminderView {
 
         private var hideKeyboardButton: some View {
             Button {
-                hideKeyboard()
+                isThresholdFocused = false
+                print("Hide keyboard button tapped")
             } label: {
                 Image(systemName: "keyboard.chevron.compact.down.fill")
             }
@@ -100,7 +115,9 @@ extension CreateReminderView {
     let viewModel = ScenesContainer.shared.createReminderViewModel()
 
     NavigationStack {
-        CreateReminderView.ThresholdView(viewModel: viewModel)
+        CreateReminderView.ThresholdView(viewModel: viewModel) { isFocused in
+            print("Preview: TextField focus changed to \(isFocused)")
+        }
     }
     .tint(Color("BrandPrimary"))
 }

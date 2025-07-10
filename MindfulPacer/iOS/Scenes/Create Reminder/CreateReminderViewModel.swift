@@ -36,9 +36,9 @@ class CreateReminderViewModel {
     var summaryViewTitle: String {
         switch mode {
         case .create:
-            return "Reminder Summary"
+            return String(localized: "Reminder Summary")
         case .edit:
-            return "Edit Reminder"
+            return String(localized: "Edit Reminder")
         }
     }
 
@@ -75,14 +75,14 @@ class CreateReminderViewModel {
 
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
-            return "Continue"
+            return String(localized: "Continue")
         }
 
         switch lastDestination {
         case .summary:
-            return "Create"
+            return String(localized: "Create")
         default:
-            return "Continue"
+            return String(localized: "Continue")
         }
     }
     
@@ -100,9 +100,9 @@ class CreateReminderViewModel {
     var thresholdUnitText: String {
         switch selectedMeasurementType {
         case .heartRate:
-            return "bpm"
+            return String(localized: "bpm")
         case .steps:
-            return "steps"
+            return String(localized: "steps")
         case nil:
             return ""
         }

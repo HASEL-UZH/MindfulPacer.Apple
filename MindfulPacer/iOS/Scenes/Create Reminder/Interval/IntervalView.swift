@@ -31,6 +31,13 @@ extension CreateReminderView {
                 .padding(.horizontal)
             }
             .navigationTitle("Interval")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") {
+                        viewModel.dismissView()
+                    }
+                }
+            }
         }
 
         // MARK: Interval Selection List
@@ -53,7 +60,7 @@ extension CreateReminderView {
                         HStack {
                             IconLabel(
                                 icon: interval.icon,
-                                title: interval.rawValue,
+                                title: interval.localized,
                                 labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
                             )
                             Spacer()

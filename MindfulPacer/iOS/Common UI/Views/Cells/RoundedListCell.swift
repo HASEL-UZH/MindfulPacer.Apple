@@ -10,24 +10,14 @@ import SwiftUI
 // MARK: - RoundedListCell
 
 struct RoundedListCell: View {
-    var icon: String?
-    var image: String?
-    var title: String
-    var description: String?
+    var label: IconLabel
     var accessoryIndicatorText: String?
     var accessoryIndicatorIcon: String?
     
     var body: some View {
         HStack {
-            IconLabel(
-                icon: icon,
-                image: image,
-                title: title,
-                description: description,
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-            .font(.subheadline.weight(.semibold))
+            label
+                .font(.subheadline.weight(.semibold))
             
             Spacer()
             
@@ -55,13 +45,22 @@ struct RoundedListCell: View {
     RoundedList {
         Section {
             RoundedListCell(
-                icon: "map",
-                title: "Roadmap"
+                label: IconLabel(
+                    icon: "map",
+                    title: "Roadmap",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
             )
             
             RoundedListCell(
-                image: "MindfulPacer Icon",
-                title: "MinfdulPacer"
+                label: IconLabel(
+                    image: "MindfulPacer Icon",
+                    title: "MindfulPacer",
+                    description: "Here is a description",
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                )
             )
         }
     }

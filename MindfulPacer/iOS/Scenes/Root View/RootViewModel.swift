@@ -22,12 +22,21 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
         self.rawValue.capitalized
     }
     
+    var localized: String {
+        switch self {
+        case .essentials:
+            String(localized: "Essentials")
+        case .expanded:
+            String(localized: "Expanded")
+        }
+    }
+    
     var description: String {
         switch self {
         case .essentials:
-            "Simpler minified user interface that focuses on comparing subjective well-being, pursued activity and biometric data."
+            String(localized: "Simpler minified user interface that focuses on comparing subjective well-being, pursued activity and biometric data.")
         case .expanded:
-            "Access all app features, including the ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors."
+            String(localized: "Access all app features, including the ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors.")
         }
     }
     

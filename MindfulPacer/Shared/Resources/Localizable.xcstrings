@@ -2,10 +2,25 @@
   "sourceLanguage" : "en",
   "strings" : {
     " - " : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     " %@" : {
-      "shouldTranslate" : false
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
     },
     "--" : {
       "localizations" : {
@@ -18,6 +33,16 @@
       },
       "shouldTranslate" : false
     },
+    "**NOTE:** Only highlighted points are considered for the missed reflection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**HINWEIS:** Nur die markierten Datenpunkte wurden für die verpassten Reflexionen verwendet."
+          }
+        }
+      }
+    },
     "**Updated:** %@" : {
       "localizations" : {
         "de" : {
@@ -29,7 +54,15 @@
       }
     },
     "%@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "%@ - %@" : {
       "localizations" : {
@@ -45,7 +78,8 @@
             "value" : "%1$@ - %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld" : {
       "localizations" : {
@@ -55,7 +89,14 @@
             "value" : "%lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
+    },
+    "%lld bpm" : {
+      "shouldTranslate" : false
+    },
+    "%lld steps" : {
+      "shouldTranslate" : false
     },
     "•" : {
       "localizations" : {
@@ -65,7 +106,8 @@
             "value" : "•"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "0" : {
       "localizations" : {
@@ -75,6 +117,27 @@
             "value" : "0"
           }
         }
+      },
+      "shouldTranslate" : false
+    },
+    "1 Day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tag"
+          }
+        }
+      }
+    },
+    "1 Hour" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Stunde"
+          }
+        }
       }
     },
     "1. **Light**: shows a yellow color 🟡.\n2. **Medium**: shows an orange color 🟠.\n3. **Strong**: shows a red color 🔴." : {
@@ -82,23 +145,214 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1. **Leicht**: zeigt eine gelbe Farbe 🟡.\n2. **Medium**: zeigt eine orange Farbe 🟠.\n3. **Stark**: zeigt eine rote Farbe 🔴."
+            "value" : "1. **Leicht**: zeigt eine gelbe Farbe 🟡.\n2. **Mittel**: zeigt eine orange Farbe 🟠.\n3. **Stark**: zeigt eine rote Farbe 🔴."
           }
         }
       }
     },
     "1. Once your Apple Watch is connected to your iPhone, open the **Watch** app.\n2. Go to the **My Watch** tab.\n3. Scroll down to see **MindfulPacer** and tap **Install**.\n4. Once you tapped **Install**, make sure the toggle is set to **Show App** on Apple Watch." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1. Sobald deine Apple Watch mit deinem iPhone verbunden ist, öffne die **Watch** App.\n2. Gehe auf die Registerkarte **Meine Uhr**.\n3. Scrolle nach unten, um **MindfulPacer** zu sehen, und tippe auf **Installieren**.\n4. Sobald du auf **Installieren** getippt hast, stelle sicher, dass der Schalter auf **App Anzeigen** auf der Apple Watch eingestellt ist."
+            "value" : "1. Sobald deine Apple Watch mit deinem iPhone verbunden ist, öffne die **Watch** App.\n2. Tippe auf **Meine Watch**.\n3. Scrolle nach unten, um **MindfulPacer** zu sehen, und tippe auf **Installieren**.\n4. Sobald du auf **Installieren** getippt hast, stelle sicher, dass der Schalter auf **App Anzeigen** auf der Apple Watch eingestellt ist."
+          }
+        }
+      }
+    },
+    "1. Open the Activity app on your Apple Watch.\n2. Firmly press the display.\n3. Tap 'Change Move Goal'.\n4. Adjust the goal to a level that suits your current capabilities." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Öffne die Aktivität-App auf deiner Apple Watch.\n2. Drücke auf das Display.\n3. Tippe auf „Ziele ändern“.\n4. Stelle das Ziel so ein, dass es deinen aktuellen Fähigkeiten entspricht."
+          }
+        }
+      }
+    },
+    "1. Open the Watch app on your iPhone.\n2. Tap on 'My Watch' at the bottom.\n3. Scroll down and tap on 'Activity'.\n4. Toggle off 'Stand Reminders'." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Öffne die Watch App auf deinem iPhone.\n2. Tippe unten auf „Meine Watch“.\n3. Scrolle nach unten und tippe auf „Aktivität“.\n4. Deaktiviere „Erinnerungen zum Stehen“."
+          }
+        }
+      }
+    },
+    "1. Open the Watch app on your iPhone.\n2. Tap on 'My Watch'.\n3. Tap on 'Notifications'.\n4. Select 'Activity'.\n5. Toggle off 'Activity Reminders'." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 1. Öffne die Watch App auf deinem iPhone.\n2. Tippe  auf „Meine Watch“.\n3. Tippe auf „Mitteilungen“.\n4. Wähle „Aktivität“.\n5. Schalte „Mitteilungen zu Aktivitäten“ aus."
+          }
+        }
+      }
+    },
+    "1. Open the Watch app on your iPhone.\n2. Tap on 'My Watch'.\n3. Tap on 'Notifications'.\n4. Select 'Activity'.\n5. Toggle off 'Workout Reminders'." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Öffne die Watch-App auf deinem iPhone.\n2. Tippe auf „Meine Uhr“.\n3. Tippe auf „Mitteilungen“.\n4. Wähle „Aktivität“.\n5. Deaktiviere „Trainingserinnerungen“."
+          }
+        }
+      }
+    },
+    "2 Hours" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Stunden"
+          }
+        }
+      }
+    },
+    "4 Hours" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 Stunden"
+          }
+        }
+      }
+    },
+    "5 Minutes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 Minuten"
+          }
+        }
+      }
+    },
+    "10 Minutes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Minutes"
+          }
+        }
+      }
+    },
+    "15 Minutes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "15 Minutes"
+          }
+        }
+      }
+    },
+    "30 Minutes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Minutes"
+          }
+        }
+      }
+    },
+    "About" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über"
+          }
+        }
+      }
+    },
+    "Above %lld bpm for %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über %1$lld bpm für %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Above %1$lld bpm for %2$@"
+          }
+        }
+      }
+    },
+    "Above %lld steps within %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über %1$lld Schritte innerhalb von %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Above %1$lld steps within %2$@"
+          }
+        }
+      }
+    },
+    "Absent" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abwesend"
+          }
+        }
+      }
+    },
+    "Accept" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzeptieren"
+          }
+        }
+      }
+    },
+    "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf alle Funktionen der App, Möglichkeit zur Erstellung von detaillierten Selbstberichten über Müdigkeit, Kurzatmigkeit, Schmerzen und andere Faktoren"
+          }
+        }
+      }
+    },
+    "Access all app features, including the ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf alle Funktionen der App, einschliesslich der Möglichkeit, detaillierte Selbstberichte über Müdigkeit, Kurzatmigkeit, Schmerzen und andere Faktoren zu erstellen."
           }
         }
       }
     },
     "Activities" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivitäten"
+          }
+        }
+      }
     },
     "Activity" : {
       "localizations" : {
@@ -106,6 +360,99 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktivität"
+          }
+        }
+      }
+    },
+    "Add reflections on your activities, energy management, moods and symptoms." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge Selbst-Reflexionen zu deinen Aktivitäten, deinem Energiemanagement, deinen Stimmungen und Symptomen hinzu."
+          }
+        }
+      }
+    },
+    "Additional Information" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusätzliche Informationen"
+          }
+        }
+      }
+    },
+    "Adjust Move Goals" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewegungsziele anpassen"
+          }
+        }
+      }
+    },
+    "Algorithms" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algorithmen"
+          }
+        }
+      }
+    },
+    "All Missed Reflections" : {
+      "shouldTranslate" : false
+    },
+    "Allow Health Access" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf Apple Health erlauben"
+          }
+        }
+      }
+    },
+    "Allow Notifications" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungen zulassen"
+          }
+        }
+      }
+    },
+    "Always use dark mode" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Immer dunkles Erscheinungsbild verwenden"
+          }
+        }
+      }
+    },
+    "Always use light mode" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Immer helles Erscheinungsbild verwenden"
+          }
+        }
+      }
+    },
+    "Amend your reflection with biometric data and receive reminders for reflection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergänze deine Selbst-Reflexion mit biometrischen Daten und lasse dich an eine Reflexion erinnern."
           }
         }
       }
@@ -120,24 +467,75 @@
         }
       }
     },
-    "Apple has many activity-promoting features on the iPhone and Apple Watch. We will guide you through the process of disabling these." : {
+    "Angry" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple hat viele aktivitätsfördernde Funktionen auf dem iPhone und der Apple Watch. Wir zeigen dir, wie du diese Funktionen deaktivieren kannst."
+            "value" : "Wütend"
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aussehen"
+          }
+        }
+      }
+    },
+    "Apple has many activity-promoting features on the iPhone and Apple Watch. If you want to disable these features, follow these steps:" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple hat viele aktivitätsfördernde Funktionen auf dem iPhone und der Apple Watch. Wenn du diese Funktionen deaktivieren möchtest, folge diesen Schritten:"
+          }
+        }
+      }
+    },
+    "Apple Watch Sync" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch Synchronisierung"
           }
         }
       }
     },
     "Are you sure you want to delete this reflection? This action cannot be undone." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bist du sicher, dass du diese Reflexion löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+          }
+        }
+      }
     },
     "Are you sure you want to delete this Reminder? This action cannot be undone." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bist du sicher, dass du diese Erinnerung löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+          }
+        }
+      }
     },
     "Articles" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artikel"
+          }
+        }
+      }
     },
     "Ascending" : {
       "localizations" : {
@@ -145,6 +543,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aufsteigend"
+          }
+        }
+      }
+    },
+    "Attending Events" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilnahme an Veranstaltungen"
+          }
+        }
+      }
+    },
+    "Better manage your physical and mental energy by regulating your activity levels." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst deine körperliche und mentale Energie besser nutzen, indem du dein Aktivitätsniveau regulierst."
+          }
+        }
+      }
+    },
+    "Biking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radfahren"
           }
         }
       }
@@ -159,7 +587,18 @@
         }
       }
     },
+    "Breaks" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausen"
+          }
+        }
+      }
+    },
     "Can't find MindfulPacer on your Apple Watch?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -179,14 +618,235 @@
         }
       }
     },
+    "Change the app theme" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ändere das Erscheinungsbild der App"
+          }
+        }
+      }
+    },
     "Choose a Reminder type, which will be reflected in the color of the Reminder notifications you receive." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle einen Erinnerungstyp, welcher in der Farbe der Erinnerungsbenachrichtigungen widerspiegelt, die du erhältst. "
+          }
+        }
+      }
+    },
+    "Cleaning" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Putzen"
+          }
+        }
+      }
+    },
+    "Cognitive" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kognitiv"
+          }
+        }
+      }
+    },
+    "Cognitive Impairment" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kognitive Beeinträchtigung"
+          }
+        }
+      }
+    },
+    "Community" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Community"
+          }
+        }
+      }
+    },
+    "Confused" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwirrt"
+          }
+        }
+      }
+    },
+    "Connect to Apple Health" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Apple Health verbinden"
+          }
+        }
+      }
+    },
+    "Contact Us" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontaktiere uns"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        }
+      }
+    },
+    "Cooking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kochen"
+          }
+        }
+      }
+    },
+    "Cool/Confident" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool/Selbstsicher"
+          }
+        }
+      }
+    },
+    "Create" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstellen"
+          }
+        }
+      }
     },
     "Create Reflection" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexion erstellen"
+          }
+        }
+      }
     },
     "Create Reminder" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung erstellen"
+          }
+        }
+      }
+    },
+    "Crying/Overwhelmed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weinen/Überfordert"
+          }
+        }
+      }
+    },
+    "Dancing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanzen"
+          }
+        }
+      }
+    },
+    "Data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten"
+          }
+        }
+      }
+    },
+    "Data to Export" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten für Export"
+          }
+        }
+      }
+    },
+    "data within" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten während"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum"
+          }
+        }
+      }
+    },
+    "day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag"
+          }
+        }
+      }
+    },
+    "Day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag"
+          }
+        }
+      }
     },
     "Delete" : {
       "localizations" : {
@@ -199,10 +859,34 @@
       }
     },
     "Delete Reflection" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexion löschen"
+          }
+        }
+      }
     },
     "Delete Reminder" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung löschen"
+          }
+        }
+      }
+    },
+    "Depression/Anxiety" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Depressiv/Ängstlich"
+          }
+        }
+      }
     },
     "Descending" : {
       "localizations" : {
@@ -214,30 +898,306 @@
         }
       }
     },
+    "Diary on Activities & Energy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tagebuch über Aktivitäten & Energie"
+          }
+        }
+      }
+    },
+    "Did this trigger a crash?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hat dies ein Crash verursacht? "
+          }
+        }
+      }
+    },
+    "Disable Activity Promoting Features" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivitätsfördernde Funktionen deaktivieren"
+          }
+        }
+      }
+    },
+    "Disabling Activity Reminders" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivitätserinnerungen deaktivieren"
+          }
+        }
+      }
+    },
+    "Disabling Breathe Reminders" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atmungserinnerungen deaktivieren"
+          }
+        }
+      }
+    },
+    "Disabling Exercise Notifications" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trainingsbenachrichtigungen deaktivieren"
+          }
+        }
+      }
+    },
+    "Disabling Stand Reminders" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steherinnerungen deaktivieren"
+          }
+        }
+      }
+    },
+    "Disappointed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enttäuscht"
+          }
+        }
+      }
+    },
+    "Disclaimer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haftungsausschluss"
+          }
+        }
+      }
+    },
     "Discuss pacing strategies and insights with the community." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diskutiere mit der Community über Strategien und Erkenntnisse zum Thema Pacing."
+          }
+        }
+      }
     },
     "Do **NOT** solely rely on MindfulPacer for pacing and managing your activities and energy." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verlasse dich **NICHT** ausschliesslich auf MindfulPacer, um dein Tempo sowie deine Aktivitäten und Energie zu verwalten."
+            "value" : "Verlasse dich **NICHT** ausschliesslich auf MindfulPacer, um deine Aktivitäten und Energie zu verwalten."
+          }
+        }
+      }
+    },
+    "Driving Car" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autofahren"
           }
         }
       }
     },
     "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dauer, während der die Herzfrequenz grösser oder gleich dem Schwellenwert (siehe vorherige Seite) sein muss, damit eine Erinnerung ausgelöst wird."
+          }
+        }
+      }
+    },
+    "Eating" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essen"
+          }
+        }
+      }
+    },
+    "Edit Reminder" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung anpassen"
+          }
+        }
+      }
+    },
+    "Email & Chat" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mail & Chat"
+          }
+        }
+      }
+    },
+    "Energy & Activity Pacing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energie- und Aktvitätsmanagement"
+          }
+        }
+      }
     },
     "Error Saving Reminder" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Speichern der Erinnerung"
+          }
+        }
+      }
+    },
+    "Essentials" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haupt-Funktionen"
+          }
+        }
+      }
+    },
+    "Excited" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufgeregt"
+          }
+        }
+      }
+    },
+    "Exercising" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training"
+          }
+        }
+      }
+    },
+    "Expanded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweiterte Funktionen"
+          }
+        }
+      }
     },
     "Export" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export"
+          }
+        }
+      }
+    },
+    "Export Data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten exportieren"
+          }
+        }
+      }
+    },
+    "Fatigue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Müdigkeit"
+          }
+        }
+      }
+    },
+    "File Format" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dateiformat"
+          }
+        }
+      }
     },
     "Filter Reflections" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexionen filtern"
+          }
+        }
+      }
+    },
+    "Finish" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ende"
+          }
+        }
+      }
+    },
+    "Fixing Things" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dinge reparieren"
+          }
+        }
+      }
+    },
+    "Flying" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fliegen"
+          }
+        }
+      }
     },
     "From" : {
       "localizations" : {
@@ -245,6 +1205,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Von"
+          }
+        }
+      }
+    },
+    "Frustrated" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frustriert"
+          }
+        }
+      }
+    },
+    "Gaming" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaming"
+          }
+        }
+      }
+    },
+    "Gardening" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gartenarbeit"
+          }
+        }
+      }
+    },
+    "General" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generell"
+          }
+        }
+      }
+    },
+    "Getting Dressed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sich Anziehen"
           }
         }
       }
@@ -259,12 +1269,102 @@
         }
       }
     },
+    "Grocery Shopping" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einkaufen"
+          }
+        }
+      }
+    },
+    "Group Activities" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppenaktivität"
+          }
+        }
+      }
+    },
+    "Happy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glücklich"
+          }
+        }
+      }
+    },
+    "Heart Rate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herzfrequenz"
+          }
+        }
+      }
+    },
+    "Helping Others" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderen helfen"
+          }
+        }
+      }
+    },
+    "High" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoch"
+          }
+        }
+      }
+    },
+    "Hiking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wandern"
+          }
+        }
+      }
+    },
     "Home" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Startseite"
+          }
+        }
+      }
+    },
+    "Household" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haushalt"
+          }
+        }
+      }
+    },
+    "Hugging/Supportive" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umarmen/Unterstützend"
           }
         }
       }
@@ -279,12 +1379,103 @@
         }
       }
     },
+    "Immediately" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sofort"
+          }
+        }
+      }
+    },
+    "Important: Limited integration with the Apple Watch." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wichtig: eingeschränkte Integration mit der Apple Watch."
+          }
+        }
+      }
+    },
+    "In love" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verliebt sein"
+          }
+        }
+      }
+    },
+    "Info" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informationen"
+          }
+        }
+      }
+    },
+    "Insights" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einblicke"
+          }
+        }
+      }
+    },
+    "Installing on Apple Watch" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installation auf der Apple Watch\n"
+          }
+        }
+      }
+    },
+    "Interactions & Social" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interaktionen & Soziales"
+          }
+        }
+      }
+    },
     "Interval" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervall"
+          }
+        }
+      }
+    },
+    "Interval Information" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informationen zu Intervallen"
+          }
+        }
+      }
+    },
+    "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfahre, wie sich deine Aktivitäten auf deine Energie auswirken, indem du das Tagebuch und die biometrischen Daten auf einer Zeitachse visualisierst."
           }
         }
       }
@@ -299,12 +1490,162 @@
         }
       }
     },
+    "Learning" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernen"
+          }
+        }
+      }
+    },
+    "Learning Something" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwas Lernen"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leicht"
+          }
+        }
+      }
+    },
+    "Long Covid Kids Schweiz" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long Covid Kids Schweiz"
+          }
+        }
+      }
+    },
+    "Low" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tief"
+          }
+        }
+      }
+    },
+    "Main Features" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hauptfunktionen"
+          }
+        }
+      }
+    },
+    "Manually add and edit reflections anytime" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexionen jederzeit manuell hinzufügen und ändern"
+          }
+        }
+      }
+    },
+    "Manually Created Reflection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuell erstellte Reflexion"
+          }
+        }
+      }
+    },
     "Measurement Type" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Messtyp"
+          }
+        }
+      }
+    },
+    "Meditation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditation"
+          }
+        }
+      }
+    },
+    "Medium" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittel"
+          }
+        }
+      }
+    },
+    "Meeting Close Friends" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enge Freunde treffen"
+          }
+        }
+      }
+    },
+    "Meeting Family" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Familie treffen"
+          }
+        }
+      }
+    },
+    "Meeting New People" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Menschen kennenlernen"
+          }
+        }
+      }
+    },
+    "Meetings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meetings"
+          }
+        }
+      }
+    },
+    "Mild" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mild"
           }
         }
       }
@@ -344,7 +1685,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MindfulPacer kann dich daran erinnern, über deine Aktivitäten, Energiemanagement, Stimmungen und Symptome zu reflektieren, zum Beispiel zu bestimmten Zeiten oder wenn ein biometrischer Wert (wie deine Herzfrequenz oder Schritte) einen bestimmten Schwellenwert erreicht."
+            "value" : "MindfulPacer kann dich daran erinnern, über deine Aktivitäten, Energiemanagement, Stimmungen und Symptome zu reflektieren, beispielsweise zu bestimmten Zeiten oder wenn ein biometrischer Wert (wie deine Herzfrequenz oder Schritte) einen bestimmten Schwellenwert erreicht."
           }
         }
       }
@@ -359,7 +1700,28 @@
         }
       }
     },
+    "MindfulPacer Expanded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer Erweitert"
+          }
+        }
+      }
+    },
+    "MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.\n\nMindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer ist kein medizinisches Produkt und bietet keine medizinischen Dienstleistungen wie Diagnose, Heilung, Linderung, Vorbeugung oder Behandlung einer Krankheit oder eines medizinischen Zustands. MindfulPacer ist kein Ersatz für die Behandlung durch medizinische Fachkräfte. Du solltest immer einen Arzt oder Ärztin konsultieren, bevor du medizinische Entscheidungen triffst."
+          }
+        }
+      }
+    },
     "MindfulPacer is automatically installed on your Apple Watch." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -390,7 +1752,34 @@
       }
     },
     "Missed Reflections" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verpasste Reflexionen"
+          }
+        }
+      }
+    },
+    "Mode of Use" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Art der Nutzung"
+          }
+        }
+      }
+    },
+    "Moderate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittel"
+          }
+        }
+      }
     },
     "Modify Filters" : {
       "localizations" : {
@@ -412,8 +1801,65 @@
         }
       }
     },
+    "More Info" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr Informationen"
+          }
+        }
+      }
+    },
+    "Movement" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewegung"
+          }
+        }
+      }
+    },
+    "My Reflections" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Reflexionen"
+          }
+        }
+      }
+    },
+    "Nervous" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nervös"
+          }
+        }
+      }
+    },
+    "Networking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Networking"
+          }
+        }
+      }
+    },
     "New Reflection" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Reflexion"
+          }
+        }
+      }
     },
     "No data" : {
       "localizations" : {
@@ -425,8 +1871,28 @@
         }
       }
     },
+    "No heart rate data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Herzfrequenzdaten"
+          }
+        }
+      }
+    },
+    "No heart rate data available" : {
+      "shouldTranslate" : false
+    },
     "No Internet Connection" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Internetverbindung"
+          }
+        }
+      }
     },
     "No Interval Selected" : {
       "localizations" : {
@@ -448,17 +1914,55 @@
         }
       }
     },
+    "No Missed Reflections" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine verpassten Reflexionen"
+          }
+        }
+      }
+    },
     "No Reflections" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Reflexionen"
+          }
+        }
+      }
     },
     "No reflections match your current filter criteria." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Reflektionen entsprechen nicht den aktuellen Filterkriterien."
+          }
+        }
+      }
     },
     "No Reminder Type Selected" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Erinnerungstyp gewählt"
+          }
+        }
+      }
     },
     "No Reminders" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Erinnerungen"
+          }
+        }
+      }
     },
     "No Results" : {
       "localizations" : {
@@ -466,6 +1970,19 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine Ergebnisse"
+          }
+        }
+      }
+    },
+    "No step data available" : {
+      "shouldTranslate" : false
+    },
+    "No steps data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Schrittdaten"
           }
         }
       }
@@ -480,6 +1997,26 @@
         }
       }
     },
+    "Not all Apple Watch functions are available yet. Biometric data is already being retrieved from the Apple Watch, but you cannot yet receive automatic review reminders on it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuell sind noch nicht alle Funktionen der Apple Watch verfügbar. Die biometrischen Daten werden zwar bereits von der Apple Watch geladen, aber du kriegst darauf noch keine automatischen Erinnerungen."
+          }
+        }
+      }
+    },
+    "Not Set" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht gesetzt"
+          }
+        }
+      }
+    },
     "Ok" : {
       "localizations" : {
         "de" : {
@@ -490,8 +2027,138 @@
         }
       }
     },
+    "Onboarding" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onboarding"
+          }
+        }
+      }
+    },
+    "one hour" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Stunde"
+          }
+        }
+      }
+    },
+    "Online Socializing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Online Kontakte"
+          }
+        }
+      }
+    },
+    "Only data points in bold considered." : {
+      "shouldTranslate" : false
+    },
+    "Other Movement" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andere Bewegungen"
+          }
+        }
+      }
+    },
+    "Other Transportation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andere Transportarten"
+          }
+        }
+      }
+    },
+    "Others" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andere"
+          }
+        }
+      }
+    },
+    "Our Website" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsere Webseite"
+          }
+        }
+      }
+    },
     "Outreach" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outreach"
+          }
+        }
+      }
+    },
+    "Overlays of your reflections on activity & energy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überlagerungen deiner Reflexionen zur Aktivität & Energie"
+          }
+        }
+      }
+    },
+    "Personal Hygiene" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Persönliche Hygiene"
+          }
+        }
+      }
+    },
+    "Physical Pain" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physischer Schmerz"
+          }
+        }
+      }
+    },
+    "Playful/Teasing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spielerisch/Fordernd"
+          }
+        }
+      }
+    },
+    "Playing Music" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musik hören"
+          }
+        }
+      }
     },
     "Please allow MindfulPacer to access your Apple Health data. Select the biometric data that you want to share (e.g. heart rate and/or steps)." : {
       "localizations" : {
@@ -504,7 +2171,14 @@
       }
     },
     "Please allow MindfulPacer to send notifications to receive the Reminders." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte erlaube MindfulPacer, Mitteilungen zu senden, um die Erinnerungen zu erhalten."
+          }
+        }
+      }
     },
     "Please make sure that you are wearing your Apple Watch and you have the MindfulPacer Watch app open, then try again." : {
       "localizations" : {
@@ -516,26 +2190,248 @@
         }
       }
     },
-    "Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer." : {
+    "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte wähle aus, in welchem Modus du MindfulPacer verwenden möchtest. Du kannst den Modus in den Einstellungen jederzeit ändern. "
+          }
+        }
+      }
+    },
+    "Preview Notification" : {
 
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutzbestimmungen"
+          }
+        }
+      }
+    },
+    "Project Management" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projektleitung"
+          }
+        }
+      }
+    },
+    "Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bietet die Möglichkeit, Kontakte zu knüpfen & Strategien auszutauschen, sich über wissenschaftliche Erkenntnisse zu informieren und mehr über MindfulPacer zu erfahren."
+          }
+        }
+      }
+    },
+    "Public Transportation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffentliche Verkehrsmittel"
+          }
+        }
+      }
     },
     "Published on %@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publiziert auf %@"
+          }
+        }
+      }
+    },
+    "Raw Data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rohdaten"
+          }
+        }
+      }
     },
     "Read Full Article" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganzen Artikel lesen"
+          }
+        }
+      }
+    },
+    "Reading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lesen"
+          }
+        }
+      }
+    },
+    "Reading the News" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "News lesen"
+          }
+        }
+      }
+    },
+    "Receive Reminders for Reflection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erhalte Erinnerungen für Reflexionen"
+          }
+        }
+      }
+    },
+    "Reflection your activities, energy management, moods and symptoms." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflektiere über deine Aktivitäten, dein Energiemanagement, deine Stimmungen und Symptome."
+          }
+        }
+      }
     },
     "Reflections" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexionen"
+          }
+        }
+      }
+    },
+    "Reflections of Activities & Energy Levels" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexionen zu Aktivitäten & Energieniveaus"
+          }
+        }
+      }
+    },
+    "Reject" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ablehnen"
+          }
+        }
+      }
+    },
+    "Relaxation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entspannung"
+          }
+        }
+      }
+    },
+    "Reminder" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung"
+          }
+        }
+      }
+    },
+    "Reminder Summary" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung Erinnerung"
+          }
+        }
+      }
     },
     "Reminder Triggered" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung ausgelöst"
+          }
+        }
+      }
     },
     "Reminder Type" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerungstyp"
+          }
+        }
+      }
+    },
+    "Reminder Type Information" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informationen zu Erinnerungstypen"
+          }
+        }
+      }
     },
     "Reminders" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerungen"
+          }
+        }
+      }
+    },
+    "Report severity of symptom." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schweregrad des Symptoms rapportieren."
+          }
+        }
+      }
+    },
+    "Researching Information" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recherchieren"
+          }
+        }
+      }
     },
     "Reset" : {
       "localizations" : {
@@ -548,7 +2444,34 @@
       }
     },
     "Roadmap" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roadmap"
+          }
+        }
+      }
+    },
+    "Running" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rennen"
+          }
+        }
+      }
+    },
+    "Sad" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traurig"
+          }
+        }
+      }
     },
     "Save" : {
       "localizations" : {
@@ -570,6 +2493,16 @@
         }
       }
     },
+    "Scared" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verängstigt"
+          }
+        }
+      }
+    },
     "See how the notification will look." : {
       "localizations" : {
         "de" : {
@@ -581,7 +2514,24 @@
       }
     },
     "Select for which measurement type you want to receive reminders to do a reflection." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle aus, für welchen Messtyp du Erinnerungen zur Erstellung einer Reflexion erhalten möchtest."
+          }
+        }
+      }
+    },
+    "Selfcare" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selbstpflege"
+          }
+        }
+      }
     },
     "Set a threshold that triggers a reminder when reached for a specified interval." : {
       "localizations" : {
@@ -603,8 +2553,25 @@
         }
       }
     },
+    "Severe" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwer"
+          }
+        }
+      }
+    },
     "Share Article" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artikel teilen"
+          }
+        }
+      }
     },
     "Share this report to help us troubleshoot issues." : {
       "localizations" : {
@@ -612,6 +2579,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Teile diesen Bericht, um uns bei der Fehlerbehebung zu unterstützen."
+          }
+        }
+      }
+    },
+    "Shocked" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schockiert"
+          }
+        }
+      }
+    },
+    "Shortness of Breath" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurzatmigkeit"
+          }
+        }
+      }
+    },
+    "Shows a red color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt eine rote Farbe an"
+          }
+        }
+      }
+    },
+    "Shows a yellow color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt eine gelbe Farbe an"
+          }
+        }
+      }
+    },
+    "Shows an orange color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt eine orange Farbe an"
+          }
+        }
+      }
+    },
+    "Sick" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Krank"
+          }
+        }
+      }
+    },
+    "Simpler minified user interface that focuses on comparing subjective well-being, pursued activity and biometric data." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einfachere, reduzierte Benutzeroberfläche, die sich auf den Vergleich von subjektivem Wohlbefinden, verfolgter Aktivität und biometrischen Daten konzentriert."
           }
         }
       }
@@ -626,12 +2663,52 @@
         }
       }
     },
+    "Sleep" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlafen"
+          }
+        }
+      }
+    },
+    "Sleep Disorder" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlafstörung"
+          }
+        }
+      }
+    },
+    "Smirking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schmunzelnd"
+          }
+        }
+      }
+    },
     "Sorting" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sortieren"
+          }
+        }
+      }
+    },
+    "Stand Up" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufstehen"
           }
         }
       }
@@ -656,8 +2733,35 @@
         }
       }
     },
+    "Stretching" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dehnen"
+          }
+        }
+      }
+    },
+    "Strong" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stark"
+          }
+        }
+      }
+    },
     "Subactivities" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unteraktivität"
+          }
+        }
+      }
     },
     "Subactivity" : {
       "localizations" : {
@@ -669,14 +2773,85 @@
         }
       }
     },
+    "Subjective Well-being" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subjektives Wohlbefinden"
+          }
+        }
+      }
+    },
     "Summary of number of Reminders triggered, by Reminder type." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung der Anzahl der ausgelösten Erinnerungen, sortiert nach Typ."
+          }
+        }
+      }
     },
     "Summary of your most recent reflections." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung deiner neusten Reflexionen."
+          }
+        }
+      }
     },
     "Summary of your Reminders." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung deiner Erinnerungen."
+          }
+        }
+      }
+    },
+    "Support for Activity Pacing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterstützung für Aktivitätsmanagement"
+          }
+        }
+      }
+    },
+    "Supported By" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterstützt durch"
+          }
+        }
+      }
+    },
+    "Swimming" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwimmen"
+          }
+        }
+      }
+    },
+    "Synchronize your smartwatch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisiere deine Smartwatch"
+          }
+        }
+      }
     },
     "System Report" : {
       "localizations" : {
@@ -688,20 +2863,98 @@
         }
       }
     },
-    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
+    "Tap the + button to create a reflection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf die Schaltfläche +, um eine Reflexion zu erstellen."
+          }
+        }
+      }
+    },
+    "Tap the + button to create a reminder." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf die Schaltfläche +, um eine Erinnerung zu erstellen."
+          }
+        }
+      }
+    },
+    "Test on Apple Watch" : {
 
+    },
+    "The buffer sets the minimum time between repeated missed reflection triggers for the same reminder." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Puffer legt die Mindestzeit zwischen wiederholten Benachrichtigungen zu verpassten Reflexionen fest."
+          }
+        }
+      }
+    },
+    "The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nPlease note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die aktuelle Herzfrequenz (in Schlägen pro Minute, BPM), die von der Apple Watch erfasst wird, muss auf oder über dem Schwellenwert bleiben, damit eine Erinnerung ausgelöst wird.\n\nBitte beachte, dass solche Schwellenwerte für das Management deiner Aktivität sehr individuell sind. Wir empfehlen dir, mit verschiedenen (und mehreren) Schwellenwerten zu experimentieren, um herauszufinden, was für dich am besten funktioniert. Ein Anfangspunkt könnte (220 - Alter in Jahren) * 0,5 sein. Eine 40-jährige Person würde zum Beispiel einen Schwellenwert von (220-40)*0,5=90 Schläge pro Minute festlegen.\n\nEin Beispiel: Führe eine kurze Reflexion durch, wenn deine Herzfrequenz länger als 5 Minuten über 90 Schläge pro Minute liegt.\n\nBitte beachte, dass du das Intervall auf der nächsten Seite einstellen kannst."
+          }
+        }
+      }
     },
     "The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.\n\nFor example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die aktuelle Schrittzahl, die von der Apple Watch erfasst wird, muss auf oder über dem Schwellenwert bleiben, damit eine Erinnerung ausgelöst wird.\n\nZum Beispiel: Erreichen von mehr als 2000 Schritten in 30 Minuten.\n\nBitte beachte, dass du das Intervall auf der nächsten Seite einstellen kannst."
+          }
+        }
+      }
+    },
+    "the last" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "den letzten"
+          }
+        }
+      }
     },
     "The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.\n\nFor example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zeitraum, in dem die von der Apple Watch gemessene Herzfrequenz auf oder über dem angegebenen Schwellenwert liegen muss, damit die Erinnerung ausgelöst wird.\n\nZum Beispiel: Führe eine kurze Reflexion durch, wenn die ermittelte Herzfrequenz 30 Sekunden oder länger über 120 liegt."
+          }
+        }
+      }
     },
     "The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.\n\nFor example: Do a quick reflection when completing 2000 or more steps within 30 minutes." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zeitraum, in dem die von der Apple Watch gemessene Gesamtzahl der Schritte auf oder über dem Schwellenwert liegen muss, damit die Erinnerung ausgelöst wird.\n\nZum Beispiel: Führe eine kurze Reflexion durch, wenn du innerhalb von 30 Minuten 2000 oder mehr Schritte gemacht hast."
+          }
+        }
+      }
     },
     "The Reminder that triggered this reflection." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Erinnerung, welche diese Reflexion ausgelöst hat. "
+          }
+        }
+      }
     },
     "Theme" : {
       "localizations" : {
@@ -713,8 +2966,45 @@
         }
       }
     },
+    "There are no reflections within the last %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es gibt keine Reflexionen innerhalb der letzten %@."
+          }
+        }
+      }
+    },
+    "Thinking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachdenken"
+          }
+        }
+      }
+    },
+    "Thinking or Brainstorming" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachdenken oder Brainstorming"
+          }
+        }
+      }
+    },
     "This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damit kannst du eine neue Erinnerung hinzufügen, die auf deiner Apple Watch oder deinem iPhone ausgelöst werden kann."
+          }
+        }
+      }
     },
     "Threshold" : {
       "localizations" : {
@@ -726,12 +3016,62 @@
         }
       }
     },
+    "Threshold (%lld bpm)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwellenwert (%lld bpm)"
+          }
+        }
+      }
+    },
+    "Threshold Information" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Information zum Schwellenwert"
+          }
+        }
+      }
+    },
+    "Tidying Up" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufräumen"
+          }
+        }
+      }
+    },
     "Time" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zeit"
+          }
+        }
+      }
+    },
+    "Timelines of your physical activity (steps, heart rate and others)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitachsen für deine körperliche Aktivität (Schritte, Herzfrequenz und andere)"
+          }
+        }
+      }
+    },
+    "Tired" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Müde"
           }
         }
       }
@@ -747,20 +3087,111 @@
       }
     },
     "Total for Day" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamt für Tag"
+          }
+        }
+      }
+    },
+    "Transportation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verkehrsmittel"
+          }
+        }
+      }
+    },
+    "Triggered on %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgelöst am %@"
+          }
+        }
+      }
+    },
+    "two hours" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zwei Stunden"
+          }
+        }
+      }
     },
     "Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Reflexion konnte nicht gespeichert werden.\nBitte versuche es erneut.\nWenn dieses Problem weiterhin besteht, kontaktiere uns bitte."
+          }
+        }
+      }
     },
     "Unable to save your Reminder.\nPlease try again.\nIf this problem persists, please contact us." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Erinnerung konnte nicht gespeichert werden.\nBitte versuche es erneut.\nWenn dieses Problem weiterhin besteht, kontaktiere uns bitte."
+          }
+        }
+      }
     },
     "Unable to Send Notification" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benachrichtigung kann nicht gesendet werden"
+            "value" : "Mitteilung kann nicht gesendet werden"
+          }
+        }
+      }
+    },
+    "Uncategorized" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unkategorisiert"
+          }
+        }
+      }
+    },
+    "Unimpressed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbeeindruckt"
+          }
+        }
+      }
+    },
+    "Use the same setting as your device" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwende die gleiche Einstellung wie dein Gerät"
+          }
+        }
+      }
+    },
+    "Using Computer, Tablet, Phone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Computer, Tablet, Telefon benutzen"
           }
         }
       }
@@ -775,12 +3206,162 @@
         }
       }
     },
+    "Very High" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr hoch"
+          }
+        }
+      }
+    },
+    "Very Low" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr tief"
+          }
+        }
+      }
+    },
     "View Options" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ansichtoptionen"
+          }
+        }
+      }
+    },
+    "View Raw Data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rohdaten anzeigen"
+          }
+        }
+      }
+    },
+    "View the onboarding again" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onboarding erneut anschauen"
+          }
+        }
+      }
+    },
+    "View upcoming features" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geplante Funktionen anschauen"
+          }
+        }
+      }
+    },
+    "Visiting Doctor or Therapist" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Besuch Doktor/Therapeut"
+          }
+        }
+      }
+    },
+    "Visually correlate activities, energy levels and reflections" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Visuelle Korrelation von Aktivitäten, Energieniveaus und Reflexionen"
+          }
+        }
+      }
+    },
+    "Walking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laufen"
+          }
+        }
+      }
+    },
+    "Walking the Stairs" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Treppen steigen"
+          }
+        }
+      }
+    },
+    "Warnings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warnungen"
+          }
+        }
+      }
+    },
+    "Washing Clothes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleider waschen"
+          }
+        }
+      }
+    },
+    "Washing Dishes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschirrspülen"
+          }
+        }
+      }
+    },
+    "Watching TV" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fernsehschauen"
+          }
+        }
+      }
+    },
+    "week" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woche"
+          }
+        }
+      }
+    },
+    "Week" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woche"
           }
         }
       }
@@ -796,6 +3377,7 @@
       }
     },
     "When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -805,8 +3387,97 @@
         }
       }
     },
+    "Window End" : {
+      "shouldTranslate" : false
+    },
+    "Window Start" : {
+      "shouldTranslate" : false
+    },
+    "Work" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arbeit"
+          }
+        }
+      }
+    },
+    "Work on Tasks" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Aufgaben arbeiten"
+          }
+        }
+      }
+    },
+    "Writing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schreiben"
+          }
+        }
+      }
+    },
+    "Y End" : {
+      "shouldTranslate" : false
+    },
+    "Y Start" : {
+      "shouldTranslate" : false
+    },
+    "Yoga" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yoga"
+          }
+        }
+      }
+    },
     "You are not connected to the internet. Please check your connection and try again." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bist nicht mit dem Internet verbunden. Bitte überprüfe deine Verbindung und versuche es erneut."
+          }
+        }
+      }
+    },
+    "You can always change this permission later, by navigating to Settings > Notifications > MindfulPacer." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst diese Genehmigung später jederzeit ändern, indem du zu Einstellungen > Mitteilungen > MindfulPacer navigierst."
+          }
+        }
+      }
+    },
+    "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst diese Genehmigung später jederzeit ändern, indem du zu Einstellungen > Datenschutz & Sicherheit > Health > MindfulPacer navigierst."
+          }
+        }
+      }
+    },
+    "You can choose between three different Reminder types." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst zwischen drei verschiedenen Arten von Erinnerungen wählen."
+          }
+        }
+      }
     },
     "You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch" : {
       "localizations" : {
@@ -828,11 +3499,45 @@
         }
       }
     },
-    "You have not created any reflections." : {
-
+    "You do not have any missed reflection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast derzeit keine verpassten Reflexionen."
+          }
+        }
+      }
     },
-    "You have not created any Reminders." : {
-
+    "You have not created any reflections." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast keine Reflexionen erstellt. "
+          }
+        }
+      }
+    },
+    "You have not created any reminders." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast keine Erinnerung erstellt."
+          }
+        }
+      }
+    },
+    "Your Apple Watch can remind you to reflect at times of high activity or specific times of the day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Apple Watch kann dich daran erinnern, zu Zeiten hoher Aktivität oder zu bestimmten Tageszeiten zu reflektieren"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

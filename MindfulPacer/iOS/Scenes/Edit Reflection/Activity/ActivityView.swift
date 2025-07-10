@@ -39,7 +39,9 @@ extension EditReflectionView {
                                     .frame(width: 32, height: 32)
                                 Text(activity.name)
                                     .font(.subheadline)
-                                    .lineLimit(2)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
+                                    .truncationMode(.middle)
                             }
                         }
                     }

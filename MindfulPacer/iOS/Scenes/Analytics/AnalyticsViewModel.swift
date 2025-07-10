@@ -158,7 +158,7 @@ class AnalyticsViewModel {
     }
 
     var chartEmptyStateTitle: String {
-        selectedMeasurementType == .heartRate ? "No heart rate data" : "No steps data"
+        selectedMeasurementType == .heartRate ? String(localized: "No heart rate data") : String(localized: "No steps data")
     }
     
     var annotationViewFormat: Date.FormatStyle {
@@ -166,7 +166,7 @@ class AnalyticsViewModel {
     }
     
     var chartDescriptionText: String {
-        "\(selectedMeasurementType.rawValue) data within last \(selectedPeriod.description)."
+        selectedMeasurementType.localized + " " + String(localized: "data within") + " " + String(localized: "the last") + " " + "\(selectedPeriod.description)."
     }
     
     var granularity: ChartGranularity {

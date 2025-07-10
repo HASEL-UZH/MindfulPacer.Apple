@@ -13,8 +13,9 @@ struct ArticlesListView: View {
     
     // MARK: Properties
     
+    @Environment(\.openURL) private var openURL
     @Bindable var viewModel: OutreachViewModel
-
+    
     // MARK: Body
     
     var body: some View {
@@ -27,7 +28,14 @@ struct ArticlesListView: View {
                     }
                 } else {
                     ForEach(viewModel.blogArticles) { article in
-                        BlogArticleCell(article: article, cardColor: Color(.secondarySystemGroupedBackground))
+                        Button {
+                            openURL(article.link)
+                        } label: {
+                            BlogArticleCell(
+                                article: article,
+                                cardColor: Color(.secondarySystemGroupedBackground)
+                            )
+                        }
                     }
                 }
             }
@@ -45,6 +53,6 @@ struct ArticlesListView: View {
 
 #Preview {
     let viewModel: OutreachViewModel = ScenesContainer.shared.outreachViewModel()
-
+    
     ArticlesListView(viewModel: viewModel)
 }

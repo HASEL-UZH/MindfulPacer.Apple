@@ -44,9 +44,9 @@ struct CreateReminderView: View {
     // MARK: Properties
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.keyboardShowing) private var keyboardShowing
     @State private var viewModel: CreateReminderViewModel = ScenesContainer.shared.createReminderViewModel()
-
+    @State private var isKeyboardShowing = false
+    
     var reminder: Reminder?
 
     // MARK: Body
@@ -132,7 +132,9 @@ struct CreateReminderView: View {
         case .reminderType:
             ReminderTypeView(viewModel: viewModel)
         case .threshold:
-            ThresholdView(viewModel: viewModel)
+            ThresholdView(viewModel: viewModel) { isFocused in
+                isKeyboardShowing = isFocused
+            }
         case .interval:
             IntervalView(viewModel: viewModel)
         case .summary:
@@ -167,7 +169,7 @@ struct CreateReminderView: View {
         PrimaryButton(title: viewModel.actionButtonTitle) {
             viewModel.actionButtonTapped()
         }
-        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
+        .padding(isKeyboardShowing ? .all : [.horizontal, .top])
         .disabled(viewModel.isActionButtonDisabled)
         .background(.ultraThinMaterial)
         .overlay(alignment: .top) {
@@ -207,8 +209,9 @@ struct CreateReminderView: View {
 
     private var reminderTypeInfoSheet: some View {
         InfoSheet(
-            title: "Reminder Type Information",
-            info: "You can choose between three different Reminder types.") {
+            title: String(localized: "Reminder Type Information"),
+            info: String(localized: "You can choose between three different Reminder types.")
+        ) {
                 Text(
                     """
                     1. **Light**: shows a yellow color 🟡.
@@ -229,8 +232,8 @@ struct CreateReminderView: View {
     // swiftlint:disable trailing_whitespace
     private var thresholdInfoSheet: some View {
         InfoSheet(
-            title: "Threshold Information",
-            info: "Set a threshold that triggers a reminder when reached for a specified interval."
+            title: String(localized: "Threshold Information"),
+            info: String(localized: "Set a threshold that triggers a reminder when reached for a specified interval.")
         ) {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
@@ -271,8 +274,8 @@ struct CreateReminderView: View {
 
     private var intervalInfoSheet: some View {
         InfoSheet(
-            title: "Interval Information",
-            info: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered."
+            title: String(localized: "Interval Information"),
+            info: String(localized: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
         ) {
             VStack(spacing: 16) {
                 IconLabelGroupBox(

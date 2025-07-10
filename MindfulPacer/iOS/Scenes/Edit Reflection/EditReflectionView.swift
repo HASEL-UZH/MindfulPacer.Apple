@@ -42,7 +42,7 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.keyboardShowing) private var keyboardShowing
+//    @Environment(\.keyboardShowing) private var keyboardShowing
     @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
 
@@ -206,7 +206,7 @@ struct EditReflectionView: View {
             DatePicker(selection: $viewModel.date) {
                 IconLabel(
                     icon: "calendar",
-                    title: "Date",
+                    title: String(localized: "Date"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -225,24 +225,28 @@ struct EditReflectionView: View {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.2x2.fill",
-                    title: "Activity",
-                    labelColor: Color("BrandPrimary"),
+                    title: String(localized: "Activity"),
+                    labelColor: viewModel.selectedActivity.isNil ? Color.red : Color("BrandPrimary"),
                     background: true
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .layoutPriority(1)
-
+                
                 Spacer(minLength: 16)
-
+                
                 HStack(spacing: 4) {
                     if let activity = viewModel.selectedActivity {
                         Text(activity.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
+                    } else {
+                        Label("Uncategorized", systemImage: "questionmark")
+                            .foregroundStyle(Color.red)
+                            .fixedSize(horizontal: true, vertical: false)
                     }
-
+                    
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 }
@@ -267,7 +271,7 @@ struct EditReflectionView: View {
             HStack {
                 IconLabel(
                     icon: "rectangle.grid.3x3.fill",
-                    title: "Subactivity",
+                    title: String(localized: "Subactivity"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -305,7 +309,7 @@ struct EditReflectionView: View {
                 HStack {
                     IconLabel(
                         icon: "face.smiling.fill",
-                        title: "Mood",
+                        title: String(localized: "Mood"),
                         labelColor: Color("BrandPrimary"),
                         background: true
                     )
@@ -403,7 +407,7 @@ struct EditReflectionView: View {
             Toggle(isOn: $viewModel.didTriggerCrash) {
                 IconLabel(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Did this trigger a crash?",
+                    title: String(localized: "Did this trigger a crash?"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 )
@@ -422,7 +426,7 @@ struct EditReflectionView: View {
         IconLabelGroupBox(
             label: IconLabel(
                 icon: "pencil.line",
-                title: "Additional Information",
+                title: String(localized: "Additional Information"),
                 labelColor: Color("BrandPrimary"),
                 background: true
             )
@@ -441,7 +445,7 @@ struct EditReflectionView: View {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "alarm",
-                        title: "Reminder",
+                        title: String(localized: "Reminder"),
                         labelColor: Color("BrandPrimary"),
                         background: true
                     ),
@@ -493,7 +497,7 @@ struct EditReflectionView: View {
         Card(backgroundColor: Color(.tertiarySystemFill)) {
             IconLabel(
                 icon: "person",
-                title: "Manually Created Reflection",
+                title: String(localized: "Manually Created Reflection"),
                 labelColor: .secondary,
                 background: true
             )
@@ -507,12 +511,13 @@ struct EditReflectionView: View {
     // MARK: Create Button
 
     private var createButton: some View {
-        PrimaryButton(title: "Create") {
+        PrimaryButton(title: String(localized: "Create")) {
             viewModel.createReflection()
             onReflectionCreation?()
             dismiss()
         }
-        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
+//        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
+        .padding([.horizontal, .top])
         .background(.ultraThinMaterial)
         .disabled(viewModel.isActionButtonDisabled)
         .overlay(alignment: .top) {
@@ -524,7 +529,7 @@ struct EditReflectionView: View {
 
     private var deleteButton: some View {
         PrimaryButton(
-            title: "Delete Reflection",
+            title: String(localized: "Delete Reflection"),
             icon: "trash",
             color: .red
         ) {

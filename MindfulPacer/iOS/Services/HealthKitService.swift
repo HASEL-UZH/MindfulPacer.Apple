@@ -35,26 +35,26 @@ enum Period: String, CaseIterable {
     var displayName: String {
         switch self {
         case .oneHour:
-            "1 Hour"
+            String(localized: "1 Hour")
         case .twoHours:
-            "2 Hours"
+            String(localized: "2 Hours")
         case .day:
-            "Day"
+            String(localized: "Day")
         case .week:
-            "Week"
+            String(localized: "Week")
         }
     }
     
     var description: String {
         switch self {
         case .oneHour:
-            return "one hour"
+            return String(localized: "one hour")
         case .twoHours:
-            return "two hours"
+            return String(localized: "two hours")
         case .day:
-            return "day"
+            return String(localized: "day")
         case .week:
-            return "week"
+            return String(localized: "week")
         }
     }
     
@@ -90,6 +90,12 @@ protocol HealthKitServiceProtocol {
             Result<(value: Double, timestamp: Date), HealthKitError>
         ) -> Void
     )
+    func fetchStepDataLast24Hours(
+        completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
+    )
+    func fetchHeartRateDataLast24Hours(
+        completion: @Sendable @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
+    )
 }
 
 // MARK: - HealthKitService
@@ -106,9 +112,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     
     // MARK: - Request HealthKit Authorization
     
-    func requestAuthorization(
-        completion: @escaping @Sendable (Bool, HealthKitError?) -> Void
-    ) {
+    func requestAuthorization(completion: @escaping @Sendable (Bool, HealthKitError?) -> Void) {
         guard let heartRateType = HKObjectType.quantityType(
             forIdentifier: .heartRate
         ),
@@ -302,13 +306,18 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     }
     
     // MARK: - Fetch Current Measurement Value
-    
+
     func fetchCurrentMeasurement(
         for measurementType: MeasurementType,
         completion: @escaping @Sendable (
             Result<(value: Double, timestamp: Date), HealthKitError>
         ) -> Void
     ) {
+        guard let healthStore = healthStore else {
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
+            return
+        }
+        
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: measurementType == .steps ? .stepCount : .heartRate) else {
             completion(.failure(HealthKitError(type: .healthDataUnavailable)))
             return
@@ -323,11 +332,8 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         )
         
         if measurementType == .steps {
-            let query = HKStatisticsQuery(
-                quantityType: quantityType,
-                quantitySamplePredicate: predicate,
-                options: .cumulativeSum
-            ) { _, result, error in
+            // Define the HKStatisticsQuery closure
+            let statsQueryHandler: (HKStatisticsQuery, HKStatistics?, Error?) -> Void = { _, result, error in
                 if let error = error {
                     DispatchQueue.main.async {
                         completion(
@@ -355,25 +361,74 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 }
                 
                 let totalSteps = sum.doubleValue(for: HKUnit.count())
-                let timestamp = Date()
                 
-                DispatchQueue.main.async {
-                    completion(.success((totalSteps, timestamp)))
+                // Define the HKSampleQuery to get the timestamp
+                let sortDescriptor = NSSortDescriptor(
+                    key: HKSampleSortIdentifierStartDate,
+                    ascending: false
+                )
+                let sampleQuery = HKSampleQuery(
+                    sampleType: quantityType,
+                    predicate: predicate,
+                    limit: 1,
+                    sortDescriptors: [sortDescriptor]
+                ) { _, results, error in
+                    if let error = error {
+                        DispatchQueue.main.async {
+                            completion(
+                                .failure(
+                                    HealthKitError(
+                                        type: .unknownError,
+                                        underlyingError: error
+                                    )
+                                )
+                            )
+                        }
+                        return
+                    }
+                    
+                    guard let sample = results?.first as? HKQuantitySample else {
+                        DispatchQueue.main.async {
+                            completion(
+                                .failure(
+                                    HealthKitError(type: .failedToFetchSamples)
+                                )
+                            )
+                        }
+                        return
+                    }
+                    
+                    let timestamp = sample.endDate
+                    
+                    DispatchQueue.main.async {
+                        completion(.success((totalSteps, timestamp)))
+                    }
                 }
+                
+                healthStore.execute(sampleQuery)
             }
             
-            healthStore?.execute(query)
+            // Create and execute the HKStatisticsQuery
+            let statsQuery = HKStatisticsQuery(
+                quantityType: quantityType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum,
+                completionHandler: statsQueryHandler
+            )
+            
+            healthStore.execute(statsQuery)
         } else {
             let sortDescriptor = NSSortDescriptor(
                 key: HKSampleSortIdentifierStartDate,
                 ascending: false
             )
+
             let query = HKSampleQuery(
                 sampleType: quantityType,
                 predicate: predicate,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
-            ) { _, results, error in
+            ) { query, results, error in
                 if let error = error {
                     DispatchQueue.main.async {
                         completion(
@@ -384,8 +439,8 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                 )
                             )
                         )
+                        return
                     }
-                    return
                 }
                 
                 guard let sample = results?.first as? HKQuantitySample else {
@@ -409,155 +464,310 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 }
             }
             
-            healthStore?.execute(query)
+            healthStore.execute(query)
         }
     }
     
     // MARK: - Check Missed Reflections
-    
-    /// Checks for all "missed reflections" in the last 24 hours for a set of `Reminder`s.
-    ///
-    /// - For `.steps` reminders:
-    ///   - Fetches step data in the last 24 hours and applies a sliding window sum of step samples over the reminder's interval.
-    ///   - Whenever the cumulative sum of steps in that window is ≥ the reminder’s threshold, it appends a `(reminder, Date)` to the results,
-    ///     using the rightmost sample's end date as the trigger time.
-    ///
-    /// - For `.heartRate` reminders:
-    ///   - Fetches heart rate data in the last 24 hours.
-    ///   - Filters all samples to those with a heart rate ≥ threshold.
-    ///   - Merges consecutive (or overlapping) time ranges where heart rate is above threshold.
-    ///   - If any merged interval meets or exceeds the reminder's interval duration, the end date is recorded as a trigger time.
-    ///
-    /// - Parameters:
-    ///   - reminders: A collection of `Reminder` objects specifying thresholds and intervals for either steps or heart rate.
-    ///   - completion: A closure returning either:
-    ///       - `.success([(Reminder, Date)])`: Each matched reminder with the time it was met or exceeded.
-    ///       - `.failure(HealthKitError)`: If there's an error during data fetching.
-    ///
+
     func checkMissedReflections(
         reminders: [Reminder],
-        actionedMissedReflectionIDs: [String],
+        isDeveloperMode: Bool = false,
         completion: @escaping @Sendable (Result<[MissedReflection], HealthKitError>) -> Void
     ) {
-        let stepReminders = reminders.filter { $0.measurementType == .steps }
-        let heartRateReminders = reminders.filter { $0.measurementType == .heartRate }
-        
-        if stepReminders.isEmpty && heartRateReminders.isEmpty {
-            completion(.success([]))
-            return
-        }
-        
-        fetchStepDataLast24Hours { stepSamples in
-            self.fetchHeartRateDataLast24Hours { hrSamples in
-                let sortedStepSamples = stepSamples.sorted { $0.endDate < $1.endDate }
-                let sortedHrSamples = hrSamples.sorted { $0.endDate < $1.endDate }
-                
-                var rawResults: [MissedReflection] = []
-                
-                // Process each reminder.
+        self.fetchHeartRateDataLast24Hours { heartRateSamples in
+            let fetchStepsAndProcess: (@escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) -> Void = { stepCompletion in
+                let hasDayPeriodStepsReminder = reminders.contains { $0.measurementType == .steps && $0.interval == .oneDay }
+                if hasDayPeriodStepsReminder {
+                    self.fetchStepDataCurrentDay(completion: stepCompletion)
+                } else {
+                    self.fetchStepDataLast24Hours(completion: stepCompletion)
+                }
+            }
+            
+            fetchStepsAndProcess { stepSamples in
+                var triggeredReflections: [MissedReflection] = []
+                var lastTriggerTimes: [String: Date?] = [:]
                 for reminder in reminders {
-                    let threshold = Double(reminder.threshold)
-                    switch reminder.measurementType {
-                    case .steps:
-                        var leftIndex = 0
-                        var currentSum = 0.0
-                        for rightIndex in 0..<sortedStepSamples.count {
-                            let right = sortedStepSamples[rightIndex]
-                            currentSum += right.stepCount
-                            
-                            while leftIndex <= rightIndex &&
-                                    sortedStepSamples[leftIndex].endDate < right.endDate.addingTimeInterval(-reminder.interval.timeInterval) {
-                                currentSum -= sortedStepSamples[leftIndex].stepCount
-                                leftIndex += 1
-                            }
-                            
-                            if currentSum >= threshold {
-                                rawResults.append(MissedReflection(reminder, date: right.endDate))
-                            }
-                        }
-                        
-                    case .heartRate:
-                        let aboveThreshold = sortedHrSamples.filter { $0.stepCount >= threshold }
-                        var intervals: [(start: Date, end: Date)] = []
-                        for sample in aboveThreshold {
-                            intervals.append((sample.startDate, sample.endDate))
-                        }
-                        
-                        let merged = self.mergeIntervals(intervals)
-                        for intervalRange in merged {
-                            let duration = intervalRange.end.timeIntervalSince(intervalRange.start)
-                            if duration >= reminder.interval.timeInterval {
-                                rawResults.append(MissedReflection(reminder, date: intervalRange.end))
-                            }
-                        }
-                    }
+                    lastTriggerTimes[reminder.id.uuidString] = nil
                 }
                 
-                // --- Filtering Logic Starts Here ---
-                // Partition raw results by measurement type.
-                let hrResults = rawResults.filter { $0.measurementType == .heartRate }
-                let stepsResults = rawResults.filter { $0.measurementType == .steps }
-                
-                // Inline helper to filter non-strong reflections:
-                // For non-strong (orange/yellow) reflections, if two occur within 1/4 of the interval,
-                // keep only the one with the higher "seriousness score" (threshold * interval.timeInterval).
-                func filterResults(_ reflections: [MissedReflection]) -> [MissedReflection] {
-                    // Always include strong ones.
-                    let strong = reflections.filter { $0.reminderType == .strong }
+                for reminder in reminders {
+                    let context: IntervalContext = reminder.measurementType == .steps ? .steps : .heartRate
                     
-                    // For non-strong ones, sort by date.
-                    let nonStrong = reflections.filter { $0.reminderType != .strong }
-                        .sorted { $0.date < $1.date }
-                    var filteredNonStrong: [MissedReflection] = []
-                    for reflection in nonStrong {
-                        if let last = filteredNonStrong.last {
-                            let quarterInterval = reflection.interval.timeInterval / 4.0
-                            if reflection.date.timeIntervalSince(last.date) < quarterInterval {
-                                let lastScore = Double(last.threshold) * last.interval.timeInterval
-                                let currentScore = Double(reflection.threshold) * reflection.interval.timeInterval
-                                if currentScore > lastScore {
-                                    filteredNonStrong[filteredNonStrong.count - 1] = reflection
-                                }
-                            } else {
-                                filteredNonStrong.append(reflection)
+                    if reminder.measurementType == .steps {
+                        if reminder.interval == .oneDay {
+                            let totalSteps = stepSamples.reduce(0.0) { $0 + $1.stepCount }
+                            if totalSteps > Double(reminder.threshold) {
+                                let windowEnd = stepSamples.max(by: { $0.endDate < $1.endDate })?.endDate ?? Date()
+                                triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
                             }
                         } else {
-                            filteredNonStrong.append(reflection)
+                            for currentIndex in 0..<stepSamples.count {
+                                let currentSample = stepSamples[currentIndex]
+                                let windowEnd = currentSample.endDate
+                                let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
+                                var totalSteps: Double = 0
+                                
+                                for previousIndex in stride(from: currentIndex, through: 0, by: -1) {
+                                    let sample = stepSamples[previousIndex]
+                                    let sampleStart = sample.startDate
+                                    let sampleEnd = sample.endDate
+                                    if sampleEnd <= windowEnd && sampleStart >= windowStart {
+                                        totalSteps += sample.stepCount
+                                    }
+                                    if sampleStart < windowStart {
+                                        break
+                                    }
+                                }
+                                
+                                if totalSteps > Double(reminder.threshold) {
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
+                                    let delay = reminder.interval.buffer(for: context) // Context-aware
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
+                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
+                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                    }
+                                }
+                            }
+                        }
+                    } else if reminder.measurementType == .heartRate {
+                        if reminder.interval == .immediately {
+                            for sample in heartRateSamples {
+                                if sample.stepCount > Double(reminder.threshold) {
+                                    let windowEnd = sample.startDate
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
+                                    let delay = reminder.interval.buffer(for: context) // Context-aware
+                                    
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
+                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
+                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                    }
+                                }
+                            }
+                        } else {
+                            for currentIndex in 0..<heartRateSamples.count {
+                                let currentSample = heartRateSamples[currentIndex]
+                                let windowEnd = currentSample.startDate
+                                let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
+                                
+                                var windowSamples: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+                                for previousIndex in stride(from: currentIndex, through: 0, by: -1) {
+                                    let sample = heartRateSamples[previousIndex]
+                                    let sampleTime = sample.startDate
+                                    if sampleTime < windowStart {
+                                        break
+                                    }
+                                    windowSamples.append(sample)
+                                }
+                                
+                                let exceedsThreshold = windowSamples.allSatisfy { $0.stepCount > Double(reminder.threshold) }
+                                if exceedsThreshold {
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
+                                    let delay = reminder.interval.buffer(for: context) // Context-aware
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
+                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
+                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                    }
+                                }
+                            }
                         }
                     }
-                    return strong + filteredNonStrong
                 }
                 
-                let filteredHR = filterResults(hrResults).sorted { $0.date < $1.date }
-                let filteredSteps = filterResults(stepsResults).sorted { $0.date < $1.date }
+                // Step 3: Additional Filtering Before Post-Processing
+                struct ReflectionKey: Hashable {
+                    let measurementType: MeasurementType
+                    let date: Date
+                }
                 
-                // Limit each to at most 5 reflections, but if there are fewer, just return them.
-                let finalHR = filteredHR.count <= 5 ? filteredHR : Array(filteredHR.suffix(5))
-                let finalSteps = filteredSteps.count <= 5 ? filteredSteps : Array(filteredSteps.suffix(5))
+                var filteredReflections: [MissedReflection] = []
+                let groupedByTypeAndTime = Dictionary(grouping: triggeredReflections) { reflection in
+                    ReflectionKey(measurementType: reflection.measurementType, date: reflection.date)
+                }
                 
-                let combinedResults = (finalHR + finalSteps).sorted { $0.date < $1.date }
+                for (key, reflections) in groupedByTypeAndTime {
+                    let strongReflections = reflections.filter { $0.reminderType == .strong }
+                    let nonStrongReflections = reflections.filter { $0.reminderType != .strong }
+                    
+                    if strongReflections.count > 1 {
+                        let largestIntervalReflection = strongReflections.max { r1, r2 in
+                            let context1 = r1.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
+                            let context2 = r2.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
+                            return r1.interval.timeInterval < r2.interval.timeInterval
+                        }
+                        if let largest = largestIntervalReflection {
+                            filteredReflections.append(largest)
+                        }
+                        filteredReflections.append(contentsOf: nonStrongReflections)
+                    } else {
+                        filteredReflections.append(contentsOf: reflections)
+                    }
+                }
                 
-                let actionedIDs = Set(actionedMissedReflectionIDs)
-                let finalResultsWithoutActioned = combinedResults.filter { !actionedIDs.contains($0.id) }
+                // HR-specific filter
+                var finalFilteredReflections: [MissedReflection] = []
+                let hrReflections = filteredReflections.filter { $0.measurementType == .heartRate }
+                let nonHrReflections = filteredReflections.filter { $0.measurementType != .heartRate }
+                let groupedHrByTime = Dictionary(grouping: hrReflections) { $0.date }
                 
-                completion(.success(finalResultsWithoutActioned))
+                for (timestamp, reflections) in groupedHrByTime {
+                    if reflections.count > 1 {
+                        let reflectionWithCounts = reflections.map { reflection -> (MissedReflection, Int) in
+                            let context = reflection.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
+                            let windowStart = reflection.interval == .immediately ? reflection.date : reflection.date.addingTimeInterval(-reflection.interval.timeInterval)
+                            let windowEnd = reflection.date
+                            let dataPointsInWindow = heartRateSamples.filter { sample in
+                                sample.startDate >= windowStart && sample.startDate <= windowEnd
+                            }.count
+                            return (reflection, dataPointsInWindow)
+                        }
+                        let reflectionWithMostPoints = reflectionWithCounts.max { $0.1 < $1.1 }?.0
+                        if let bestReflection = reflectionWithMostPoints {
+                            finalFilteredReflections.append(bestReflection)
+                        }
+                    } else {
+                        finalFilteredReflections.append(contentsOf: reflections)
+                    }
+                }
+                finalFilteredReflections.append(contentsOf: nonHrReflections)
+                
+                // Step 4: Post-Processing and Filtering
+                let finalReflections: [MissedReflection]
+                if isDeveloperMode {
+                    finalReflections = finalFilteredReflections.sorted { $0.date < $1.date }
+                } else {
+                    let stepsReflections = finalFilteredReflections.filter { $0.measurementType == .steps }
+                    let heartRateReflections = finalFilteredReflections.filter { $0.measurementType == .heartRate }
+                    
+                    var filteredSteps = stepsReflections.sorted { $0.date < $1.date }
+                    let strongSteps = filteredSteps.filter { $0.reminderType == .strong }
+                    let nonStrongSteps = filteredSteps.filter { $0.reminderType != .strong }
+                    var filteredNonStrongSteps: [MissedReflection] = []
+                    var lastTriggerTimeSteps: Date?
+                    
+                    for reflection in nonStrongSteps {
+                        let context = IntervalContext.steps
+                        let buffer = reflection.interval.buffer(for: context) // Context-aware
+                        if lastTriggerTimeSteps == nil || reflection.date.timeIntervalSince(lastTriggerTimeSteps!) >= buffer {
+                            filteredNonStrongSteps.append(reflection)
+                            lastTriggerTimeSteps = reflection.date
+                        }
+                    }
+                    filteredSteps = (strongSteps + filteredNonStrongSteps).sorted { $0.date < $1.date }
+                    
+                    var filteredHeartRate = heartRateReflections.sorted { $0.date < $1.date }
+                    let strongHeartRate = filteredHeartRate.filter { $0.reminderType == .strong }
+                    let nonStrongHeartRate = filteredHeartRate.filter { $0.reminderType != .strong }
+                    var filteredNonStrongHeartRate: [MissedReflection] = []
+                    var lastTriggerTimeHeartRate: Date?
+                    
+                    for reflection in nonStrongHeartRate {
+                        let context = IntervalContext.heartRate
+                        let buffer = reflection.interval.buffer(for: context) // Context-aware
+                        if lastTriggerTimeHeartRate == nil || reflection.date.timeIntervalSince(lastTriggerTimeHeartRate!) >= buffer {
+                            filteredNonStrongHeartRate.append(reflection)
+                            lastTriggerTimeHeartRate = reflection.date
+                        }
+                    }
+                    filteredHeartRate = (strongHeartRate + filteredNonStrongHeartRate).sorted { $0.date < $1.date }
+                    
+                    let finalSteps = filteredSteps.suffix(5)
+                    let finalHeartRate = filteredHeartRate.suffix(5)
+                    
+                    let combinedReflections = (finalSteps + finalHeartRate).sorted { $0.date < $1.date }
+                    finalReflections = combinedReflections.filter { !$0.isActioned }
+                }
+                
+                DispatchQueue.main.async {
+                    completion(.success(finalReflections))
+                }
             }
         }
     }
-    
-    /// Fetches all step data from the last 24 hours using `HKSampleQuery`.
+
+    /// Fetches step data from the start of the current day (midnight) to now using `HKStatisticsCollectionQuery`.
     ///
-    /// - Retrieves all `.stepCount` samples within the 24-hour window preceding the current time.
-    /// - Returns an array of tuples `(startDate, endDate, stepCount)`.
-    /// - Each tuple corresponds to one `HKQuantitySample`.
+    /// - Aggregates `.stepCount` samples into 1-minute intervals from midnight of the current day to the current time.
+    /// - Returns an array of tuples `(startDate, endDate, stepCount)` for each interval with non-zero steps.
+    /// - HealthKit handles merging of data from multiple sources (e.g., iPhone and Apple Watch).
     ///
     /// - Parameters:
-    ///   - completion: A closure called with an array of `(Date, Date, Double)` representing all samples.
+    ///   - completion: A closure called with an array of `(Date, Date, Double)` representing aggregated samples.
     ///     If there's an error or if no health store is available, returns an empty array.
     ///
-    func fetchStepDataLast24Hours(
-        completion: @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
-    ) {
+    func fetchStepDataCurrentDay(completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) {
+        guard let healthStore = healthStore else {
+            completion([])
+            return
+        }
+        
+        guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            completion([])
+            return
+        }
+        
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+        
+        // Use 1-minute intervals for aggregation
+        let interval = DateComponents(minute: 1)
+        let anchorDate = startOfDay
+        
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startOfDay,
+            end: now,
+            options: .strictStartDate
+        )
+        
+        let query = HKStatisticsCollectionQuery(
+            quantityType: stepType,
+            quantitySamplePredicate: predicate,
+            options: [.cumulativeSum],
+            anchorDate: anchorDate,
+            intervalComponents: interval
+        )
+        
+        query.initialResultsHandler = { query, results, error in
+            if error != nil {
+                completion([])
+                return
+            }
+            
+            guard let statsCollection = results else {
+                completion([])
+                return
+            }
+            
+            var results: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+            statsCollection.enumerateStatistics(from: startOfDay, to: now) { statistics, stop in
+                if let sum = statistics.sumQuantity() {
+                    let stepCount = sum.doubleValue(for: HKUnit.count())
+                    if stepCount > 0 { // Only include intervals with non-zero steps
+                        results.append((statistics.startDate, statistics.endDate, stepCount))
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                completion(results)
+            }
+        }
+        
+        healthStore.execute(query)
+    }
+
+    /// Fetches all step data from the last 24 hours using `HKStatisticsCollectionQuery`.
+    ///
+    /// - Aggregates `.stepCount` samples into 1-minute intervals within the 24-hour window preceding the current time.
+    /// - Returns an array of tuples `(startDate, endDate, stepCount)` for each interval with non-zero steps.
+    /// - HealthKit handles merging of data from multiple sources (e.g., iPhone and Apple Watch).
+    ///
+    /// - Parameters:
+    ///   - completion: A closure called with an array of `(Date, Date, Double)` representing aggregated samples.
+    ///     If there's an error or if no health store is available, returns an empty array.
+    ///
+    func fetchStepDataLast24Hours(completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) {
         guard let healthStore = healthStore else {
             completion([])
             return
@@ -574,53 +784,65 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
+        // Use 1-minute intervals for aggregation
+        let interval = DateComponents(minute: 1)
+        let anchorDate = last24Hours
+        
         let predicate = HKQuery.predicateForSamples(
             withStart: last24Hours,
             end: now,
             options: .strictStartDate
         )
         
-        let query = HKSampleQuery(
-            sampleType: stepType,
-            predicate: predicate,
-            limit: HKObjectQueryNoLimit,
-            sortDescriptors: nil
-        ) { _, samples, error in
+        let query = HKStatisticsCollectionQuery(
+            quantityType: stepType,
+            quantitySamplePredicate: predicate,
+            options: [.cumulativeSum],
+            anchorDate: anchorDate,
+            intervalComponents: interval
+        )
+        
+        query.initialResultsHandler = { query, results, error in
             if error != nil {
                 completion([])
                 return
             }
             
-            guard let quantitySamples = samples as? [HKQuantitySample] else {
+            guard let statsCollection = results else {
                 completion([])
                 return
             }
             
-            var results: [(Date, Date, Double)] = []
-            for sample in quantitySamples {
-                let val = sample.quantity.doubleValue(for: HKUnit.count())
-                results.append((sample.startDate, sample.endDate, val))
+            var results: [(startDate: Date, endDate: Date, stepCount: Double)] = []
+            statsCollection.enumerateStatistics(from: last24Hours, to: now) { statistics, stop in
+                if let sum = statistics.sumQuantity() {
+                    let stepCount = sum.doubleValue(for: HKUnit.count())
+                    if stepCount > 0 { // Only include intervals with non-zero steps
+                        results.append((statistics.startDate, statistics.endDate, stepCount))
+                    }
+                }
             }
             
-            completion(results)
+            DispatchQueue.main.async {
+                completion(results)
+            }
         }
         
         healthStore.execute(query)
     }
-    
+
     /// Fetches all heart rate data from the last 24 hours using `HKSampleQuery`.
     ///
     /// - Retrieves all `.heartRate` samples within the 24-hour window preceding the current time.
     /// - Returns an array of tuples `(startDate, endDate, heartRateValue)`.
     /// - Each tuple corresponds to one `HKQuantitySample` representing beats per minute (bpm).
+    /// - Saves results to a JSON file named "heartRateDataLast24Hours.json" in the document directory.
     ///
     /// - Parameters:
     ///   - completion: A closure called with an array of `(Date, Date, Double)` representing all samples.
     ///     If there's an error or if no health store is available, returns an empty array.
     ///
-    func fetchHeartRateDataLast24Hours(
-        completion: @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
-    ) {
+    func fetchHeartRateDataLast24Hours(completion: @Sendable @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) {
         guard let healthStore = healthStore else {
             completion([])
             return
@@ -669,62 +891,5 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
         
         healthStore.execute(query)
-    }
-    
-    /// Merges overlapping or contiguous time intervals where a condition is met (e.g., heart rate above a threshold).
-    ///
-    /// - Accepts a list of `(start, end)` intervals.
-    /// - Sorts them by start time.
-    /// - Iterates through the sorted list to merge any intervals that overlap or touch.
-    /// - Returns a condensed list of non-overlapping intervals covering all the same time ranges.
-    ///
-    /// - Parameter intervals: A list of `(start: Date, end: Date)` tuples.
-    /// - Returns: A list of merged intervals covering the same time span.
-    ///
-    private func mergeIntervals(_ intervals: [(start: Date, end: Date)]) -> [(start: Date, end: Date)] {
-        if intervals.isEmpty { return [] }
-        let sorted = intervals.sorted { $0.start < $1.start }
-        var merged: [(Date, Date)] = []
-        var current = sorted[0]
-        for index in 1..<sorted.count {
-            let next = sorted[index]
-            if next.start <= current.end {
-                if next.end > current.end {
-                    current = (current.start, next.end)
-                }
-            } else {
-                merged.append(current)
-                current = next
-            }
-        }
-        merged.append(current)
-        return merged
-    }
-    
-    private func filterResults(_ reflections: [MissedReflection]) -> [MissedReflection] {
-        // Always include strong ones.
-        let strong = reflections.filter { $0.reminderType == .strong }
-        
-        // For non-strong ones, sort by date.
-        let nonStrong = reflections.filter { $0.reminderType != .strong }
-            .sorted { $0.date < $1.date }
-        var filteredNonStrong: [MissedReflection] = []
-        for reflection in nonStrong {
-            if let last = filteredNonStrong.last {
-                let quarterInterval = reflection.interval.timeInterval / 4.0
-                if reflection.date.timeIntervalSince(last.date) < quarterInterval {
-                    let lastScore = Double(last.threshold) * last.interval.timeInterval
-                    let currentScore = Double(reflection.threshold) * reflection.interval.timeInterval
-                    if currentScore > lastScore {
-                        filteredNonStrong[filteredNonStrong.count - 1] = reflection
-                    }
-                } else {
-                    filteredNonStrong.append(reflection)
-                }
-            } else {
-                filteredNonStrong.append(reflection)
-            }
-        }
-        return strong + filteredNonStrong
     }
 }

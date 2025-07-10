@@ -21,7 +21,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Receive Reminders for Reflection") {
+                title: String(localized: "Receive Reminders for Reflection")) {
                     VStack(spacing: 16) {
                         Image(systemName: "bell.square.fill")
                             .resizable()
@@ -37,7 +37,7 @@ extension OnboardingView {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        InfoBox(text: "You can always change this permission later, by navigating to Settings > Privacy & Security > Notifications > MindfulPacer.")
+                        InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Notifications > MindfulPacer."))
                     }
                 }
         }
