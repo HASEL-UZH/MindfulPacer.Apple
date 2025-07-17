@@ -159,6 +159,13 @@ extension Reflection {
         case physicalPain(Int?)
         case depressionOrAnxiety(Int?)
         
+        var numOptions: Int {
+            switch self {
+            case .wellBeing: 5
+            default: 4
+            }
+        }
+        
         var value: Int? {
             switch self {
             case .wellBeing(let value),
@@ -271,8 +278,9 @@ extension Reflection {
             switch value {
             case 0: return String(localized: "Very Low")
             case 1: return String(localized: "Low")
-            case 2: return String(localized: "High")
-            case 3: return String(localized: "Very High")
+            case 2: return String(localized: "Moderate")
+            case 3: return String(localized: "High")
+            case 4: return String(localized: "Very High")
             default: return String(localized: "Not Set")
             }
         }
@@ -293,6 +301,7 @@ extension Reflection {
             case 1: return .orange
             case 2: return .yellow
             case 3: return .green
+            case 4: return .green
             default: return .gray
             }
         }

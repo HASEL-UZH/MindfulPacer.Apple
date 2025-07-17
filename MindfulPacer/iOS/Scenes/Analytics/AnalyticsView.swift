@@ -104,7 +104,7 @@ struct AnalyticsView: View {
                 Picker(selection: $viewModel.selectedPeriod) {
                     ForEach(Period.allCases, id: \.self) { period in
                         Text(period.displayName)
-                            .tag(period)
+                            .tag(period.displayName)
                     }
                 } label: {
                     EmptyView()

@@ -36,9 +36,9 @@ class EditReflectionViewModel {
     var navigationTitle: String {
         switch mode {
         case .create:
-            return "Create Reflection"
+            return String(localized: "Create Reflection")
         case .edit:
-            return "Edit Reflection"
+            return String(localized: "Edit Reflection")
         }
     }
     
