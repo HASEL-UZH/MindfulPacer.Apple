@@ -39,7 +39,7 @@ extension HomeView {
                     
                 } else {
                     RoundedList {
-                        ForEach(viewModel.filteredReflections) { reflection in
+                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
                             ReflectionCell(reflection: reflection) {
                                 viewModel.presentSheet(.editReflectionView(reflection))
                             }
