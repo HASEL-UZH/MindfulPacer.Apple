@@ -16,13 +16,16 @@ protocol DeleteReminderUseCase {
 
 class DefaultDeleteReminderUseCase: DeleteReminderUseCase {
     private let modelContext: ModelContext
+    private let watchUpdateService: WatchUpdateService
 
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, watchUpdateService: WatchUpdateService) {
         self.modelContext = modelContext
+        self.watchUpdateService = watchUpdateService
     }
 
     func execute(reminder: Reminder) {
         modelContext.delete(reminder)
+        watchUpdateService.notifyWatchOfReminderChange()
         try? modelContext.save()
     }
 }

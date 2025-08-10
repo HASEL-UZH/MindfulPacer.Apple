@@ -16,8 +16,6 @@
 		0D1D71EC2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D71EB2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift */; };
 		0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */; };
 		0D1FD5162CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1FD5152CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift */; };
-		0D2F82052C46653E0004CD34 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82042C46653E0004CD34 /* RootView.swift */; };
-		0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F82062C46654B0004CD34 /* RootViewModel.swift */; };
 		0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C22C937461008F11C7 /* AnalyticsView.swift */; };
 		0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */; };
 		0D3006C82C943444008F11C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C72C943444008F11C7 /* SettingsView.swift */; };
@@ -33,8 +31,18 @@
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
 		0D34C4652C837FE100928C53 /* ReflectionsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */; };
 		0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */; };
+		0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */; };
+		0D352C6C2E474E0F0039055F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C6B2E474E0F0039055F /* RootView.swift */; };
+		0D352C6E2E474E220039055F /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C6D2E474E220039055F /* RootViewModel.swift */; };
+		0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7B2E475A790039055F /* HeartRateDetailView.swift */; };
+		0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7D2E475B230039055F /* NotificationDelegate.swift */; };
+		0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7F2E476E470039055F /* WatchUpdateService.swift */; };
+		0D352C822E4891560039055F /* SystemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C812E4891560039055F /* SystemDelegate.swift */; };
 		0D36471F2D53862C000F85EF /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 0D36471E2D53862C000F85EF /* SwiftSoup */; };
 		0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */; };
+		0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */; };
+		0D3966222E491FD8007C73C0 /* ActiveRemindersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */; };
+		0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB12C7D077C0014CD81 /* FetchRemindersUseCase.swift */; };
 		0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D4569F52D28417C00C37062 /* CheckMissedReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */; };
@@ -55,10 +63,8 @@
 		0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */; };
 		0D4EBE462C727F8900C1865D /* IntervalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE452C727F8900C1865D /* IntervalView.swift */; };
 		0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE4B2C72865F00C1865D /* SummaryView.swift */; };
-		0D500FC22C7355BD00395AEB /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC12C7355BD00395AEB /* NotificationService.swift */; };
 		0D500FC42C73560A00395AEB /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC32C73560A00395AEB /* NotificationService.swift */; };
 		0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */; };
-		0D500FC82C73582A00395AEB /* InitializeNotificationsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */; };
 		0D500FCA2C7376A700395AEB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC92C7376A700395AEB /* Message.swift */; };
 		0D500FCB2C7376A700395AEB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FC92C7376A700395AEB /* Message.swift */; };
 		0D500FEB2C749B2700395AEB /* MoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEA2C749B2700395AEB /* MoodView.swift */; };
@@ -109,8 +115,6 @@
 		0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9351532D12F9DD0028AA61 /* DataContainer.swift */; };
 		0D9351572D12FBBF0028AA61 /* RoadmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9351562D12FBBF0028AA61 /* RoadmapView.swift */; };
 		0D9634382D5A98800038E257 /* HeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9634372D5A98800038E257 /* HeartRateChartView.swift */; };
-		0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D96D7542C7130C700B62A4D /* InitializeConnectivityUseCase.swift */; };
-		0D96D7572C7130EB00B62A4D /* InitializeConnectivityUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D96D7562C7130EB00B62A4D /* InitializeConnectivityUseCase.swift */; };
 		0D9AB09A2C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0992C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift */; };
 		0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */; };
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
@@ -130,11 +134,8 @@
 		0D9E5F602C64C7B7005BA46C /* AddDefaultActivitiesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E5F5F2C64C7B7005BA46C /* AddDefaultActivitiesUseCase.swift */; };
 		0DA31AAA2CD0DCDC00C9E3EA /* SymptomValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA31AA92CD0DCDC00C9E3EA /* SymptomValueView.swift */; };
 		0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */; };
-		0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */; };
-		0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */; };
 		0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */; };
 		0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */; };
-		0DA6CB342C39583300FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */; };
 		0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA77E3F2D1596C50057DFA2 /* Toast.swift */; };
 		0DAC64D92DA2A3B400BBB741 /* AlgorithmsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
@@ -221,8 +222,6 @@
 		0D1D71EB2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInternetConnectivityUseCase.swift; sourceTree = "<group>"; };
 		0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorService.swift; sourceTree = "<group>"; };
 		0D1FD5152CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReflectionsInPeriodUseCase.swift; sourceTree = "<group>"; };
-		0D2F82042C46653E0004CD34 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		0D2F82062C46654B0004CD34 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		0D3006C22C937461008F11C7 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
 		0D3006C72C943444008F11C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -235,7 +234,16 @@
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
 		0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionsWidget.swift; sourceTree = "<group>"; };
 		0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeWidget.swift; sourceTree = "<group>"; };
+		0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateMonitoringService.swift; sourceTree = "<group>"; };
+		0D352C6B2E474E0F0039055F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		0D352C6D2E474E220039055F /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		0D352C7B2E475A790039055F /* HeartRateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDetailView.swift; sourceTree = "<group>"; };
+		0D352C7D2E475B230039055F /* NotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegate.swift; sourceTree = "<group>"; };
+		0D352C7F2E476E470039055F /* WatchUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchUpdateService.swift; sourceTree = "<group>"; };
+		0D352C812E4891560039055F /* SystemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDelegate.swift; sourceTree = "<group>"; };
 		0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsView.swift; sourceTree = "<group>"; };
+		0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRemindersView.swift; sourceTree = "<group>"; };
+		0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRemindersViewModel.swift; sourceTree = "<group>"; };
 		0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReflectionsUseCase.swift; sourceTree = "<group>"; };
@@ -255,10 +263,8 @@
 		0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdView.swift; sourceTree = "<group>"; };
 		0D4EBE452C727F8900C1865D /* IntervalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntervalView.swift; sourceTree = "<group>"; };
 		0D4EBE4B2C72865F00C1865D /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
-		0D500FC12C7355BD00395AEB /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0D500FC32C73560A00395AEB /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerWatchNotificationUseCase.swift; sourceTree = "<group>"; };
-		0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeNotificationsUseCase.swift; sourceTree = "<group>"; };
 		0D500FC92C7376A700395AEB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		0D500FEA2C749B2700395AEB /* MoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodView.swift; sourceTree = "<group>"; };
 		0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extensions.swift"; sourceTree = "<group>"; };
@@ -303,8 +309,6 @@
 		0D9351532D12F9DD0028AA61 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
 		0D9351562D12FBBF0028AA61 /* RoadmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapView.swift; sourceTree = "<group>"; };
 		0D9634372D5A98800038E257 /* HeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartView.swift; sourceTree = "<group>"; };
-		0D96D7542C7130C700B62A4D /* InitializeConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeConnectivityUseCase.swift; sourceTree = "<group>"; };
-		0D96D7562C7130EB00B62A4D /* InitializeConnectivityUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeConnectivityUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0992C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDefaultActivitiesUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
@@ -321,15 +325,12 @@
 		0D9E5F5F2C64C7B7005BA46C /* AddDefaultActivitiesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefaultActivitiesUseCase.swift; sourceTree = "<group>"; };
 		0DA31AA92CD0DCDC00C9E3EA /* SymptomValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymptomValueView.swift; sourceTree = "<group>"; };
 		0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
-		0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
-		0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
 		0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		0DA6CB192C38370800FE1E61 /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		0DA6CB1A2C38373600FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1B2C38374500FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchOS.entitlements; sourceTree = "<group>"; };
 		0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
-		0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA77E3F2D1596C50057DFA2 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmsView.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -406,13 +407,6 @@
 			path = Styling;
 			sourceTree = "<group>";
 		};
-		0D189B352C8F220B008BF03D /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		0D27BFC32C32DA8B007F4CFA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,15 +417,6 @@
 				0DDD33992C7BB6CB00A0B091 /* Resources */,
 			);
 			path = Shared;
-			sourceTree = "<group>";
-		};
-		0D2F82032C4665390004CD34 /* Root View */ = {
-			isa = PBXGroup;
-			children = (
-				0D2F82042C46653E0004CD34 /* RootView.swift */,
-				0D2F82062C46654B0004CD34 /* RootViewModel.swift */,
-			);
-			path = "Root View";
 			sourceTree = "<group>";
 		};
 		0D3006C12C93745B008F11C7 /* Analytics */ = {
@@ -527,6 +512,35 @@
 			path = Widgets;
 			sourceTree = "<group>";
 		};
+		0D352C842E48ABFE0039055F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */,
+				0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */,
+				0D352C7B2E475A790039055F /* HeartRateDetailView.swift */,
+				0D352C6B2E474E0F0039055F /* RootView.swift */,
+				0D352C6D2E474E220039055F /* RootViewModel.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0D352C852E48AC760039055F /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				0D352C812E4891560039055F /* SystemDelegate.swift */,
+				0D352C7D2E475B230039055F /* NotificationDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		0D352C862E48AC920039055F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		0D379D022D22BDBE00F52849 /* Missed Reflections */ = {
 			isa = PBXGroup;
 			children = (
@@ -609,14 +623,6 @@
 				0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */,
 			);
 			path = Buttons;
-			sourceTree = "<group>";
-		};
-		0D500FEF2C749F0700395AEB /* System */ = {
-			isa = PBXGroup;
-			children = (
-				0D500FC72C73582A00395AEB /* InitializeNotificationsUseCase.swift */,
-			);
-			path = System;
 			sourceTree = "<group>";
 		};
 		0D5947862CBE740C0019BA24 /* Theme */ = {
@@ -920,25 +926,6 @@
 			path = "Symptom Value";
 			sourceTree = "<group>";
 		};
-		0DA6CB042C37F88200FE1E61 /* Use Cases */ = {
-			isa = PBXGroup;
-			children = (
-				0DD8588D2C7140E400061F63 /* iOS Communication */,
-				0D500FEF2C749F0700395AEB /* System */,
-				0DA6CB0A2C37F8FB00FE1E61 /* UseCasesContainer.swift */,
-			);
-			path = "Use Cases";
-			sourceTree = "<group>";
-		};
-		0DA6CB052C37F89800FE1E61 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				0DA6CB332C39583300FE1E61 /* ConnectivityService.swift */,
-				0D500FC12C7355BD00395AEB /* NotificationService.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
 		0DAC64D72DA2A3AE00BBB741 /* Algorithms */ = {
 			isa = PBXGroup;
 			children = (
@@ -959,15 +946,14 @@
 		0DBA37392C32087300209681 /* WatchOS */ = {
 			isa = PBXGroup;
 			children = (
+				0DBA373A2C32087300209681 /* WatchOSApp.swift */,
 				0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */,
 				0DA6CB1B2C38374500FE1E61 /* Info.plist */,
-				0DBA374B2C320AD800209681 /* Application */,
-				0D189B352C8F220B008BF03D /* Extensions */,
 				0DBA37402C32087400209681 /* Preview Content */,
 				0DBA374E2C320B1500209681 /* Resources */,
-				0DBA37492C320ACB00209681 /* Scenes */,
-				0DA6CB052C37F89800FE1E61 /* Services */,
-				0DA6CB042C37F88200FE1E61 /* Use Cases */,
+				0D352C842E48ABFE0039055F /* Views */,
+				0D352C852E48AC760039055F /* Delegates */,
+				0D352C862E48AC920039055F /* Services */,
 			);
 			path = WatchOS;
 			sourceTree = "<group>";
@@ -978,23 +964,6 @@
 				0DBA37412C32087400209681 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		0DBA37492C320ACB00209681 /* Scenes */ = {
-			isa = PBXGroup;
-			children = (
-				0D2F82032C4665390004CD34 /* Root View */,
-				0DA6CB082C37F8EA00FE1E61 /* ScenesContainer.swift */,
-			);
-			path = Scenes;
-			sourceTree = "<group>";
-		};
-		0DBA374B2C320AD800209681 /* Application */ = {
-			isa = PBXGroup;
-			children = (
-				0DBA373A2C32087300209681 /* WatchOSApp.swift */,
-			);
-			path = Application;
 			sourceTree = "<group>";
 		};
 		0DBA374E2C320B1500209681 /* Resources */ = {
@@ -1096,6 +1065,7 @@
 				0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */,
 				0D500FC32C73560A00395AEB /* NotificationService.swift */,
 				0D93514C2D12F9670028AA61 /* RoadmapAPIService.swift */,
+				0D352C7F2E476E470039055F /* WatchUpdateService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1175,18 +1145,9 @@
 		0DD8588C2C7140C600061F63 /* Watch Communication */ = {
 			isa = PBXGroup;
 			children = (
-				0D96D7542C7130C700B62A4D /* InitializeConnectivityUseCase.swift */,
 				0D500FC52C73567700395AEB /* TriggerWatchNotificationUseCase.swift */,
 			);
 			path = "Watch Communication";
-			sourceTree = "<group>";
-		};
-		0DD8588D2C7140E400061F63 /* iOS Communication */ = {
-			isa = PBXGroup;
-			children = (
-				0D96D7562C7130EB00B62A4D /* InitializeConnectivityUseCase.swift */,
-			);
-			path = "iOS Communication";
 			sourceTree = "<group>";
 		};
 		0DD8588F2C71463A00061F63 /* Errors */ = {
@@ -1480,7 +1441,6 @@
 				0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */,
 				0D3006D72C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */,
-				0D96D7552C7130C700B62A4D /* InitializeConnectivityUseCase.swift in Sources */,
 				0DFCA1D02C623FAC0000C87C /* EditReflectionView.swift in Sources */,
 				0D34C45E2C83683200928C53 /* SaveReflectionUseCase.swift in Sources */,
 				0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */,
@@ -1491,6 +1451,7 @@
 				0DC2D7E92C7C7DD7008122CC /* HomeViewModel.swift in Sources */,
 				0DC136BE2D50BBE700001D08 /* RoundedListCell.swift in Sources */,
 				0DC136A42D4E63F600001D08 /* SubactivityView.swift in Sources */,
+				0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */,
 				0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */,
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
 				0D4E11862C85ECC80023E0A0 /* RemindersListView.swift in Sources */,
@@ -1515,31 +1476,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DA6CB092C37F8EA00FE1E61 /* ScenesContainer.swift in Sources */,
 				0DD858952C71468700061F63 /* ConnectivityError.swift in Sources */,
-				0DA6CB0B2C37F8FB00FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
+				0D352C822E4891560039055F /* SystemDelegate.swift in Sources */,
+				0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */,
+				0D352C6E2E474E220039055F /* RootViewModel.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
+				0D3966222E491FD8007C73C0 /* ActiveRemindersViewModel.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
+				0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
 				0D9E5F5D2C64BE56005BA46C /* Reflection.swift in Sources */,
-				0D500FC22C7355BD00395AEB /* NotificationService.swift in Sources */,
-				0D2F82072C46654B0004CD34 /* RootViewModel.swift in Sources */,
-				0D2F82052C46653E0004CD34 /* RootView.swift in Sources */,
 				0DDD33692C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
+				0D352C6C2E474E0F0039055F /* RootView.swift in Sources */,
 				0DDD336B2C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
-				0D96D7572C7130EB00B62A4D /* InitializeConnectivityUseCase.swift in Sources */,
 				0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */,
-				0D500FC82C73582A00395AEB /* InitializeNotificationsUseCase.swift in Sources */,
 				0D3006DA2C99823C008F11C7 /* Date+Extensions.swift in Sources */,
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
+				0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */,
 				0D9351462D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
-				0DA6CB342C39583300FE1E61 /* ConnectivityService.swift in Sources */,
+				0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */,
+				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,
 				0D500FCB2C7376A700395AEB /* Message.swift in Sources */,
 				0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 			);
@@ -1775,8 +1737,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your heart rate in real-time to detect high heart rate events.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app creates workout sessions in the background to monitor your heart rate continuously.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1809,8 +1771,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need access to health data for heart rate and step count.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Need access to health data for heart rate and step count.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your heart rate in real-time to detect high heart rate events.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app creates workout sessions in the background to monitor your heart rate continuously.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
 				LD_RUNPATH_SEARCH_PATHS = (

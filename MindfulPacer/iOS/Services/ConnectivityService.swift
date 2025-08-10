@@ -5,83 +5,66 @@
 //  Created by Grigor Dochev on 06.07.2024.
 //
 
+import Combine
 import Foundation
 import WatchConnectivity
+
+@MainActor
+class WatchEventCoordinator {
+    
+    static let shared = WatchEventCoordinator()
+    let createReflectionSubject = PassthroughSubject<[(value: Double, date: Date)], Never>()
+    
+    private init() {}
+}
 
 // MARK: - ConnectivityServiceProtocol
 
 protocol ConnectivityServiceProtocol: Sendable {
-    func initializeSession(completion: @escaping (Result<Void, Error>) -> Void)
-    func sendMessage(_ command: MessageCommand, data: [String: Any]?, completion: @escaping (Result<Void, Error>) -> Void)
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any])
 }
 
 // MARK: - ConnectivityService
 
 final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, @unchecked Sendable {
+    
     static let shared = ConnectivityService()
-
+    
     private override init() {
         super.init()
     }
-
-    func initializeSession(completion: @escaping (Result<Void, Error>) -> Void) {
-        if WCSession.isSupported() {
-            let session = WCSession.default
-            session.delegate = self
-            session.activate()
-
-            if session.activationState != .activated {
-                completion(.failure(ConnectivityError.sessionActivationFailed(SessionError.notActivated)))
-            } else {
-                completion(.success(()))
-            }
-        } else {
-            completion(.failure(SessionError.notSupported))
-        }
-    }
-
-    func sendMessage(_ command: MessageCommand, data: [String: Any]? = nil, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard WCSession.default.isReachable else {
-            completion(.failure(SessionError.notReachable))
-            return
-        }
-
-        var message: [String: Any] = [MessageKeys.command: command.rawValue]
-        if let data = data {
-            message[MessageKeys.data] = data
-        }
-
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
-            completion(.failure(ConnectivityError.messageSendingFailed(error)))
-        }
-    }
-}
-
-// MARK: - WCSessionDelegate
-
-extension ConnectivityService {
+        
+    func sessionDidBecomeInactive(_ session: WCSession) {}
+    func sessionDidDeactivate(_ session: WCSession) {}
+    
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed with error: \(error.localizedDescription)")
+            print("ConnectivityService: WCSession activation failed: \(error.localizedDescription)")
         } else {
-            print("WCSession activated with state: \(activationState.rawValue)")
+            print("ConnectivityService: WCSession activated with state: \(activationState.rawValue)")
         }
     }
-
-    func sessionReachabilityDidChange(_ session: WCSession) {
-        if session.isReachable {
-            print("WCSession is reachable")
-        } else {
-            print("WCSession is not reachable")
+    
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        guard let commandString = message[MessageKeys.command] as? String,
+              let command = MessageCommand(rawValue: commandString) else {
+            return
         }
-    }
-
-    func sessionDidBecomeInactive(_ session: WCSession) {
-        print("WCSession did become inactive")
-    }
-
-    func sessionDidDeactivate(_ session: WCSession) {
-        print("WCSession did deactivate, activating again")
-        session.activate()
+        
+        if command == .createReflection {
+            if let dataArray = message[MessageKeys.data] as? [[String: Any]] {
+                let heartRateData = dataArray.compactMap { dict -> (value: Double, date: Date)? in
+                    guard let value = dict["value"] as? Double,
+                          let timestamp = dict["timestamp"] as? TimeInterval else {
+                        return nil
+                    }
+                    return (value: value, date: Date(timeIntervalSince1970: timestamp))
+                }
+                
+                Task { @MainActor in
+                    WatchEventCoordinator.shared.createReflectionSubject.send(heartRateData)
+                }
+            }
+        }
     }
 }

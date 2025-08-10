@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import WatchConnectivity
 
 protocol CreateReminderUseCase {
     func execute(
@@ -21,11 +22,13 @@ protocol CreateReminderUseCase {
 
 class DefaultCreateReminderUseCase: CreateReminderUseCase {
     private let modelContext: ModelContext
-
-    init(modelContext: ModelContext) {
+    private let watchUpdateService: WatchUpdateService
+    
+    init(modelContext: ModelContext, watchUpdateService: WatchUpdateService) {
         self.modelContext = modelContext
+        self.watchUpdateService = watchUpdateService
     }
-
+    
     func execute(
         measurementType: MeasurementType,
         reminderType: Reminder.ReminderType,
@@ -38,11 +41,12 @@ class DefaultCreateReminderUseCase: CreateReminderUseCase {
             threshold: threshold,
             interval: interval
         )
-
+        
         modelContext.insert(reminder)
-
+        
         do {
             try modelContext.save()
+            watchUpdateService.notifyWatchOfReminderChange()
             return .success(reminder)
         } catch {
             return .failure(error)

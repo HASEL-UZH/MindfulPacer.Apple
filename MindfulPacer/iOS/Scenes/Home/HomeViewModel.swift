@@ -105,6 +105,8 @@ class HomeViewModel {
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
         self.filterReflectionsUseCase = filterReflectionsUseCase
         self.markMissedReflectionAsActionedUseCase = markMissedReflectionAsActionedUseCase
+        
+        subscribeToWatchEvents()
     }
     
     // MARK: - View Lifecycle
@@ -215,6 +217,53 @@ class HomeViewModel {
     }
     
     // MARK: - Private Methods
+    
+    private func subscribeToWatchEvents() {
+        WatchEventCoordinator.shared.createReflectionSubject
+            .receive(on: DispatchQueue.main) // Ensure we're on the main thread
+            .sink { [weak self] heartRateData in
+                guard let self = self else { return }
+                
+                // This is where you decide what to do with the incoming data.
+                // We will create a *new* Reflection object to pass to the sheet.
+                
+                // Let's use your existing CreateReflectionUseCase to make a new, empty reflection.
+                // This assumes your use case can handle nil for most properties.
+                let result = self.createReflectionUseCase.execute(
+                    date: Date(), // Use the current date for the new reflection
+                    activity: nil,
+                    subactivity: nil,
+                    mood: nil,
+                    didTriggerCrash: false,
+                    wellBeing: nil,
+                    fatigue: nil,
+                    shortnessOfBreath: nil,
+                    sleepDisorder: nil,
+                    cognitiveImpairment: nil,
+                    physicalPain: nil,
+                    depressionOrAnxiety: nil,
+                    additionalInformation: "Reflection triggered by a heart rate event.",
+                    measurementType: .heartRate,
+                    reminderType: .strong, // You might want to pass this from the watch
+                    threshold: 0, // You might want to pass this from the watch
+                    interval: .immediately // You might want to pass this from the watch
+                )
+                
+                switch result {
+                case .success(let newReflection):
+                    // TODO: You might want a way to attach the `heartRateData` to the `newReflection`
+                    // For example: `newReflection.heartRateSamples = heartRateData`
+                    // This depends on your `Reflection` model structure.
+                    
+                    // Now, present the sheet with the newly created Reflection object.
+                    self.presentSheet(.editReflectionView(newReflection))
+                    
+                case .failure(let error):
+                    print("Failed to create reflection from watch event: \(error.localizedDescription)")
+                }
+            }
+            .store(in: &cancellables) // Store the subscription to keep it alive
+    }
     
     private func setupBindings() {
         filterAndSortingPublisher

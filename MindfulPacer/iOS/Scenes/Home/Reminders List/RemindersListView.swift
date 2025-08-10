@@ -31,6 +31,12 @@ struct RemindersListView: View {
                             }
                         }
                     }
+                    
+                    Section {
+                        PrimaryButton(title: "Sync with Watch", icon: "applewatch.radiowaves.left.and.right") {
+                            WatchUpdateService.shared.notifyWatchOfReminderChange()
+                        }
+                    }
                 }
             }
         }

@@ -64,7 +64,6 @@ class RootViewModel {
     private let modelContext: ModelContext
     private let addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
-    private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     
     // MARK: - Published Properties
     
@@ -81,13 +80,11 @@ class RootViewModel {
     init(
         modelContext: ModelContext,
         addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase,
-        checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase,
-        initializeConnectivityUseCase: InitializeConnectivityUseCase
+        checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     ) {
         self.modelContext = modelContext
         self.addDefaultActivitiesUseCase = addDefaultActivitiesUseCase
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
-        self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
     // MARK: - View Events
@@ -96,7 +93,6 @@ class RootViewModel {
     func onViewFirstAppear() {
         Task {
             await addDefaultActivitiesUseCase.execute()
-            initializeConnectivityUseCase.execute()
         }
         
         checkIfUserHasSeenOnboarding()

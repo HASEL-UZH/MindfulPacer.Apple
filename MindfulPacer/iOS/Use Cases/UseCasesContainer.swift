@@ -134,12 +134,12 @@ extension UseCasesContainer {
     
     @MainActor
     var createReminderUseCase: Factory<CreateReminderUseCase> {
-        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     @MainActor
     var deleteReminderUseCase: Factory<DeleteReminderUseCase> {
-        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     @MainActor
@@ -149,7 +149,7 @@ extension UseCasesContainer {
 
     @MainActor
     var saveReminderUseCase: Factory<DefaultSaveReminderUseCase> {
-        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     // MARK: - Settings
@@ -172,11 +172,6 @@ extension UseCasesContainer {
     }
 
     // MARK: - Watch Communication
-
-    @MainActor
-    var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
-        self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
-    }
 
     @MainActor
     var triggerWatchNotificationUseCase: Factory<DefaultTriggerWatchNotificationUseCase> {

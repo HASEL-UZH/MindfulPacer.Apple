@@ -12,6 +12,8 @@ import Foundation
 /// Manages the types of commands you send, ensuring type safety and reducing hardcoding.
 enum MessageCommand: String {
     case triggerLocalNotification
+    case remindersUpdated
+    case createReflection
 }
 
 // MARK: - MessageKeys

@@ -23,9 +23,11 @@ protocol SaveReminderUseCase {
 
 class DefaultSaveReminderUseCase: SaveReminderUseCase {
     private let modelContext: ModelContext
-
-    init(modelContext: ModelContext) {
+    private let watchUpdateService: WatchUpdateService
+    
+    init(modelContext: ModelContext, watchUpdateService: WatchUpdateService) {
         self.modelContext = modelContext
+        self.watchUpdateService = watchUpdateService
     }
 
     func execute(
@@ -42,6 +44,7 @@ class DefaultSaveReminderUseCase: SaveReminderUseCase {
 
         do {
             try modelContext.save()
+            watchUpdateService.notifyWatchOfReminderChange()
             return .success(existingReminder)
         } catch {
             return .failure(error)

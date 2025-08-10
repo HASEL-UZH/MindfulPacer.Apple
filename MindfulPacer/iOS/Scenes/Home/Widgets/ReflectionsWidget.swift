@@ -70,7 +70,7 @@ extension HomeView {
 
         private var recentReflectionsSummary: some View {
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(viewModel.recentReflections) { reflection in
+                ForEach(viewModel.recentReflections, id: \.id) { reflection in
                     ReflectionCell(
                         reflection: reflection,
                         backgroundColor: Color(.tertiarySystemGroupedBackground)
