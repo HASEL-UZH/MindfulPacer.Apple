@@ -220,17 +220,12 @@ class HomeViewModel {
     
     private func subscribeToWatchEvents() {
         WatchEventCoordinator.shared.createReflectionSubject
-            .receive(on: DispatchQueue.main) // Ensure we're on the main thread
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] heartRateData in
                 guard let self = self else { return }
-                
-                // This is where you decide what to do with the incoming data.
-                // We will create a *new* Reflection object to pass to the sheet.
-                
-                // Let's use your existing CreateReflectionUseCase to make a new, empty reflection.
-                // This assumes your use case can handle nil for most properties.
+          
                 let result = self.createReflectionUseCase.execute(
-                    date: Date(), // Use the current date for the new reflection
+                    date: Date(),
                     activity: nil,
                     subactivity: nil,
                     mood: nil,
@@ -343,20 +338,22 @@ class HomeViewModel {
     }
     
     private func checkMissedReflections() {
-        let reminders = fetchRemindersUseCase.execute() ?? []
-        
-        checkMissedReflectionsUseCase.execute(
-            reminders: reminders,
-            isDeveloperMode: false
-        ) { [weak self] result in
-            guard let self = self else { return }
+        Task(priority: .background) {
+            let reminders = fetchRemindersUseCase.execute() ?? []
             
-            Task { @MainActor in
-                switch result {
-                case .success(let missedReflections):
-                    self.missedReflections = missedReflections
-                case .failure(let failure):
-                    print("DEBUG:", failure)
+            checkMissedReflectionsUseCase.execute(
+                reminders: reminders,
+                isDeveloperMode: false
+            ) { [weak self] result in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    
+                    switch result {
+                    case .success(let missedReflections):
+                        self.missedReflections = missedReflections
+                    case .failure(let failure):
+                        print("DEBUG:", failure)
+                    }
                 }
             }
         }
