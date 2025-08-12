@@ -9,6 +9,62 @@ import Foundation
 import HealthKit
 import SwiftData
 import UserNotifications
+import Combine
+import SwiftUI
+
+enum StatusMessage: String {
+    case notConfigured = "Not Configured"
+    case configured = "Configured"
+    case ready = "Ready"
+    case noHRReminders = "No HR Reminders"
+    case initializing = "Initializing..."
+    case authDenied = "Auth Denied"
+    case collectionFailed = "Collection Failed"
+    case monitoring = "Monitoring"
+    case sessionFailed = "Session Failed"
+    case stopped = "Stopped"
+
+    var symbolName: String {
+        switch self {
+        case .notConfigured: return "exclamationmark.triangle"
+        case .configured: return "checkmark.circle"
+        case .ready: return "bolt.heart"
+        case .noHRReminders: return "bell.slash"
+        case .initializing: return "hourglass"
+        case .authDenied: return "lock.slash"
+        case .collectionFailed: return "xmark.octagon"
+        case .monitoring: return "waveform.path.ecg"
+        case .sessionFailed: return "exclamationmark.octagon"
+        case .stopped: return "stop.circle"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .notConfigured: return .yellow
+        case .configured: return .green
+        case .ready: return .blue
+        case .noHRReminders: return .gray
+        case .initializing: return .orange
+        case .authDenied: return .red
+        case .collectionFailed: return .red
+        case .monitoring: return .green
+        case .sessionFailed: return .red
+        case .stopped: return .gray
+        }
+    }
+}
+
+public struct HeartRateAlertRule: @unchecked Sendable {
+    public let id: UUID
+    var thresholdBPM: Double
+    var duration: TimeInterval
+    var alertMessage: String
+    var triggerDate: Date? = nil
+    var dipDate: Date? = nil
+    var collectedData: [(value: Double, date: Date)] = []
+    var type: Reminder.ReminderType
+}
 
 final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, @unchecked Sendable {
     
@@ -16,7 +72,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
-    @Published var statusMessage: String = "Not Configured"
+    @Published var statusMessage: StatusMessage = .notConfigured
     @Published private(set) var activeRules: [HeartRateAlertRule] = []
     
     private let healthStore = HKHealthStore()
@@ -28,13 +84,15 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     
     private var alertDataCache: [UUID: [(value: Double, date: Date)]] = [:]
     
+    let alertTriggeredSubject = PassthroughSubject<HeartRateAlertRule, Never>()
+
     private override init() {
         super.init()
     }
     
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
-        self.statusMessage = "Configured"
+        self.statusMessage = .configured
         self.registerNotificationCategories()
     }
     
@@ -79,7 +137,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     
     private func updateMonitoringRules() -> Bool {
         guard let useCase = fetchRemindersUseCase else {
-            self.statusMessage = "Not Configured"
+            self.statusMessage = .notConfigured
             return false
         }
         let allReminders = useCase.execute() ?? []
@@ -98,7 +156,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
         
         // ✅ THE FIX: Update properties directly and synchronously. No more DispatchQueue.
         self.activeRules = newRules
-        self.statusMessage = self.activeRules.isEmpty ? "No HR Reminders" : "Ready"
+        self.statusMessage = self.activeRules.isEmpty ? .noHRReminders : .ready
         print("DEBUGY: Rules updated. Found \(self.activeRules.count) rules. Status set to: \(self.statusMessage)")
         
         return !self.activeRules.isEmpty
@@ -126,19 +184,19 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
             self.workoutBuilder?.beginCollection(withStart: Date()) { success, error in
                 if let error = error {
                     print("DEBUGY: ERROR - beginCollection failed with error: \(error.localizedDescription)")
-                    DispatchQueue.main.async { self.statusMessage = "Collection Failed" }
+                    DispatchQueue.main.async { self.statusMessage = .collectionFailed }
                     return
                 }
                 guard success else { return }
                 DispatchQueue.main.async {
                     print("DEBUGY: Session started successfully. Updating UI.")
                     self.isSessionActive = true
-                    self.statusMessage = "Monitoring"
+                    self.statusMessage = .monitoring
                 }
             }
         } catch {
             print("DEBUGY: ERROR - Failed to create HKWorkoutSession: \(error.localizedDescription)")
-            DispatchQueue.main.async { self.statusMessage = "Session Failed" }
+            DispatchQueue.main.async { self.statusMessage = .sessionFailed }
         }
     }
     
@@ -149,7 +207,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
         DispatchQueue.main.async {
             self.isSessionActive = false
             self.heartRate = 0
-            self.statusMessage = "Stopped"
+            self.statusMessage = .stopped
         }
     }
     
@@ -223,34 +281,31 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     private func sendNotification(for rule: HeartRateAlertRule) {
         let alertID = UUID()
         alertDataCache[alertID] = rule.collectedData
-        
+
         let content = UNMutableNotificationContent()
         content.title = "Heart Rate Alert"
         content.body = rule.alertMessage
         content.sound = .defaultCritical
         content.categoryIdentifier = "HEART_RATE_ALERT"
         content.userInfo = ["alert_id": alertID.uuidString]
-        
+
         let request = UNNotificationRequest(
             identifier: alertID.uuidString,
             content: content,
             trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         )
         UNUserNotificationCenter.current().add(request)
+
+        // ✅ Deep copy to avoid sharing mutable array storage
+        var safeRule = rule
+        safeRule.collectedData = Array(rule.collectedData)
+
+        DispatchQueue.main.async {
+            self.alertTriggeredSubject.send(safeRule)
+        }
     }
     
     func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
-}
-
-public struct HeartRateAlertRule {
-    public let id: UUID
-    var thresholdBPM: Double
-    var duration: TimeInterval
-    var alertMessage: String
-    var triggerDate: Date? = nil
-    var dipDate: Date? = nil
-    var collectedData: [(value: Double, date: Date)] = []
-    var type: Reminder.ReminderType
 }

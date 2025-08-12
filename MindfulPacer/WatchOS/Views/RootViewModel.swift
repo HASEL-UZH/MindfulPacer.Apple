@@ -7,14 +7,29 @@
 
 import Foundation
 import Combine
+import WatchKit
+import SwiftUI
 
+struct StorageKeys {
+    static let strongAlertCount = "strongAlertCount"
+    static let mediumAlertCount = "mediumAlertCount"
+    static let lightAlertCount = "lightAlertCount"
+    static let lastAlertDate = "lastAlertDate"
+}
+
+@MainActor
 @Observable
 class RootViewModel {
-    var statusMessage: String = "Initializing..."
+    var statusMessage: StatusMessage = .initializing
     var heartRate: Double = 0
     var isMonitoring: Bool = false
     var activeRules: [HeartRateAlertRule] = []
     var isShowingActiveRules = false
+    var isAlerting: Bool = false
+    
+    var strongAlertCount: Int = 0
+    var mediumAlertCount: Int = 0
+    var lightAlertCount: Int = 0
     
     private let monitorService = HeartRateMonitorService.shared
     private var cancellables = Set<AnyCancellable>()
@@ -23,7 +38,10 @@ class RootViewModel {
     init(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
         monitorService.configure(fetchRemindersUseCase: fetchRemindersUseCase)
-                
+        
+        loadPersistentCounts()
+        checkForDailyReset()
+        
         monitorService.$statusMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newStatus in
@@ -51,15 +69,73 @@ class RootViewModel {
                 self?.activeRules = newRules
             }
             .store(in: &cancellables)
+        
+        monitorService.alertTriggeredSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] rule in
+                self?.triggerInAppAlert(for: rule)
+            }
+            .store(in: &cancellables)
     }
     
     func onAppear() {
         monitorService.requestAuthorization { [weak self] isAuthorized in
             guard isAuthorized else {
-                self?.statusMessage = "Auth Denied"
+                self?.statusMessage = .authDenied
                 return
             }
             self?.monitorService.refreshState()
         }
+    }
+    
+    private func triggerInAppAlert(for rule: HeartRateAlertRule) {
+        guard !isAlerting else { return }
+        self.isAlerting = true
+        
+        switch rule.type {
+        case .light:
+            lightAlertCount += 1
+            WKInterfaceDevice.current().play(.success)
+        case .medium:
+            mediumAlertCount += 1
+            WKInterfaceDevice.current().play(.stop)
+        case .strong:
+            strongAlertCount += 1
+            WKInterfaceDevice.current().play(.failure)
+        }
+        
+        savePersistentCounts()
+        UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            self.isAlerting = false
+        }
+    }
+    
+    private func checkForDailyReset() {
+        let userDefaults = UserDefaults.standard
+        guard let lastDate = userDefaults.object(forKey: StorageKeys.lastAlertDate) as? Date else { return }
+        
+        if !Calendar.current.isDateInToday(lastDate) {
+            print("DEBUGY: New day detected. Resetting alert counters.")
+            strongAlertCount = 0
+            mediumAlertCount = 0
+            lightAlertCount = 0
+            savePersistentCounts()
+        }
+    }
+    
+    private func loadPersistentCounts() {
+        let userDefaults = UserDefaults.standard
+        strongAlertCount = userDefaults.integer(forKey: StorageKeys.strongAlertCount)
+        mediumAlertCount = userDefaults.integer(forKey: StorageKeys.mediumAlertCount)
+        lightAlertCount = userDefaults.integer(forKey: StorageKeys.lightAlertCount)
+    }
+    
+    private func savePersistentCounts() {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(strongAlertCount, forKey: StorageKeys.strongAlertCount)
+        userDefaults.set(mediumAlertCount, forKey: StorageKeys.mediumAlertCount)
+        userDefaults.set(lightAlertCount, forKey: StorageKeys.lightAlertCount)
     }
 }

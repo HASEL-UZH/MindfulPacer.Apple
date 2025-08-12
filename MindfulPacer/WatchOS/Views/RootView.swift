@@ -28,36 +28,62 @@ struct RootView: View {
     @StateObject private var navigationManager = NavigationManager.shared
     
     var body: some View {
-        VStack {
-            Image(systemName: viewModel.isMonitoring ? "heart.circle.fill" : "heart.slash.circle.fill")
-                .font(.largeTitle)
-                .foregroundColor(viewModel.isMonitoring ? .pink : .gray)
+        ZStack {
+            Circle()
+                .fill(Color.red.opacity(viewModel.isAlerting ? 0.3 : 0.0))
+                .scaleEffect(viewModel.isAlerting ? 3.0 : 0.5)
+                .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
             
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
-                    .font(.largeTitle.weight(.semibold))
-                Text("BPM")
-                    .font(.subheadline)
-                    .foregroundColor(.pink)
-            }
-            
-            Text(viewModel.statusMessage)
-                .font(.footnote)
-                .foregroundColor(.secondary)
-            
-            Spacer()
-            
-            if viewModel.isMonitoring {
-                Button {
-                    viewModel.isShowingActiveRules = true
-                } label: {
-                    Text("View Active Reminders")
+            VStack(alignment: .leading, spacing: 8) {
+                Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
+                    .foregroundStyle(viewModel.statusMessage.color)
+                
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
+                        .font(.largeTitle.bold())
+                        .scaleEffect(viewModel.isAlerting ? 1.2 : 1.0)
+                    Text("BPM")
+                        .font(.subheadline)
                 }
-                .tint(.brandPrimary)
-                .padding(.top)
+                .foregroundColor(viewModel.isAlerting ? .red : .primary)
+                .animation(.easeInOut, value: viewModel.isAlerting)
+                
+                HStack {
+                    Spacer()
+                    VStack(spacing: 8) {
+                        Text(String(viewModel.strongAlertCount))
+                            .font(.subheadline.weight(.semibold))
+                        Icon(name: "alarm.fill", color: .red, background: true)
+                    }
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    VStack(spacing: 8) {
+                        Text(String(viewModel.mediumAlertCount))
+                            .font(.subheadline.weight(.semibold))
+                        Icon(name: "alarm.fill", color: .orange, background: true)
+                    }
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    VStack(spacing: 8) {
+                        Text(String(viewModel.lightAlertCount))
+                            .font(.subheadline.weight(.semibold))
+                        Icon(name: "alarm.fill", color: .yellow, background: true)
+                    }
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                
+                Spacer()
             }
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding()
         .onAppear {
             viewModel.onAppear()
         }

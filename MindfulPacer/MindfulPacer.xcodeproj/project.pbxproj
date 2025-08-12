@@ -179,6 +179,8 @@
 		0DE097C22D95752000BE3D6A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */; };
 		0DE097C52D96AAC600BE3D6A /* MissedReflectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */; };
 		0DE097C82D96E23F00BE3D6A /* CardStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE097C72D96E23F00BE3D6A /* CardStack */; };
+		0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
+		0DE47A112E4B4A500052959C /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
@@ -1501,6 +1503,8 @@
 				0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */,
 				0D9351462D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
 				0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */,
+				0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */,
+				0DE47A112E4B4A500052959C /* Icon.swift in Sources */,
 				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,
 				0D500FCB2C7376A700395AEB /* Message.swift in Sources */,
 				0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
