@@ -181,6 +181,8 @@
 		0DE097C82D96E23F00BE3D6A /* CardStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE097C72D96E23F00BE3D6A /* CardStack */; };
 		0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0DE47A112E4B4A500052959C /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
+		0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A122E4B6E4D0052959C /* AppDelegate.swift */; };
+		0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A152E4B79BB0052959C /* AppleWatchView.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
@@ -368,6 +370,8 @@
 		0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsListView.swift; sourceTree = "<group>"; };
+		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
@@ -434,6 +438,7 @@
 		0D3006C62C943433008F11C7 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0DE47A142E4B79A70052959C /* Apple Watch */,
 				0DAC64D72DA2A3AE00BBB741 /* Algorithms */,
 				0DF93A812D53B3D100121308 /* Export */,
 				0DE097C32D96AA9300BE3D6A /* Missed Reflections List */,
@@ -1115,6 +1120,7 @@
 			isa = PBXGroup;
 			children = (
 				0D8C66332C2DA96000853EDE /* iOSApp.swift */,
+				0DE47A122E4B6E4D0052959C /* AppDelegate.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -1197,6 +1203,14 @@
 				0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */,
 			);
 			path = "Missed Reflections List";
+			sourceTree = "<group>";
+		};
+		0DE47A142E4B79A70052959C /* Apple Watch */ = {
+			isa = PBXGroup;
+			children = (
+				0DE47A152E4B79BB0052959C /* AppleWatchView.swift */,
+			);
+			path = "Apple Watch";
 			sourceTree = "<group>";
 		};
 		0DF93A812D53B3D100121308 /* Export */ = {
@@ -1368,6 +1382,7 @@
 				0D67F4372C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
 				0DC136A92D4E75C400001D08 /* OutreachView.swift in Sources */,
+				0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */,
 				0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */,
 				0DF93A922D58EFF300121308 /* StepsChartView.swift in Sources */,
 				0DD8F80A2D346D9B0024BFA8 /* MarkMissedReflectionAsActionedUseCase.swift in Sources */,
@@ -1376,6 +1391,7 @@
 				0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DC136B02D4E780100001D08 /* BlogService.swift in Sources */,
+				0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */,
 				0D1D71EC2D14551B00D5201E /* CheckInternetConnectivityUseCase.swift in Sources */,
 				0D3006D92C99823C008F11C7 /* Date+Extensions.swift in Sources */,
 				0D9E5F5B2C64BD17005BA46C /* Reflection.swift in Sources */,

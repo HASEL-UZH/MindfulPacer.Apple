@@ -258,6 +258,15 @@ class HomeViewModel {
                 }
             }
             .store(in: &cancellables) // Store the subscription to keep it alive
+        
+        WatchEventCoordinator.shared.requestCreateReflectionSheetSubject
+            .sink { [weak self] in
+                print("DEBUGY IPHONE: HomeViewModel received signal from coordinator. Presenting sheet.")
+                // Present the sheet with a nil Reflection, which your HomeView
+                // already knows means "create a new one".
+                self?.presentSheet(.editReflectionView(nil))
+            }
+            .store(in: &cancellables)
     }
     
     private func setupBindings() {

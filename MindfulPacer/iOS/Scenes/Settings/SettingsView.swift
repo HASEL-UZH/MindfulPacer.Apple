@@ -31,6 +31,7 @@ enum SettingsNavigationDestination: Hashable {
     case algorithms
     case theme
     case export
+    case appleWatch
 }
 
 // MARK: - SettingsView
@@ -52,6 +53,7 @@ struct SettingsView: View {
                 Section {
                     mindfulPacerExpanded
                     viewOnboarding
+                    appleWatch
                 } header: {
                     sectionHeader(title: String(localized: "General"))
                 }
@@ -116,6 +118,8 @@ struct SettingsView: View {
             ThemeSettingsView()
         case .export:
             ExportView(viewModel: viewModel)
+        case .appleWatch:
+            AppleWatchView(viewModel: viewModel)
         }
     }
     
@@ -390,6 +394,22 @@ struct SettingsView: View {
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
+    }
+    
+    // MARK: Apple Watch
+    
+    private var appleWatch: some View {
+        NavigationLink(value: SettingsNavigationDestination.appleWatch) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "applewatch",
+                    title: String(localized: "Apple Watch"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
     }
     
     // MARK: App Version

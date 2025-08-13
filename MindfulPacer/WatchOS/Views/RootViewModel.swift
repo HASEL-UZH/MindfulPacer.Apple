@@ -26,7 +26,8 @@ class RootViewModel {
     var activeRules: [HeartRateAlertRule] = []
     var isShowingActiveRules = false
     var isAlerting: Bool = false
-    
+    var alertColor: Color = .clear
+
     var strongAlertCount: Int = 0
     var mediumAlertCount: Int = 0
     var lightAlertCount: Int = 0
@@ -88,9 +89,15 @@ class RootViewModel {
         }
     }
     
+    func requestCreateReflectionOnPhone() {
+        print("DEBUGY WATCH: Button tapped. Calling SystemDelegate...")
+        SystemDelegate.shared.requestCreateReflectionOnPhone()
+    }
+    
     private func triggerInAppAlert(for rule: HeartRateAlertRule) {
         guard !isAlerting else { return }
         self.isAlerting = true
+        self.alertColor = rule.type.color
         
         switch rule.type {
         case .light:

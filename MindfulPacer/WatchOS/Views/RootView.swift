@@ -30,13 +30,25 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color.red.opacity(viewModel.isAlerting ? 0.3 : 0.0))
+                .fill(viewModel.alertColor.opacity(viewModel.isAlerting ? 0.3 : 0.0))
                 .scaleEffect(viewModel.isAlerting ? 3.0 : 0.5)
                 .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
             
             VStack(alignment: .leading, spacing: 8) {
-                Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
-                    .foregroundStyle(viewModel.statusMessage.color)
+                if viewModel.statusMessage == .monitoring {
+                    Button {
+                        viewModel.isShowingActiveRules = true
+                    } label: {
+                        Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
+                            .foregroundStyle(viewModel.statusMessage.color)
+                            .symbolVariant(.fill)
+                    }
+                    .buttonStyle(.borderless)
+                } else {
+                    Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
+                        .foregroundStyle(viewModel.statusMessage.color)
+                        .symbolVariant(.fill)
+                }
                 
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
@@ -78,6 +90,11 @@ struct RootView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(Color.primary.opacity(0.1))
+                }
                 
                 Spacer()
             }

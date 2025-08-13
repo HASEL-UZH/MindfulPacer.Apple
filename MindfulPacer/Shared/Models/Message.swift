@@ -14,6 +14,7 @@ enum MessageCommand: String {
     case triggerLocalNotification
     case remindersUpdated
     case createReflection
+    case requestCreateReflection
 }
 
 // MARK: - MessageKeys

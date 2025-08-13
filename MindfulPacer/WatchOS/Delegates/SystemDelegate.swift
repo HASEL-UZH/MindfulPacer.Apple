@@ -9,7 +9,9 @@ import Foundation
 import UserNotifications
 import WatchConnectivity
 
-class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate, WCSessionDelegate {
+class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate, WCSessionDelegate, @unchecked Sendable {
+    
+    static let shared = SystemDelegate()
     
     @MainActor
     func userNotificationCenter(
@@ -40,7 +42,23 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         completionHandler()
     }
     
-    nonisolated func session(
+    func requestCreateReflectionOnPhone() {
+            print("DEBUGY WATCH: SystemDelegate's request method called.")
+            
+            guard WCSession.default.isReachable else {
+                print("DEBUGY WATCH: ERROR - iPhone is not reachable. Message will NOT be sent.")
+                return
+            }
+            
+        print("DEBUGY WATCH: iPhone is reachable. Sending message...")
+        let message: [String: Any] = [MessageKeys.command: MessageCommand.requestCreateReflection.rawValue]
+        
+        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+            print("DEBUGY WATCH: ERROR - sendMessage failed with error: \(error.localizedDescription)")
+        }
+    }
+    
+    func session(
         _ session: WCSession,
         activationDidCompleteWith activationState: WCSessionActivationState,
         error: Error?
@@ -52,7 +70,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
     }
     
-    nonisolated func session(
+    func session(
         _ session: WCSession,
         didReceiveMessage message: [String: Any]
     ) {

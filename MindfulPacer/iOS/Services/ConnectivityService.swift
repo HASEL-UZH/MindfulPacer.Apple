@@ -14,6 +14,7 @@ class WatchEventCoordinator {
     
     static let shared = WatchEventCoordinator()
     let createReflectionSubject = PassthroughSubject<[(value: Double, date: Date)], Never>()
+    let requestCreateReflectionSheetSubject = PassthroughSubject<Void, Never>()
     
     private init() {}
 }
@@ -33,7 +34,7 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
     private override init() {
         super.init()
     }
-        
+    
     func sessionDidBecomeInactive(_ session: WCSession) {}
     func sessionDidDeactivate(_ session: WCSession) {}
     
@@ -46,6 +47,8 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        print("DEBUGY IPHONE: didReceiveMessage called with message: \(message)")
+
         guard let commandString = message[MessageKeys.command] as? String,
               let command = MessageCommand(rawValue: commandString) else {
             return
@@ -64,6 +67,11 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
                 Task { @MainActor in
                     WatchEventCoordinator.shared.createReflectionSubject.send(heartRateData)
                 }
+            }
+        } else if command == .requestCreateReflection {
+            print("DEBUGY IPHONE: Correct 'requestCreateReflection' command received. Sending to coordinator.")
+            Task { @MainActor in
+                WatchEventCoordinator.shared.requestCreateReflectionSheetSubject.send()
             }
         }
     }
