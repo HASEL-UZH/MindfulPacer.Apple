@@ -12,6 +12,12 @@ struct ReminderCell: View {
     
     var body: some View {
         HStack(spacing: 16) {
+            Icon(
+                name: "alarm",
+                color: .yellow,
+                background: true
+            )
+            
             VStack(alignment: .leading, spacing: 8) {
                 IconLabel(
                     icon: "heart.fill",
@@ -19,21 +25,13 @@ struct ReminderCell: View {
                     labelColor: .pink
                 )
                 .font(.subheadline.weight(.semibold))
-
+                
                 Text("Above 90 bpm for 10 min")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
             }
-
-            Spacer()
-
-            Icon(
-                name: "alarm",
-                color: .yellow,
-                background: true
-            )
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .foregroundStyle(Color.primary)
     }
 }

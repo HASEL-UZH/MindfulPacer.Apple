@@ -21,7 +21,7 @@ enum StatusMessage: String {
     case initializing = "Initializing..."
     case authDenied = "Auth Denied"
     case collectionFailed = "Collection Failed"
-    case monitoring = "Monitoring"
+    case monitoring = "Monitoring Active"
     case sessionFailed = "Session Failed"
     case stopped = "Stopped"
     case syncing = "Syncing..."
@@ -51,7 +51,7 @@ enum StatusMessage: String {
         case .initializing: return .orange
         case .authDenied: return .red
         case .collectionFailed: return .red
-        case .monitoring: return .green
+        case .monitoring: return .brandPrimary
         case .sessionFailed: return .red
         case .stopped: return .gray
         case .syncing: return .cyan
@@ -188,7 +188,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
         }
         
         let configuration = HKWorkoutConfiguration()
-        configuration.activityType = .other
+        configuration.activityType = .walking
         configuration.locationType = .unknown
         
         do {

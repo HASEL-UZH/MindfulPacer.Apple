@@ -12,11 +12,11 @@ import SwiftUI
 struct RemindersListView: View {
     
     // MARK: Properties
-
+    
     @Bindable var viewModel: HomeViewModel
-
+    
     // MARK: Body
-
+    
     var body: some View {
         VStack {
             if viewModel.reminders.isEmpty {
@@ -29,12 +29,6 @@ struct RemindersListView: View {
                             ReminderCell(reminder: reminder) {
                                 viewModel.presentSheet(.createReminderView(reminder))
                             }
-                        }
-                    }
-                    
-                    Section {
-                        PrimaryButton(title: "Sync with Watch", icon: "applewatch.radiowaves.left.and.right") {
-                            WatchUpdateService.shared.notifyWatchOfReminderChange()
                         }
                     }
                 }
@@ -53,9 +47,9 @@ struct RemindersListView: View {
             }
         }
     }
-
+    
     // MARK: Reminders Empty State
-
+    
     var remindersEmptyState: some View {
         VStack(alignment: .leading, spacing: 16) {
             ContentUnavailableView {
@@ -79,7 +73,7 @@ struct RemindersListView: View {
 
 #Preview {
     let viewModel = ScenesContainer.shared.homeViewModel()
-
+    
     NavigationStack {
         RemindersListView(viewModel: viewModel)
     }
