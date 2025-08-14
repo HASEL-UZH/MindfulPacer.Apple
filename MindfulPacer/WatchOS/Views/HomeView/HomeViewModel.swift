@@ -1,14 +1,15 @@
 //
-//  RootViewModel.swift
+//  HomeViewModel.swift
 //  WatchOS
 //
-//  Created by Grigor Dochev on 09.08.2025.
+//  Created by Grigor Dochev on 14.08.2025.
 //
 
 import Foundation
 import Combine
 import WatchKit
 import SwiftUI
+import SwiftData
 
 struct StorageKeys {
     static let strongAlertCount = "strongAlertCount"
@@ -19,7 +20,7 @@ struct StorageKeys {
 
 @MainActor
 @Observable
-class RootViewModel {
+class HomeViewModel {
     var statusMessage: StatusMessage = .initializing
     var heartRate: Double = 0
     var isMonitoring: Bool = false
@@ -36,48 +37,45 @@ class RootViewModel {
     private var cancellables = Set<AnyCancellable>()
     private let fetchRemindersUseCase: FetchRemindersUseCase
     
-    init(fetchRemindersUseCase: FetchRemindersUseCase) {
-        self.fetchRemindersUseCase = fetchRemindersUseCase
-        monitorService.configure(fetchRemindersUseCase: fetchRemindersUseCase)
+    init() {
+        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext)
+        
+        monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
         
         loadPersistentCounts()
         checkForDailyReset()
         
+        setupSubscriptions()
+    }
+    
+    private func setupSubscriptions() {
         monitorService.$statusMessage
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newStatus in
-                self?.statusMessage = newStatus
-            }
+            .sink { [weak self] newStatus in self?.statusMessage = newStatus }
             .store(in: &cancellables)
         
         monitorService.$heartRate
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newHeartRate in
-                self?.heartRate = newHeartRate
-            }
+            .sink { [weak self] newHeartRate in self?.heartRate = newHeartRate }
             .store(in: &cancellables)
         
         monitorService.$isSessionActive
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newIsMonitoring in
-                self?.isMonitoring = newIsMonitoring
-            }
+            .sink { [weak self] newIsMonitoring in self?.isMonitoring = newIsMonitoring }
             .store(in: &cancellables)
         
         monitorService.$activeRules
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newRules in
-                self?.activeRules = newRules
-            }
+            .sink { [weak self] newRules in self?.activeRules = newRules }
             .store(in: &cancellables)
         
         monitorService.alertTriggeredSubject
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] rule in
-                self?.triggerInAppAlert(for: rule)
-            }
+            .sink { [weak self] rule in self?.triggerInAppAlert(for: rule) }
             .store(in: &cancellables)
     }
+    
+    // --- View Events ---
     
     func onAppear() {
         monitorService.requestAuthorization { [weak self] isAuthorized in
@@ -90,9 +88,10 @@ class RootViewModel {
     }
     
     func requestCreateReflectionOnPhone() {
-        print("DEBUGY WATCH: Button tapped. Calling SystemDelegate...")
         SystemDelegate.shared.requestCreateReflectionOnPhone()
     }
+    
+    // --- Private Logic ---
     
     private func triggerInAppAlert(for rule: HeartRateAlertRule) {
         guard !isAlerting else { return }
@@ -105,7 +104,7 @@ class RootViewModel {
             WKInterfaceDevice.current().play(.success)
         case .medium:
             mediumAlertCount += 1
-            WKInterfaceDevice.current().play(.stop)
+            WKInterfaceDevice.current().play(.click)
         case .strong:
             strongAlertCount += 1
             WKInterfaceDevice.current().play(.failure)
@@ -124,7 +123,6 @@ class RootViewModel {
         guard let lastDate = userDefaults.object(forKey: StorageKeys.lastAlertDate) as? Date else { return }
         
         if !Calendar.current.isDateInToday(lastDate) {
-            print("DEBUGY: New day detected. Resetting alert counters.")
             strongAlertCount = 0
             mediumAlertCount = 0
             lightAlertCount = 0

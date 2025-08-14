@@ -11,6 +11,7 @@ import SwiftData
 import UserNotifications
 import Combine
 import SwiftUI
+import CoreData
 
 enum StatusMessage: String {
     case notConfigured = "Not Configured"
@@ -23,7 +24,8 @@ enum StatusMessage: String {
     case monitoring = "Monitoring"
     case sessionFailed = "Session Failed"
     case stopped = "Stopped"
-
+    case syncing = "Syncing..."
+    
     var symbolName: String {
         switch self {
         case .notConfigured: return "exclamationmark.triangle"
@@ -36,9 +38,10 @@ enum StatusMessage: String {
         case .monitoring: return "waveform.path.ecg"
         case .sessionFailed: return "exclamationmark.octagon"
         case .stopped: return "stop.circle"
+        case .syncing: return "arrow.triangle.2.circlepath.circle"
         }
     }
-
+    
     var color: Color {
         switch self {
         case .notConfigured: return .yellow
@@ -51,6 +54,7 @@ enum StatusMessage: String {
         case .monitoring: return .green
         case .sessionFailed: return .red
         case .stopped: return .gray
+        case .syncing: return .cyan
         }
     }
 }
@@ -85,9 +89,22 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     private var alertDataCache: [UUID: [(value: Double, date: Date)]] = [:]
     
     let alertTriggeredSubject = PassthroughSubject<HeartRateAlertRule, Never>()
-
+    private var cancellables = Set<AnyCancellable>()
+    
     private override init() {
         super.init()
+        
+        subscribeToCloudKitChanges()
+    }
+    
+    private func subscribeToCloudKitChanges() {
+        NotificationCenter.default.publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("DEBUGY: CloudKit data change detected. Refreshing state from new data.")
+                self?.refreshState()
+            }
+            .store(in: &cancellables)
     }
     
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
@@ -128,10 +145,15 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     func refreshState() {
         print("DEBUGY: Refreshing state triggered.")
         
-        // ✅ THE FIX: Call updateMonitoringRules and capture its boolean result.
         let hasRules = updateMonitoringRules()
         
-        // ✅ Pass that result to the next function.
+        if isSessionActive {
+            self.statusMessage = .monitoring
+        } else {
+            self.statusMessage = hasRules ? .ready : .noHRReminders
+        }
+        print("DEBUGY: Final status set to: \(self.statusMessage.rawValue)")
+        
         _startOrStopMonitoring(hasRules: hasRules)
     }
     
@@ -154,10 +176,7 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
             )
         }
         
-        // ✅ THE FIX: Update properties directly and synchronously. No more DispatchQueue.
         self.activeRules = newRules
-        self.statusMessage = self.activeRules.isEmpty ? .noHRReminders : .ready
-        print("DEBUGY: Rules updated. Found \(self.activeRules.count) rules. Status set to: \(self.statusMessage)")
         
         return !self.activeRules.isEmpty
     }
@@ -281,25 +300,24 @@ final class HeartRateMonitorService: NSObject, ObservableObject, HKWorkoutSessio
     private func sendNotification(for rule: HeartRateAlertRule) {
         let alertID = UUID()
         alertDataCache[alertID] = rule.collectedData
-
+        
         let content = UNMutableNotificationContent()
         content.title = "Heart Rate Alert"
         content.body = rule.alertMessage
         content.sound = .defaultCritical
         content.categoryIdentifier = "HEART_RATE_ALERT"
         content.userInfo = ["alert_id": alertID.uuidString]
-
+        
         let request = UNNotificationRequest(
             identifier: alertID.uuidString,
             content: content,
             trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         )
         UNUserNotificationCenter.current().add(request)
-
-        // ✅ Deep copy to avoid sharing mutable array storage
+        
         var safeRule = rule
         safeRule.collectedData = Array(rule.collectedData)
-
+        
         DispatchQueue.main.async {
             self.alertTriggeredSubject.send(safeRule)
         }

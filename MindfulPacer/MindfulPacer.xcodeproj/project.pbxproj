@@ -186,6 +186,9 @@
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
+		0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */; };
+		0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */; };
+		0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */; };
 		0DF93A802D53AFEF00121308 /* RoadmapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */; };
 		0DF93A852D53B3F500121308 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A842D53B3F500121308 /* ExportView.swift */; };
 		0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */; };
@@ -374,6 +377,9 @@
 		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCell.swift; sourceTree = "<group>"; };
+		0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
 		0DF93A842D53B3F500121308 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
@@ -522,11 +528,11 @@
 		0D352C842E48ABFE0039055F /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */,
-				0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */,
+				0DF5EDA32E4DF4F9005DB9DE /* RootView */,
+				0DF5EDA42E4DF4FE005DB9DE /* HomeView */,
+				0DF5EDA22E4DF4EC005DB9DE /* ActiveReminders */,
 				0D352C7B2E475A790039055F /* HeartRateDetailView.swift */,
-				0D352C6B2E474E0F0039055F /* RootView.swift */,
-				0D352C6D2E474E220039055F /* RootViewModel.swift */,
+				0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1213,6 +1219,33 @@
 			path = "Apple Watch";
 			sourceTree = "<group>";
 		};
+		0DF5EDA22E4DF4EC005DB9DE /* ActiveReminders */ = {
+			isa = PBXGroup;
+			children = (
+				0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */,
+				0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */,
+			);
+			path = ActiveReminders;
+			sourceTree = "<group>";
+		};
+		0DF5EDA32E4DF4F9005DB9DE /* RootView */ = {
+			isa = PBXGroup;
+			children = (
+				0D352C6B2E474E0F0039055F /* RootView.swift */,
+				0D352C6D2E474E220039055F /* RootViewModel.swift */,
+			);
+			path = RootView;
+			sourceTree = "<group>";
+		};
+		0DF5EDA42E4DF4FE005DB9DE /* HomeView */ = {
+			isa = PBXGroup;
+			children = (
+				0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */,
+				0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */,
+			);
+			path = HomeView;
+			sourceTree = "<group>";
+		};
 		0DF93A812D53B3D100121308 /* Export */ = {
 			isa = PBXGroup;
 			children = (
@@ -1497,6 +1530,7 @@
 				0DD858952C71468700061F63 /* ConnectivityError.swift in Sources */,
 				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0D352C822E4891560039055F /* SystemDelegate.swift in Sources */,
+				0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */,
 				0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */,
 				0D352C6E2E474E220039055F /* RootViewModel.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
@@ -1505,6 +1539,7 @@
 				0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
+				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
 				0D9E5F5D2C64BE56005BA46C /* Reflection.swift in Sources */,
@@ -1519,6 +1554,7 @@
 				0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */,
 				0D9351462D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
 				0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */,
+				0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */,
 				0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */,
 				0DE47A112E4B4A500052959C /* Icon.swift in Sources */,
 				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,

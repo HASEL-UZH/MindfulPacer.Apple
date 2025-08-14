@@ -70,7 +70,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
     }
     
-    func session(
+    nonisolated func session(
         _ session: WCSession,
         didReceiveMessage message: [String: Any]
     ) {
@@ -79,10 +79,12 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             
             switch messageCommand {
             case .remindersUpdated:
-                print("SystemDelegate: Received 'remindersUpdated' command.")
+                print("SystemDelegate: Received 'remindersUpdated' command (doorbell).")
                 Task { @MainActor in
-                    HeartRateMonitorService.shared.refreshState()
+                    print("DEBUGY: Setting status to Syncing.")
+                    HeartRateMonitorService.shared.statusMessage = .syncing
                 }
+                
             default:
                 break
             }

@@ -1,30 +1,18 @@
 //
-//  RootView.swift
+//  HomeView.swift
 //  WatchOS
 //
-//  Created by Grigor Dochev on 09.08.2025.
+//  Created by Grigor Dochev on 14.08.2025.
 //
 
-import Foundation
 import SwiftUI
 import SwiftData
 
-extension UUID: @retroactive Identifiable {
-    public var id: UUID {
-        self
-    }
-}
-
-@MainActor
-class NavigationManager: ObservableObject {
-    static let shared = NavigationManager()
-    @Published var selectedAlertID: UUID?
+struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext
     
-    private init() {}
-}
+    @State private var viewModel: HomeViewModel = HomeViewModel()
 
-struct RootView: View {
-    @State private var viewModel = RootViewModel(fetchRemindersUseCase: DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext))
     @StateObject private var navigationManager = NavigationManager.shared
     
     var body: some View {
@@ -57,7 +45,7 @@ struct RootView: View {
                     Text("BPM")
                         .font(.subheadline)
                 }
-                .foregroundColor(viewModel.isAlerting ? .red : .primary)
+                .foregroundColor(viewModel.isAlerting ? viewModel.alertColor : .primary)
                 .animation(.easeInOut, value: viewModel.isAlerting)
                 
                 HStack {
@@ -114,5 +102,5 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    HomeView()
 }
