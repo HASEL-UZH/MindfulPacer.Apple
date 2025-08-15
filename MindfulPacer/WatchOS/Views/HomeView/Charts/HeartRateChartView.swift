@@ -84,12 +84,12 @@ struct HeartRateChartView: View {
                     Spacer()
                 }
             } else {
-                Spacer()
-                Text("Start a monitoring session to see your heart rate chart.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                Spacer()
+                ContentUnavailableView(
+                    "No Data",
+                    systemImage: "chart.xyaxis.line",
+                    description: Text("Please check the monitoring status.")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -98,5 +98,6 @@ struct HeartRateChartView: View {
 }
 
 #Preview {
-    HeartRateChartView(viewModel: .mock)
+    //    HeartRateChartView(viewModel: .mock)
+    HeartRateChartView(viewModel: HomeViewModel())
 }

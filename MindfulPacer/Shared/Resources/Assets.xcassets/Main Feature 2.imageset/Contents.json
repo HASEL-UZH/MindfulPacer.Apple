@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Main Feature 1 - Light.png",
+      "filename" : "main_feature_2_light.png",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Main Feature 1 - Dark.png",
+      "filename" : "main_feature_2_dark.png",
       "idiom" : "universal"
     }
   ],

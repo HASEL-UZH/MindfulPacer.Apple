@@ -128,6 +128,8 @@ private struct IntervalSliderView: View {
         let lowerBound = max(0, buffer - delta)
         let upperBound: Double
         switch interval {
+        case .oneMinute:
+            return 0...5
         case .immediately:
             return 0...10        // Special case: 0 to 10 seconds
         case .oneDay:

@@ -40,9 +40,10 @@ extension OnboardingView {
                         ) {
                             Image(feature.image)
                                 .resizable()
-                                .scaledToFit()
-                                .frame(height: 200)
-                                .frame(maxWidth: .infinity, alignment: .center)
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 350, alignment: .top)
+                                .clipped()
+                                .padding(.horizontal)
                             
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(feature.points, id: \.self) { point in

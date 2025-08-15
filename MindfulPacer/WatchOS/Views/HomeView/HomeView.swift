@@ -128,7 +128,7 @@ struct HomeView: View {
                     Button {
                         viewModel.showAppInfo.toggle()
                     } label: {
-                        Icon(name: "info", color: .secondary, background: true)
+                        Icon(image: "MindfulPacer Icon", background: true)
                     }
                     .buttonStyle(.borderless)
                     .alert("App Info", isPresented: $viewModel.showAppInfo) {
@@ -215,4 +215,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView(viewModel: .mock)
+        .environmentObject(NavigationManager.shared)
 }

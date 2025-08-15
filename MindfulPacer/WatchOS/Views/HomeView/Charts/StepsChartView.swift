@@ -79,12 +79,12 @@ struct StepsChartView: View {
                     Spacer()
                 }
             } else {
-                Spacer()
-                Text("Step data from the last hour will be shown here.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                Spacer()
+                ContentUnavailableView(
+                    "No Data",
+                    systemImage: "chart.xyaxis.line",
+                    description: Text("Please check the monitoring status.")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

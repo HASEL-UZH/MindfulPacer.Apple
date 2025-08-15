@@ -358,7 +358,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     // Updated default buffers based on DELAY_MAPPING (converted from minutes to seconds)
     private let defaultBuffers: [Reminder.Interval: TimeInterval] = [
         .immediately: 0,         // None (0 seconds)
-        .oneMinute: 30,
+        .oneMinute: 5,
         .fiveMinutes: 60,        // 1 minute = 60 seconds
         .tenMinutes: 120,        // 2 minutes = 120 seconds
         .fifteenMinutes: 180,    // 3 minutes = 180 seconds
