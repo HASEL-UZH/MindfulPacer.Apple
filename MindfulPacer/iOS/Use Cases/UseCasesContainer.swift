@@ -82,7 +82,7 @@ extension UseCasesContainer {
 
     @MainActor
     var createReflectionUseCase: Factory<CreateReflectionUseCase> {
-        self { DefaulCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor

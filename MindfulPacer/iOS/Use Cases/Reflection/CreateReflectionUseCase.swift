@@ -32,7 +32,7 @@ protocol CreateReflectionUseCase {
 
 // MARK: - Use Case Implementation
 
-class DefaulCreateReflectionUseCase: CreateReflectionUseCase {
+class DefaultCreateReflectionUseCase: CreateReflectionUseCase {
     private let modelContext: ModelContext
     
     init(modelContext: ModelContext) {

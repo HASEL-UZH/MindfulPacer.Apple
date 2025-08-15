@@ -18,6 +18,16 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     private var createReflectionUseCase: CreateReflectionUseCase?
     
     @MainActor
+    func configure() {
+        guard self.fetchRemindersUseCase == nil else { return }
+        
+        print("DEBUGY: Configuring SystemDelegate with use cases.")
+        let modelContext = ModelContainer.prod.mainContext
+        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
+        self.createReflectionUseCase = DefaultCreateReflectionUseCase(modelContext: modelContext)
+    }
+    
+    @MainActor
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -36,11 +46,12 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             print("DEBUGY DELEGATE: 'ACCEPT_ADD_DETAILS_ACTION' received. Setting navigation manager.")
             if let _ = createReflectionFromNotification(reminderID: reminderID) {
                 NavigationManager.shared.reminderIDForActivitySelection = reminderID
+            } else {
+                print("DEBUGY: Could not create reflection from notification")
             }
             
         case "ACCEPT_LATER_ACTION":
             _ = createReflectionFromNotification(reminderID: reminderID)
-            
         default:
             break
         }
@@ -116,7 +127,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             "reflection_id": reflectionID.uuidString
         ]
         
-        // Add the IDs to the message dictionary if they exist.
         if let activityID = activityID {
             message["activity_id"] = activityID.uuidString
         }
@@ -158,7 +168,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
     }
     
-    nonisolated func session(
+    func session(
         _ session: WCSession,
         didReceiveMessage message: [String: Any]
     ) {

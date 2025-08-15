@@ -128,7 +128,7 @@ class HomeViewModel {
     
     init() {
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext)
-        
+        SystemDelegate.shared.configure()
         monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
         
         loadPersistentCounts()

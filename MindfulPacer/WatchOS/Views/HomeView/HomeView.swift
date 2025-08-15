@@ -29,8 +29,8 @@ enum HomePage {
 
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
-    @StateObject private var navigationManager = NavigationManager.shared
-    
+    @EnvironmentObject private var navigationManager: NavigationManager
+
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage

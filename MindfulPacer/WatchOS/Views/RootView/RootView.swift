@@ -10,7 +10,6 @@ import SwiftUI
 @MainActor
 class NavigationManager: ObservableObject {
     static let shared = NavigationManager()
-    @Published var selectedAlertID: UUID?
     @Published var reminderIDForActivitySelection: UUID? {
         didSet {
             if let id = reminderIDForActivitySelection {

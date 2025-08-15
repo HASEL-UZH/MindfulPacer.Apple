@@ -13,8 +13,9 @@ import WatchConnectivity
 @main
 struct WatchOSApp: App {
     
-    private let systemDelegate = SystemDelegate()
-    
+    @StateObject private var navigationManager = NavigationManager.shared
+    private let systemDelegate = SystemDelegate.shared
+
     init() {
         UNUserNotificationCenter.current().delegate = systemDelegate
         WCSession.default.delegate = systemDelegate
@@ -29,6 +30,7 @@ struct WatchOSApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(navigationManager)
         }
     }
     
