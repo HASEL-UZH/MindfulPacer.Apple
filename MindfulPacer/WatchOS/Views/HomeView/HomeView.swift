@@ -30,7 +30,6 @@ enum HomePage {
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @StateObject private var navigationManager = NavigationManager.shared
-    @State private var showActiveAlertsView: Bool = false
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
@@ -45,13 +44,13 @@ struct HomeView: View {
         }
         .tabViewStyle(.carousel)
         .onAppear {
+            print("DEBUGY VIEW: HomeView appeared. Current reminderID for sheet is \(String(describing: navigationManager.reminderIDForActivitySelection))")
             viewModel.onAppear()
+            
+            if navigationManager.reminderIDForActivitySelection != nil {}
         }
-        .sheet(item: $navigationManager.selectedAlertID) { alertID in
-            HeartRateDetailView(alertID: alertID)
-        }
-        .sheet(isPresented: $showActiveAlertsView) {
-            ActiveAlertsView(viewModel: viewModel)
+        .sheet(item: $navigationManager.reminderIDForActivitySelection) { reminderID in
+            SelectActivityView(reminderID: reminderID)
         }
     }
     
@@ -63,26 +62,7 @@ struct HomeView: View {
                 .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
             
             VStack(alignment: .leading) {
-                HStack {
-                    VStack {
-                        Image(.mindfulPacerIcon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-
-                    BatteryView()
-                        .padding()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background {
-                            RoundedRectangle(cornerRadius: 16)
-                                .foregroundStyle(.primary.opacity(0.1))
-                        }
-                }
-                .frame(maxHeight: .infinity)
-                
-                HStack {
+                VStack {
                     Button {
                         viewModel.selectedTab = .heartRateChart
                     } label: {
@@ -98,7 +78,75 @@ struct HomeView: View {
                     .buttonStyle(.plain)
                 }
                 
-                statusWidget
+                HStack {
+                    Button {
+                        viewModel.showStatusInfo.toggle()
+                    } label: {
+                        Icon(name: viewModel.statusMessage.symbolName, color: viewModel.statusMessage.color, background: true)
+                    }
+                    .buttonStyle(.borderless)
+                    .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(
+                            """
+                            \(viewModel.statusMessage.rawValue)
+                            \(viewModel.statusMessage.description)
+                            """
+                        )
+                    }
+                   
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    Button {
+                        viewModel.showBatteryInfo.toggle()
+                    } label: {
+                        Icon(
+                            name: viewModel.batteryImageName,
+                            color: viewModel.batteryTintColor,
+                            background: true
+                        )
+                    }
+                    .buttonStyle(.borderless)
+                    .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(
+                            """
+                            Percentage: \(Int(viewModel.batteryLevel * 100))%
+                            ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
+                            """
+                        )
+                    }
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    Button {
+                        viewModel.showAppInfo.toggle()
+                    } label: {
+                        Icon(name: "info", color: .secondary, background: true)
+                    }
+                    .buttonStyle(.borderless)
+                    .alert("App Info", isPresented: $viewModel.showAppInfo) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(
+                            """
+                            App Version: \(AppInfoService.appVersion)
+                            Build Number: \(AppInfoService.buildNumber)
+                            """
+                        )
+                    }
+                }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(.primary.opacity(0.1))
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -106,37 +154,26 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    @ViewBuilder
-    private var statusWidget: some View {
-        if viewModel.statusMessage == .monitoring {
-            Button {
-                showActiveAlertsView = true
-            } label: {
-                Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
-                    .font(.footnote)
-                    .foregroundStyle(viewModel.statusMessage.color)
-                    .symbolVariant(.fill)
-            }
-            .buttonStyle(.borderless)
-            .frame(maxWidth: .infinity, alignment: .center)
-        } else {
-            Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
-                .font(.footnote)
-                .foregroundStyle(viewModel.statusMessage.color)
-                .symbolVariant(.fill)
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-    }
-    
     private var currentHeartRateWidget: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        HStack(alignment: .top, spacing: 8) {
             Icon(name: "heart.fill", color: .pink, background: true)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
-                    .font(.system(.title3, weight: .bold))
-                    .scaleEffect(viewModel.isAlerting ? 1.2 : 1.0)
-                
+
+            VStack(alignment: .leading) {
+                if viewModel.isMonitoring {
+                    Text("")
+                        .modifier(
+                            AnimatedNumberModifier(
+                                value: viewModel.heartRate,
+                                font: .system(.title2, weight: .bold)
+                            )
+                        )
+                        .scaleEffect(viewModel.isAlerting ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.4), value: viewModel.heartRate)
+                } else {
+                    Text("--")
+                        .font(.system(.title2, weight: .bold))
+                }
+
                 Text("bpm")
                     .font(.system(.footnote))
                     .foregroundStyle(.secondary)
@@ -153,12 +190,12 @@ struct HomeView: View {
     }
     
     private var currentStepsWidget: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        HStack(alignment: .top, spacing: 8) {
             Icon(name: "figure.walk", color: .teal, background: true)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading) {
                 Text(viewModel.todaysSteps, format: .number)
-                    .font(.system(.title3, weight: .bold))
+                    .font(.system(.title2, weight: .bold))
                 
                 Text("steps")
                     .font(.system(.footnote))
@@ -167,7 +204,7 @@ struct HomeView: View {
         }
         .foregroundColor(viewModel.isAlerting ? viewModel.alertColor : .primary)
         .animation(.easeInOut, value: viewModel.isAlerting)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 16)

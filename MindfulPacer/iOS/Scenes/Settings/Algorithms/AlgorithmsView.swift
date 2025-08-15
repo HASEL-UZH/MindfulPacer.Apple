@@ -142,6 +142,8 @@ private struct IntervalSliderView: View {
         switch interval {
         case .immediately:
             return 1             // 1-second steps
+        case .oneMinute:
+            return 5
         case .fiveMinutes, .tenMinutes, .fifteenMinutes:
             return 5             // 5-second steps
         case .thirtyMinutes:
@@ -158,7 +160,7 @@ private struct IntervalSliderView: View {
     private func formattedTime(_ seconds: Double) -> String {
         let totalSeconds = Int(seconds)
         switch interval {
-        case .immediately, .fiveMinutes, .tenMinutes, .fifteenMinutes:
+        case .immediately, .oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes:
             return "\(totalSeconds) sec"
         case .thirtyMinutes, .oneHour:
             let minutes = totalSeconds / 60
@@ -179,7 +181,7 @@ private struct IntervalSliderView: View {
     private func formattedBuffer(_ seconds: Double) -> String {
         let totalSeconds = Int(seconds)
         switch interval {
-        case .immediately, .fiveMinutes, .tenMinutes, .fifteenMinutes:
+        case .immediately, .oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes:
             return "\(totalSeconds) sec"
         case .thirtyMinutes, .oneHour:
             let minutes = totalSeconds / 60

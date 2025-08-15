@@ -11,6 +11,15 @@ import SwiftUI
 class NavigationManager: ObservableObject {
     static let shared = NavigationManager()
     @Published var selectedAlertID: UUID?
+    @Published var reminderIDForActivitySelection: UUID? {
+        didSet {
+            if let id = reminderIDForActivitySelection {
+                print("DEBUGY NAV: reminderIDForActivitySelection was SET to \(id)")
+            } else {
+                print("DEBUGY NAV: reminderIDForActivitySelection was set to NIL")
+            }
+        }
+    }
     private init() {}
 }
 

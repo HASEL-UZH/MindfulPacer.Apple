@@ -25,15 +25,21 @@ class HomeViewModel {
     var heartRate: Double = 0
     var isMonitoring: Bool = false
     var isShowingActiveRules = false
+    var isShowingAppInfoSheet = false
     var isAlerting: Bool = false
     var alertColor: Color = .clear
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
     var selectedTab: HomePage = .main
-
+    var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
+    
+    var showAppInfo: Bool = false
+    var showBatteryInfo: Bool = false
+    var showStatusInfo: Bool = false
+    
     var heartRateSamples: [(value: Double, date: Date)] = []
     var hourlyStepData: [(date: Date, steps: Double)] = []
-
+    
     var strongAlertCount: Int = 0
     var mediumAlertCount: Int = 0
     var lightAlertCount: Int = 0
@@ -219,6 +225,20 @@ class HomeViewModel {
             await fetchTodaysSteps()
             await fetchChartData()
         }
+        
+        let device = WKInterfaceDevice.current()
+        device.isBatteryMonitoringEnabled = true
+        updateBattery()
+        
+        NotificationCenter.default.addObserver(
+            forName: Notification.Name("WKInterfaceDeviceBatteryLevelDidChangeNotification"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            Task { @MainActor in
+                self.updateBattery()
+            }
+        }
     }
     
     func requestCreateReflectionOnPhone() {
@@ -283,6 +303,28 @@ class HomeViewModel {
         userDefaults.set(strongAlertCount, forKey: StorageKeys.strongAlertCount)
         userDefaults.set(mediumAlertCount, forKey: StorageKeys.mediumAlertCount)
         userDefaults.set(lightAlertCount, forKey: StorageKeys.lightAlertCount)
+    }
+    
+    private func updateBattery() {
+        batteryLevel = WKInterfaceDevice.current().batteryLevel
+    }
+    
+    var batteryImageName: String {
+        switch batteryLevel {
+        case 0.75...: return "battery.100percent"
+        case 0.5..<0.75: return "battery.75percent"
+        case 0.25..<0.5: return "battery.50percent"
+        case 0.01..<0.25: return "battery.25percent"
+        default: return "battery.0percent"
+        }
+    }
+    
+    var batteryTintColor: Color {
+        switch batteryLevel {
+        case ..<0.2: return .red
+        case ..<0.5: return .yellow
+        default: return .green
+        }
     }
 }
 

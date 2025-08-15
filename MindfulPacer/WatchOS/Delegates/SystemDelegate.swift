@@ -8,10 +8,14 @@
 import Foundation
 import UserNotifications
 import WatchConnectivity
+import SwiftData
 
 class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate, WCSessionDelegate, @unchecked Sendable {
     
     static let shared = SystemDelegate()
+    
+    private var fetchRemindersUseCase: FetchRemindersUseCase?
+    private var createReflectionUseCase: CreateReflectionUseCase?
     
     @MainActor
     func userNotificationCenter(
@@ -20,20 +24,22 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let idString = userInfo["alert_id"] as? String,
-              let alertID = UUID(uuidString: idString) else {
+        
+        guard let reminderIDString = userInfo["reminder_id"] as? String,
+              let reminderID = UUID(uuidString: reminderIDString) else {
             completionHandler()
             return
         }
         
         switch response.actionIdentifier {
-        case "VIEW_DETAILS_ACTION":
-            NavigationManager.shared.selectedAlertID = alertID
-            
-        case "CREATE_REFLECTION_ACTION":
-            if let data = HealthMonitorService.shared.data(for: alertID) {
-                sendReflectionRequestToPhone(with: data)
+        case "ACCEPT_ADD_DETAILS_ACTION":
+            print("DEBUGY DELEGATE: 'ACCEPT_ADD_DETAILS_ACTION' received. Setting navigation manager.")
+            if let _ = createReflectionFromNotification(reminderID: reminderID) {
+                NavigationManager.shared.reminderIDForActivitySelection = reminderID
             }
+            
+        case "ACCEPT_LATER_ACTION":
+            _ = createReflectionFromNotification(reminderID: reminderID)
             
         default:
             break
@@ -42,10 +48,92 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         completionHandler()
     }
     
-    func requestCreateReflectionOnPhone() {
-            print("DEBUGY WATCH: SystemDelegate's request method called.")
+    func createAndSendReflection(reminderID: UUID, activity: Activity?, subactivity: Subactivity?) {
+        guard let fetchRemindersUseCase else { return }
+        guard let allReminders = fetchRemindersUseCase.execute(),
+              let reminder = allReminders.first(where: { $0.id == reminderID }) else {
+            print("DEBUGY: Could not find reminder with ID \(reminderID).")
+            return
+        }
+        
+        guard let createReflectionUseCase else { return }
+        let result = createReflectionUseCase.execute(
+            date: Date(),
+            activity: activity, // Use the passed-in activity
+            subactivity: subactivity, // Use the passed-in subactivity
+            mood: nil, didTriggerCrash: false,
+            wellBeing: nil, fatigue: nil, shortnessOfBreath: nil,
+            sleepDisorder: nil, cognitiveImpairment: nil, physicalPain: nil,
+            depressionOrAnxiety: nil, additionalInformation: "",
+            measurementType: reminder.measurementType,
+            reminderType: reminder.reminderType,
+            threshold: reminder.threshold,
+            interval: reminder.interval
+        )
+        
+        if case .success(let newReflection) = result {
+            sendEditReflectionRequestToPhone(
+                reflectionID: newReflection.id,
+                activityID: activity?.id,
+                subactivityID: subactivity?.id
+            )
+        }
+    }
+    
+    private func createReflectionFromNotification(reminderID: UUID) -> Reflection? {
+        guard let fetchRemindersUseCase else { return nil}
+        guard let allReminders = fetchRemindersUseCase.execute(),
+              let reminder = allReminders.first(where: { $0.id == reminderID }) else {
+            print("DEBUGY: Could not find reminder with ID \(reminderID) to create reflection.")
+            return nil
+        }
+        
+        guard let createReflectionUseCase else { return nil }
+        
+        let result = createReflectionUseCase.execute(
+            date: Date(),
+            activity: nil, subactivity: nil, mood: nil, didTriggerCrash: false,
+            wellBeing: nil, fatigue: nil, shortnessOfBreath: nil,
+            sleepDisorder: nil, cognitiveImpairment: nil, physicalPain: nil,
+            depressionOrAnxiety: nil, additionalInformation: "",
+            measurementType: reminder.measurementType,
+            reminderType: reminder.reminderType,
+            threshold: reminder.threshold,
+            interval: reminder.interval
+        )
+        
+        if case .success(let reflection) = result {
+            return reflection
+        }
+        return nil
+    }
+    
+    func sendEditReflectionRequestToPhone(reflectionID: UUID, activityID: UUID?, subactivityID: UUID?) {
+        guard WCSession.default.isReachable else { return }
+        
+        var message: [String: Any] = [
+            MessageKeys.command: MessageCommand.openReflectionForEditing.rawValue,
+            "reflection_id": reflectionID.uuidString
+        ]
+        
+        // Add the IDs to the message dictionary if they exist.
+        if let activityID = activityID {
+            message["activity_id"] = activityID.uuidString
+        }
+        if let subactivityID = subactivityID {
+            message["subactivity_id"] = subactivityID.uuidString
+        }
+        
+        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+            print("Error sending edit reflection request: \(error.localizedDescription)")
             
-            guard WCSession.default.isReachable else {
+        }
+    }
+    
+    func requestCreateReflectionOnPhone() {
+        print("DEBUGY WATCH: SystemDelegate's request method called.")
+        
+        guard WCSession.default.isReachable else {
                 print("DEBUGY WATCH: ERROR - iPhone is not reachable. Message will NOT be sent.")
                 return
             }

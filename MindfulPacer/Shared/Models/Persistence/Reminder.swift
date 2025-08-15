@@ -45,11 +45,9 @@ extension SchemaV1 {
         var triggerSummary: String {
             switch measurementType {
             case .heartRate:
-                let context = IntervalContext.heartRate
                 let timeString = interval.timeInterval < 60 ? "\(Int(interval.timeInterval)) sec" : "\(Int(interval.timeInterval / 60)) min"
                 return String(localized: "Above \(threshold) bpm for \(timeString)")
             case .steps:
-                let context = IntervalContext.steps
                 let timeString = interval.timeInterval < 3600 ? "\(Int(interval.timeInterval / 60)) min" : "\(Int(interval.timeInterval / 3600)) hr"
                 return String(localized: "Above \(threshold) steps within \(timeString)")
             }
@@ -169,6 +167,7 @@ extension Reminder {
         // MARK: Heart Rate
         
         case immediately = "Immediately"
+        case oneMinute = "1 Minute"
         case fiveMinutes = "5 Minutes"
         case tenMinutes = "10 Minutes"
         case fifteenMinutes = "15 Minutes"
@@ -184,6 +183,7 @@ extension Reminder {
         var localized: String {
             switch self {
             case .immediately: String(localized: "Immediately")
+            case .oneMinute: String(localized: "1 Minute")
             case .fiveMinutes: String(localized: "5 Minutes")
             case .tenMinutes: String(localized: "10 Minutes")
             case .fifteenMinutes: String(localized: "15 Minutes")
@@ -198,6 +198,7 @@ extension Reminder {
         var icon: String {
             switch self {
             case .immediately: "alarm"
+            case .oneMinute: "1.circle"
             case .fiveMinutes: "5.circle"
             case .tenMinutes: "10.circle"
             case .fifteenMinutes: "15.circle"
@@ -218,7 +219,7 @@ extension Reminder {
         }
         
         static var heartRateIntervals: [Interval] {
-            [.immediately, .fiveMinutes, .tenMinutes, .fifteenMinutes, .thirtyMinutes, .oneHour]
+            [.immediately, .oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes, .thirtyMinutes, .oneHour]
         }
         
         static var stepsIntervals: [Interval] {
@@ -343,6 +344,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     // Default values for each interval (used as fixed values for timeInterval and fallback for buffer)
     private let defaultTimeIntervals: [Reminder.Interval: TimeInterval] = [
         .immediately: 0,
+        .oneMinute: 60,
         .fiveMinutes: 5 * 60,
         .tenMinutes: 10 * 60,
         .fifteenMinutes: 15 * 60,
@@ -356,6 +358,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     // Updated default buffers based on DELAY_MAPPING (converted from minutes to seconds)
     private let defaultBuffers: [Reminder.Interval: TimeInterval] = [
         .immediately: 0,         // None (0 seconds)
+        .oneMinute: 30,
         .fiveMinutes: 60,        // 1 minute = 60 seconds
         .tenMinutes: 120,        // 2 minutes = 120 seconds
         .fifteenMinutes: 180,    // 3 minutes = 180 seconds
@@ -368,6 +371,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     
     // AppStorage properties for heart rate buffers (using HR-specific values)
     @AppStorage("hr_immediately_buffer") private var hr_immediatelyBuffer: Double = 0      // 0 seconds
+    @AppStorage("hr_oneMinute_buffer") private var hr_oneMinuteBuffer: Double = 30      // 30 seconds
     @AppStorage("hr_fiveMinutes_buffer") private var hr_fiveMinutesBuffer: Double = 60      // 1 minute
     @AppStorage("hr_tenMinutes_buffer") private var hr_tenMinutesBuffer: Double = 120       // 2 minutes
     @AppStorage("hr_fifteenMinutes_buffer") private var hr_fifteenMinutesBuffer: Double = 180  // 3 minutes
@@ -392,6 +396,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     func buffer(for interval: Reminder.Interval, context: IntervalContext) -> TimeInterval {
         switch (interval, context) {
         case (.immediately, .heartRate): return hr_immediatelyBuffer
+        case (.oneMinute, .heartRate): return hr_oneMinuteBuffer
         case (.fiveMinutes, .heartRate): return hr_fiveMinutesBuffer
         case (.tenMinutes, .heartRate): return hr_tenMinutesBuffer
         case (.fifteenMinutes, .heartRate): return hr_fifteenMinutesBuffer
@@ -410,6 +415,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     func setBuffer(_ value: Double, for interval: Reminder.Interval, context: IntervalContext) {
         switch (interval, context) {
         case (.immediately, .heartRate): hr_immediatelyBuffer = value
+        case (.oneMinute, .heartRate): hr_oneMinuteBuffer = value
         case (.fiveMinutes, .heartRate): hr_fiveMinutesBuffer = value
         case (.tenMinutes, .heartRate): hr_tenMinutesBuffer = value
         case (.fifteenMinutes, .heartRate): hr_fifteenMinutesBuffer = value
@@ -427,6 +433,7 @@ class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     // Reset buffers to default values
     func resetToDefaults() {
         hr_immediatelyBuffer = defaultBuffers[.immediately]!
+        hr_oneMinuteBuffer = defaultBuffers[.oneMinute]!
         hr_fiveMinutesBuffer = defaultBuffers[.fiveMinutes]!
         hr_tenMinutesBuffer = defaultBuffers[.tenMinutes]!
         hr_fifteenMinutesBuffer = defaultBuffers[.fifteenMinutes]!

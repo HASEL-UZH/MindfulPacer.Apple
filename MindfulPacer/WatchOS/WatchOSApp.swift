@@ -33,21 +33,21 @@ struct WatchOSApp: App {
     }
     
     private func registerNotificationCategories() {
-        let viewDetailsAction = UNNotificationAction(
-            identifier: "VIEW_DETAILS_ACTION",
-            title: "View Details",
+        let acceptAddDetailsAction = UNNotificationAction(
+            identifier: "ACCEPT_ADD_DETAILS_ACTION",
+            title: "Accept & Add Details",
             options: .foreground
         )
         
-        let createReflectionAction = UNNotificationAction(
-            identifier: "CREATE_REFLECTION_ACTION",
-            title: "Create Reflection",
-            options: .foreground
+        let acceptLaterAction = UNNotificationAction(
+            identifier: "ACCEPT_LATER_ACTION",
+            title: "Accept & Add Later",
+            options: []
         )
         
         let heartRateAlertCategory = UNNotificationCategory(
             identifier: "HEART_RATE_ALERT",
-            actions: [viewDetailsAction, createReflectionAction],
+            actions: [acceptAddDetailsAction, acceptLaterAction],
             intentIdentifiers: [],
             options: []
         )

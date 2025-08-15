@@ -33,7 +33,6 @@
 		0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */; };
 		0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C692E474DE40039055F /* HealthMonitoringService.swift */; };
 		0D352C6C2E474E0F0039055F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C6B2E474E0F0039055F /* RootView.swift */; };
-		0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7B2E475A790039055F /* HeartRateDetailView.swift */; };
 		0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7D2E475B230039055F /* NotificationDelegate.swift */; };
 		0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7F2E476E470039055F /* WatchUpdateService.swift */; };
 		0D352C822E4891560039055F /* SystemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C812E4891560039055F /* SystemDelegate.swift */; };
@@ -117,7 +116,7 @@
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */; };
-		0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */; };
+		0D9AB0C52C6D529000BB773F /* CreateReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReflectionUseCase.swift */; };
 		0D9AB0C82C6E0C6200BB773F /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */; };
 		0D9AB0CA2C6E0DA400BB773F /* KeyboardShowingViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */; };
 		0D9AB0CC2C6E403000BB773F /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0CB2C6E403000BB773F /* CloseButton.swift */; };
@@ -188,8 +187,12 @@
 		0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */; };
 		0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDAB2E4E6A01005DB9DE /* HeartRateChartView.swift */; };
 		0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */; };
-		0DF5EDB12E4F1EEE005DB9DE /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */; };
-		0DF5EDB32E4F27A7005DB9DE /* ActiveAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */; };
+		0DF5EDB52E4F2F79005DB9DE /* AppInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */; };
+		0DF5EDB82E4F40F2005DB9DE /* FetchDefaultActivitiesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0992C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift */; };
+		0DF5EDBA2E4F4330005DB9DE /* SelectActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB92E4F4330005DB9DE /* SelectActivityView.swift */; };
+		0DF5EDBB2E4F4367005DB9DE /* SaveReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */; };
+		0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReflectionUseCase.swift */; };
+		0DF5EDBD2E4F45D8005DB9DE /* FetchReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */; };
 		0DF93A802D53AFEF00121308 /* RoadmapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */; };
 		0DF93A852D53B3F500121308 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A842D53B3F500121308 /* ExportView.swift */; };
 		0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */; };
@@ -244,7 +247,6 @@
 		0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeWidget.swift; sourceTree = "<group>"; };
 		0D352C692E474DE40039055F /* HealthMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthMonitoringService.swift; sourceTree = "<group>"; };
 		0D352C6B2E474E0F0039055F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		0D352C7B2E475A790039055F /* HeartRateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDetailView.swift; sourceTree = "<group>"; };
 		0D352C7D2E475B230039055F /* NotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegate.swift; sourceTree = "<group>"; };
 		0D352C7F2E476E470039055F /* WatchUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchUpdateService.swift; sourceTree = "<group>"; };
 		0D352C812E4891560039055F /* SystemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDelegate.swift; sourceTree = "<group>"; };
@@ -318,7 +320,7 @@
 		0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
-		0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReviewUseCase.swift; sourceTree = "<group>"; };
+		0D9AB0C42C6D529000BB773F /* CreateReflectionUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReflectionUseCase.swift; sourceTree = "<group>"; };
 		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C92C6E0DA400BB773F /* KeyboardShowingViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShowingViewModifier.swift; sourceTree = "<group>"; };
 		0D9AB0CB2C6E403000BB773F /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
@@ -380,8 +382,8 @@
 		0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0DF5EDAB2E4E6A01005DB9DE /* HeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartView.swift; sourceTree = "<group>"; };
 		0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsChartView.swift; sourceTree = "<group>"; };
-		0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
-		0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveAlertsView.swift; sourceTree = "<group>"; };
+		0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoService.swift; sourceTree = "<group>"; };
+		0DF5EDB92E4F4330005DB9DE /* SelectActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectActivityView.swift; sourceTree = "<group>"; };
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
 		0DF93A842D53B3F500121308 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
@@ -532,10 +534,8 @@
 			children = (
 				0DF5EDA32E4DF4F9005DB9DE /* RootView */,
 				0DF5EDA42E4DF4FE005DB9DE /* HomeView */,
-				0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */,
-				0D352C7B2E475A790039055F /* HeartRateDetailView.swift */,
 				0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */,
-				0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */,
+				0DF5EDB92E4F4330005DB9DE /* SelectActivityView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -553,6 +553,7 @@
 			isa = PBXGroup;
 			children = (
 				0D352C692E474DE40039055F /* HealthMonitoringService.swift */,
+				0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -921,7 +922,7 @@
 			children = (
 				0D9E5F5F2C64C7B7005BA46C /* AddDefaultActivitiesUseCase.swift */,
 				0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */,
-				0D9AB0C42C6D529000BB773F /* CreateReviewUseCase.swift */,
+				0D9AB0C42C6D529000BB773F /* CreateReflectionUseCase.swift */,
 				0D9D8A812C83A3DE00DFFF00 /* DeleteReflectionUseCase.swift */,
 				0DC136A52D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift */,
 				0D9AB0992C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift */,
@@ -1461,7 +1462,7 @@
 				0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
-				0D9AB0C52C6D529000BB773F /* CreateReviewUseCase.swift in Sources */,
+				0D9AB0C52C6D529000BB773F /* CreateReflectionUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
 				0DAC64D92DA2A3B400BBB741 /* AlgorithmsView.swift in Sources */,
 				0D5947882CBE74170019BA24 /* ThemeSettingsView.swift in Sources */,
@@ -1534,7 +1535,6 @@
 				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0D352C822E4891560039055F /* SystemDelegate.swift in Sources */,
 				0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */,
-				0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */,
@@ -1543,25 +1543,29 @@
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
 				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
+				0DF5EDBB2E4F4367005DB9DE /* SaveReflectionUseCase.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
+				0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
 				0D9E5F5D2C64BE56005BA46C /* Reflection.swift in Sources */,
 				0DDD33692C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
+				0DF5EDB82E4F40F2005DB9DE /* FetchDefaultActivitiesUseCase.swift in Sources */,
 				0D352C6C2E474E0F0039055F /* RootView.swift in Sources */,
 				0DDD336B2C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
+				0DF5EDBA2E4F4330005DB9DE /* SelectActivityView.swift in Sources */,
 				0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0D3006DA2C99823C008F11C7 /* Date+Extensions.swift in Sources */,
+				0DF5EDB52E4F2F79005DB9DE /* AppInfoService.swift in Sources */,
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
-				0DF5EDB12E4F1EEE005DB9DE /* BatteryView.swift in Sources */,
 				0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */,
 				0D9351462D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
 				0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */,
 				0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */,
-				0DF5EDB32E4F27A7005DB9DE /* ActiveAlertsView.swift in Sources */,
 				0DE47A112E4B4A500052959C /* Icon.swift in Sources */,
 				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,
+				0DF5EDBD2E4F45D8005DB9DE /* FetchReflectionsUseCase.swift in Sources */,
 				0D500FCB2C7376A700395AEB /* Message.swift in Sources */,
 				0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 			);

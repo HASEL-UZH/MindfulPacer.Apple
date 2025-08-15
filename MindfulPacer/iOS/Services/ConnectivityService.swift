@@ -15,6 +15,7 @@ class WatchEventCoordinator {
     static let shared = WatchEventCoordinator()
     let createReflectionSubject = PassthroughSubject<[(value: Double, date: Date)], Never>()
     let requestCreateReflectionSheetSubject = PassthroughSubject<Void, Never>()
+    let openReflectionSubject = PassthroughSubject<(reflectionID: UUID, activityID: UUID?, subactivityID: UUID?), Never>()
     
     private init() {}
 }
@@ -48,30 +49,34 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
     
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         print("DEBUGY IPHONE: didReceiveMessage called with message: \(message)")
-
+        
         guard let commandString = message[MessageKeys.command] as? String,
               let command = MessageCommand(rawValue: commandString) else {
             return
         }
         
-        if command == .createReflection {
-            if let dataArray = message[MessageKeys.data] as? [[String: Any]] {
-                let heartRateData = dataArray.compactMap { dict -> (value: Double, date: Date)? in
-                    guard let value = dict["value"] as? Double,
-                          let timestamp = dict["timestamp"] as? TimeInterval else {
-                        return nil
-                    }
-                    return (value: value, date: Date(timeIntervalSince1970: timestamp))
-                }
-                
-                Task { @MainActor in
-                    WatchEventCoordinator.shared.createReflectionSubject.send(heartRateData)
-                }
+        switch command {
+        case .triggerLocalNotification:
+            break
+        case .remindersUpdated:
+            break
+        case .createReflection:
+            break
+        case .requestCreateReflection:
+            break
+        case .openReflectionForEditing:
+            guard let idString = message["reflection_id"] as? String,
+                  let reflectionID = UUID(uuidString: idString) else {
+                return
             }
-        } else if command == .requestCreateReflection {
-            print("DEBUGY IPHONE: Correct 'requestCreateReflection' command received. Sending to coordinator.")
+            
+            let activityID = (message["activity_id"] as? String).flatMap(UUID.init)
+            let subactivityID = (message["subactivity_id"] as? String).flatMap(UUID.init)
+            
             Task { @MainActor in
-                WatchEventCoordinator.shared.requestCreateReflectionSheetSubject.send()
+                WatchEventCoordinator.shared.openReflectionSubject.send(
+                    (reflectionID: reflectionID, activityID: activityID, subactivityID: subactivityID)
+                )
             }
         }
     }

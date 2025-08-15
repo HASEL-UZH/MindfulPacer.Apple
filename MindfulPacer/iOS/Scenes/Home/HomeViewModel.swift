@@ -219,52 +219,31 @@ class HomeViewModel {
     // MARK: - Private Methods
     
     private func subscribeToWatchEvents() {
-        WatchEventCoordinator.shared.createReflectionSubject
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] heartRateData in
+        WatchEventCoordinator.shared.openReflectionSubject
+            .sink { [weak self] event in
                 guard let self = self else { return }
-          
-                let result = self.createReflectionUseCase.execute(
-                    date: Date(),
-                    activity: nil,
-                    subactivity: nil,
-                    mood: nil,
-                    didTriggerCrash: false,
-                    wellBeing: nil,
-                    fatigue: nil,
-                    shortnessOfBreath: nil,
-                    sleepDisorder: nil,
-                    cognitiveImpairment: nil,
-                    physicalPain: nil,
-                    depressionOrAnxiety: nil,
-                    additionalInformation: "Reflection triggered by a heart rate event.",
-                    measurementType: .heartRate,
-                    reminderType: .strong, // You might want to pass this from the watch
-                    threshold: 0, // You might want to pass this from the watch
-                    interval: .immediately // You might want to pass this from the watch
-                )
                 
-                switch result {
-                case .success(let newReflection):
-                    // TODO: You might want a way to attach the `heartRateData` to the `newReflection`
-                    // For example: `newReflection.heartRateSamples = heartRateData`
-                    // This depends on your `Reflection` model structure.
-                    
-                    // Now, present the sheet with the newly created Reflection object.
-                    self.presentSheet(.editReflectionView(newReflection))
-                    
-                case .failure(let error):
-                    print("Failed to create reflection from watch event: \(error.localizedDescription)")
+                guard let reflections = self.fetchReflectionsUseCase.execute() else {
+                    print("ERROR: iPhone could not find reflection with ID \(event.reflectionID)")
+                    return
                 }
-            }
-            .store(in: &cancellables) // Store the subscription to keep it alive
-        
-        WatchEventCoordinator.shared.requestCreateReflectionSheetSubject
-            .sink { [weak self] in
-                print("DEBUGY IPHONE: HomeViewModel received signal from coordinator. Presenting sheet.")
-                // Present the sheet with a nil Reflection, which your HomeView
-                // already knows means "create a new one".
-                self?.presentSheet(.editReflectionView(nil))
+                
+                guard let reflection = reflections.filter({ $0.id == event.reflectionID }).first else { return }
+                
+                if let activityID = event.activityID {
+                    if let allActivities = self.fetchDefaultActivitiesUseCase.execute(),
+                       let matchingActivity = allActivities.first(where: { $0.id == activityID }) {
+                        
+                        reflection.activity = matchingActivity
+                        
+                        if let subactivityID = event.subactivityID,
+                           let matchingSubactivity = matchingActivity.subactivities?.first(where: { $0.id == subactivityID }) {
+                            reflection.subactivity = matchingSubactivity
+                        }
+                    }
+                }
+                
+                self.presentSheet(.editReflectionView(reflection))
             }
             .store(in: &cancellables)
     }

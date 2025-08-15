@@ -59,6 +59,33 @@ enum StatusMessage: String {
         case .syncing: return .cyan
         }
     }
+    
+    var description: String {
+        switch self {
+        case .notConfigured:
+            return "The health monitoring service has not been configured yet. You may need to set up reminder rules or link required services."
+        case .configured:
+            return "The service is configured with reminders but not currently running a monitoring session."
+        case .ready:
+            return "All rules are active and the system is ready to start monitoring at any time."
+        case .noHRReminders:
+            return "No active heart rate reminders are set, so monitoring will not start until a rule is added."
+        case .initializing:
+            return "The monitoring service is starting up and preparing the HealthKit session."
+        case .authDenied:
+            return "HealthKit access was denied. The app cannot read heart rate or step data until access is granted in Settings."
+        case .collectionFailed:
+            return "The system failed to collect health data from HealthKit. This might be due to missing permissions or unavailable data."
+        case .monitoring:
+            return "Monitoring is currently active, with HealthKit data being collected and rules evaluated."
+        case .sessionFailed:
+            return "The monitoring session could not be started or has failed unexpectedly."
+        case .stopped:
+            return "The monitoring session has ended, and no data is currently being collected."
+        case .syncing:
+            return "The app is syncing data with CloudKit or another backend service."
+        }
+    }
 }
 
 
@@ -473,7 +500,11 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         content.body = rule.alertMessage
         content.sound = .defaultCritical
         content.categoryIdentifier = "HEART_RATE_ALERT"
-        content.userInfo = ["alert_id": alertID.uuidString]
+        content.userInfo = [
+               "alert_id": alertID.uuidString,
+               "reminder_id": rule.id.uuidString
+           ]
+                   
         let request = UNNotificationRequest(identifier: alertID.uuidString, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
         UNUserNotificationCenter.current().add(request)
     }
