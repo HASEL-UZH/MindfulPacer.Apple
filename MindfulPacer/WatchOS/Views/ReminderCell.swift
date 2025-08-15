@@ -8,34 +8,35 @@
 import SwiftUI
 
 struct ReminderCell: View {
-    let rule: HeartRateAlertRule
+    let rule: AlertRule
     
     var body: some View {
         HStack(spacing: 16) {
             Icon(
                 name: "alarm",
-                color: .yellow,
+                color: rule.color,
                 background: true
             )
             
             VStack(alignment: .leading, spacing: 8) {
                 IconLabel(
-                    icon: "heart.fill",
-                    title: "Heart Rate",
-                    labelColor: .pink
+                    icon: rule.measurementType == .heartRate ? "heart.fill" : "figure.walk",
+                    title: rule.measurementType.localized,
+                    labelColor: rule.measurementType.color
                 )
                 .font(.subheadline.weight(.semibold))
                 
-                Text("Above 90 bpm for 10 min")
+                Text(rule.alertMessage)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .foregroundStyle(Color.primary)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .foregroundStyle(.primary.opacity(0.1))
+        }
     }
-}
-
-#Preview {
-    ReminderCell(rule: HeartRateAlertRule(id: UUID(), thresholdBPM: 0.0, duration: .infinity, alertMessage: "", type: .light))
 }

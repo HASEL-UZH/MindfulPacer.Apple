@@ -31,17 +31,14 @@
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
 		0D34C4652C837FE100928C53 /* ReflectionsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */; };
 		0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */; };
-		0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */; };
+		0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C692E474DE40039055F /* HealthMonitoringService.swift */; };
 		0D352C6C2E474E0F0039055F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C6B2E474E0F0039055F /* RootView.swift */; };
-		0D352C6E2E474E220039055F /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C6D2E474E220039055F /* RootViewModel.swift */; };
 		0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7B2E475A790039055F /* HeartRateDetailView.swift */; };
 		0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7D2E475B230039055F /* NotificationDelegate.swift */; };
 		0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7F2E476E470039055F /* WatchUpdateService.swift */; };
 		0D352C822E4891560039055F /* SystemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C812E4891560039055F /* SystemDelegate.swift */; };
 		0D36471F2D53862C000F85EF /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 0D36471E2D53862C000F85EF /* SwiftSoup */; };
 		0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */; };
-		0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */; };
-		0D3966222E491FD8007C73C0 /* ActiveRemindersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */; };
 		0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB12C7D077C0014CD81 /* FetchRemindersUseCase.swift */; };
 		0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
@@ -189,6 +186,10 @@
 		0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */; };
 		0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */; };
 		0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */; };
+		0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDAB2E4E6A01005DB9DE /* HeartRateChartView.swift */; };
+		0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */; };
+		0DF5EDB12E4F1EEE005DB9DE /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */; };
+		0DF5EDB32E4F27A7005DB9DE /* ActiveAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */; };
 		0DF93A802D53AFEF00121308 /* RoadmapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */; };
 		0DF93A852D53B3F500121308 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A842D53B3F500121308 /* ExportView.swift */; };
 		0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */; };
@@ -241,16 +242,13 @@
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
 		0D34C4642C837FE100928C53 /* ReflectionsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionsWidget.swift; sourceTree = "<group>"; };
 		0D34C4662C838BD700928C53 /* ReminderTypeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeWidget.swift; sourceTree = "<group>"; };
-		0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateMonitoringService.swift; sourceTree = "<group>"; };
+		0D352C692E474DE40039055F /* HealthMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthMonitoringService.swift; sourceTree = "<group>"; };
 		0D352C6B2E474E0F0039055F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		0D352C6D2E474E220039055F /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		0D352C7B2E475A790039055F /* HeartRateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDetailView.swift; sourceTree = "<group>"; };
 		0D352C7D2E475B230039055F /* NotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegate.swift; sourceTree = "<group>"; };
 		0D352C7F2E476E470039055F /* WatchUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchUpdateService.swift; sourceTree = "<group>"; };
 		0D352C812E4891560039055F /* SystemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDelegate.swift; sourceTree = "<group>"; };
 		0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsView.swift; sourceTree = "<group>"; };
-		0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRemindersView.swift; sourceTree = "<group>"; };
-		0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRemindersViewModel.swift; sourceTree = "<group>"; };
 		0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReflectionsUseCase.swift; sourceTree = "<group>"; };
@@ -380,6 +378,10 @@
 		0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCell.swift; sourceTree = "<group>"; };
 		0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0DF5EDAB2E4E6A01005DB9DE /* HeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartView.swift; sourceTree = "<group>"; };
+		0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsChartView.swift; sourceTree = "<group>"; };
+		0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
+		0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveAlertsView.swift; sourceTree = "<group>"; };
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
 		0DF93A842D53B3F500121308 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
@@ -530,9 +532,10 @@
 			children = (
 				0DF5EDA32E4DF4F9005DB9DE /* RootView */,
 				0DF5EDA42E4DF4FE005DB9DE /* HomeView */,
-				0DF5EDA22E4DF4EC005DB9DE /* ActiveReminders */,
+				0DF5EDB22E4F27A7005DB9DE /* ActiveAlertsView.swift */,
 				0D352C7B2E475A790039055F /* HeartRateDetailView.swift */,
 				0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */,
+				0DF5EDB02E4F1EEE005DB9DE /* BatteryView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -549,7 +552,7 @@
 		0D352C862E48AC920039055F /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				0D352C692E474DE40039055F /* HeartRateMonitoringService.swift */,
+				0D352C692E474DE40039055F /* HealthMonitoringService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1219,20 +1222,10 @@
 			path = "Apple Watch";
 			sourceTree = "<group>";
 		};
-		0DF5EDA22E4DF4EC005DB9DE /* ActiveReminders */ = {
-			isa = PBXGroup;
-			children = (
-				0D39661F2E490DF1007C73C0 /* ActiveRemindersView.swift */,
-				0D3966212E491FD8007C73C0 /* ActiveRemindersViewModel.swift */,
-			);
-			path = ActiveReminders;
-			sourceTree = "<group>";
-		};
 		0DF5EDA32E4DF4F9005DB9DE /* RootView */ = {
 			isa = PBXGroup;
 			children = (
 				0D352C6B2E474E0F0039055F /* RootView.swift */,
-				0D352C6D2E474E220039055F /* RootViewModel.swift */,
 			);
 			path = RootView;
 			sourceTree = "<group>";
@@ -1242,8 +1235,18 @@
 			children = (
 				0DF5EDA92E4DF60C005DB9DE /* HomeView.swift */,
 				0DF5EDA72E4DF5FD005DB9DE /* HomeViewModel.swift */,
+				0DF5EDAD2E4E6A10005DB9DE /* Charts */,
 			);
 			path = HomeView;
+			sourceTree = "<group>";
+		};
+		0DF5EDAD2E4E6A10005DB9DE /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				0DF5EDAB2E4E6A01005DB9DE /* HeartRateChartView.swift */,
+				0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */,
+			);
+			path = Charts;
 			sourceTree = "<group>";
 		};
 		0DF93A812D53B3D100121308 /* Export */ = {
@@ -1532,13 +1535,13 @@
 				0D352C822E4891560039055F /* SystemDelegate.swift in Sources */,
 				0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */,
 				0D352C7C2E475A790039055F /* HeartRateDetailView.swift in Sources */,
-				0D352C6E2E474E220039055F /* RootViewModel.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
-				0D3966222E491FD8007C73C0 /* ActiveRemindersViewModel.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0D352C7E2E475B230039055F /* NotificationDelegate.swift in Sources */,
+				0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
+				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
 				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
@@ -1551,11 +1554,12 @@
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
-				0D352C6A2E474DE40039055F /* HeartRateMonitoringService.swift in Sources */,
+				0DF5EDB12E4F1EEE005DB9DE /* BatteryView.swift in Sources */,
+				0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */,
 				0D9351462D12F9130028AA61 /* RoadmapItemDTO.swift in Sources */,
-				0D3966202E490DF1007C73C0 /* ActiveRemindersView.swift in Sources */,
 				0DF5EDAA2E4DF60C005DB9DE /* HomeView.swift in Sources */,
 				0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */,
+				0DF5EDB32E4F27A7005DB9DE /* ActiveAlertsView.swift in Sources */,
 				0DE47A112E4B4A500052959C /* Icon.swift in Sources */,
 				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,
 				0D500FCB2C7376A700395AEB /* Message.swift in Sources */,
@@ -1793,7 +1797,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your heart rate in real-time to detect high heart rate events.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads your heart rate to detect high heart rate events and reads your step count to alert you based on your activity goals.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app creates workout sessions in the background to monitor your heart rate continuously.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;
@@ -1827,7 +1831,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacer;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your heart rate in real-time to detect high heart rate events.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads your heart rate to detect high heart rate events and reads your step count to alert you based on your activity goals.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app creates workout sessions in the background to monitor your heart rate continuously.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MindfulPacer.Apple.iOS;

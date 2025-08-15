@@ -23,55 +23,94 @@ struct AnimatedNumberModifier: @MainActor AnimatableModifier {
     }
 }
 
+enum HomePage {
+    case main, heartRateChart, stepsChart
+}
+
 struct HomeView: View {
-    @Environment(\.modelContext) private var modelContext
-    @State private var viewModel: HomeViewModel = HomeViewModel()
+    @Bindable var viewModel: HomeViewModel
     @StateObject private var navigationManager = NavigationManager.shared
-    
-    @State private var animatedHeartRate: Double = 0
-    @State private var scale: CGFloat = 1.0
+    @State private var showActiveAlertsView: Bool = false
     
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(viewModel.alertColor.opacity(viewModel.isAlerting ? 0.3 : 0.0))
-                .scaleEffect(viewModel.isAlerting ? 3.0 : 0.5)
-                .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
+        TabView(selection: $viewModel.selectedTab) {
+            mainStatusPage
+                .tag(HomePage.main)
             
-            VStack(alignment: .leading, spacing: 16) {
-                Image(.mindfulPacerIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                                
-                HStack {
-                    heartRate
-                    steps
-                }
-                                
-                status
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            HeartRateChartView(viewModel: viewModel)
+                .tag(HomePage.heartRateChart)
+            
+            StepsChartView(viewModel: viewModel)
+                .tag(HomePage.stepsChart)
         }
+        .tabViewStyle(.carousel)
         .onAppear {
             viewModel.onAppear()
         }
         .sheet(item: $navigationManager.selectedAlertID) { alertID in
             HeartRateDetailView(alertID: alertID)
         }
-        .sheet(isPresented: $viewModel.isShowingActiveRules) {
-            ActiveRemindersView()
+        .sheet(isPresented: $showActiveAlertsView) {
+            ActiveAlertsView(viewModel: viewModel)
         }
     }
     
-    // MARK: Status
+    private var mainStatusPage: some View {
+        ZStack {
+            Circle()
+                .fill(viewModel.alertColor.opacity(viewModel.isAlerting ? 0.3 : 0.0))
+                .scaleEffect(viewModel.isAlerting ? 3.0 : 0.5)
+                .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
+            
+            VStack(alignment: .leading) {
+                HStack {
+                    VStack {
+                        Image(.mindfulPacerIcon)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+
+                    BatteryView()
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background {
+                            RoundedRectangle(cornerRadius: 16)
+                                .foregroundStyle(.primary.opacity(0.1))
+                        }
+                }
+                .frame(maxHeight: .infinity)
+                
+                HStack {
+                    Button {
+                        viewModel.selectedTab = .heartRateChart
+                    } label: {
+                        currentHeartRateWidget
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Button {
+                        viewModel.selectedTab = .stepsChart
+                    } label: {
+                        currentStepsWidget
+                    }
+                    .buttonStyle(.plain)
+                }
+                
+                statusWidget
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
     
     @ViewBuilder
-    private var status: some View {
+    private var statusWidget: some View {
         if viewModel.statusMessage == .monitoring {
             Button {
-                viewModel.isShowingActiveRules = true
+                showActiveAlertsView = true
             } label: {
                 Label(viewModel.statusMessage.rawValue, systemImage:  viewModel.statusMessage.symbolName)
                     .font(.footnote)
@@ -89,31 +128,14 @@ struct HomeView: View {
         }
     }
     
-    // MARK: Heart Rate
-    
-    private var heartRate: some View {
+    private var currentHeartRateWidget: some View {
         VStack(alignment: .leading, spacing: 16) {
             Icon(name: "heart.fill", color: .pink, background: true)
-
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
+                    .font(.system(.title3, weight: .bold))
                     .scaleEffect(viewModel.isAlerting ? 1.2 : 1.0)
-                    .modifier(
-                        AnimatedNumberModifier(
-                            value: animatedHeartRate,
-                            font: .system(.title3, weight: .bold)
-                        )
-                    )
-                    .scaleEffect(scale)
-                    .onChange(of: viewModel.heartRate) { _, newValue in
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            animatedHeartRate = newValue
-                            scale = 1.3
-                        }
-                        withAnimation(.easeOut(duration: 0.5).delay(0.5)) {
-                            scale = 1.0
-                        }
-                    }
                 
                 Text("bpm")
                     .font(.system(.footnote))
@@ -130,14 +152,12 @@ struct HomeView: View {
         }
     }
     
-    // MARK: Steps
-    
-    private var steps: some View {
+    private var currentStepsWidget: some View {
         VStack(alignment: .leading, spacing: 16) {
             Icon(name: "figure.walk", color: .teal, background: true)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("10,250")
+                Text(viewModel.todaysSteps, format: .number)
                     .font(.system(.title3, weight: .bold))
                 
                 Text("steps")
@@ -157,5 +177,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(viewModel: .mock)
 }

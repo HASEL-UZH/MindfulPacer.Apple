@@ -38,6 +38,6 @@ struct HeartRateDetailView: View {
     }
 
     private func loadData() {
-        self.heartRateData = HeartRateMonitorService.shared.data(for: alertID) ?? []
+        self.heartRateData = HealthMonitorService.shared.data(for: alertID) ?? []
     }
 }

@@ -50,7 +50,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "This app needs to read your heart rate in real-time to detect high heart rate events."
+            "value" : "This app reads your heart rate to detect high heart rate events and reads your step count to alert you based on your activity goals."
           }
         }
       }

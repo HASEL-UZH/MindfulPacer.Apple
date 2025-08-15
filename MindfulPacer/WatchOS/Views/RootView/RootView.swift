@@ -19,13 +19,11 @@ extension UUID: @retroactive Identifiable {
 }
 
 struct RootView: View {
-    var body: some View {
-        HomeView()
-    }
-}
+    @State private var viewModel = HomeViewModel()
 
-#Preview {
-    RootView()
+    var body: some View {
+        HomeView(viewModel: viewModel)
+    }
 }
 
 #Preview {

@@ -31,7 +31,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             NavigationManager.shared.selectedAlertID = alertID
             
         case "CREATE_REFLECTION_ACTION":
-            if let data = HeartRateMonitorService.shared.data(for: alertID) {
+            if let data = HealthMonitorService.shared.data(for: alertID) {
                 sendReflectionRequestToPhone(with: data)
             }
             
@@ -82,7 +82,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
                 print("SystemDelegate: Received 'remindersUpdated' command (doorbell).")
                 Task { @MainActor in
                     print("DEBUGY: Setting status to Syncing.")
-                    HeartRateMonitorService.shared.statusMessage = .syncing
+                    HealthMonitorService.shared.statusMessage = .syncing
                 }
                 
             default:
