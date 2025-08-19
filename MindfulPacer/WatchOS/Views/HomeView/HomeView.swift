@@ -23,6 +23,17 @@ struct AnimatedNumberModifier: @MainActor AnimatableModifier {
     }
 }
 
+private struct DismissSheetActionKey: EnvironmentKey {
+    static let defaultValue: @Sendable () -> Void = {}
+}
+
+extension EnvironmentValues {
+    var dismissSheet: @Sendable () -> Void {
+        get { self[DismissSheetActionKey.self] }
+        set { self[DismissSheetActionKey.self] = newValue }
+    }
+}
+
 enum HomePage {
     case main, heartRateChart, stepsChart
 }
@@ -30,7 +41,7 @@ enum HomePage {
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
-
+    
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage
@@ -44,22 +55,97 @@ struct HomeView: View {
         }
         .tabViewStyle(.carousel)
         .onAppear {
-            print("DEBUGY VIEW: HomeView appeared. Current reminderID for sheet is \(String(describing: navigationManager.reminderIDForActivitySelection))")
             viewModel.onAppear()
-            
-            if navigationManager.reminderIDForActivitySelection != nil {}
         }
         .sheet(item: $navigationManager.reminderIDForActivitySelection) { reminderID in
-            SelectActivityView(reminderID: reminderID)
+            SelectActivityView(reminderID: reminderID, activities: viewModel.defaultActivities)
+                .environment(\.dismissSheet) {
+                    Task { @MainActor in
+                        navigationManager.reminderIDForActivitySelection = nil
+                    }
+                }
         }
+        .overlay {
+            if case .strong(let rule) = viewModel.alertState {
+                strongReminderOverlay(for: rule)
+            }
+        }
+    }
+    
+    private func strongReminderOverlay(for rule: AlertRule) -> some View {
+        ZStack {
+            Rectangle()
+                .foregroundStyle(.ultraThinMaterial)
+                .ignoresSafeArea()
+            
+            Color.red.opacity(0.7)
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    VStack(spacing: 8) {
+                        Label {
+                            Text("Strong Reminder")
+                                .font(.headline.weight(.bold))
+                        } icon: {
+                            Image(systemName: "circle.fill")
+                                .foregroundStyle(.red)
+                        }
+                        .foregroundColor(.white)
+                        
+                        Text(rule.alertMessage)
+                            .multilineTextAlignment(.center)
+                            .font(.body)
+                            .layoutPriority(1)
+                    }
+                    
+                    VStack {
+                        Button {
+                            viewModel.handleStrongAlertAction(shouldAddDetails: true)
+                        } label: {
+                            Text("Accept & Add Details")
+                                .fontWeight(.semibold)
+                        }
+                        
+                        Button {
+                            viewModel.handleStrongAlertAction(shouldAddDetails: false)
+                        } label: {
+                            Text("Accept & Add Details Later")
+                        }
+                        
+                        Button {
+                            viewModel.rejectStrongAlert()
+                        } label: {
+                            Text("Reject")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .foregroundColor(.white)
+                    
+                    Spacer()
+                }
+                .padding()
+            }
+        }
+        .transition(.opacity.animation(.easeInOut))
     }
     
     private var mainStatusPage: some View {
         ZStack {
-            Circle()
-                .fill(viewModel.alertColor.opacity(viewModel.isAlerting ? 0.3 : 0.0))
-                .scaleEffect(viewModel.isAlerting ? 3.0 : 0.5)
-                .animation(.easeInOut(duration: 0.5), value: viewModel.isAlerting)
+            if case .solid(let color) = viewModel.alertState {
+                color.opacity(0.3).ignoresSafeArea()
+                    .animation(.easeInOut, value: viewModel.alertState)
+            }
+            
+            VStack {
+                Button {
+                    
+                } label: {
+                    
+                }
+                .buttonStyle(.borderless)
+            }
+                
             
             VStack(alignment: .leading) {
                 VStack {
@@ -82,7 +168,11 @@ struct HomeView: View {
                     Button {
                         viewModel.showStatusInfo.toggle()
                     } label: {
-                        Icon(name: viewModel.statusMessage.symbolName, color: viewModel.statusMessage.color, background: true)
+                        Icon(
+                            name: viewModel.statusMessage.symbolName,
+                            color: viewModel.statusMessage.color,
+                            background: true
+                        )
                     }
                     .buttonStyle(.borderless)
                     .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
@@ -95,7 +185,7 @@ struct HomeView: View {
                             """
                         )
                     }
-                   
+                    
                     Spacer()
                     Divider()
                     Spacer()
@@ -155,61 +245,86 @@ struct HomeView: View {
     }
     
     private var currentHeartRateWidget: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Icon(name: "heart.fill", color: .pink, background: true)
-
+        let isFlashing: Bool
+        if case .flashing(_, let type) = viewModel.alertState, type == .heartRate {
+            isFlashing = true
+        } else {
+            isFlashing = false
+        }
+        
+        return HStack(alignment: .top, spacing: 8) {
+            Icon(
+                name: "heart.fill",
+                color: isFlashing ? Color.yellow : Color.pink,
+                background: true
+            )
+            
             VStack(alignment: .leading) {
                 if viewModel.isMonitoring {
-                    Text("")
-                        .modifier(
-                            AnimatedNumberModifier(
-                                value: viewModel.heartRate,
-                                font: .system(.title2, weight: .bold)
-                            )
-                        )
-                        .scaleEffect(viewModel.isAlerting ? 1.2 : 1.0)
-                        .animation(.easeInOut(duration: 0.4), value: viewModel.heartRate)
-                } else {
-                    Text("--")
+                    Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
                         .font(.system(.title2, weight: .bold))
+                        .scaleEffect(isFlashing ? 1.2 : 1.0)
+                        .foregroundStyle(isFlashing ? Color.yellow : Color.primary)
+                } else {
+                    Text("--").font(.system(.title2, weight: .bold))
                 }
-
+                
                 Text("bpm")
                     .font(.system(.footnote))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isFlashing ? Color.yellow.opacity(0.7) : Color.secondary)
             }
         }
-        .foregroundColor(viewModel.isAlerting ? viewModel.alertColor : .primary)
-        .animation(.easeInOut, value: viewModel.isAlerting)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(.primary.opacity(0.1))
+                .fill(isFlashing ? Color.yellow.opacity(0.1) : Color.primary.opacity(0.1))
         }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
     }
     
     private var currentStepsWidget: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Icon(name: "figure.walk", color: .teal, background: true)
+        let isFlashing: Bool
+        if case .flashing(_, let type) = viewModel.alertState, type == .steps {
+            isFlashing = true
+        } else {
+            isFlashing = false
+        }
+        
+        return HStack(alignment: .top, spacing: 8) {
+            Icon(
+                name: "figure.walk",
+                color: isFlashing ? Color.yellow : Color.teal,
+                background: true
+            )
 
             VStack(alignment: .leading) {
                 Text(viewModel.todaysSteps, format: .number)
                     .font(.system(.title2, weight: .bold))
+                    .scaleEffect(isFlashing ? 1.2 : 1.0)
+                    .foregroundStyle(isFlashing ? Color.yellow : Color.primary)
                 
                 Text("steps")
                     .font(.system(.footnote))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isFlashing ? Color.yellow.opacity(0.7) : Color.secondary)
             }
         }
-        .foregroundColor(viewModel.isAlerting ? viewModel.alertColor : .primary)
-        .animation(.easeInOut, value: viewModel.isAlerting)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 16)
-                .foregroundStyle(.primary.opacity(0.1))
+                .fill(isFlashing ? Color.yellow.opacity(0.1) : Color.primary.opacity(0.1))
         }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
+    }
+}
+
+extension HomeViewModel {
+    var strongAlertRule: AlertRule? {
+        if case .strong(let rule) = alertState {
+            return rule
+        }
+        return nil
     }
 }
 

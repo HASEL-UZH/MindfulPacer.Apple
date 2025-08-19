@@ -44,11 +44,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
             print("DEBUGY DELEGATE: 'ACCEPT_ADD_DETAILS_ACTION' received. Setting navigation manager.")
-            if let _ = createReflectionFromNotification(reminderID: reminderID) {
-                NavigationManager.shared.reminderIDForActivitySelection = reminderID
-            } else {
-                print("DEBUGY: Could not create reflection from notification")
-            }
+            NavigationManager.shared.reminderIDForActivitySelection = reminderID
             
         case "ACCEPT_LATER_ACTION":
             _ = createReflectionFromNotification(reminderID: reminderID)
@@ -70,8 +66,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         guard let createReflectionUseCase else { return }
         let result = createReflectionUseCase.execute(
             date: Date(),
-            activity: activity, // Use the passed-in activity
-            subactivity: subactivity, // Use the passed-in subactivity
+            activity: activity,
+            subactivity: subactivity,
             mood: nil, didTriggerCrash: false,
             wellBeing: nil, fatigue: nil, shortnessOfBreath: nil,
             sleepDisorder: nil, cognitiveImpairment: nil, physicalPain: nil,

@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - ActivitySelection
 @Observable
 class ActivitySelection {
     var reflectionID: UUID
@@ -19,61 +20,62 @@ class ActivitySelection {
     }
 }
 
+// MARK: - SelectActivityView
+
 struct SelectActivityView: View {
-    // This view now only needs the ID of the Reminder that triggered it.
     let reminderID: UUID
     
-    private let fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext)
-    @State private var activities: [Activity] = []
-    @Environment(\.dismiss) private var dismiss
+    let activities: [Activity]
+    
+    @Environment(\.dismissSheet) private var dismissSheet
 
     var body: some View {
         NavigationStack {
             List(activities) { activity in
-                NavigationLink(destination: SelectSubactivityView(reminderID: reminderID, activity: activity)) {
+                NavigationLink(
+                    destination:
+                        SelectSubactivityView(
+                            reminderID: reminderID,
+                            activity: activity
+                        )
+                ) {
                     Label(activity.name, systemImage: activity.icon)
+                        .symbolVariant(.fill)
                 }
             }
             .navigationTitle("Select Activity")
-            .onAppear(perform: loadActivities)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Skip") {
-                        SystemDelegate.shared.createAndSendReflection(reminderID: reminderID, activity: nil, subactivity: nil)
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-    
-    private func loadActivities() {
-        if let fetchedActivities = fetchDefaultActivitiesUseCase.execute() {
-            self.activities = fetchedActivities
         }
     }
 }
+
+// MARK: - SelectSubactivityView
 
 struct SelectSubactivityView: View {
     let reminderID: UUID
     let activity: Activity
     
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismissSheet) private var dismissSheet
 
     var body: some View {
         List(activity.subactivities ?? []) { subactivity in
             Button {
-                // When a subactivity is chosen, this is the final step on the watch.
                 SystemDelegate.shared.createAndSendReflection(
                     reminderID: reminderID,
                     activity: activity,
                     subactivity: subactivity
                 )
-                dismiss()
+                dismissSheet()
             } label: {
                 Label(subactivity.name, systemImage: subactivity.icon)
             }
         }
         .navigationTitle(activity.name)
     }
+}
+
+#Preview {
+    SelectActivityView(
+        reminderID: UUID(),
+        activities: DefaultActivityData.allActivities
+    )
 }

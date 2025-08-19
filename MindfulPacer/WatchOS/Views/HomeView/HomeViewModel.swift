@@ -18,6 +18,34 @@ struct StorageKeys {
     static let lastAlertDate = "lastAlertDate"
 }
 
+enum AlertState {
+    case none
+    case flashing(color: Color, type: Reminder.MeasurementType)
+    case solid(color: Color)
+    case strong(rule: AlertRule)
+}
+
+extension AlertState: Equatable {
+    static func == (lhs: AlertState, rhs: AlertState) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none):
+            return true
+            
+        case (.flashing(let lhsColor, let lhsType), .flashing(let rhsColor, let rhsType)):
+            return lhsColor == rhsColor && lhsType == rhsType
+            
+        case (.solid(let lhsColor), .solid(let rhsColor)):
+            return lhsColor == rhsColor
+            
+        case (.strong(let lhsRule), .strong(let rhsRule)):
+            return lhsRule.id == rhsRule.id
+            
+        default:
+            return false
+        }
+    }
+}
+
 @MainActor
 @Observable
 class HomeViewModel {
@@ -26,10 +54,9 @@ class HomeViewModel {
     var isMonitoring: Bool = false
     var isShowingActiveRules = false
     var isShowingAppInfoSheet = false
-    var isAlerting: Bool = false
-    var alertColor: Color = .clear
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
+    var defaultActivities: [Activity] = []
     var selectedTab: HomePage = .main
     var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
     
@@ -37,12 +64,16 @@ class HomeViewModel {
     var showBatteryInfo: Bool = false
     var showStatusInfo: Bool = false
     
+    var alertState: AlertState = .none
+    
     var heartRateSamples: [(value: Double, date: Date)] = []
     var hourlyStepData: [(date: Date, steps: Double)] = []
     
     var strongAlertCount: Int = 0
     var mediumAlertCount: Int = 0
     var lightAlertCount: Int = 0
+    
+    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     
     var avgHeartRate: Int {
         guard !heartRateSamples.isEmpty else { return 0 }
@@ -128,6 +159,8 @@ class HomeViewModel {
     
     init() {
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext)
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext)
+        
         SystemDelegate.shared.configure()
         monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
         
@@ -135,11 +168,13 @@ class HomeViewModel {
         checkForDailyReset()
         
         setupSubscriptions()
+        loadDefaultActivities()
     }
     
     private init(isForPreview: Bool) {
-        let container = try! ModelContainer(for: Reminder.self)
+        let container = try! ModelContainer(for: Reminder.self, Activity.self)
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: container.mainContext)
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: container.mainContext)
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
@@ -168,6 +203,12 @@ class HomeViewModel {
             stepData.append((date: date, steps: steps))
         }
         self.hourlyStepData = stepData.reversed()
+    }
+    
+    private func loadDefaultActivities() {
+        if let activities = fetchDefaultActivitiesUseCase.execute() {
+            self.defaultActivities = activities
+        }
     }
     
     static var mock: HomeViewModel {
@@ -203,6 +244,13 @@ class HomeViewModel {
         monitorService.$activeRules
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newRules in self?.activeRules = newRules }
+            .store(in: &cancellables)
+        
+        monitorService.mediumAlertCancelledSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.cancelMediumAlert()
+            }
             .store(in: &cancellables)
         
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
@@ -254,29 +302,70 @@ class HomeViewModel {
         self.todaysSteps = Int(steps)
     }
     
-    private func triggerInAppAlert(for rule: HeartRateAlertRule) {
-        guard !isAlerting else { return }
-        self.isAlerting = true
-        self.alertColor = rule.type.color
-        
-        switch rule.type {
-        case .light:
+    private func triggerInAppAlert(for rule: AlertRule) {
+        // --- Light Alert: A quick, transient flash on a specific widget ---
+        if rule.reminderType == .light {
+            guard alertState == .none else { return }
+            
+            // Set the state to flashing, passing the color AND the measurement type.
+            alertState = .flashing(color: rule.reminderType.color, type: rule.measurementType)
             lightAlertCount += 1
             WKInterfaceDevice.current().play(.success)
-        case .medium:
-            mediumAlertCount += 1
-            WKInterfaceDevice.current().play(.click)
-        case .strong:
-            strongAlertCount += 1
-            WKInterfaceDevice.current().play(.failure)
+            
+            // After a delay, reset the state back to none.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.alertState = .none
+            }
+        }
+        
+        // --- Medium Alert: A persistent solid background ---
+        if rule.reminderType == .medium {
+            if alertState != .solid(color: rule.reminderType.color) {
+                alertState = .solid(color: rule.reminderType.color)
+                mediumAlertCount += 1
+                WKInterfaceDevice.current().play(.stop)
+            }
+        }
+        
+        if rule.reminderType == .strong {
+            if case .strong = alertState {
+            } else {
+                alertState = .strong(rule: rule)
+                strongAlertCount += 1
+                Task {
+                    for _ in 0..<3 {
+                        WKInterfaceDevice.current().play(.failure)
+                        try? await Task.sleep(for: .milliseconds(500))
+                    }
+                }
+            }
         }
         
         savePersistentCounts()
         UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-            self.isAlerting = false
+    }
+    
+    func cancelMediumAlert() {
+        if case .solid = alertState {
+            print("DEBUGY: ViewModel cancelling medium alert.")
+            alertState = .none
         }
+    }
+    
+    func handleStrongAlertAction(shouldAddDetails: Bool) {
+        guard case .strong(let rule) = alertState else { return }
+        
+        if shouldAddDetails {
+            NavigationManager.shared.reminderIDForActivitySelection = rule.id
+        } else {
+            SystemDelegate.shared.createAndSendReflection(reminderID: rule.id, activity: nil, subactivity: nil)
+        }
+        
+        self.alertState = .none
+    }
+    
+    func rejectStrongAlert() {
+        self.alertState = .none
     }
     
     private func checkForDailyReset() {

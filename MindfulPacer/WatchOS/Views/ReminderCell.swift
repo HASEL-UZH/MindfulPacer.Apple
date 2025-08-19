@@ -14,7 +14,7 @@ struct ReminderCell: View {
         HStack(spacing: 16) {
             Icon(
                 name: "alarm",
-                color: rule.color,
+                color: rule.reminderType.color,
                 background: true
             )
             

@@ -48,11 +48,11 @@ struct HeartRateChartView: View {
                         if case .heartRate(let threshold) = rule.ruleType {
                             RuleMark(y: .value("Threshold", threshold))
                                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
-                                .foregroundStyle(rule.color)
+                                .foregroundStyle(rule.reminderType.color)
                                 .annotation(position: .top, alignment: .leading) {
                                     Text("\(Int(threshold))")
                                         .font(.caption2)
-                                        .foregroundColor(rule.color)
+                                        .foregroundColor(rule.reminderType.color)
                                         .padding(.leading, 4)
                                 }
                         }

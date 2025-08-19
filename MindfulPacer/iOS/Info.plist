@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UILaunchImageFile</key>
+	<string>MindfulPacer Icon</string>
+	<key>UILaunchImageFile~iphone</key>
+	<string>MindfulPacer Icon</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We need to send you notifications for important updates.</string>
 	<key>UIBackgroundModes</key>

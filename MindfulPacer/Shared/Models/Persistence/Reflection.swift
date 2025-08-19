@@ -416,6 +416,13 @@ struct DefaultActivityData {
 
         activities = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, others]
     }
+    
+    static var allActivities: [Activity] {
+        if DefaultActivityData.activities.isEmpty {
+            DefaultActivityData.initializeData()
+        }
+        return DefaultActivityData.activities
+    }
 }
 
 // MARK: - Default Moods
