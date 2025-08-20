@@ -36,11 +36,32 @@ extension SchemaV1 {
         var physicalPain: Int?
         var depressionOrAnxiety: Int?
         var additionalInformation: String = ""
-        // MARK: Reminder Properties
+
         var measurementType: Reminder.MeasurementType?
         var reminderType: Reminder.ReminderType?
         var threshold: Int?
         var interval: Reminder.Interval?
+        var triggerData: Data?
+        
+        var triggerSamples: [MeasurementSample] {
+            get {
+                guard let data = triggerData else { return [] }
+                do {
+                    return try JSONDecoder().decode([MeasurementSample].self, from: data)
+                } catch {
+                    print("DEBUGY: Error decoding triggerData: \(error)")
+                    return []
+                }
+            }
+            set {
+                do {
+                    triggerData = try JSONEncoder().encode(newValue)
+                } catch {
+                    print("DEBUGY: Error encoding triggerSamples: \(error)")
+                }
+            }
+        }
+        
         
         init(
             id: UUID = UUID(),
@@ -60,7 +81,8 @@ extension SchemaV1 {
             measurementType: Reminder.MeasurementType? = nil,
             reminderType: Reminder.ReminderType? = nil,
             threshold: Int? = nil,
-            interval: Reminder.Interval? = nil
+            interval: Reminder.Interval? = nil,
+            triggerSamples: [MeasurementSample] = []
         ) {
             self.id = id
             self.date = date
@@ -80,8 +102,17 @@ extension SchemaV1 {
             self.reminderType = reminderType
             self.threshold = threshold
             self.interval = interval
+            self.triggerSamples = triggerSamples
         }
     }
+}
+
+// MARK: - MeasurementSample
+
+struct MeasurementSample: Codable, Hashable {
+    let type: Reminder.MeasurementType
+    let value: Double
+    let date: Date
 }
 
 // MARK: - Activity

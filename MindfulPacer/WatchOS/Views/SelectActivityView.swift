@@ -1,30 +1,9 @@
-//
-//  SelectActivityView.swift
-//  WatchOS
-//
-//  Created by Grigor Dochev on 15.08.2025.
-//
-
 import SwiftUI
 import SwiftData
 
-// MARK: - ActivitySelection
-@Observable
-class ActivitySelection {
-    var reflectionID: UUID
-    var selectedActivity: Activity?
-    var selectedSubactivity: Subactivity?
-    
-    init(reflectionID: UUID) {
-        self.reflectionID = reflectionID
-    }
-}
-
-// MARK: - SelectActivityView
-
 struct SelectActivityView: View {
     let reminderID: UUID
-    
+    let alertID: UUID
     let activities: [Activity]
     
     @Environment(\.dismissSheet) private var dismissSheet
@@ -32,26 +11,33 @@ struct SelectActivityView: View {
     var body: some View {
         NavigationStack {
             List(activities) { activity in
-                NavigationLink(
-                    destination:
-                        SelectSubactivityView(
-                            reminderID: reminderID,
-                            activity: activity
-                        )
-                ) {
+                NavigationLink(destination: SelectSubactivityView(reminderID: reminderID, alertID: alertID, activity: activity)) {
                     Label(activity.name, systemImage: activity.icon)
-                        .symbolVariant(.fill)
                 }
             }
             .navigationTitle("Select Activity")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Skip") {
+                        Task {
+                            Services.shared.systemDelegate.createAndSendReflection(
+                                reminderID: reminderID,
+                                alertID: alertID,
+                                activity: nil,
+                                subactivity: nil
+                            )
+                            dismissSheet()
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-// MARK: - SelectSubactivityView
-
 struct SelectSubactivityView: View {
     let reminderID: UUID
+    let alertID: UUID
     let activity: Activity
     
     @Environment(\.dismissSheet) private var dismissSheet
@@ -59,12 +45,15 @@ struct SelectSubactivityView: View {
     var body: some View {
         List(activity.subactivities ?? []) { subactivity in
             Button {
-                SystemDelegate.shared.createAndSendReflection(
-                    reminderID: reminderID,
-                    activity: activity,
-                    subactivity: subactivity
-                )
-                dismissSheet()
+                Task {
+                    Services.shared.systemDelegate.createAndSendReflection(
+                        reminderID: reminderID,
+                        alertID: alertID,
+                        activity: activity,
+                        subactivity: subactivity
+                    )
+                    dismissSheet()
+                }
             } label: {
                 Label(subactivity.name, systemImage: subactivity.icon)
             }
@@ -73,9 +62,20 @@ struct SelectSubactivityView: View {
     }
 }
 
-#Preview {
+#Preview("Activity List") {
     SelectActivityView(
         reminderID: UUID(),
+        alertID: UUID(),
         activities: DefaultActivityData.allActivities
     )
+}
+
+#Preview("Subactivity List") {
+    NavigationStack {
+        SelectSubactivityView(
+            reminderID: UUID(),
+            alertID: UUID(),
+            activity: DefaultActivityData.allActivities.first!
+        )
+    }
 }

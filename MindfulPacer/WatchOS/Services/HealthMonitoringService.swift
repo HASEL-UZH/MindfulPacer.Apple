@@ -96,6 +96,7 @@ enum RuleType: Sendable {
 
 public struct AlertRule: Identifiable, Sendable {
     public let id: UUID
+    var alertID: UUID?
     let measurementType: Reminder.MeasurementType
     let reminderType: Reminder.ReminderType
     let ruleType: RuleType
@@ -111,18 +112,16 @@ public struct AlertRule: Identifiable, Sendable {
 
 @MainActor
 final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, @unchecked Sendable {
-    
-    static let shared = HealthMonitorService()
-    
+        
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
     @Published var statusMessage: StatusMessage = .notConfigured
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
-
+    
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
     let mediumAlertCancelledSubject = PassthroughSubject<Void, Never>()
-
+    
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     
@@ -130,11 +129,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var cancellables = Set<AnyCancellable>()
-        
-    private var stepsCheckTimer: Timer?
-    private var alertDataCache: [UUID: [(value: Double, date: Date)]] = [:]
     
-    private override init() {
+    private var stepsCheckTimer: Timer?
+    
+     override init() {
         super.init()
         subscribeToCloudKitChanges()
     }
@@ -152,10 +150,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
         self.statusMessage = .configured
-    }
-    
-    func data(for alertID: UUID) -> [(value: Double, date: Date)]? {
-        return alertDataCache[alertID]
     }
     
     func refreshState() {
@@ -208,7 +202,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             return false
         }
         let allReminders = useCase.execute() ?? []
-                
+        
         self.activeRules = allReminders.map { reminder in
             let ruleType: RuleType
             if reminder.measurementType == .heartRate {
@@ -285,7 +279,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         statusMessage = .stopped
         activeRules = []
     }
-
+    
     func requestAuthorization() async throws -> Bool {
         let typesToShare: Set = [HKObjectType.workoutType()]
         let typesToRead: Set = [
@@ -382,8 +376,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 if rule.triggerDate == nil { rule.triggerDate = Date() }
                 rule.dipDate = nil
                 rule.collectedData.append((value: currentHeartRate, date: Date()))
+                
                 if let triggerDate = rule.triggerDate, Date().timeIntervalSince(triggerDate) >= rule.duration {
-                    self.sendNotification(for: rule)
+                    self.sendNotification(for: rule, withData: rule.collectedData)
+                    
                     rule.triggerDate = nil
                     rule.collectedData = []
                 }
@@ -393,7 +389,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                         print("DEBUGY: HR dropped below medium threshold. Sending cancel signal.")
                         self.mediumAlertCancelledSubject.send()
                     }
-                               }
+                }
                 
                 if rule.triggerDate != nil {
                     if rule.dipDate == nil { rule.dipDate = Date() }
@@ -446,7 +442,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     if totalSteps > threshold {
                         if !self.activeRules[index].notificationSent {
                             print("DEBUGY: Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
-                            self.sendNotification(for: self.activeRules[index])
+                            self.sendNotification(for: self.activeRules[index], with: totalSteps)
                             self.activeRules[index].notificationSent = true
                         }
                     } else {
@@ -461,25 +457,46 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
     }
     
-    private func sendNotification(for rule: AlertRule) {
+    private func sendNotification(
+        for rule: AlertRule,
+        with steps: Double? = nil,
+        withData heartRateData: [(value: Double, date: Date)] = []
+    ) {
         let alertID = UUID()
-        if rule.measurementType == .heartRate {
-            alertDataCache[alertID] = rule.collectedData
+        var samples: [MeasurementSample] = []
+        
+        switch rule.measurementType {
+        case .heartRate:
+            samples = heartRateData.map {
+                MeasurementSample(type: .heartRate, value: $0.value, date: $0.date)
+            }
+        case .steps:
+            if let totalSteps = steps {
+                samples = [MeasurementSample(type: .steps, value: totalSteps, date: Date())]
+            }
         }
         
+        Services.shared.systemDelegate.cacheTriggerData(samples, for: alertID)
+
         let content = UNMutableNotificationContent()
         content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
         content.body = rule.alertMessage
         content.sound = .defaultCritical
         content.categoryIdentifier = "HEART_RATE_ALERT"
         content.userInfo = [
-               "alert_id": alertID.uuidString,
-               "reminder_id": rule.id.uuidString
-           ]
-                   
+            "alert_id": alertID.uuidString,
+            "reminder_id": rule.id.uuidString
+        ]
+        
+        var ruleToSend = rule
+        ruleToSend.alertID = alertID
+        
         let request = UNNotificationRequest(identifier: alertID.uuidString, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
         UNUserNotificationCenter.current().add(request)
-        self.alertTriggeredSubject.send(rule)
+        
+        if rule.measurementType == .heartRate {
+            self.alertTriggeredSubject.send(ruleToSend)
+        }
     }
     
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D0506F02E55C05300C5123A /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0506EF2E55C05300C5123A /* Services.swift */; };
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
@@ -225,6 +226,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0D0506EF2E55C05300C5123A /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
 		0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabelGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -551,6 +553,7 @@
 			children = (
 				0D352C692E474DE40039055F /* HealthMonitoringService.swift */,
 				0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */,
+				0D0506EF2E55C05300C5123A /* Services.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1562,6 +1565,7 @@
 				0DE47A112E4B4A500052959C /* Icon.swift in Sources */,
 				0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */,
 				0DF5EDBD2E4F45D8005DB9DE /* FetchReflectionsUseCase.swift in Sources */,
+				0D0506F02E55C05300C5123A /* Services.swift in Sources */,
 				0D500FCB2C7376A700395AEB /* Message.swift in Sources */,
 				0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 			);

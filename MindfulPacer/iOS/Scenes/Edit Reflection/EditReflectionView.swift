@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 // MARK: - Presentation Enums
 
@@ -42,7 +43,6 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-//    @Environment(\.keyboardShowing) private var keyboardShowing
     @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
 
@@ -439,72 +439,77 @@ struct EditReflectionView: View {
 
     @ViewBuilder
     private var reminder: some View {
-        if let reflection = reflection {
-            if let reminderMeasurementType = reflection.measurementType,
-               let reminderType = reflection.reminderType {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "alarm",
-                        title: String(localized: "Reminder"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    ),
-                    description: Text("The Reminder that triggered this reflection.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-                    HStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            IconLabel(
-                                icon: reminderMeasurementType.icon,
-                                title: reminderMeasurementType.rawValue,
-                                labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
-                            )
-                            .font(.subheadline.weight(.semibold))
-
-                            Text(viewModel.reminderTriggerSummary(for: reflection))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Icon(
-                            name: "alarm",
-                            color: reminderType.color,
+        VStack(spacing: 16) {
+            if let reflection {
+                if let reminderMeasurementType = reflection.measurementType,
+                   let reminderType = reflection.reminderType {
+                    IconLabelGroupBox(
+                        label: IconLabel(
+                            icon: "alarm",
+                            title: String(localized: "Reminder"),
+                            labelColor: Color("BrandPrimary"),
                             background: true
                         )
+                    ) {
+                        VStack(spacing: 16) {
+                            Picker(selection: $viewModel.selectedReminderContext) {
+                                Text("Reminder")
+                                    .tag(ReminderContext.reminder)
+                                Text("Chart")
+                                    .tag(ReminderContext.chart)
+                            } label: {
+                                Text(viewModel.selectedReminderContext.rawValue)
+                            }
+                            .pickerStyle(.segmented)
+                            
+                            if viewModel.selectedReminderContext == .chart {
+                                TriggerDataChartView(reflection: reflection)
+                            } else {
+                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                                    HStack(spacing: 16) {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            IconLabel(
+                                                icon: reminderMeasurementType.icon,
+                                                title: reminderMeasurementType.rawValue,
+                                                labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
+                                            )
+                                            .font(.subheadline.weight(.semibold))
+                                            
+                                            Text(viewModel.reminderTriggerSummary(for: reflection))
+                                                .font(.footnote)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Icon(
+                                            name: "alarm",
+                                            color: reminderType.color,
+                                            background: true
+                                        )
+                                    }
+                                    .foregroundStyle(Color.primary)
+                                }
+
+                            }
+                        }
                     }
-                    .foregroundStyle(Color.primary)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .foregroundStyle(Color(.tertiarySystemGroupedBackground))
+                    .iconLabelGroupBoxStyle(.divider)
+                } else {
+                    Card(backgroundColor: Color(.tertiarySystemFill)) {
+                        IconLabel(
+                            icon: "person",
+                            title: String(localized: "Manually Created Reflection"),
+                            labelColor: .secondary,
+                            background: true
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .layoutPriority(1)
                     }
                 }
-                .iconLabelGroupBoxStyle(.divider)
-            } else {
-                manualReflection
             }
-        } else {
-            manualReflection
-        }
-    }
-
-    // MARK: Manual Reflection
-
-    private var manualReflection: some View {
-        Card(backgroundColor: Color(.tertiarySystemFill)) {
-            IconLabel(
-                icon: "person",
-                title: String(localized: "Manually Created Reflection"),
-                labelColor: .secondary,
-                background: true
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .layoutPriority(1)
         }
     }
 
@@ -516,7 +521,6 @@ struct EditReflectionView: View {
             onReflectionCreation?()
             dismiss()
         }
-//        .padding(keyboardShowing ? [.all] : [.horizontal, .top])
         .padding([.horizontal, .top])
         .background(.ultraThinMaterial)
         .disabled(viewModel.isActionButtonDisabled)
@@ -570,6 +574,206 @@ struct EditReflectionView: View {
             message: Text("Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us."),
             dismissButton: .default(Text("Ok"))
         )
+    }
+}
+
+// MARK: - TriggerDataChartView
+
+struct TriggerDataChartView: View {
+    
+    let reflection: Reflection
+    
+    @State private var selectedDate: Date?
+    
+    var samples: [MeasurementSample] { reflection.triggerSamples }
+    
+    private var measurementType: Reminder.MeasurementType? {
+        samples.first?.type
+    }
+    
+    private var eventStartDate: Date? {
+        samples.first?.date
+    }
+    
+    private var eventEndDate: Date? {
+        samples.last?.date
+    }
+    
+    private var xAxisValues: [Date] {
+        guard let startDate = eventStartDate, let endDate = eventEndDate else { return [] }
+        let middleDate = startDate.addingTimeInterval((endDate.timeIntervalSince(startDate)) / 2)
+        return [startDate, middleDate, endDate]
+    }
+    
+    private var downsampledSamples: [MeasurementSample] {
+        let maxDataPoints = 200
+        
+        guard samples.count > maxDataPoints else {
+            return samples
+        }
+        
+        var downsampledData: [MeasurementSample] = []
+        let bucketSize = Double(samples.count) / Double(maxDataPoints)
+        
+        for i in 0..<maxDataPoints {
+            let bucketStart = Int(Double(i) * bucketSize)
+            let bucketEnd = Int(Double(i + 1) * bucketSize)
+            
+            guard let bucketSlice = samples[safe: bucketStart..<bucketEnd] else { continue }
+            let bucket = Array(bucketSlice)
+            guard !bucket.isEmpty else { continue }
+            
+            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
+                downsampledData.append(significantPoint)
+            }
+        }
+        
+        return downsampledData
+    }
+    
+    private var yDomain: ClosedRange<Double> {
+        let values = samples.map { $0.value }
+        let minY = values.min() ?? 0
+        let maxY = values.max() ?? 100
+        let threshold = Double(reflection.threshold ?? Int(maxY))
+        
+        let overallMin = min(minY, threshold)
+        let overallMax = max(maxY, threshold)
+        
+        let padding = (overallMax - overallMin) * 0.1
+        return (overallMin - (padding + 5))...(overallMax + (padding + 5))
+    }
+    
+    private var selectedSample: MeasurementSample? {
+        guard let selectedDate else { return nil }
+        return samples.min(by: { abs($0.date.distance(to: selectedDate)) < abs($1.date.distance(to: selectedDate)) })
+    }
+    
+    private var minValue: Double {
+        samples.map(\.value).min() ?? 0
+    }
+    
+    private var chartColor: Color {
+        measurementType == .heartRate ? .pink : .teal
+    }
+    
+    private var xAxisFormatStyle: Date.FormatStyle {
+        if let interval = reflection.interval {
+            switch interval {
+            case .immediately:
+                return .dateTime.hour().minute().second()
+            case .oneMinute:
+                return .dateTime.hour().minute().second()
+            case .fiveMinutes:
+                return .dateTime.hour().minute()
+            case .tenMinutes:
+                return .dateTime.hour().minute()
+            case .fifteenMinutes:
+                return .dateTime.hour().minute()
+            case .thirtyMinutes:
+                return .dateTime.hour().minute()
+            case .oneHour:
+                return .dateTime.hour().minute()
+            case .twoHours:
+                return .dateTime.hour().minute()
+            case .fourHours:
+                return .dateTime.hour()
+            case .oneDay:
+                return .dateTime.hour()
+            }
+        } else {
+            return .dateTime.hour().minute().second()
+        }
+    }
+    
+    var body: some View {
+        if samples.isEmpty {
+            Text("No trigger data was saved for this reflection.")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .frame(height: 150)
+        } else {
+            Chart {
+                ForEach(downsampledSamples, id: \.date) { sample in
+                    LineMark(
+                        x: .value("Time", sample.date),
+                        y: .value("BPM", sample.value)
+                    )
+                    .foregroundStyle(chartColor)
+                    .interpolationMethod(.catmullRom)
+                }
+                
+                if let threshold = reflection.threshold {
+                    RuleMark(y: .value("Goal", threshold))
+                        .foregroundStyle(reflection.reminderType?.color ?? .primary)
+                        .lineStyle(.init(lineWidth: 1, dash: [5]))
+                        .annotation(position: .top, alignment: .leading) {
+                            Text("\(threshold)")
+                                .font(.caption2)
+                                .foregroundColor(reflection.reminderType?.color ?? .primary)
+                        }
+                }
+            }
+            .chartYScale(domain: yDomain)
+            .chartXAxis {
+                AxisMarks(values: xAxisValues) { value in
+                    AxisGridLine()
+                    AxisValueLabel(format: xAxisFormatStyle, collisionResolution: .greedy)
+                }
+            }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    if let selectedDate {
+                        let datePosition = proxy.position(forX: selectedDate) ?? 0
+                        
+                        Rectangle()
+                            .fill(chartColor.opacity(0.3))
+                            .frame(width: 2, height: geometry.size.height)
+                            .position(x: datePosition, y: geometry.size.height / 2)
+                        
+                        if let selectedSample {
+                            valuePopover(for: selectedSample)
+                                .position(x: datePosition, y: geometry.size.height / 2 - 40)
+                        }
+                    }
+                }
+            }
+            .chartXSelection(value: $selectedDate)
+            .frame(height: 256)
+        }
+    }
+    
+    @ViewBuilder
+    private func valuePopover(for sample: MeasurementSample) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(sample.date.formatted(.dateTime.hour().minute().second()))
+                .font(.caption)
+                .foregroundColor(chartColor)
+            
+            HStack(alignment: .lastTextBaseline, spacing: 4) {
+                Text(String(Int(sample.value)))
+                    .font(.body.weight(.bold))
+                Text(measurementType == .heartRate ? "bpm" : "steps")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(8)
+        .background {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Material.thick)
+        }
+    }
+}
+
+// MARK: - Array+Ext
+
+fileprivate extension Array {
+    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
+        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
+            return self[range]
+        }
+        return nil
     }
 }
 

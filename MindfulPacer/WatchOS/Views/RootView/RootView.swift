@@ -7,21 +7,19 @@
 
 import SwiftUI
 
-@MainActor
-class NavigationManager: ObservableObject {
-    static let shared = NavigationManager()
-    @Published var reminderIDForActivitySelection: UUID? {
-        didSet {
-            if let id = reminderIDForActivitySelection {
-                print("DEBUGY NAV: reminderIDForActivitySelection was SET to \(id)")
-            } else {
-                print("DEBUGY NAV: reminderIDForActivitySelection was set to NIL")
-            }
-        }
-    }
-    private init() {}
+struct ActivitySelectionInfo: Identifiable {
+    let id: UUID
+    let reminderID: UUID
 }
 
+@MainActor
+class NavigationManager: ObservableObject {
+    @Published var selectedAlertID: UUID?
+    @Published var pendingActivitySelection: ActivitySelectionInfo?
+    init() {}
+}
+
+// This is the only extension you need here.
 extension UUID: @retroactive Identifiable {
     public var id: UUID { self }
 }

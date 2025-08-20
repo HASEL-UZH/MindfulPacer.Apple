@@ -13,10 +13,12 @@ import WatchConnectivity
 @main
 struct WatchOSApp: App {
     
-    @StateObject private var navigationManager = NavigationManager.shared
-    private let systemDelegate = SystemDelegate.shared
+    @StateObject private var navigationManager = Services.shared.navigationManager
+    private let systemDelegate = Services.shared.systemDelegate
 
     init() {
+        Services.shared.configure()
+        
         UNUserNotificationCenter.current().delegate = systemDelegate
         WCSession.default.delegate = systemDelegate
         
@@ -32,9 +34,16 @@ struct WatchOSApp: App {
             RootView()
                 .environmentObject(navigationManager)
         }
+        .modelContainer(.prod)
     }
     
     private func registerNotificationCategories() {
+        let viewDetailsAction = UNNotificationAction(
+            identifier: "VIEW_DETAILS_ACTION",
+            title: "View Details",
+            options: .foreground
+        )
+        
         let acceptAddDetailsAction = UNNotificationAction(
             identifier: "ACCEPT_ADD_DETAILS_ACTION",
             title: "Accept & Add Details",
@@ -49,7 +58,7 @@ struct WatchOSApp: App {
         
         let heartRateAlertCategory = UNNotificationCategory(
             identifier: "HEART_RATE_ALERT",
-            actions: [acceptAddDetailsAction, acceptLaterAction],
+            actions: [viewDetailsAction, acceptAddDetailsAction, acceptLaterAction],
             intentIdentifiers: [],
             options: []
         )

@@ -9,6 +9,13 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - ReminderContext
+
+enum ReminderContext: String {
+    case reminder
+    case chart
+}
+
 // MARK: - EditReflectionViewModel
 
 @MainActor
@@ -30,6 +37,7 @@ class EditReflectionViewModel {
     var navigationPath: [EditReflectionNavigationDestination] = []
     var activeSheet: EditReflectionSheet?
     var activeAlert: EditReflectionAlert?
+    var selectedReminderContext: ReminderContext = .reminder
     
     var activities: [Activity] = []
     
@@ -223,7 +231,8 @@ class EditReflectionViewModel {
             measurementType: nil,
             reminderType: nil,
             threshold: nil,
-            interval: nil
+            interval: nil,
+            triggerSamples: []
         )
         
         print("DEBUGY:", wellBeing)

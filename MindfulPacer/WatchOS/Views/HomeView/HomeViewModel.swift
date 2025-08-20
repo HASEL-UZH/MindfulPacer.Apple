@@ -18,28 +18,24 @@ struct StorageKeys {
     static let lastAlertDate = "lastAlertDate"
 }
 
-enum AlertState {
+enum AlertState: Equatable {
     case none
     case flashing(color: Color, type: Reminder.MeasurementType)
     case solid(color: Color)
-    case strong(rule: AlertRule)
+    case strong(rule: AlertRule, alertID: UUID)
 }
 
-extension AlertState: Equatable {
+extension AlertState {
     static func == (lhs: AlertState, rhs: AlertState) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none):
             return true
-            
-        case (.flashing(let lhsColor, let lhsType), .flashing(let rhsColor, let rhsType)):
-            return lhsColor == rhsColor && lhsType == rhsType
-            
-        case (.solid(let lhsColor), .solid(let rhsColor)):
-            return lhsColor == rhsColor
-            
-        case (.strong(let lhsRule), .strong(let rhsRule)):
-            return lhsRule.id == rhsRule.id
-            
+        case (.flashing(let lColor, let lType), .flashing(let rColor, let rType)):
+            return lColor == rColor && lType == rType
+        case (.solid(let lColor), .solid(let rColor)):
+            return lColor == rColor
+        case (.strong(let lRule, let lId), .strong(let rRule, let rId)):
+            return lRule.id == rRule.id && lId == rId
         default:
             return false
         }
@@ -111,8 +107,6 @@ class HomeViewModel {
                 downsampledData.append(significantPoint)
             }
         }
-        
-        print("DEBUGY: Downsampling HR data from \(heartRateSamples.count) to \(downsampledData.count) points.")
         return downsampledData
     }
     
@@ -153,16 +147,15 @@ class HomeViewModel {
     }
     
     private var refreshTimer: Timer?
-    private let monitorService = HealthMonitorService.shared
     private var cancellables = Set<AnyCancellable>()
-    private let fetchRemindersUseCase: FetchRemindersUseCase
     
     init() {
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext)
+        let modelContext = ModelContainer.prod.mainContext
+        let fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
         
-        SystemDelegate.shared.configure()
-        monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
+        Services.shared.systemDelegate.configure()
+        Services.shared.monitorService.configure(fetchRemindersUseCase: fetchRemindersUseCase)
         
         loadPersistentCounts()
         checkForDailyReset()
@@ -173,20 +166,19 @@ class HomeViewModel {
     
     private init(isForPreview: Bool) {
         let container = try! ModelContainer(for: Reminder.self, Activity.self)
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: container.mainContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: container.mainContext)
+        let modelContext = container.mainContext
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
         self.heartRate = 78
-        
         self.strongAlertCount = 1
         self.mediumAlertCount = 0
         self.lightAlertCount = 2
         
         let now = Date()
         var samples: [(value: Double, date: Date)] = []
-        for i in 0..<60 { // 60 data points
+        for i in 0..<60 {
             let timeInterval = Double(i) * -60
             let date = now.addingTimeInterval(timeInterval)
             let sineValue = sin(Double(i) * 0.2)
@@ -197,7 +189,7 @@ class HomeViewModel {
         
         var stepData: [(date: Date, steps: Double)] = []
         for i in 0..<12 {
-            let timeInterval = Double(i) * -300 // 5 minutes
+            let timeInterval = Double(i) * -300
             let date = now.addingTimeInterval(timeInterval)
             let steps = Double.random(in: 50...300)
             stepData.append((date: date, steps: steps))
@@ -216,37 +208,37 @@ class HomeViewModel {
     }
     
     private func setupSubscriptions() {
-        monitorService.$statusMessage
+        Services.shared.monitorService.$statusMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newStatus in self?.statusMessage = newStatus }
             .store(in: &cancellables)
         
-        monitorService.$heartRate
+        Services.shared.monitorService.$heartRate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newHeartRate in self?.heartRate = newHeartRate }
             .store(in: &cancellables)
         
-        monitorService.$isSessionActive
+        Services.shared.monitorService.$isSessionActive
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newIsMonitoring in self?.isMonitoring = newIsMonitoring }
             .store(in: &cancellables)
         
-        monitorService.alertTriggeredSubject
+        Services.shared.monitorService.alertTriggeredSubject
             .receive(on: DispatchQueue.main)
             .sink { [weak self] rule in self?.triggerInAppAlert(for: rule) }
             .store(in: &cancellables)
         
-        monitorService.$recentHeartRateSamples
+        Services.shared.monitorService.$recentHeartRateSamples
             .receive(on: DispatchQueue.main)
             .sink { [weak self] samples in self?.heartRateSamples = samples }
             .store(in: &cancellables)
         
-        monitorService.$activeRules
+        Services.shared.monitorService.$activeRules
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newRules in self?.activeRules = newRules }
             .store(in: &cancellables)
         
-        monitorService.mediumAlertCancelledSubject
+        Services.shared.monitorService.mediumAlertCancelledSubject
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.cancelMediumAlert()
@@ -262,14 +254,14 @@ class HomeViewModel {
     
     func onAppear() {
         Task {
-            let isAuthorized = try await monitorService.requestAuthorization()
+            let isAuthorized = try await Services.shared.monitorService.requestAuthorization()
             
             guard isAuthorized else {
                 self.statusMessage = .authDenied
                 return
             }
             
-            self.monitorService.refreshState()
+            Services.shared.monitorService.refreshState()
             await fetchTodaysSteps()
             await fetchChartData()
         }
@@ -290,37 +282,32 @@ class HomeViewModel {
     }
     
     func requestCreateReflectionOnPhone() {
-        SystemDelegate.shared.requestCreateReflectionOnPhone()
+        Services.shared.systemDelegate.requestCreateReflectionOnPhone()
     }
     
     func fetchChartData() async {
-        self.hourlyStepData = await monitorService.fetchHourlyStepData()
+        self.hourlyStepData = await Services.shared.monitorService.fetchHourlyStepData()
     }
     
     func fetchTodaysSteps() async {
-        let steps = await monitorService.fetchTodaysSteps()
+        let steps = await Services.shared.monitorService.fetchTodaysSteps()
         self.todaysSteps = Int(steps)
     }
     
     private func triggerInAppAlert(for rule: AlertRule) {
-        // --- Light Alert: A quick, transient flash on a specific widget ---
         if rule.reminderType == .light {
             guard alertState == .none else { return }
-            
-            // Set the state to flashing, passing the color AND the measurement type.
             alertState = .flashing(color: rule.reminderType.color, type: rule.measurementType)
             lightAlertCount += 1
             WKInterfaceDevice.current().play(.success)
-            
-            // After a delay, reset the state back to none.
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.alertState = .none
+                if case .flashing = self.alertState { self.alertState = .none }
             }
         }
         
-        // --- Medium Alert: A persistent solid background ---
         if rule.reminderType == .medium {
-            if alertState != .solid(color: rule.reminderType.color) {
+            if case .solid(let color) = alertState, color == rule.reminderType.color { }
+            else {
                 alertState = .solid(color: rule.reminderType.color)
                 mediumAlertCount += 1
                 WKInterfaceDevice.current().play(.stop)
@@ -328,9 +315,11 @@ class HomeViewModel {
         }
         
         if rule.reminderType == .strong {
-            if case .strong = alertState {
-            } else {
-                alertState = .strong(rule: rule)
+            guard let alertID = rule.alertID else { return }
+
+            if case .strong = alertState { }
+            else {
+                alertState = .strong(rule: rule, alertID: alertID)
                 strongAlertCount += 1
                 Task {
                     for _ in 0..<3 {
@@ -347,18 +336,25 @@ class HomeViewModel {
     
     func cancelMediumAlert() {
         if case .solid = alertState {
-            print("DEBUGY: ViewModel cancelling medium alert.")
             alertState = .none
         }
     }
     
-    func handleStrongAlertAction(shouldAddDetails: Bool) {
-        guard case .strong(let rule) = alertState else { return }
+    func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
+        guard case .strong(let rule, _) = alertState else { return }
         
         if shouldAddDetails {
-            NavigationManager.shared.reminderIDForActivitySelection = rule.id
+            Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
+                id: alertID,
+                reminderID: rule.id
+            )
         } else {
-            SystemDelegate.shared.createAndSendReflection(reminderID: rule.id, activity: nil, subactivity: nil)
+            Services.shared.systemDelegate.createAndSendReflection(
+                reminderID: rule.id,
+                alertID: alertID,
+                activity: nil,
+                subactivity: nil
+            )
         }
         
         self.alertState = .none
@@ -423,9 +419,9 @@ extension Double {
 
 extension Array {
     subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
-        if range.startIndex > self.endIndex || range.endIndex > self.endIndex {
-            return nil
+        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
+            return self[range]
         }
-        return self[range]
+        return nil
     }
 }

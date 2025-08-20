@@ -44,7 +44,7 @@ class AnalyticsViewModel {
     // MARK: - Published Properties
     
     var activeSheet: AnalyticsViewSheet?
-
+    
     var reflectionsInPeriod: [ReflectionBucket] = []
     var reminders: [Reminder] = []
     
@@ -57,6 +57,33 @@ class AnalyticsViewModel {
     
     var heartRateChartData: [ChartDataItem] = []
     var stepsChartData: [ChartDataItem] = []
+    
+    var downsampledChartData: [ChartDataItem] {
+        let maxDataPoints = 250
+        
+        guard chartData.count > maxDataPoints else {
+            return chartData
+        }
+        
+        var downsampledData: [ChartDataItem] = []
+        let bucketSize = Double(chartData.count) / Double(maxDataPoints)
+        
+        for i in 0..<maxDataPoints {
+            let bucketStart = Int(Double(i) * bucketSize)
+            let bucketEnd = Int(Double(i + 1) * bucketSize)
+            
+            guard let bucketSlice = chartData[safe: bucketStart..<bucketEnd] else { continue }
+            let bucket = Array(bucketSlice)
+            guard !bucket.isEmpty else { continue }
+            
+            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
+                downsampledData.append(significantPoint)
+            }
+        }
+        
+        print("DEBUGY ANALYTICS: Downsampling from \(chartData.count) to \(downsampledData.count) points.")
+        return downsampledData
+    }
     
     var selectedDate: Date? {
         didSet {
@@ -156,7 +183,7 @@ class AnalyticsViewModel {
     var chartEmptyStateImage: String {
         selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis"
     }
-
+    
     var chartEmptyStateTitle: String {
         selectedMeasurementType == .heartRate ? String(localized: "No heart rate data") : String(localized: "No steps data")
     }
@@ -220,7 +247,7 @@ class AnalyticsViewModel {
     }
     
     // MARK: - Chart Related
-
+    
     func getXUnitForPeriod(_ period: Period) -> Calendar.Component {
         switch period {
         case .oneHour, .twoHours:
@@ -301,5 +328,14 @@ class AnalyticsViewModel {
                 (reminder.reminderType, reminder.threshold)
             }
             .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+    }
+}
+
+fileprivate extension Array {
+    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
+        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
+            return self[range]
+        }
+        return nil
     }
 }

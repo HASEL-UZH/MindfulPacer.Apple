@@ -57,22 +57,26 @@ struct HomeView: View {
         .onAppear {
             viewModel.onAppear()
         }
-        .sheet(item: $navigationManager.reminderIDForActivitySelection) { reminderID in
-            SelectActivityView(reminderID: reminderID, activities: viewModel.defaultActivities)
-                .environment(\.dismissSheet) {
-                    Task { @MainActor in
-                        navigationManager.reminderIDForActivitySelection = nil
-                    }
+        .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
+            SelectActivityView(
+                reminderID: selectionInfo.reminderID,
+                alertID: selectionInfo.id,
+                activities: viewModel.defaultActivities
+            )
+            .environment(\.dismissSheet) {
+                Task { @MainActor in
+                    navigationManager.pendingActivitySelection = nil
                 }
+            }
         }
         .overlay {
-            if case .strong(let rule) = viewModel.alertState {
-                strongReminderOverlay(for: rule)
+            if case .strong(let rule, let alertID) = viewModel.alertState {
+                strongReminderOverlay(for: rule, with: alertID)
             }
         }
     }
     
-    private func strongReminderOverlay(for rule: AlertRule) -> some View {
+    private func strongReminderOverlay(for rule: AlertRule, with alertID: UUID) -> some View {
         ZStack {
             Rectangle()
                 .foregroundStyle(.ultraThinMaterial)
@@ -101,14 +105,14 @@ struct HomeView: View {
                     
                     VStack {
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: true)
+                            viewModel.handleStrongAlertAction(shouldAddDetails: true, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details")
                                 .fontWeight(.semibold)
                         }
                         
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: false)
+                            viewModel.handleStrongAlertAction(shouldAddDetails: false, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details Later")
                         }
@@ -320,9 +324,9 @@ struct HomeView: View {
 }
 
 extension HomeViewModel {
-    var strongAlertRule: AlertRule? {
-        if case .strong(let rule) = alertState {
-            return rule
+    var strongAlertInfo: (rule: AlertRule, alertID: UUID)? {
+        if case .strong(let rule, let alertID) = alertState {
+            return (rule, alertID)
         }
         return nil
     }
@@ -330,5 +334,5 @@ extension HomeViewModel {
 
 #Preview {
     HomeView(viewModel: .mock)
-        .environmentObject(NavigationManager.shared)
+        .environmentObject(Services.shared.navigationManager)
 }

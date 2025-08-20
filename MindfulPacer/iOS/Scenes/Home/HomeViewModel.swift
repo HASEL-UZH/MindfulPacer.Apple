@@ -192,7 +192,8 @@ class HomeViewModel {
             measurementType: missedReflection.measurementType,
             reminderType: missedReflection.reminderType,
             threshold: missedReflection.threshold,
-            interval: missedReflection.interval
+            interval: missedReflection.interval,
+            triggerSamples: []
         )
        
         presentToast(.successfullyCreatedReflection)
