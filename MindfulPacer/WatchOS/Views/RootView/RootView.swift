@@ -14,12 +14,10 @@ struct ActivitySelectionInfo: Identifiable {
 
 @MainActor
 class NavigationManager: ObservableObject {
-    @Published var selectedAlertID: UUID?
     @Published var pendingActivitySelection: ActivitySelectionInfo?
     init() {}
 }
 
-// This is the only extension you need here.
 extension UUID: @retroactive Identifiable {
     public var id: UUID { self }
 }

@@ -70,30 +70,30 @@ struct HomeView: View {
             }
         }
         .overlay {
-            if case .strong(let rule, let alertID) = viewModel.alertState {
-                strongReminderOverlay(for: rule, with: alertID)
+            if case .showing(let rule, let alertID) = viewModel.alertState {
+                notificationOverlay(for: rule, with: alertID)
             }
         }
     }
     
-    private func strongReminderOverlay(for rule: AlertRule, with alertID: UUID) -> some View {
+    private func notificationOverlay(for rule: AlertRule, with alertID: UUID) -> some View {
         ZStack {
             Rectangle()
-                .foregroundStyle(.ultraThinMaterial)
+                .foregroundStyle(.ultraThickMaterial)
                 .ignoresSafeArea()
             
-            Color.red.opacity(0.7)
+            rule.reminderType.color.opacity(0.7)
                 .ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(spacing: 8) {
                         Label {
-                            Text("Strong Reminder")
+                            Text("\(rule.reminderType.rawValue) Reminder")
                                 .font(.headline.weight(.bold))
                         } icon: {
                             Image(systemName: "circle.fill")
-                                .foregroundStyle(.red)
+                                .foregroundStyle(rule.reminderType.color)
                         }
                         .foregroundColor(.white)
                         
@@ -118,12 +118,13 @@ struct HomeView: View {
                         }
                         
                         Button {
-                            viewModel.rejectStrongAlert()
+                            viewModel.dismissAlertOverlay()
                         } label: {
                             Text("Reject")
                         }
                     }
                     .buttonStyle(.bordered)
+                    .tint(rule.reminderType.color)
                     .foregroundColor(.white)
                     
                     Spacer()
@@ -135,131 +136,106 @@ struct HomeView: View {
     }
     
     private var mainStatusPage: some View {
-        ZStack {
-            if case .solid(let color) = viewModel.alertState {
-                color.opacity(0.3).ignoresSafeArea()
-                    .animation(.easeInOut, value: viewModel.alertState)
-            }
-            
+        VStack(alignment: .leading) {
             VStack {
                 Button {
-                    
+                    viewModel.selectedTab = .heartRateChart
                 } label: {
-                    
+                    currentHeartRateWidget
+                }
+                .buttonStyle(.plain)
+                
+                Button {
+                    viewModel.selectedTab = .stepsChart
+                } label: {
+                    currentStepsWidget
+                }
+                .buttonStyle(.plain)
+            }
+            
+            HStack {
+                Button {
+                    viewModel.showStatusInfo.toggle()
+                } label: {
+                    Icon(
+                        name: viewModel.statusMessage.symbolName,
+                        color: viewModel.statusMessage.color,
+                        background: true
+                    )
                 }
                 .buttonStyle(.borderless)
-            }
-                
-            
-            VStack(alignment: .leading) {
-                VStack {
-                    Button {
-                        viewModel.selectedTab = .heartRateChart
-                    } label: {
-                        currentHeartRateWidget
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Button {
-                        viewModel.selectedTab = .stepsChart
-                    } label: {
-                        currentStepsWidget
-                    }
-                    .buttonStyle(.plain)
+                .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(
+                        """
+                        \(viewModel.statusMessage.rawValue)
+                        \(viewModel.statusMessage.description)
+                        """
+                    )
                 }
                 
-                HStack {
-                    Button {
-                        viewModel.showStatusInfo.toggle()
-                    } label: {
-                        Icon(
-                            name: viewModel.statusMessage.symbolName,
-                            color: viewModel.statusMessage.color,
-                            background: true
-                        )
-                    }
-                    .buttonStyle(.borderless)
-                    .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text(
-                            """
-                            \(viewModel.statusMessage.rawValue)
-                            \(viewModel.statusMessage.description)
-                            """
-                        )
-                    }
-                    
-                    Spacer()
-                    Divider()
-                    Spacer()
-                    
-                    Button {
-                        viewModel.showBatteryInfo.toggle()
-                    } label: {
-                        Icon(
-                            name: viewModel.batteryImageName,
-                            color: viewModel.batteryTintColor,
-                            background: true
-                        )
-                    }
-                    .buttonStyle(.borderless)
-                    .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text(
-                            """
-                            Percentage: \(Int(viewModel.batteryLevel * 100))%
-                            ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
-                            """
-                        )
-                    }
-                    
-                    Spacer()
-                    Divider()
-                    Spacer()
-                    
-                    Button {
-                        viewModel.showAppInfo.toggle()
-                    } label: {
-                        Icon(image: "MindfulPacer Icon", background: true)
-                    }
-                    .buttonStyle(.borderless)
-                    .alert("App Info", isPresented: $viewModel.showAppInfo) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text(
-                            """
-                            App Version: \(AppInfoService.appVersion)
-                            Build Number: \(AppInfoService.buildNumber)
-                            """
-                        )
-                    }
+                Spacer()
+                Divider()
+                Spacer()
+                
+                Button {
+                    viewModel.showBatteryInfo.toggle()
+                } label: {
+                    Icon(
+                        name: viewModel.batteryImageName,
+                        color: viewModel.batteryTintColor,
+                        background: true
+                    )
                 }
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .foregroundStyle(.primary.opacity(0.1))
+                .buttonStyle(.borderless)
+                .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(
+                        """
+                        Percentage: \(Int(viewModel.batteryLevel * 100))%
+                        ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
+                        """
+                    )
+                }
+                
+                Spacer()
+                Divider()
+                Spacer()
+                
+                Button {
+                    viewModel.showAppInfo.toggle()
+                } label: {
+                    Icon(image: "MindfulPacer Icon", background: true)
+                }
+                .buttonStyle(.borderless)
+                .alert("App Info", isPresented: $viewModel.showAppInfo) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(
+                        """
+                        App Version: \(AppInfoService.appVersion)
+                        Build Number: \(AppInfoService.buildNumber)
+                        """
+                    )
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(.primary.opacity(0.1))
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
     }
     
     private var currentHeartRateWidget: some View {
-        let isFlashing: Bool
-        if case .flashing(_, let type) = viewModel.alertState, type == .heartRate {
-            isFlashing = true
-        } else {
-            isFlashing = false
-        }
-        
-        return HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             Icon(
                 name: "heart.fill",
-                color: isFlashing ? Color.yellow : Color.pink,
+                color: Color.pink,
                 background: true
             )
             
@@ -267,68 +243,50 @@ struct HomeView: View {
                 if viewModel.isMonitoring {
                     Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
                         .font(.system(.title2, weight: .bold))
-                        .scaleEffect(isFlashing ? 1.2 : 1.0)
-                        .foregroundStyle(isFlashing ? Color.yellow : Color.primary)
+                        .foregroundStyle(Color.primary)
                 } else {
                     Text("--").font(.system(.title2, weight: .bold))
                 }
                 
                 Text("bpm")
                     .font(.system(.footnote))
-                    .foregroundStyle(isFlashing ? Color.yellow.opacity(0.7) : Color.secondary)
+                    .foregroundStyle(Color.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 16)
-                .fill(isFlashing ? Color.yellow.opacity(0.1) : Color.primary.opacity(0.1))
+                .fill(Color.primary.opacity(0.1))
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
     }
     
     private var currentStepsWidget: some View {
-        let isFlashing: Bool
-        if case .flashing(_, let type) = viewModel.alertState, type == .steps {
-            isFlashing = true
-        } else {
-            isFlashing = false
-        }
-        
-        return HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             Icon(
                 name: "figure.walk",
-                color: isFlashing ? Color.yellow : Color.teal,
+                color: Color.teal,
                 background: true
             )
-
+            
             VStack(alignment: .leading) {
                 Text(viewModel.todaysSteps, format: .number)
                     .font(.system(.title2, weight: .bold))
-                    .scaleEffect(isFlashing ? 1.2 : 1.0)
-                    .foregroundStyle(isFlashing ? Color.yellow : Color.primary)
+                    .foregroundStyle(Color.primary)
                 
                 Text("steps")
                     .font(.system(.footnote))
-                    .foregroundStyle(isFlashing ? Color.yellow.opacity(0.7) : Color.secondary)
+                    .foregroundStyle(Color.secondary)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 16)
-                .fill(isFlashing ? Color.yellow.opacity(0.1) : Color.primary.opacity(0.1))
+                .fill(Color.primary.opacity(0.1))
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
-    }
-}
-
-extension HomeViewModel {
-    var strongAlertInfo: (rule: AlertRule, alertID: UUID)? {
-        if case .strong(let rule, let alertID) = alertState {
-            return (rule, alertID)
-        }
-        return nil
     }
 }
 

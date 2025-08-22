@@ -91,14 +91,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     ) {
         let userInfo = response.notification.request.content.userInfo
         
-        if response.actionIdentifier == "VIEW_DETAILS_ACTION" {
-            if let idString = userInfo["alert_id"] as? String, let alertID = UUID(uuidString: idString) {
-                Services.shared.navigationManager.selectedAlertID = alertID
-            }
-            completionHandler()
-            return
-        }
-        
         guard let alertIDString = userInfo["alert_id"] as? String,
               let alertID = UUID(uuidString: alertIDString),
               let reminderIDString = userInfo["reminder_id"] as? String,

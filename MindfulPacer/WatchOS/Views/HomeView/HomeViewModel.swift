@@ -20,9 +20,7 @@ struct StorageKeys {
 
 enum AlertState: Equatable {
     case none
-    case flashing(color: Color, type: Reminder.MeasurementType)
-    case solid(color: Color)
-    case strong(rule: AlertRule, alertID: UUID)
+    case showing(rule: AlertRule, alertID: UUID)
 }
 
 extension AlertState {
@@ -30,11 +28,7 @@ extension AlertState {
         switch (lhs, rhs) {
         case (.none, .none):
             return true
-        case (.flashing(let lColor, let lType), .flashing(let rColor, let rType)):
-            return lColor == rColor && lType == rType
-        case (.solid(let lColor), .solid(let rColor)):
-            return lColor == rColor
-        case (.strong(let lRule, let lId), .strong(let rRule, let rId)):
+        case (.showing(let lRule, let lId), .showing(let rRule, let rId)):
             return lRule.id == rRule.id && lId == rId
         default:
             return false
@@ -45,7 +39,7 @@ extension AlertState {
 @MainActor
 @Observable
 class HomeViewModel {
-    var statusMessage: StatusMessage = .initializing
+    var statusMessage: StatusMessage = .notMonitoring
     var heartRate: Double = 0
     var isMonitoring: Bool = false
     var isShowingActiveRules = false
@@ -238,16 +232,10 @@ class HomeViewModel {
             .sink { [weak self] newRules in self?.activeRules = newRules }
             .store(in: &cancellables)
         
-        Services.shared.monitorService.mediumAlertCancelledSubject
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.cancelMediumAlert()
-            }
-            .store(in: &cancellables)
-        
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
                 await self?.fetchChartData()
+                await self?.fetchTodaysSteps()
             }
         }
     }
@@ -257,7 +245,7 @@ class HomeViewModel {
             let isAuthorized = try await Services.shared.monitorService.requestAuthorization()
             
             guard isAuthorized else {
-                self.statusMessage = .authDenied
+                self.statusMessage = .permissionDenied
                 return
             }
             
@@ -295,37 +283,25 @@ class HomeViewModel {
     }
     
     private func triggerInAppAlert(for rule: AlertRule) {
-        if rule.reminderType == .light {
-            guard alertState == .none else { return }
-            alertState = .flashing(color: rule.reminderType.color, type: rule.measurementType)
+        guard alertState == .none else { return }
+        
+        guard let alertID = rule.alertID else { return }
+        
+        self.alertState = .showing(rule: rule, alertID: alertID)
+        
+        switch rule.reminderType {
+        case .light:
             lightAlertCount += 1
             WKInterfaceDevice.current().play(.success)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                if case .flashing = self.alertState { self.alertState = .none }
-            }
-        }
-        
-        if rule.reminderType == .medium {
-            if case .solid(let color) = alertState, color == rule.reminderType.color { }
-            else {
-                alertState = .solid(color: rule.reminderType.color)
-                mediumAlertCount += 1
-                WKInterfaceDevice.current().play(.stop)
-            }
-        }
-        
-        if rule.reminderType == .strong {
-            guard let alertID = rule.alertID else { return }
-
-            if case .strong = alertState { }
-            else {
-                alertState = .strong(rule: rule, alertID: alertID)
-                strongAlertCount += 1
-                Task {
-                    for _ in 0..<3 {
-                        WKInterfaceDevice.current().play(.failure)
-                        try? await Task.sleep(for: .milliseconds(500))
-                    }
+        case .medium:
+            mediumAlertCount += 1
+            WKInterfaceDevice.current().play(.stop)
+        case .strong:
+            strongAlertCount += 1
+            Task {
+                for _ in 0..<3 {
+                    WKInterfaceDevice.current().play(.failure)
+                    try? await Task.sleep(for: .milliseconds(500))
                 }
             }
         }
@@ -334,14 +310,8 @@ class HomeViewModel {
         UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
     }
     
-    func cancelMediumAlert() {
-        if case .solid = alertState {
-            alertState = .none
-        }
-    }
-    
     func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
-        guard case .strong(let rule, _) = alertState else { return }
+        guard case .showing(let rule, _) = alertState else { return }
         
         if shouldAddDetails {
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
@@ -357,6 +327,10 @@ class HomeViewModel {
             )
         }
         
+        self.alertState = .none
+    }
+    
+    func dismissAlertOverlay() {
         self.alertState = .none
     }
     

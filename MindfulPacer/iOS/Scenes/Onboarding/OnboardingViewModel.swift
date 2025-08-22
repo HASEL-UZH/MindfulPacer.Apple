@@ -8,6 +8,37 @@
 import Combine
 import Foundation
 
+// MARK: - AppleWatchComplicationType
+
+enum AppleWatchComplicationType: String, CaseIterable {
+    case rectangular
+    case circular
+    case corner
+    case inline
+    
+    var icon: String {
+        switch self {
+        case .circular: "circle.fill"
+        case .rectangular: "rectangle.fill"
+        case .corner: "righttriangle.split.diagonal.fill"
+        case .inline: "line.3.horizontal"
+        }
+    }
+    
+    var image: String {
+        switch self {
+        case .circular:
+            "Circular Complication"
+        case .rectangular:
+            "Rectangular Complication"
+        case .corner:
+            "Corner Complication"
+        case .inline:
+            "Inline Complication"
+        }
+    }
+}
+
 // MARK: - KeyFeatureItem
 
 struct KeyFeatureItem {
@@ -53,6 +84,7 @@ class OnboardingViewModel {
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
     var selectedModeOfUse: ModeOfUse?
+    var selectedAppleWatchComplicationTyoe: AppleWatchComplicationType = .rectangular
     
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {

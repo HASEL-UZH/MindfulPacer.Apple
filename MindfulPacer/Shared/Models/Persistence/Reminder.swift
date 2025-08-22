@@ -219,7 +219,7 @@ extension Reminder {
         }
         
         static var heartRateIntervals: [Interval] {
-            [.oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes, .thirtyMinutes, .oneHour]
+            [.oneMinute, .fiveMinutes, .fifteenMinutes, .oneHour]
         }
         
         static var stepsIntervals: [Interval] {

@@ -449,7 +449,10 @@ struct EditReflectionView: View {
                             title: String(localized: "Reminder"),
                             labelColor: Color("BrandPrimary"),
                             background: true
-                        )
+                        ), description:
+                            Text(viewModel.reminderTriggerSummary(for: reflection))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     ) {
                         VStack(spacing: 16) {
                             Picker(selection: $viewModel.selectedReminderContext) {
@@ -686,6 +689,15 @@ struct TriggerDataChartView: View {
         }
     }
     
+    private var triggerWindowStartDate: Date? {
+        guard let endDate = eventEndDate, let interval = reflection.interval?.timeInterval else { return nil }
+        return endDate.addingTimeInterval(-interval)
+    }
+    
+    private var triggerWindowEndDate: Date? {
+        return eventEndDate
+    }
+    
     var body: some View {
         if samples.isEmpty {
             Text("No trigger data was saved for this reflection.")
@@ -694,6 +706,14 @@ struct TriggerDataChartView: View {
                 .frame(height: 150)
         } else {
             Chart {
+                if let startDate = triggerWindowStartDate, let endDate = triggerWindowEndDate {
+                    RectangleMark(
+                        xStart: .value("Start", startDate),
+                        xEnd: .value("End", endDate)
+                    )
+                    .foregroundStyle(chartColor.opacity(0.1))
+                }
+                
                 ForEach(downsampledSamples, id: \.date) { sample in
                     LineMark(
                         x: .value("Time", sample.date),

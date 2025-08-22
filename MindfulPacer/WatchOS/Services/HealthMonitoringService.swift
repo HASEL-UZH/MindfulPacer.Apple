@@ -12,82 +12,57 @@ import UserNotifications
 import Combine
 import SwiftUI
 import CoreData
+import WidgetKit
 
 // MARK: - StatusMessage
 
 enum StatusMessage: String {
-    case notConfigured = "Not Configured"
-    case configured = "Configured"
-    case ready = "Ready"
-    case noHRReminders = "No HR Reminders"
-    case initializing = "Initializing..."
-    case authDenied = "Auth Denied"
-    case collectionFailed = "Collection Failed"
     case monitoring = "Monitoring Active"
-    case sessionFailed = "Session Failed"
-    case stopped = "Stopped"
+    case notMonitoring = "Not Monitoring"
+    case noReminders = "No Reminders Set"
+    case permissionDenied = "Permission Denied"
+    case error = "An Error Occurred"
     case syncing = "Syncing..."
     
     var symbolName: String {
         switch self {
-        case .notConfigured: return "exclamationmark.triangle"
-        case .configured: return "checkmark.circle"
-        case .ready: return "bolt.heart"
-        case .noHRReminders: return "bell.slash"
-        case .initializing: return "hourglass"
-        case .authDenied: return "lock.slash"
-        case .collectionFailed: return "xmark.octagon"
-        case .monitoring: return "waveform.path.ecg"
-        case .sessionFailed: return "exclamationmark.octagon"
-        case .stopped: return "stop.circle"
+        case .monitoring: return "checkmark"
+        case .notMonitoring: return "xmark"
+        case .noReminders: return "bell.slash"
+        case .permissionDenied: return "lock.slash"
+        case .error: return "exclamationmark.triangle"
         case .syncing: return "arrow.triangle.2.circlepath.circle"
         }
     }
     
     var color: Color {
         switch self {
-        case .notConfigured: return .yellow
-        case .configured: return .green
-        case .ready: return .blue
-        case .noHRReminders: return .gray
-        case .initializing: return .orange
-        case .authDenied: return .red
-        case .collectionFailed: return .red
-        case .monitoring: return .brandPrimary
-        case .sessionFailed: return .red
-        case .stopped: return .gray
+        case .monitoring: return .green
+        case .notMonitoring: return .red
+        case .noReminders: return .gray
+        case .permissionDenied: return .red
+        case .error: return .orange
         case .syncing: return .cyan
         }
     }
     
     var description: String {
         switch self {
-        case .notConfigured:
-            return "The health monitoring service has not been configured yet. You may need to set up reminder rules or link required services."
-        case .configured:
-            return "The service is configured with reminders but not currently running a monitoring session."
-        case .ready:
-            return "All rules are active and the system is ready to start monitoring at any time."
-        case .noHRReminders:
-            return "No active heart rate reminders are set, so monitoring will not start until a rule is added."
-        case .initializing:
-            return "The monitoring service is starting up and preparing the HealthKit session."
-        case .authDenied:
-            return "HealthKit access was denied. The app cannot read heart rate or step data until access is granted in Settings."
-        case .collectionFailed:
-            return "The system failed to collect health data from HealthKit. This might be due to missing permissions or unavailable data."
         case .monitoring:
-            return "Monitoring is currently active, with HealthKit data being collected and rules evaluated."
-        case .sessionFailed:
-            return "The monitoring session could not be started or has failed unexpectedly."
-        case .stopped:
-            return "The monitoring session has ended, and no data is currently being collected."
+            return "The app is actively monitoring your health data based on your reminders."
+        case .notMonitoring:
+            return "Monitoring is currently inactive. This may be because no reminders are set or there was an issue."
+        case .noReminders:
+            return "Please add a reminder on your iPhone to begin monitoring."
+        case .permissionDenied:
+            return "Access to HealthKit was denied. Please grant permission in the Health app on your iPhone."
+        case .error:
+            return "An unexpected error occurred. Please try restarting the app."
         case .syncing:
-            return "The app is syncing data with CloudKit or another backend service."
+            return "Syncing your latest reminders from iCloud..."
         }
     }
 }
-
 
 enum RuleType: Sendable {
     case heartRate(threshold: Double)
@@ -115,7 +90,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
-    @Published var statusMessage: StatusMessage = .notConfigured
+    @Published var statusMessage: StatusMessage = .notMonitoring
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
     
@@ -132,9 +107,13 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     private var stepsCheckTimer: Timer?
     
-     override init() {
+    override init() {
         super.init()
         subscribeToCloudKitChanges()
+    }
+    
+    private var sharedUserDefaults: UserDefaults? {
+        return UserDefaults(suiteName: "group.com.MindfulPacer")
     }
     
     private func subscribeToCloudKitChanges() {
@@ -149,7 +128,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
-        self.statusMessage = .configured
+        self.statusMessage = .monitoring
     }
     
     func refreshState() {
@@ -159,7 +138,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         if isSessionActive {
             self.statusMessage = .monitoring
         } else {
-            self.statusMessage = hasRules ? .ready : .noHRReminders
+            self.statusMessage = hasRules ? .notMonitoring : .noReminders
         }
         print("DEBUGY: Final status set to: \(self.statusMessage.rawValue)")
         
@@ -198,7 +177,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     private func updateMonitoringRules() -> Bool {
         guard let useCase = fetchRemindersUseCase else {
-            self.statusMessage = .notConfigured
             return false
         }
         let allReminders = useCase.execute() ?? []
@@ -222,7 +200,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
         
         let hasActiveRules = !self.activeRules.isEmpty
-        self.statusMessage = hasActiveRules ? .ready : .noHRReminders
+        self.statusMessage = hasActiveRules ? .monitoring : .noReminders
         
         return hasActiveRules
     }
@@ -242,7 +220,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             do {
                 let isAuthorized = try await requestAuthorization()
                 guard isAuthorized else {
-                    self.statusMessage = .authDenied
+                    self.statusMessage = .permissionDenied
                     return
                 }
                 
@@ -261,8 +239,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 self.isSessionActive = true
                 self.statusMessage = .monitoring
                 self.startStepsTimer()
+                
+                self.sharedUserDefaults?.set(true, forKey: "isMonitoringActive")
+                WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+                print("DEBUGY: Complication timeline reloaded (State: Active)")
             } catch {
-                self.statusMessage = .sessionFailed
+                self.statusMessage = .error
             }
         }
     }
@@ -276,8 +258,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         workoutBuilder = nil
         isSessionActive = false
         heartRate = 0
-        statusMessage = .stopped
+        statusMessage = .notMonitoring
         activeRules = []
+        
+        self.sharedUserDefaults?.set(false, forKey: "isMonitoringActive")
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+        print("DEBUGY: Complication timeline reloaded (State: Inactive)")
     }
     
     func requestAuthorization() async throws -> Bool {
@@ -375,13 +361,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             if currentHeartRate > threshold {
                 if rule.triggerDate == nil { rule.triggerDate = Date() }
                 rule.dipDate = nil
-                rule.collectedData.append((value: currentHeartRate, date: Date()))
                 
                 if let triggerDate = rule.triggerDate, Date().timeIntervalSince(triggerDate) >= rule.duration {
-                    self.sendNotification(for: rule, withData: rule.collectedData)
-                    
+                    let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
+                    let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
+                    self.sendNotification(for: rule, withData: eventData)
                     rule.triggerDate = nil
-                    rule.collectedData = []
                 }
             } else {
                 if rule.reminderType == .medium {

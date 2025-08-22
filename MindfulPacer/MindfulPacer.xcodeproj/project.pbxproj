@@ -3,11 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0D0506F02E55C05300C5123A /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0506EF2E55C05300C5123A /* Services.swift */; };
+		0D0506FB2E574F0200C5123A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D0506FA2E574F0200C5123A /* WidgetKit.framework */; };
+		0D0506FD2E574F0200C5123A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D0506FC2E574F0200C5123A /* SwiftUI.framework */; };
+		0D05070A2E574F0300C5123A /* MindfulPacerStatusExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0D0506F82E574F0200C5123A /* MindfulPacerStatusExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0D0507102E5751B400C5123A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */; };
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
@@ -202,6 +206,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0D0507082E574F0300C5123A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D8C66282C2DA96000853EDE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0D0506F72E574F0200C5123A;
+			remoteInfo = MindfulPacerStatusExtension;
+		};
 		0DBA37432C32087400209681 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0D8C66282C2DA96000853EDE /* Project object */;
@@ -212,6 +223,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0D05070F2E574F0300C5123A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0D05070A2E574F0300C5123A /* MindfulPacerStatusExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0DBA37332C3207FB00209681 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -227,6 +249,10 @@
 
 /* Begin PBXFileReference section */
 		0D0506EF2E55C05300C5123A /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
+		0D0506F82E574F0200C5123A /* MindfulPacerStatusExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MindfulPacerStatusExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0D0506FA2E574F0200C5123A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		0D0506FC2E574F0200C5123A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		0D0507112E57542E00C5123A /* MindfulPacerStatusExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MindfulPacerStatusExtension.entitlements; sourceTree = "<group>"; };
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
 		0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabelGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -392,7 +418,30 @@
 		0DFCA1D12C623FB40000C87C /* EditReflectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReflectionViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0D05070B2E574F0300C5123A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0D0506F72E574F0200C5123A /* MindfulPacerStatusExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0D0506FE2E574F0200C5123A /* MindfulPacerStatus */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0D05070B2E574F0300C5123A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MindfulPacerStatus; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		0D0506F52E574F0200C5123A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0D0506FD2E574F0200C5123A /* SwiftUI.framework in Frameworks */,
+				0D0506FB2E574F0200C5123A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0D8C662D2C2DA96000853EDE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -416,6 +465,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D0506F92E574F0200C5123A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0D0506FA2E574F0200C5123A /* WidgetKit.framework */,
+				0D0506FC2E574F0200C5123A /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0D189B342C8F21F5008BF03D /* Styling */ = {
 			isa = PBXGroup;
 			children = (
@@ -786,9 +844,12 @@
 		0D8C66272C2DA96000853EDE = {
 			isa = PBXGroup;
 			children = (
+				0D0507112E57542E00C5123A /* MindfulPacerStatusExtension.entitlements */,
 				0D27BFC32C32DA8B007F4CFA /* Shared */,
 				0D8C66322C2DA96000853EDE /* iOS */,
 				0DBA37392C32087300209681 /* WatchOS */,
+				0D0506FE2E574F0200C5123A /* MindfulPacerStatus */,
+				0D0506F92E574F0200C5123A /* Frameworks */,
 				0D8C66312C2DA96000853EDE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -798,6 +859,7 @@
 			children = (
 				0D8C66302C2DA96000853EDE /* iOS.app */,
 				0DBA37382C32087300209681 /* WatchOS.app */,
+				0D0506F82E574F0200C5123A /* MindfulPacerStatusExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1261,6 +1323,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0D0506F72E574F0200C5123A /* MindfulPacerStatusExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0D05070C2E574F0300C5123A /* Build configuration list for PBXNativeTarget "MindfulPacerStatusExtension" */;
+			buildPhases = (
+				0D0506F42E574F0200C5123A /* Sources */,
+				0D0506F52E574F0200C5123A /* Frameworks */,
+				0D0506F62E574F0200C5123A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0D0506FE2E574F0200C5123A /* MindfulPacerStatus */,
+			);
+			name = MindfulPacerStatusExtension;
+			packageProductDependencies = (
+			);
+			productName = MindfulPacerStatusExtension;
+			productReference = 0D0506F82E574F0200C5123A /* MindfulPacerStatusExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		0D8C662F2C2DA96000853EDE /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0D8C663E2C2DA96100853EDE /* Build configuration list for PBXNativeTarget "iOS" */;
@@ -1294,10 +1378,12 @@
 				0DBA37342C32087300209681 /* Sources */,
 				0DBA37352C32087300209681 /* Frameworks */,
 				0DBA37362C32087300209681 /* Resources */,
+				0D05070F2E574F0300C5123A /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0D0507092E574F0300C5123A /* PBXTargetDependency */,
 			);
 			name = WatchOS;
 			packageProductDependencies = (
@@ -1314,9 +1400,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					0D0506F72E574F0200C5123A = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					0D8C662F2C2DA96000853EDE = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -1350,11 +1439,20 @@
 			targets = (
 				0D8C662F2C2DA96000853EDE /* iOS */,
 				0DBA37372C32087300209681 /* WatchOS */,
+				0D0506F72E574F0200C5123A /* MindfulPacerStatusExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0D0506F62E574F0200C5123A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0D0507102E5751B400C5123A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0D8C662E2C2DA96000853EDE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1383,6 +1481,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0D0506F42E574F0200C5123A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0D8C662C2C2DA96000853EDE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1574,6 +1679,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0D0507092E574F0300C5123A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0D0506F72E574F0200C5123A /* MindfulPacerStatusExtension */;
+			targetProxy = 0D0507082E574F0300C5123A /* PBXContainerItemProxy */;
+		};
 		0DBA37442C32087400209681 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0DBA37372C32087300209681 /* WatchOS */;
@@ -1582,6 +1692,74 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0D05070D2E574F0300C5123A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MindfulPacerStatusExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BM2PRG8CMX;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindfulPacerStatus/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacerStatus;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS.MindfulPacerStatus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		0D05070E2E574F0300C5123A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MindfulPacerStatusExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BM2PRG8CMX;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindfulPacerStatus/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MindfulPacerStatus;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS.MindfulPacerStatus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
 		0D8C663C2C2DA96100853EDE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1858,6 +2036,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0D05070C2E574F0300C5123A /* Build configuration list for PBXNativeTarget "MindfulPacerStatusExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0D05070D2E574F0300C5123A /* Debug */,
+				0D05070E2E574F0300C5123A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0D8C662B2C2DA96000853EDE /* Build configuration list for PBXProject "MindfulPacer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

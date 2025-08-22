@@ -62,7 +62,6 @@ extension SchemaV1 {
             }
         }
         
-        
         init(
             id: UUID = UUID(),
             date: Date = .now,
