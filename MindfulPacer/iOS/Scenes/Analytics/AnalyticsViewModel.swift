@@ -59,7 +59,7 @@ class AnalyticsViewModel {
     var stepsChartData: [ChartDataItem] = []
     
     var downsampledChartData: [ChartDataItem] {
-        let maxDataPoints = 250
+        let maxDataPoints = 100
         
         guard chartData.count > maxDataPoints else {
             return chartData

@@ -64,6 +64,16 @@ enum StatusMessage: String {
     }
 }
 
+private let pendingNotificationsKey = "pendingNotificationsKey"
+
+struct PendingNotification: Codable, Identifiable {
+    var id: UUID { alertID }
+    
+    let alertID: UUID
+    let reminderID: UUID
+    let sentDate: Date
+}
+
 enum RuleType: Sendable {
     case heartRate(threshold: Double)
     case steps(threshold: Double)
@@ -77,11 +87,13 @@ public struct AlertRule: Identifiable, Sendable {
     let ruleType: RuleType
     let duration: TimeInterval
     let alertMessage: String
-    
+    let interval: Reminder.Interval
+
     var triggerDate: Date? = nil
     var dipDate: Date? = nil
     var collectedData: [(value: Double, date: Date)] = []
     
+    var lastNotificationDate: Date? = nil
     var notificationSent: Bool = false
 }
 
@@ -99,7 +111,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
-    
+    var isAppInForeground: Bool = false
+
     private var workoutBuilder: HKLiveWorkoutBuilder?
     
     private var fetchRemindersUseCase: FetchRemindersUseCase?
@@ -128,7 +141,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
-        self.statusMessage = .monitoring
     }
     
     func refreshState() {
@@ -195,7 +207,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 reminderType: reminder.reminderType,
                 ruleType: ruleType,
                 duration: reminder.interval.timeInterval,
-                alertMessage: reminder.triggerSummary
+                alertMessage: reminder.triggerSummary,
+                interval: reminder.interval
             )
         }
         
@@ -350,6 +363,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func evaluateHeartRateRules(for currentHeartRate: Double) {
+        let now = Date()
         let dipGracePeriod: TimeInterval = 30.0
         for i in 0..<activeRules.count {
             guard activeRules[i].measurementType == .heartRate else { continue }
@@ -362,10 +376,16 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 if rule.triggerDate == nil { rule.triggerDate = Date() }
                 rule.dipDate = nil
                 
-                if let triggerDate = rule.triggerDate, Date().timeIntervalSince(triggerDate) >= rule.duration {
-                    let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
-                    let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
-                    self.sendNotification(for: rule, withData: eventData)
+                if let triggerDate = rule.triggerDate, now.timeIntervalSince(triggerDate) >= rule.duration {
+                    let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
+                    if let lastNotif = rule.lastNotificationDate, now.timeIntervalSince(lastNotif) < buffer {
+                        print("DEBUGY: Notification being surpressed due to buffer")
+                    } else {
+                        let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
+                        let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
+                        self.sendNotification(for: rule, withData: eventData)
+                        rule.lastNotificationDate = now
+                    }
                     rule.triggerDate = nil
                 }
             } else {
@@ -395,7 +415,49 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             Task { @MainActor in
                 print("DEBUGY: Steps timer fired. Checking step rules.")
                 self?.checkStepRules()
+                self?.processMissedNotifications()
             }
+        }
+    }
+    
+    private func processMissedNotifications() {
+        let userDefaults = UserDefaults.standard
+        let allPending = getPendingNotifications()
+        guard !allPending.isEmpty else { return }
+        
+        let now = Date()
+        let missedThreshold: TimeInterval = 600
+        
+        var stillPending: [PendingNotification] = []
+        var notificationsToRemoveFromCenter: [String] = []
+        
+        for pending in allPending {
+            if now.timeIntervalSince(pending.sentDate) > missedThreshold {
+                print("DEBUGY: Processing missed notification with alertID \(pending.alertID)")
+                
+                Services.shared.systemDelegate.createAndSendReflection(
+                    reminderID: pending.reminderID,
+                    alertID: pending.alertID,
+                    activity: nil,
+                    subactivity: nil
+                )
+                
+                notificationsToRemoveFromCenter.append(pending.alertID.uuidString)
+            } else {
+                stillPending.append(pending)
+            }
+        }
+        
+        if !notificationsToRemoveFromCenter.isEmpty {
+            print("DEBUGY: Removing \(notificationsToRemoveFromCenter.count) old notifications from Notification Center.")
+            UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: notificationsToRemoveFromCenter)
+        }
+        
+        do {
+            let data = try JSONEncoder().encode(stillPending)
+            userDefaults.set(data, forKey: pendingNotificationsKey)
+        } catch {
+            print("DEBUGY: ERROR - Failed to save updated pending list: \(error)")
         }
     }
     
@@ -403,6 +465,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let stepRulesToCheck = self.activeRules.filter { $0.measurementType == .steps }
         guard !stepRulesToCheck.isEmpty else { return }
         
+        let now = Date()
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         
         for rule in stepRulesToCheck {
@@ -426,9 +489,16 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     
                     if totalSteps > threshold {
                         if !self.activeRules[index].notificationSent {
-                            print("DEBUGY: Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
-                            self.sendNotification(for: self.activeRules[index], with: totalSteps)
-                            self.activeRules[index].notificationSent = true
+                            let buffer = BufferManager.shared.buffer(for: self.activeRules[index].interval, context: .steps)
+                            
+                            if let lastNotif = self.activeRules[index].lastNotificationDate, now.timeIntervalSince(lastNotif) < buffer {
+                                print("DEBUGY: Steps Rule met for \(rule.id), but in buffer period. Suppressing.")
+                            } else {
+                                print("DEBUGY: Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
+                                self.sendNotification(for: self.activeRules[index], with: totalSteps)
+                                self.activeRules[index].notificationSent = true
+                                self.activeRules[index].lastNotificationDate = now
+                            }
                         }
                     } else {
                         if self.activeRules[index].notificationSent {
@@ -448,8 +518,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         withData heartRateData: [(value: Double, date: Date)] = []
     ) {
         let alertID = UUID()
-        var samples: [MeasurementSample] = []
         
+        var samples: [MeasurementSample] = []
         switch rule.measurementType {
         case .heartRate:
             samples = heartRateData.map {
@@ -460,28 +530,55 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 samples = [MeasurementSample(type: .steps, value: totalSteps, date: Date())]
             }
         }
-        
         Services.shared.systemDelegate.cacheTriggerData(samples, for: alertID)
 
-        let content = UNMutableNotificationContent()
-        content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
-        content.body = rule.alertMessage
-        content.sound = .defaultCritical
-        content.categoryIdentifier = "HEART_RATE_ALERT"
-        content.userInfo = [
-            "alert_id": alertID.uuidString,
-            "reminder_id": rule.id.uuidString
-        ]
-        
-        var ruleToSend = rule
-        ruleToSend.alertID = alertID
-        
-        let request = UNNotificationRequest(identifier: alertID.uuidString, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
-        UNUserNotificationCenter.current().add(request)
-        
-        if rule.measurementType == .heartRate {
+        if isAppInForeground {
+            print("DEBUGY: App is in foreground. Triggering IN-APP alert.")
+            
+            var ruleToSend = rule
+            ruleToSend.alertID = alertID
             self.alertTriggeredSubject.send(ruleToSend)
+            
+        } else {
+            print("DEBUGY: App is in background. Sending SYSTEM notification.")
+            
+            let content = UNMutableNotificationContent()
+            content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
+            content.body = rule.alertMessage
+            content.sound = .defaultCritical
+            content.categoryIdentifier = "HEART_RATE_ALERT"
+            content.userInfo = [
+                "alert_id": alertID.uuidString,
+                "reminder_id": rule.id.uuidString
+            ]
+            
+            let request = UNNotificationRequest(identifier: alertID.uuidString, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
+            UNUserNotificationCenter.current().add(request)
         }
+    }
+    
+    private func logPendingNotification(alertID: UUID, reminderID: UUID) {
+        let userDefaults = UserDefaults.standard
+        let newPending = PendingNotification(alertID: alertID, reminderID: reminderID, sentDate: Date())
+        
+        do {
+            var allPending = getPendingNotifications()
+            allPending.append(newPending)
+            let data = try JSONEncoder().encode(allPending)
+            userDefaults.set(data, forKey: pendingNotificationsKey)
+            print("DEBUGY: Logged new pending notification with alertID \(alertID)")
+        } catch {
+            print("DEBUGY: ERROR - Failed to log pending notification: \(error)")
+        }
+    }
+    
+    private func getPendingNotifications() -> [PendingNotification] {
+        let userDefaults = UserDefaults.standard
+        guard let data = userDefaults.data(forKey: pendingNotificationsKey),
+              let pending = try? JSONDecoder().decode([PendingNotification].self, from: data) else {
+            return []
+        }
+        return pending
     }
     
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}

@@ -12,6 +12,13 @@
 		0D0506FD2E574F0200C5123A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D0506FC2E574F0200C5123A /* SwiftUI.framework */; };
 		0D05070A2E574F0300C5123A /* MindfulPacerStatusExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0D0506F82E574F0200C5123A /* MindfulPacerStatusExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0D0507102E5751B400C5123A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */; };
+		0D0507132E58782200C5123A /* ReminderTypeInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507122E58782200C5123A /* ReminderTypeInfoSheet.swift */; };
+		0D0507152E58784800C5123A /* ThresholdInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507142E58784800C5123A /* ThresholdInfoSheet.swift */; };
+		0D0507172E58787000C5123A /* IntervalInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507162E58787000C5123A /* IntervalInfoSheet.swift */; };
+		0D0507192E587BF100C5123A /* CroppedIPhoneImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */; };
+		0D05071B2E58910800C5123A /* FetchMissedReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05071A2E58910800C5123A /* FetchMissedReflectionsUseCase.swift */; };
+		0D05071E2E58931500C5123A /* MissedReflectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05071D2E58931500C5123A /* MissedReflectionsView.swift */; };
+		0D05072A2E59077000C5123A /* MissedReflectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507292E59077000C5123A /* MissedReflectionsListView.swift */; };
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
@@ -30,7 +37,6 @@
 		0D3006D72C99803D008F11C7 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D52C99803D008F11C7 /* Array+Extensions.swift */; };
 		0D3006D92C99823C008F11C7 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D82C99823C008F11C7 /* Date+Extensions.swift */; };
 		0D3006DA2C99823C008F11C7 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D82C99823C008F11C7 /* Date+Extensions.swift */; };
-		0D33F0B42D941DFB00A00403 /* ReflectionChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D33F0B32D941DFB00A00403 /* ReflectionChartView.swift */; };
 		0D34C45E2C83683200928C53 /* SaveReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */; };
 		0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4602C837F4400928C53 /* StepsWidget.swift */; };
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
@@ -41,7 +47,6 @@
 		0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7F2E476E470039055F /* WatchUpdateService.swift */; };
 		0D352C822E4891560039055F /* SystemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C812E4891560039055F /* SystemDelegate.swift */; };
 		0D36471F2D53862C000F85EF /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 0D36471E2D53862C000F85EF /* SwiftSoup */; };
-		0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */; };
 		0D3A0B122E47455800C9F7F3 /* FetchRemindersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB12C7D077C0014CD81 /* FetchRemindersUseCase.swift */; };
 		0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
@@ -177,8 +182,11 @@
 		0DDD33702C7B5D8E00A0B091 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */; };
 		0DDD33712C7B5D8E00A0B091 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */; };
 		0DE097C22D95752000BE3D6A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */; };
-		0DE097C52D96AAC600BE3D6A /* MissedReflectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */; };
 		0DE097C82D96E23F00BE3D6A /* CardStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0DE097C72D96E23F00BE3D6A /* CardStack */; };
+		0DE3B1102E5B32C00070C4A2 /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */; };
+		0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */; };
+		0DE3B1142E5B32F80070C4A2 /* BufferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */; };
+		0DE3B1152E5B32F80070C4A2 /* BufferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */; };
 		0DE47A102E4B4A500052959C /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0DE47A112E4B4A500052959C /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
 		0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A122E4B6E4D0052959C /* AppDelegate.swift */; };
@@ -253,6 +261,13 @@
 		0D0506FA2E574F0200C5123A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0D0506FC2E574F0200C5123A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		0D0507112E57542E00C5123A /* MindfulPacerStatusExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MindfulPacerStatusExtension.entitlements; sourceTree = "<group>"; };
+		0D0507122E58782200C5123A /* ReminderTypeInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeInfoSheet.swift; sourceTree = "<group>"; };
+		0D0507142E58784800C5123A /* ThresholdInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdInfoSheet.swift; sourceTree = "<group>"; };
+		0D0507162E58787000C5123A /* IntervalInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntervalInfoSheet.swift; sourceTree = "<group>"; };
+		0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CroppedIPhoneImage.swift; sourceTree = "<group>"; };
+		0D05071A2E58910800C5123A /* FetchMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
+		0D05071D2E58931500C5123A /* MissedReflectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsView.swift; sourceTree = "<group>"; };
+		0D0507292E59077000C5123A /* MissedReflectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsListView.swift; sourceTree = "<group>"; };
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
 		0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabelGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -266,7 +281,6 @@
 		0D3006C92C943463008F11C7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		0D3006D52C99803D008F11C7 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		0D3006D82C99823C008F11C7 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
-		0D33F0B32D941DFB00A00403 /* ReflectionChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionChartView.swift; sourceTree = "<group>"; };
 		0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReflectionUseCase.swift; sourceTree = "<group>"; };
 		0D34C4602C837F4400928C53 /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
@@ -276,7 +290,6 @@
 		0D352C6B2E474E0F0039055F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0D352C7F2E476E470039055F /* WatchUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchUpdateService.swift; sourceTree = "<group>"; };
 		0D352C812E4891560039055F /* SystemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDelegate.swift; sourceTree = "<group>"; };
-		0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsView.swift; sourceTree = "<group>"; };
 		0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0D4569F42D28417C00C37062 /* CheckMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchReflectionsUseCase.swift; sourceTree = "<group>"; };
@@ -398,7 +411,8 @@
 		0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsListView.swift; sourceTree = "<group>"; };
+		0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
+		0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManager.swift; sourceTree = "<group>"; };
 		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -474,6 +488,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		0D05071C2E58920800C5123A /* Missed Reflections */ = {
+			isa = PBXGroup;
+			children = (
+				0D05071D2E58931500C5123A /* MissedReflectionsView.swift */,
+			);
+			path = "Missed Reflections";
+			sourceTree = "<group>";
+		};
+		0D0507282E59076700C5123A /* Missed Reflections List */ = {
+			isa = PBXGroup;
+			children = (
+				0D0507292E59077000C5123A /* MissedReflectionsListView.swift */,
+			);
+			path = "Missed Reflections List";
+			sourceTree = "<group>";
+		};
 		0D189B342C8F21F5008BF03D /* Styling */ = {
 			isa = PBXGroup;
 			children = (
@@ -509,7 +539,6 @@
 				0DE47A142E4B79A70052959C /* Apple Watch */,
 				0DAC64D72DA2A3AE00BBB741 /* Algorithms */,
 				0DF93A812D53B3D100121308 /* Export */,
-				0DE097C32D96AA9300BE3D6A /* Missed Reflections List */,
 				0D876BCD2CB6D228007EEEDE /* System Report */,
 				0D5947862CBE740C0019BA24 /* Theme */,
 				0D3006C72C943444008F11C7 /* SettingsView.swift */,
@@ -612,17 +641,9 @@
 				0D352C692E474DE40039055F /* HealthMonitoringService.swift */,
 				0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */,
 				0D0506EF2E55C05300C5123A /* Services.swift */,
+				0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		0D379D022D22BDBE00F52849 /* Missed Reflections */ = {
-			isa = PBXGroup;
-			children = (
-				0D379D032D22BDCD00F52849 /* MissedReflectionsView.swift */,
-				0D33F0B32D941DFB00A00403 /* ReflectionChartView.swift */,
-			);
-			path = "Missed Reflections";
 			sourceTree = "<group>";
 		};
 		0D456ABB2C808F9B0014CD81 /* Reflections List */ = {
@@ -654,6 +675,7 @@
 			isa = PBXGroup;
 			children = (
 				0D4EBE332C72784A00C1865D /* ReminderTypeView.swift */,
+				0D0507122E58782200C5123A /* ReminderTypeInfoSheet.swift */,
 			);
 			path = "Reminder Type";
 			sourceTree = "<group>";
@@ -670,6 +692,7 @@
 			isa = PBXGroup;
 			children = (
 				0D4EBE3F2C727E9F00C1865D /* ThresholdView.swift */,
+				0D0507142E58784800C5123A /* ThresholdInfoSheet.swift */,
 			);
 			path = Threshold;
 			sourceTree = "<group>";
@@ -678,6 +701,7 @@
 			isa = PBXGroup;
 			children = (
 				0D4EBE452C727F8900C1865D /* IntervalView.swift */,
+				0D0507162E58787000C5123A /* IntervalInfoSheet.swift */,
 			);
 			path = Interval;
 			sourceTree = "<group>";
@@ -988,6 +1012,7 @@
 				0D9D8A812C83A3DE00DFFF00 /* DeleteReflectionUseCase.swift */,
 				0DC136A52D4E6B6900001D08 /* FetchActionedMissedReflectionsUseCase.swift */,
 				0D9AB0992C6B5DFA00BB773F /* FetchDefaultActivitiesUseCase.swift */,
+				0D05071A2E58910800C5123A /* FetchMissedReflectionsUseCase.swift */,
 				0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */,
 				0D1FD5152CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift */,
 				0DD3FDAA2C89BE8400859A1C /* FilterReflectionsUseCase.swift */,
@@ -1091,7 +1116,8 @@
 		0DC2D7E72C7C7DCC008122CC /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				0D379D022D22BDBE00F52849 /* Missed Reflections */,
+				0D0507282E59076700C5123A /* Missed Reflections List */,
+				0D05071C2E58920800C5123A /* Missed Reflections */,
 				0D456ABB2C808F9B0014CD81 /* Reflections List */,
 				0D4E11842C85ECB80023E0A0 /* Reminders List */,
 				0D34C45F2C837F2900928C53 /* Widgets */,
@@ -1210,6 +1236,7 @@
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0DD3FDC32C8CC73C00859A1C /* RoundedList.swift */,
 				0DA77E3F2D1596C50057DFA2 /* Toast.swift */,
+				0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1247,6 +1274,7 @@
 			children = (
 				0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */,
 				0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */,
+				0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1267,14 +1295,6 @@
 				0DDD33632C7B5D8E00A0B091 /* View+Modifiers.swift */,
 			);
 			path = "View Modifiers";
-			sourceTree = "<group>";
-		};
-		0DE097C32D96AA9300BE3D6A /* Missed Reflections List */ = {
-			isa = PBXGroup;
-			children = (
-				0DE097C42D96AAC600BE3D6A /* MissedReflectionsListView.swift */,
-			);
-			path = "Missed Reflections List";
 			sourceTree = "<group>";
 		};
 		0DE47A142E4B79A70052959C /* Apple Watch */ = {
@@ -1492,10 +1512,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DE097C52D96AAC600BE3D6A /* MissedReflectionsListView.swift in Sources */,
 				0DD3FDAB2C89BE8400859A1C /* FilterReflectionsUseCase.swift in Sources */,
 				0D9AB0D12C6E8B3D00BB773F /* CreateReminderView.swift in Sources */,
 				0DA6CB0F2C37F92E00FE1E61 /* RootViewModel.swift in Sources */,
+				0D0507172E58787000C5123A /* IntervalInfoSheet.swift in Sources */,
 				0DC136C02D50BD7700001D08 /* ArticlesListView.swift in Sources */,
 				0D876BCF2CB6D232007EEEDE /* SystemReportView.swift in Sources */,
 				0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */,
@@ -1504,9 +1524,9 @@
 				0DF93A852D53B3F500121308 /* ExportView.swift in Sources */,
 				0D4AF7352C9A12B50067D24E /* MailView.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
+				0DE3B1152E5B32F80070C4A2 /* BufferManager.swift in Sources */,
 				0D67F4442C9217F9000F6114 /* RequestHealthAuthorisationUseCase.swift in Sources */,
 				0D9351572D12FBBF0028AA61 /* RoadmapView.swift in Sources */,
-				0D33F0B42D941DFB00A00403 /* ReflectionChartView.swift in Sources */,
 				0D67F42B2C90E109000F6114 /* AppleHealthView.swift in Sources */,
 				0D67F43A2C91936D000F6114 /* InitializeNotificationsUseCase.swift in Sources */,
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
@@ -1549,6 +1569,7 @@
 				0D3006CA2C943463008F11C7 /* SettingsViewModel.swift in Sources */,
 				0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */,
 				0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */,
+				0D05071E2E58931500C5123A /* MissedReflectionsView.swift in Sources */,
 				0D93514D2D12F9670028AA61 /* RoadmapAPIService.swift in Sources */,
 				0D6AEB512C9DA7B000D8D22F /* FetchStepsUseCase.swift in Sources */,
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
@@ -1564,8 +1585,8 @@
 				0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0DDD33662C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */,
-				0D379D042D22BDCD00F52849 /* MissedReflectionsView.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
+				0DE3B1102E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
 				0D9AB0C52C6D529000BB773F /* CreateReflectionUseCase.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
@@ -1599,6 +1620,8 @@
 				0D1FD5162CA326C9008153A0 /* FetchReflectionsInPeriodUseCase.swift in Sources */,
 				0DD858942C71468700061F63 /* ConnectivityError.swift in Sources */,
 				0DD32DEA2CABFAA700E91B90 /* FetchCurrentHeartRateUseCase.swift in Sources */,
+				0D0507192E587BF100C5123A /* CroppedIPhoneImage.swift in Sources */,
+				0D0507132E58782200C5123A /* ReminderTypeInfoSheet.swift in Sources */,
 				0D3006D72C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */,
 				0DFCA1D02C623FAC0000C87C /* EditReflectionView.swift in Sources */,
@@ -1613,6 +1636,7 @@
 				0DC136A42D4E63F600001D08 /* SubactivityView.swift in Sources */,
 				0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */,
 				0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */,
+				0D0507152E58784800C5123A /* ThresholdInfoSheet.swift in Sources */,
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
 				0D4E11862C85ECC80023E0A0 /* RemindersListView.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
@@ -1624,10 +1648,12 @@
 				0D456AB62C7D0F2B0014CD81 /* Icon.swift in Sources */,
 				0DD858922C71465A00061F63 /* SessionError.swift in Sources */,
 				0D9351502D12F98D0028AA61 /* RoadmapRepository.swift in Sources */,
+				0D05072A2E59077000C5123A /* MissedReflectionsListView.swift in Sources */,
 				0DC136BA2D4EACA400001D08 /* HTMLText.swift in Sources */,
 				0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */,
 				0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9351522D12F9BF0028AA61 /* FetchRoadmapUseCase.swift in Sources */,
+				0D05071B2E58910800C5123A /* FetchMissedReflectionsUseCase.swift in Sources */,
 				0D93514B2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1643,6 +1669,7 @@
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */,
+				0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
@@ -1660,6 +1687,7 @@
 				0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */,
 				0D3006DA2C99823C008F11C7 /* Date+Extensions.swift in Sources */,
 				0DF5EDB52E4F2F79005DB9DE /* AppInfoService.swift in Sources */,
+				0DE3B1142E5B32F80070C4A2 /* BufferManager.swift in Sources */,
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
@@ -1699,7 +1727,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = MindfulPacerStatusExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MindfulPacerStatus/Info.plist;
@@ -1711,7 +1739,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS.MindfulPacerStatus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1733,7 +1761,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = MindfulPacerStatusExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MindfulPacerStatus/Info.plist;
@@ -1745,7 +1773,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS.MindfulPacerStatus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1889,7 +1917,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1931,7 +1959,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -1972,7 +2000,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2006,7 +2034,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;

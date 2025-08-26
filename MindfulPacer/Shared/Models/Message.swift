@@ -16,6 +16,7 @@ enum MessageCommand: String {
     case createReflection
     case requestCreateReflection
     case openReflectionForEditing
+    case ping
 }
 
 // MARK: - MessageKeys

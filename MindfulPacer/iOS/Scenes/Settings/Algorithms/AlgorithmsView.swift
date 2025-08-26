@@ -13,7 +13,8 @@ struct AlgorithmsView: View {
     
     // MARK: Properties
     
-    @ObservedObject private var settings = IntervalSettingsManager.shared
+    @Bindable var viewModel: SettingsViewModel
+    @State private var selectedMeasurementType: Reminder.MeasurementType = .heartRate
     
     // MARK: Body
     
@@ -21,34 +22,37 @@ struct AlgorithmsView: View {
         RoundedList {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
-                    label:
-                        IconLabel(
-                            icon: "slider.horizontal.below.square.and.square.filled",
-                            title: "Missed Reflections",
-                            labelColor: .brandPrimary,
-                            background: true
-                        ),
-                    description:
-                        Text("The buffer sets the minimum time between repeated missed reflection triggers for the same reminder.")
+                    label: IconLabel(
+                        icon: "timer",
+                        title: "Reminder Buffers",
+                        labelColor: .brandPrimary,
+                        background: true
+                    ),
+                    description: Text("The buffer sets the minimum time between repeated notifications for the same reminder.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
-                    IconLabel(
-                        icon: "heart",
-                        title: "Heart Rate",
-                        labelColor: .pink,
-                        background: true
-                    )
-                    .font(.subheadline.weight(.semibold))
+                    Picker(selection: $selectedMeasurementType) {
+                        Text("Heart Rate")
+                            .tag(Reminder.MeasurementType.heartRate)
+                        Text("Steps")
+                            .tag(Reminder.MeasurementType.steps)
+                    } label: {
+                        Text(selectedMeasurementType.localized)
+                    }
+                    .pickerStyle(.segmented)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: 16) {
-                            ForEach(Reminder.Interval.heartRateIntervals, id: \.self) { interval in
+                            ForEach(
+                                selectedMeasurementType == .heartRate ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals,
+                                id: \.self
+                            ) { interval in
                                 Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    IntervalSliderView(
+                                    BufferSliderView(
                                         interval: interval,
-                                        context: .heartRate,
-                                        settings: settings
+                                        type: selectedMeasurementType,
+                                        viewModel: viewModel
                                     )
                                 }
                             }
@@ -56,176 +60,91 @@ struct AlgorithmsView: View {
                         .scrollTargetLayout()
                     }
                     .scrollTargetBehavior(.viewAligned)
-                    
-                    Divider()
-                    
-                    IconLabel(
-                        icon: "figure.walk",
-                        title: "Steps",
-                        labelColor: .teal,
-                        background: true
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(Reminder.Interval.stepsIntervals, id: \.self) { interval in
-                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    IntervalSliderView(
-                                        interval: interval,
-                                        context: .steps,
-                                        settings: settings
-                                    )
-                                }
-                            }
-                        }
-                        .scrollTargetLayout()
+                } footer: {
+                    Button {
+                        viewModel.resetBuffersToDefaults()
+                    } label: {
+                        IconLabel(icon: "arrow.clockwise", title: "Reset to Defaults", labelColor: .red)
+                            .font(.subheadline.weight(.semibold))
                     }
-                    .scrollTargetBehavior(.viewAligned)
                 }
                 .iconLabelGroupBoxStyle(.divider)
-                
-                PrimaryButton(
-                    title: "Reset to Defaults",
-                    icon: "arrow.clockwise",
-                    color: .red
-                ) {
-                    settings.resetToDefaults()
-                }
             }
         }
         .navigationTitle("Algorithms")
     }
 }
 
-// MARK: - IntervalSliderView
+// MARK: - BufferSliderView
 
-private struct IntervalSliderView: View {
+private struct BufferSliderView: View {
     let interval: Reminder.Interval
-    let context: IntervalContext
-    @ObservedObject var settings: IntervalSettingsManager
+    let type: Reminder.MeasurementType
+    @Bindable var viewModel: SettingsViewModel
     
-    private var defaultBuffer: Double {
-        switch (interval, context) {
-        case (.immediately, _): return 0
-        case (.fiveMinutes, .heartRate): return 60
-        case (.tenMinutes, .heartRate): return 120
-        case (.fifteenMinutes, .heartRate): return 180
-        case (.thirtyMinutes, .heartRate): return 360
-        case (.thirtyMinutes, .steps): return 450
-        case (.oneHour, .heartRate): return 720
-        case (.oneHour, .steps): return 900
-        case (.twoHours, .steps): return 1800
-        case (.fourHours, .steps): return 3600
-        case (.oneDay, .steps): return 0
-        default: return 0
-        }
-    }
+    let defaultBuffer: Double
+    let bufferRange: ClosedRange<Double>
     
-    private var bufferRange: ClosedRange<Double> {
-        let buffer = defaultBuffer
-        let delta = buffer * 0.5 // ±50% of the default buffer
-        let lowerBound = max(0, buffer - delta)
-        let upperBound: Double
-        switch interval {
-        case .oneMinute:
-            return 0...5
-        case .immediately:
-            return 0...10        // Special case: 0 to 10 seconds
-        case .oneDay:
-            upperBound = 7200    // Special case: up to 120 minutes
-        default:
-            upperBound = buffer + delta
+    init(interval: Reminder.Interval, type: Reminder.MeasurementType, viewModel: SettingsViewModel) {
+        self.interval = interval
+        self.type = type
+        self._viewModel = Bindable(viewModel)
+        
+        let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
+        let buffer = BufferManager.shared.buffer(for: interval, context: context)
+        self.defaultBuffer = buffer
+        
+        if interval == .oneDay {
+            self.bufferRange = 0...(2 * 3600)
+        } else {
+            self.bufferRange = 0...(buffer * 3)
         }
-        return lowerBound...upperBound
     }
     
     private var bufferStep: Double {
-        switch interval {
-        case .immediately:
-            return 1             // 1-second steps
-        case .oneMinute:
-            return 5
-        case .fiveMinutes, .tenMinutes, .fifteenMinutes:
-            return 5             // 5-second steps
-        case .thirtyMinutes:
-            return 15            // 15-second steps
-        case .oneHour:
-            return 30            // 30-second steps
-        case .twoHours:
-            return 60            // 1-minute steps
-        case .fourHours, .oneDay:
-            return 300           // 5-minute steps
-        }
-    }
-    
-    private func formattedTime(_ seconds: Double) -> String {
-        let totalSeconds = Int(seconds)
-        switch interval {
-        case .immediately, .oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes:
-            return "\(totalSeconds) sec"
-        case .thirtyMinutes, .oneHour:
-            let minutes = totalSeconds / 60
-            return "\(minutes) min"
-        case .twoHours, .fourHours, .oneDay:
-            let hours = totalSeconds / 3600
-            let remainingMinutes = (totalSeconds % 3600) / 60
-            if hours == 0 {
-                return "\(remainingMinutes) min"
-            } else if remainingMinutes == 0 {
-                return "\(hours) hr"
-            } else {
-                return "\(hours) hr \(remainingMinutes) min"
-            }
-        }
+        return 1.0
     }
     
     private func formattedBuffer(_ seconds: Double) -> String {
         let totalSeconds = Int(seconds)
-        switch interval {
-        case .immediately, .oneMinute, .fiveMinutes, .tenMinutes, .fifteenMinutes:
-            return "\(totalSeconds) sec"
-        case .thirtyMinutes, .oneHour:
-            let minutes = totalSeconds / 60
-            return "\(minutes) min"
-        case .twoHours, .fourHours, .oneDay:
-            let hours = totalSeconds / 3600
-            let remainingMinutes = (totalSeconds % 3600) / 60
-            if hours == 0 {
-                return "\(remainingMinutes) min"
-            } else if remainingMinutes == 0 {
-                return "\(hours) hr"
-            } else {
-                return "\(hours) hr \(remainingMinutes) min"
-            }
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let remainingSeconds = totalSeconds % 60
+
+        if hours > 0 {
+            return "Buffer: \(hours)h \(minutes)m"
+        } else if minutes > 0 {
+            return "Buffer: \(minutes)m \(remainingSeconds)s"
+        } else {
+            return "Buffer: \(totalSeconds)s"
         }
     }
     
     var body: some View {
+        let key = StorageKeys.bufferKey(for: interval, type: type)
+        
+        let bufferBinding = Binding<Double>(
+            get: { viewModel.bufferValues[key] ?? self.defaultBuffer },
+            set: { newValue in viewModel.bufferValues[key] = newValue }
+        )
+        
         VStack(alignment: .leading, spacing: 16) {
             IconLabel(
                 icon: interval.icon,
                 title: interval.localized,
-                description: formattedBuffer(settings.buffer(for: interval, context: context))
+                description: formattedBuffer(bufferBinding.wrappedValue)
             )
             .font(.subheadline.weight(.semibold))
             
             Slider(
-                value: Binding(
-                    get: { settings.buffer(for: interval, context: context) },
-                    set: { settings.setBuffer($0, for: interval, context: context) }
-                ),
-                in: bufferRange,
+                value: bufferBinding,
+                in: self.bufferRange,
                 step: bufferStep
             ) {
-                IconLabel(
-                    icon: interval.icon,
-                    title: interval.localized,
-                    description: "Buffer: \(formattedBuffer(settings.buffer(for: interval, context: context)))",
-                    labelColor: .brandPrimary,
-                    background: true
-                )
-                .font(.subheadline.weight(.semibold))
+            } onEditingChanged: { isEditing in
+                if !isEditing {
+                    viewModel.saveBuffer(for: interval, type: type, newBufferInSeconds: bufferBinding.wrappedValue)
+                }
             }
             .tint(.brandPrimary)
         }
@@ -236,5 +155,6 @@ private struct IntervalSliderView: View {
 // MARK: - Preview
 
 #Preview {
-    AlgorithmsView()
+    let viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
+    AlgorithmsView(viewModel: viewModel)
 }

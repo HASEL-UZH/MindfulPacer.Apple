@@ -172,11 +172,11 @@ extension OnboardingView {
                         VStack(spacing: 16) {
                             Text("By default, the watch returns to the clock. For an immersive experience, you can have it always return to our app when monitoring is active.")
                             
-                            Image(.appleWatchReturnToClock)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 340, alignment: .top)
-                                .clipped()
+                            CroppedIPhoneImage(
+                                Image(.appleWatchReturnToClock),
+                                heightRatio: 1,
+                                fill: true
+                            )
                             
                             Text(
                                 """
@@ -189,7 +189,6 @@ extension OnboardingView {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .iconLabelGroupBoxStyle(.divider)
-                    
                 }
             }
         }

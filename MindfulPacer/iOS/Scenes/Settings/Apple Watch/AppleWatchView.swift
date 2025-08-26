@@ -14,55 +14,81 @@ extension SettingsView {
         
         // MARK: Properties
         
+        @Environment(\.openURL) private var openURL
         @Bindable var viewModel: SettingsViewModel
         
         // MARK: Body
         
         var body: some View {
-            RoundedList {
-                Section {
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "applewatch",
-                                title: "MindfulPacer Screen",
+            if viewModel.isWatchAppInstalled {
+                RoundedList {
+                    Section {
+                        IconLabelGroupBox(
+                            label: IconLabel(
+                                icon: "antenna.radiowaves.left.and.right",
+                                title: "Connection",
                                 labelColor: Color("BrandPrimary"),
                                 background: true
                             ),
-                        description:
-                            Text("Ideally, the MindfulPacer home screen can always be displayed on your watch.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    ) {
-                        Image(.appleWatchReturnToClock)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 350, alignment: .top)
-                            .clipped()
-                            .padding(.horizontal)
-                        
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(
-                                [
-                                    "Open the Watch app on your iPhone",
-                                    "Go to General > Return to Clock > MindfulPacer",
-                                    "Toggle 'Return to App' to on."
-                                ], id: \.self) { point in
-                                    HStack(alignment: .top) {
-                                        Text("•")
-                                        Text(point)
-                                            .multilineTextAlignment(.leading)
-                                            .lineLimit(nil)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
+                            description: Text("Live status of the connection to your Apple Watch.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        ) {
+                            VStack(spacing: 16) {
+                                HStack {
+                                    Text("Connection Status")
+                                    Spacer()
+                                    IconLabel(
+                                        icon: viewModel.watchConnectionStatus.symbolName,
+                                        title: viewModel.watchConnectionStatus.rawValue,
+                                        labelColor: viewModel.watchConnectionStatus.color
+                                    )
+                                    .font(.subheadline.weight(.semibold))
                                 }
+                                
+                                HStack {
+                                    Text("Connection Speed")
+                                    Spacer()
+                                    IconLabel(
+                                        icon: viewModel.watchConnectionSpeed.symbolName,
+                                        title: viewModel.watchConnectionSpeed.rawValue,
+                                        labelColor: viewModel.watchConnectionSpeed.color
+                                    )
+                                    .font(.subheadline.weight(.semibold))
+                                }
+                            }
                         }
+                        .iconLabelGroupBoxStyle(.divider)
                     }
-                    .iconLabelGroupBoxStyle(.divider)
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
+                .navigationTitle("Apple Watch")
+                .onAppear {
+                    ConnectivityService.shared.startPinging()
+                }
+                .onDisappear {
+                    ConnectivityService.shared.stopPinging()
+                }
+            } else {
+                ContentUnavailableView {
+                    Label("App Not Installed", systemImage: "exclamationmark.applewatch")
+                } description: {
+                    Text("The Apple Watch app needs to be installed. Please install it from the Watch app on your iPhone.")
+                } actions: {
+                    Button {
+                        openURL(viewModel.appleWatchInstallationHelp)
+                    } label: {
+                        Text("How to Install")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                }
+                .navigationTitle("Apple Watch")
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
             }
-            .navigationTitle("Apple Watch")
         }
     }
 }

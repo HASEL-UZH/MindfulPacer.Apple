@@ -37,6 +37,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 checkMissedReflectionsUseCase: UseCasesContainer.shared.checkMissedReflectionsUseCase(),
                 createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
+                deleteReflectionUseCase: UseCasesContainer.shared.deleteReflectionUseCase(),
                 fetchActionedMissedReflectionsUseCase: UseCasesContainer.shared.fetchActionedMissedReflectionsUseCase(),
                 fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),

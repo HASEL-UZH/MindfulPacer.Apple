@@ -42,6 +42,8 @@ struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
     
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage
@@ -55,7 +57,18 @@ struct HomeView: View {
         }
         .tabViewStyle(.carousel)
         .onAppear {
+            print("DEBUGY: HomeView appeared. Setting isAppInForeground = true.")
+            Services.shared.monitorService.isAppInForeground = true
             viewModel.onAppear()
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
+                print("DEBUGY: Scene became ACTIVE. Setting isAppInForeground = true.")
+                Services.shared.monitorService.isAppInForeground = true
+            } else {
+                print("DEBUGY: Scene became INACTIVE or BACKGROUND. Setting isAppInForeground = false.")
+                Services.shared.monitorService.isAppInForeground = false
+            }
         }
         .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
             SelectActivityView(
@@ -120,7 +133,7 @@ struct HomeView: View {
                         Button {
                             viewModel.dismissAlertOverlay()
                         } label: {
-                            Text("Reject")
+                            Text("Delete")
                         }
                     }
                     .buttonStyle(.bordered)

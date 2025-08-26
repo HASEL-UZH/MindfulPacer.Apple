@@ -29,7 +29,7 @@ enum EditReflectionSheet: Identifiable {
 enum EditReflectionAlert: Identifiable {
     case deleteConfirmation
     case unableToSaveReflection
-
+    
     var id: Int {
         hashValue
     }
@@ -45,19 +45,19 @@ struct EditReflectionView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
-
+    
     var reflection: Reflection?
     var onReflectionCreation: (() -> Void)?
-
+    
     // MARK: Body
-
+    
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             GeometryReader { proxy in
                 ScrollView {
                     VStack(spacing: 16) {
                         date
-
+                        
                         VStack(spacing: 0) {
                             activity
                             if viewModel.selectedActivity.isNotNil {
@@ -77,11 +77,11 @@ struct EditReflectionView: View {
                             triggerCrash
                             additionalInformation
                         }
-
+                        
                         if !viewModel.isReflectionDeleted {
                             reminder
                         }
-
+                        
                         if viewModel.mode == .edit {
                             deleteButton
                         }
@@ -107,13 +107,13 @@ struct EditReflectionView: View {
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
                 }
-
+                
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     if viewModel.mode == .edit {
                         Button("Save") {
@@ -140,9 +140,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Alert Content
-
+    
     private func alertContent(for alert: EditReflectionAlert) -> Alert {
         switch alert {
         case .deleteConfirmation:
@@ -151,7 +151,7 @@ struct EditReflectionView: View {
             return unableToSaveReflectionAlert
         }
     }
-
+    
     // MARK: Sheet Content
     
     @ViewBuilder
@@ -181,9 +181,9 @@ struct EditReflectionView: View {
             .presentationCornerRadius(16)
         }
     }
-
+    
     // MARK: Navigation Destination
-
+    
     @ViewBuilder
     private func navigationDestination(for destination: EditReflectionNavigationDestination) -> some View {
         switch destination {
@@ -200,7 +200,7 @@ struct EditReflectionView: View {
     }
     
     // MARK: Date
-
+    
     private var date: some View {
         Card {
             DatePicker(selection: $viewModel.date) {
@@ -217,9 +217,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Activity
-
+    
     private var activity: some View {
         NavigationLink(value: EditReflectionNavigationDestination.activity) {
             HStack {
@@ -263,9 +263,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Subactivity
-
+    
     private var subactivity: some View {
         NavigationLink(value: EditReflectionNavigationDestination.subactivity(viewModel.selectedActivity)) {
             HStack {
@@ -279,16 +279,16 @@ struct EditReflectionView: View {
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .layoutPriority(1)
-
+                
                 Spacer(minLength: 16)
-
+                
                 HStack(spacing: 4) {
                     if let subactivity = viewModel.selectedSubactivity {
                         Text(subactivity.name)
                             .foregroundStyle(Color(.systemGray2))
                             .fixedSize(horizontal: true, vertical: false)
                     }
-
+                    
                     Icon(name: "chevron.right", color: Color(.systemGray2))
                         .font(.subheadline.weight(.semibold))
                 }
@@ -300,9 +300,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Mood
-
+    
     private var mood: some View {
         NavigationLink(value: EditReflectionNavigationDestination.mood) {
             Card {
@@ -317,15 +317,15 @@ struct EditReflectionView: View {
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                     .layoutPriority(1)
-
+                    
                     Spacer()
-
+                    
                     HStack(spacing: 4) {
                         if let mood = viewModel.selectedMood {
                             Text(mood.emoji)
                                 .frame(width: 24, height: 24)
                         }
-
+                        
                         Icon(name: "chevron.right", color: Color(.systemGray2))
                             .font(.subheadline.weight(.semibold))
                     }
@@ -333,7 +333,7 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Well Being
     
     private var wellBeing: some View {
@@ -349,7 +349,7 @@ struct EditReflectionView: View {
                         background: true
                     )
                     .font(.subheadline.weight(.semibold))
-                 
+                    
                     Spacer()
                     
                     Text(viewModel.wellBeing.description)
@@ -360,7 +360,7 @@ struct EditReflectionView: View {
     }
     
     // MARK: Symptoms
-
+    
     @ViewBuilder private func symptoms(width: CGFloat) -> some View {
         LazyVGrid(
             columns: Array(repeating: GridItem(spacing: 16), count: 2),
@@ -399,9 +399,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Trigger Crash
-
+    
     private var triggerCrash: some View {
         Card {
             Toggle(isOn: $viewModel.didTriggerCrash) {
@@ -419,9 +419,9 @@ struct EditReflectionView: View {
             .tint(.accentColor)
         }
     }
-
+    
     // MARK: Additional Information
-
+    
     private var additionalInformation: some View {
         IconLabelGroupBox(
             label: IconLabel(
@@ -434,9 +434,9 @@ struct EditReflectionView: View {
             TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
         }
     }
-
+    
     // MARK: - Reminder
-
+    
     @ViewBuilder
     private var reminder: some View {
         VStack(spacing: 16) {
@@ -449,52 +449,46 @@ struct EditReflectionView: View {
                             title: String(localized: "Reminder"),
                             labelColor: Color("BrandPrimary"),
                             background: true
-                        ), description:
-                            Text(viewModel.reminderTriggerSummary(for: reflection))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        )
                     ) {
-                        VStack(spacing: 16) {
-                            Picker(selection: $viewModel.selectedReminderContext) {
-                                Text("Reminder")
-                                    .tag(ReminderContext.reminder)
-                                Text("Chart")
-                                    .tag(ReminderContext.chart)
-                            } label: {
-                                Text(viewModel.selectedReminderContext.rawValue)
-                            }
-                            .pickerStyle(.segmented)
-                            
-                            if viewModel.selectedReminderContext == .chart {
-                                TriggerDataChartView(reflection: reflection)
-                            } else {
-                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    HStack(spacing: 16) {
-                                        VStack(alignment: .leading, spacing: 8) {
-                                            IconLabel(
-                                                icon: reminderMeasurementType.icon,
-                                                title: reminderMeasurementType.rawValue,
-                                                labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
-                                            )
-                                            .font(.subheadline.weight(.semibold))
-                                            
-                                            Text(viewModel.reminderTriggerSummary(for: reflection))
-                                                .font(.footnote)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        Icon(
-                                            name: "alarm",
-                                            color: reminderType.color,
-                                            background: true
-                                        )
-                                    }
-                                    .foregroundStyle(Color.primary)
+                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
+                            HStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    IconLabel(
+                                        icon: reminderMeasurementType.icon,
+                                        title: reminderMeasurementType.rawValue,
+                                        labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
+                                    )
+                                    .font(.subheadline.weight(.semibold))
+                                    
+                                    Text(reflection.reminderTriggerSummary)
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
                                 }
-
+                                
+                                Spacer()
+                                
+                                Icon(
+                                    name: "alarm",
+                                    color: reminderType.color,
+                                    background: true
+                                )
                             }
+                            .foregroundStyle(Color.primary)
+                        }
+                    } footer: {
+                        DisclosureGroup {
+                            TriggerDataChartView(reflection: reflection)
+                                .frame(height: 250)
+                                .padding(.top)
+                        } label: {
+                            IconLabel(
+                                icon: "chart.xyaxis.line",
+                                title: "Chart",
+                                description: "View the data that triggered this reminder",
+                                labelColor: .primary
+                            )
+                            .font(.subheadline.weight(.semibold))
                         }
                     }
                     .iconLabelGroupBoxStyle(.divider)
@@ -515,9 +509,9 @@ struct EditReflectionView: View {
             }
         }
     }
-
+    
     // MARK: Create Button
-
+    
     private var createButton: some View {
         PrimaryButton(title: String(localized: "Create")) {
             viewModel.createReflection()
@@ -531,9 +525,9 @@ struct EditReflectionView: View {
             Divider()
         }
     }
-
+    
     // MARK: Delete Button
-
+    
     private var deleteButton: some View {
         PrimaryButton(
             title: String(localized: "Delete Reflection"),
@@ -543,9 +537,9 @@ struct EditReflectionView: View {
             viewModel.presentAlert(.deleteConfirmation)
         }
     }
-
+    
     // MARK: Hide Keyboard Button
-
+    
     private var hideKeyboardButton: some View {
         Button {
             hideKeyboard()
@@ -554,9 +548,9 @@ struct EditReflectionView: View {
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
-
+    
     // MARK: Reflection Deletion Confirmation Alert
-
+    
     private var reviewDeletionConfirmationAlert: Alert {
         Alert(
             title: Text("Delete Reflection"),
@@ -568,9 +562,9 @@ struct EditReflectionView: View {
             secondaryButton: .cancel()
         )
     }
-
+    
     // MARK: - Unable to Save Reflection Alert
-
+    
     private var unableToSaveReflectionAlert: Alert {
         Alert(
             title: Text("Save Error"),
@@ -759,7 +753,6 @@ struct TriggerDataChartView: View {
                 }
             }
             .chartXSelection(value: $selectedDate)
-            .frame(height: 256)
         }
     }
     
@@ -801,7 +794,7 @@ fileprivate extension Array {
 
 #Preview {
     let viewModel = ScenesContainer.shared.editReflectionViewModel()
-
+    
     return EditReflectionView(viewModel: viewModel) {}
         .tint(Color("BrandPrimary"))
 }

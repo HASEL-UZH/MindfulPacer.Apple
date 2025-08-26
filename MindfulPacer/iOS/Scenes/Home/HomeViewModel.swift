@@ -21,6 +21,7 @@ class HomeViewModel {
     private let modelContext: ModelContext
     private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
     private let createReflectionUseCase: CreateReflectionUseCase
+    private let deleteReflectionUseCase: DeleteReflectionUseCase
     private let fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
@@ -39,6 +40,7 @@ class HomeViewModel {
     var reviewFilter: ReflectionFilter = ReflectionFilter()
     var reviewSorting: ReflectionSorting = .dateDescending
     var reflections: [Reflection] = []
+    var missedReflections: [Reflection] = []
     var filteredReflections: [Reflection] = []
     
     var recentReflections: [Reflection] {
@@ -50,7 +52,6 @@ class HomeViewModel {
         Array(reminders.prefix(3))
     }
     
-    var missedReflections: [MissedReflection] = []
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     
@@ -67,7 +68,7 @@ class HomeViewModel {
     }
     
     var missedReflectionsWidgetTitle: String {
-        "\(missedReflections.count) Missed \(missedReflections.count > 1 ? "Reflections" : "Reflection")"
+        missedReflections.count > 1 ? "\(missedReflections.count) Missed Reflections" : "1 Missed Reflection"
     }
     
     // MARK: - Private Properties
@@ -81,6 +82,7 @@ class HomeViewModel {
         modelContext: ModelContext,
         checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
         createReflectionUseCase: CreateReflectionUseCase,
+        deleteReflectionUseCase: DeleteReflectionUseCase,
         fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase,
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
@@ -95,6 +97,7 @@ class HomeViewModel {
         self.modelContext = modelContext
         self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
         self.createReflectionUseCase = createReflectionUseCase
+        self.deleteReflectionUseCase = deleteReflectionUseCase
         self.fetchActionedMissedReflectionsUseCase = fetchActionedMissedReflectionsUseCase
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
@@ -120,17 +123,25 @@ class HomeViewModel {
         fetchCurrentHeartRate()
         fetchReflections()
         fetchReminders()
-        checkMissedReflections()
         fetchHealthData()
     }
     
     func onSheetDismissed() {
         fetchReflections()
         fetchReminders()
-        checkMissedReflections()
     }
     
     // MARK: - User Actions
+    
+    func rejectMissedReflection(reflection: Reflection) {
+        deleteReflectionUseCase.execute(reflection: reflection)
+        missedReflections.removeAll { $0.id == reflection.id }
+    }
+    
+    func acceptMissedReflection(reflection: Reflection) {
+        missedReflections.removeAll { $0.id == reflection.id }
+        presentSheet(.editReflectionView(reflection))
+    }
     
     func toggleFilterActivity(_ activity: Activity) {
         updateFilter {
@@ -165,45 +176,6 @@ class HomeViewModel {
     func toggleTriggeredCrash() {
         updateFilter {
             reviewFilter.triggeredCrash.toggle()
-        }
-    }
-    
-    func acceptMissedReflection(_ missedReflection: MissedReflection) {
-        missedReflection.accept()
-    
-        withAnimation {
-            missedReflections.removeAll { $0.id == missedReflection.id }
-        }
-        
-        _ = createReflectionUseCase.execute(
-            date: missedReflection.date,
-            activity: nil,
-            subactivity: nil,
-            mood: nil,
-            didTriggerCrash: false,
-            wellBeing: nil,
-            fatigue: nil,
-            shortnessOfBreath: nil,
-            sleepDisorder: nil,
-            cognitiveImpairment: nil,
-            physicalPain: nil,
-            depressionOrAnxiety: nil,
-            additionalInformation: "",
-            measurementType: missedReflection.measurementType,
-            reminderType: missedReflection.reminderType,
-            threshold: missedReflection.threshold,
-            interval: missedReflection.interval,
-            triggerSamples: []
-        )
-       
-        presentToast(.successfullyCreatedReflection)
-    }
-    
-    func rejectMissedReflection(_ missedReflection: MissedReflection) {
-        missedReflection.reject()
-        
-        withAnimation {
-            missedReflections.removeAll { $0.id == missedReflection.id }
         }
     }
     
@@ -318,33 +290,13 @@ class HomeViewModel {
     }
     
     private func fetchReflections() {
-        reflections = fetchReflectionsUseCase.execute() ?? []
+        let allReflections = fetchReflectionsUseCase.execute() ?? []
+        reflections = allReflections.filter { !$0.isMissedReflection }
+        missedReflections = allReflections.filter { $0.isMissedReflection }
         applyFilterAndSorting(reviewFilter, reviewSorting)
     }
     
     private func fetchReminders() {
         reminders = fetchRemindersUseCase.execute() ?? []
-    }
-    
-    private func checkMissedReflections() {
-        Task(priority: .background) {
-            let reminders = fetchRemindersUseCase.execute() ?? []
-            
-            checkMissedReflectionsUseCase.execute(
-                reminders: reminders,
-                isDeveloperMode: false
-            ) { [weak self] result in
-                Task { @MainActor in
-                    guard let self = self else { return }
-                    
-                    switch result {
-                    case .success(let missedReflections):
-                        self.missedReflections = missedReflections
-                    case .failure(let failure):
-                        print("DEBUG:", failure)
-                    }
-                }
-            }
-        }
     }
 }

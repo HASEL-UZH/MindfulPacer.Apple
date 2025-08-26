@@ -16,43 +16,56 @@ extension EditReflectionView {
 
         var activity: Activity
         @Bindable var viewModel: EditReflectionViewModel
-
+        
         // MARK: Body
-
+        
         var body: some View {
-            ScrollView {
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(spacing: 16), count: 2),
-                    spacing: 16
-                ) {
-                    ForEach(activity.subactivities!) { subactivity in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedSubactivity == subactivity
-                        ) {
-                            viewModel.toggleSelection(subactivity, selectedItem: &viewModel.selectedSubactivity)
-                        } label: {
-                            VStack(spacing: 16) {
-                                Image(systemName: subactivity.icon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .symbolVariant(.fill)
-                                    .frame(width: 32, height: 32)
-                                Text(subactivity.name)
-                                    .font(.subheadline)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.75)
-                                    .truncationMode(.middle)
+            if activity.subactivities!.isEmpty {
+                ContentUnavailableView {
+                    Label("No Subactivities", systemImage: "exclamationmark.circle.fill")
+                } description: {
+                    Text("There are no subactivities for this activity.")
+                }
+                .navigationTitle("Subactivity")
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
+            } else {
+                ScrollView {
+                    LazyVGrid(
+                        columns: Array(repeating: GridItem(spacing: 16), count: 2),
+                        spacing: 16
+                    ) {
+                        ForEach(activity.subactivities!) { subactivity in
+                            SelectableButton(
+                                shape: .roundedRectangle(cornerRadius: 16),
+                                isSelected: viewModel.selectedSubactivity == subactivity
+                            ) {
+                                viewModel.toggleSelection(subactivity, selectedItem: &viewModel.selectedSubactivity)
+                            } label: {
+                                VStack(spacing: 16) {
+                                    Image(systemName: subactivity.icon)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .symbolVariant(.fill)
+                                        .frame(width: 32, height: 32)
+                                    Text(subactivity.name)
+                                        .font(.subheadline)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.75)
+                                        .truncationMode(.middle)
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-            }
-            .navigationTitle("Subactivity")
-            .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                .navigationTitle("Subactivity")
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ enum HomeViewNavigationDestination: Hashable {
     case reviewsList
     case remindersList
     case analytics
+    case missedReflectionsList
 }
 
 enum HomeViewSheet: Identifiable {
@@ -91,24 +92,35 @@ struct HomeView: View {
     @ViewBuilder
     private var missedReflectionsWidget: some View {
         if !viewModel.missedReflections.isEmpty {
-            Button {
-                viewModel.presentSheet(.missedReflections)
-            } label: {
+            NavigationLink(value: HomeViewNavigationDestination.missedReflectionsList) {
                 Card {
-                    Label {
-                        Text(viewModel.missedReflectionsWidgetTitle)
-                            .foregroundStyle(Color.red)
-                            .font(.subheadline.weight(.semibold))
-                    } icon: {
-                        Icon(
+                    HStack {
+                        IconLabel(
                             image: "book.pages.fill.badge.exclamationmark",
-                            color: .red,
+                            title: String(localized: "Missed Reflections"),
+                            labelColor: .red,
                             background: true
                         )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .layoutPriority(1)
+                        
+                        Spacer(minLength: 16)
+                        
+                        HStack(spacing: 4) {
+                            Text(String(viewModel.missedReflections.count))
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.red)
+                                .fixedSize(horizontal: true, vertical: false)
+                            
+                            
+                            Icon(name: "chevron.right", color: Color(.systemGray2))
+                                .font(.subheadline.weight(.semibold))
+                        }
                     }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         } else {
             EmptyView()
         }
@@ -141,6 +153,8 @@ struct HomeView: View {
             ReflectionsListView(viewModel: viewModel)
         case .remindersList:
             RemindersListView(viewModel: viewModel)
+        case .missedReflectionsList:
+            MissedReflectionsListView(viewModel: viewModel)
         case .analytics:
             AnalyticsView()
         }
@@ -152,12 +166,9 @@ struct HomeView: View {
     private func sheetContent(for sheet: HomeViewSheet) -> some View {
         switch sheet {
         case .editReflectionView(let reflection):
-            EditReflectionView(reflection: reflection, onReflectionCreation: {
-                viewModel.presentToast(.successfullyCreatedReflection)
-            })
-            .interactiveDismissDisabled(reflection.isNil)
+            EditReflectionView(reflection: reflection)
+            .interactiveDismissDisabled()
             .presentationCornerRadius(16)
-            .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
         case .createReminderView(let reminder):
             CreateReminderView(reminder: reminder)
                 .interactiveDismissDisabled(reminder.isNil)

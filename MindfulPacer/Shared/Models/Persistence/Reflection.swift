@@ -62,6 +62,23 @@ extension SchemaV1 {
             }
         }
         
+        var isMissedReflection: Bool {
+            activity.isNil && reminderType.isNotNil
+        }
+        
+        var reminderTriggerSummary: String {
+            guard let reminderMeasurementType = measurementType,
+                  let reminderInterval = interval,
+                  let reminderThreshold = threshold else { return "No summary" }
+            
+            switch reminderMeasurementType {
+            case .heartRate:
+                return "Above \(reminderThreshold) bpm for \(reminderInterval.rawValue.lowercased())"
+            case .steps:
+                return "Above \(reminderThreshold) steps within the window of \(reminderInterval.rawValue.lowercased())"
+            }
+        }
+        
         init(
             id: UUID = UUID(),
             date: Date = .now,

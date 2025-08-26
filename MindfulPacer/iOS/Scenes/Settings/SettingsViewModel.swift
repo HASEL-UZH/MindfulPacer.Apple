@@ -9,6 +9,7 @@ import Foundation
 import MessageUI
 import SwiftUI
 import UniformTypeIdentifiers
+import Combine
 
 // MARK: - Theme
 
@@ -124,6 +125,13 @@ enum ExportFileFormat: String, CaseIterable, Identifiable {
         }
     }
     
+    var icon: String {
+        switch self {
+        case .csv: "document.fill"
+        case .json: "ellipsis.curlybraces"
+        }
+    }
+    
     var id: String { self.rawValue }
 }
 
@@ -220,6 +228,22 @@ class SettingsViewModel {
     var reflections: [Reflection] = []
     var reminders: [Reminder] = []
     
+    var watchConnectionStatus: WatchConnectionStatus = .initializing
+    var watchConnectionSpeed: WatchConnectionSpeed = .noResponse
+    
+    var isWatchPaired: Bool {
+        return watchConnectionStatus != .noWatchPaired
+    }
+    
+    var isWatchAppInstalled: Bool {
+        switch watchConnectionStatus {
+        case .noWatchPaired, .appNotInstalled:
+            return false
+        default:
+            return true
+        }
+    }
+    
     var isFetchingRoadmap: Bool = false
     var roadmapItems: [RoadmapItem] = []
     var isInternetConnected: Bool = true
@@ -237,6 +261,10 @@ class SettingsViewModel {
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var missedReflections: [MissedReflection] = []
 
+    var bufferValues: [String: TimeInterval] = [:]
+
+    private var cancellables = Set<AnyCancellable>()
+
     var isGermanLanguage: Bool {
         Locale.current.language.languageCode?.identifier == "de"
     }
@@ -247,6 +275,10 @@ class SettingsViewModel {
     
     var landingPageURL: URL {
         isGermanLanguage ? URL(string: "https://mindfulpacer.ch/")! : URL(string: "https://mindfulpacer.ch/en/mindfulpacer-english/")!
+    }
+    
+    var appleWatchInstallationHelp: URL {
+        isGermanLanguage ? URL(string: "https://support.apple.com/de-ch/109023")! : URL(string: "https://support.apple.com/en-us/109023")!
     }
     
     var appVersion: String {
@@ -335,6 +367,9 @@ class SettingsViewModel {
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
+        
+        loadAllBuffers()
+        subscribeToWatchStatus()
     }
     
     // MARK: - View Events
@@ -354,6 +389,27 @@ class SettingsViewModel {
     
     // MARK: - User Actions
     
+    func saveBuffer(for interval: Reminder.Interval, type: Reminder.MeasurementType, newBufferInSeconds: TimeInterval) {
+        let key = StorageKeys.bufferKey(for: interval, type: type)
+        sharedUserDefaults?.set(newBufferInSeconds, forKey: key)
+        bufferValues[key] = newBufferInSeconds
+    }
+    
+    func resetBuffersToDefaults() {
+        let measurementTypes: [Reminder.MeasurementType] = [.heartRate, .steps]
+        
+        for type in measurementTypes {
+            let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
+            for interval in intervals {
+                let key = StorageKeys.bufferKey(for: interval, type: type)
+                // Remove the custom value from UserDefaults.
+                sharedUserDefaults?.removeObject(forKey: key)
+            }
+        }
+        
+        loadAllBuffers()
+    }
+    
     func setModeOfUse(_ modeOfUse: ModeOfUse) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
     }
@@ -361,7 +417,6 @@ class SettingsViewModel {
     func onExportTapped() {
         let exportedFileURL: URL?
         
-        // Set the export format based on the data model
         switch selectedExportDataModel {
         case .reflection, .reminder:
             selectedExportFileFormat = .csv
@@ -380,6 +435,18 @@ class SettingsViewModel {
     }
     
     // MARK: - Private Methods
+    
+    private func subscribeToWatchStatus() {
+        ConnectivityService.shared.$connectionStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in self?.watchConnectionStatus = status }
+            .store(in: &cancellables)
+        
+        ConnectivityService.shared.$connectionSpeed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] speed in self?.watchConnectionSpeed = speed }
+            .store(in: &cancellables)
+    }
     
     private func fetchReflections() {
         reflections = fetchReflectionsUseCase.execute() ?? []
@@ -403,6 +470,26 @@ class SettingsViewModel {
                 self.heartRateData = heartRateData
             }
         }
+    }
+    
+    private func loadAllBuffers() {
+        var loadedValues: [String: TimeInterval] = [:]
+        let measurementTypes: [Reminder.MeasurementType] = [.heartRate, .steps]
+        
+        for type in measurementTypes {
+            let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
+            for interval in intervals {
+                let key = StorageKeys.bufferKey(for: interval, type: type)
+                
+                if let savedValue = sharedUserDefaults?.object(forKey: key) as? TimeInterval {
+                    loadedValues[key] = savedValue
+                } else {
+                    let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
+                    loadedValues[key] = BufferManager.shared.buffer(for: interval, context: context)
+                }
+            }
+        }
+        self.bufferValues = loadedValues
     }
     
     private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
@@ -482,6 +569,10 @@ class SettingsViewModel {
             print("Failed to create JSON file: \(error)")
             return nil
         }
+    }
+    
+    private var sharedUserDefaults: UserDefaults? {
+        return UserDefaults(suiteName: "group.com.MindfulPacer")
     }
     
     private func optionalIntToString(_ value: Int?) -> String {

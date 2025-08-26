@@ -48,12 +48,12 @@ extension OnboardingView {
                         
                         Divider()
                         
-                        Image(.appleHealthPermission)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 270, alignment: .top)
-                            .clipped()
-                            .padding([.top, .horizontal])
+                        CroppedIPhoneImage(
+                            Image(.appleHealthPermission),
+                            heightRatio: 0.8,
+                            fill: true
+                        )
+                        .padding()
                         
                         Text(
                             """

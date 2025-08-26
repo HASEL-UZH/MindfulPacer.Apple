@@ -17,6 +17,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var createReflectionUseCase: CreateReflectionUseCase?
     private var alertDataCache: [UUID: [MeasurementSample]] = [:]
+    private let pendingNotificationsKey = "pendingNotificationsKey"
 
     @MainActor
     func configure() {
@@ -36,16 +37,9 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
        func cacheTriggerData(_ data: [MeasurementSample], for alertID: UUID) {
            print("DEBUGY: Encoding and caching \(data.count) samples for alertID \(alertID) in UserDefaults.")
            do {
-               // Get the existing cache, or a new one.
                var cache = retrieveFullCache()
-               
-               // Encode the data to a Data blob.
                let encodedData = try JSONEncoder().encode(data)
-               
-               // Save it using the alertID as the key.
                cache[alertID.uuidString] = encodedData
-               
-               // Write the entire updated cache dictionary back to UserDefaults.
                let cacheData = try JSONEncoder().encode(cache)
                UserDefaults.standard.set(cacheData, forKey: alertCacheKey)
            } catch {
@@ -56,22 +50,17 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     
     private func retrieveTriggerData(for alertID: UUID) -> [MeasurementSample]? {
            print("DEBUGY: Retrieving data for alertID \(alertID) from UserDefaults.")
-           // Get the full cache dictionary.
            var cache = retrieveFullCache()
            
-           // Find the data for our specific ID.
            guard let data = cache[alertID.uuidString] else {
                print("DEBUGY: ERROR - No data found in UserDefaults cache for alertID \(alertID).")
                return nil
            }
            
-           // Remove the data now that we've used it to keep the cache clean.
            cache.removeValue(forKey: alertID.uuidString)
            
-           // Write the cleaned cache back.
            try? UserDefaults.standard.set(JSONEncoder().encode(cache), forKey: alertCacheKey)
            
-           // Decode the data and return it.
            return try? JSONDecoder().decode([MeasurementSample].self, from: data)
        }
 
@@ -99,6 +88,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             return
         }
         
+        clearPendingNotification(alertID: alertID)
+
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
@@ -114,6 +105,39 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
         
         completionHandler()
+    }
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        print("DEBUGY: Notification arrived while app is in foreground. Suppressing system UI.")
+        completionHandler([])
+    }
+    
+    private func clearPendingNotification(alertID: UUID) {
+        let userDefaults = UserDefaults.standard
+        var allPending = getPendingNotifications()
+        
+        allPending.removeAll { $0.alertID == alertID }
+        
+        do {
+            let data = try JSONEncoder().encode(allPending)
+            userDefaults.set(data, forKey: pendingNotificationsKey)
+            print("DEBUGY: Cleared pending notification with alertID \(alertID)")
+        } catch {
+            print("DEBUGY: ERROR - Failed to clear pending notification: \(error)")
+        }
+    }
+
+    private func getPendingNotifications() -> [PendingNotification] {
+        let userDefaults = UserDefaults.standard
+        guard let data = userDefaults.data(forKey: pendingNotificationsKey),
+              let pending = try? JSONDecoder().decode([PendingNotification].self, from: data) else {
+            return []
+        }
+        return pending
     }
     
     @MainActor
@@ -238,7 +262,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     
     func session(
         _ session: WCSession,
-        didReceiveMessage message: [String: Any]
+        didReceiveMessage message: [String: Any],
+        replyHandler: @escaping ([String : Any]) -> Void
     ) {
         if let command = message[MessageKeys.command] as? String,
            let messageCommand = MessageCommand(rawValue: command) {
@@ -248,7 +273,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
                 Task { @MainActor in
                     Services.shared.monitorService.statusMessage = .syncing
                 }
-                
+            case .ping:
+                replyHandler(["ack": "pong"])
             default:
                 break
             }

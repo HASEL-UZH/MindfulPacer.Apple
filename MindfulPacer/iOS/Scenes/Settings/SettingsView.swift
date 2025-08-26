@@ -14,7 +14,6 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
-    case missedReflectionsListView
 
     var id: Int {
         switch self {
@@ -22,7 +21,6 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
-        case .missedReflectionsListView: 4
         }
     }
 }
@@ -50,19 +48,26 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
+                
+                // MARK: General
+                
                 Section {
                     mindfulPacerExpanded
+                    appleWatch
                     viewOnboarding
-//                    appleWatch
                 } header: {
                     sectionHeader(title: String(localized: "General"))
                 }
+                
+                // MARK: Appearance
                 
                 Section {
                     themeSettings
                 } header: {
                     sectionHeader(title: String(localized: "Appearance"))
                 }
+                
+                // MARK: Data
                 
                 Section {
                     exportData
@@ -73,6 +78,8 @@ struct SettingsView: View {
                     sectionHeader(title: String(localized: "Data"))
                 }
                 
+                // MARK: About
+                
                 Section {
                     contactUs
                     roadmap
@@ -82,6 +89,8 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: String(localized: "About"))
                 }
+                
+                // MARK: Affiliations
                 
                 Section {
                     logos
@@ -113,7 +122,7 @@ struct SettingsView: View {
     private func navigationDestination(for destination: SettingsNavigationDestination) -> some View {
         switch destination {
         case .algorithms:
-            AlgorithmsView()
+            AlgorithmsView(viewModel: viewModel)
         case .theme:
             ThemeSettingsView()
         case .export:
@@ -146,10 +155,6 @@ struct SettingsView: View {
                 .presentationDragIndicator(.visible)
         case .systemReportView:
             SystemReportView(viewModel: viewModel)
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
-        case .missedReflectionsListView:
-            MissedReflectionsListView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
         }
@@ -212,7 +217,7 @@ struct SettingsView: View {
         NavigationLink(value: SettingsNavigationDestination.algorithms) {
             RoundedListCell(
                 label: IconLabel(
-                    icon: "curlybraces",
+                    icon: "slider.horizontal.below.square.filled.and.square",
                     title: String(localized: "Algorithms"),
                     labelColor: Color("BrandPrimary"),
                     background: true
@@ -420,9 +425,6 @@ struct SettingsView: View {
             .foregroundStyle(Color.secondary)
             .onTapGesture(count: 1) {
                 viewModel.presentSheet(.systemReportView)
-            }
-            .onTapGesture(count: 2) {
-                viewModel.presentSheet(.missedReflectionsListView)
             }
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal)

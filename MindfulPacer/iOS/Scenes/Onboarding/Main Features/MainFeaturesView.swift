@@ -38,11 +38,11 @@ extension OnboardingView {
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         ) {
-                            Image(feature.image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 350, alignment: .top)
-                                .clipped()
+                            CroppedIPhoneImage(
+                                Image(feature.image),
+                                heightRatio: 1.05,
+                                fill: true
+                            )
                             
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(feature.points, id: \.self) { point in
