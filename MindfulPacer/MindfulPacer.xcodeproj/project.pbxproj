@@ -191,6 +191,9 @@
 		0DE47A112E4B4A500052959C /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AB52C7D0F2B0014CD81 /* Icon.swift */; };
 		0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A122E4B6E4D0052959C /* AppDelegate.swift */; };
 		0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A152E4B79BB0052959C /* AppleWatchView.swift */; };
+		0DEF86F62E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
+		0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
+		0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
@@ -415,6 +418,7 @@
 		0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManager.swift; sourceTree = "<group>"; };
 		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
+		0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationState.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCell.swift; sourceTree = "<group>"; };
@@ -1275,6 +1279,7 @@
 				0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */,
 				0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */,
 				0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */,
+				0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1505,6 +1510,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1613,6 +1619,7 @@
 				0DC136AB2D4E75DF00001D08 /* OutreachViewModel.swift in Sources */,
 				0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */,
 				0D9AB0CF2C6E8B3600BB773F /* CreateReminderViewModel.swift in Sources */,
+				0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
 				0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */,
 				0DC136B72D4E7DCB00001D08 /* BlogArticleCell.swift in Sources */,
 				0D67F43F2C91DC49000F6114 /* CheckUserHasSeenOnboardingUseCase.swift in Sources */,
@@ -1675,6 +1682,7 @@
 				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
 				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
 				0DF5EDBB2E4F4367005DB9DE /* SaveReflectionUseCase.swift in Sources */,
+				0DEF86F62E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,

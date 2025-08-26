@@ -9,53 +9,75 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
-    private var isMonitoringActive: Bool {
+    private var monitoringState: ComplicationState {
         let defaults = UserDefaults(suiteName: "group.com.MindfulPacer")
-        return defaults?.bool(forKey: "isMonitoringActive") ?? false
+        let rawValue = defaults?.integer(forKey: "monitoringState") ?? ComplicationState.inactive.rawValue
+        return ComplicationState(rawValue: rawValue) ?? .inactive
     }
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), isMonitoring: true)
+        SimpleEntry(date: Date(), state: .active)
     }
-
+    
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), isMonitoring: isMonitoringActive)
+        let entry = SimpleEntry(date: Date(), state: monitoringState)
         completion(entry)
     }
-
+    
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
-         let entry = SimpleEntry(date: Date(), isMonitoring: isMonitoringActive)
-         
-         let timeline = Timeline(entries: [entry], policy: .never)
-         completion(timeline)
-     }
- }
+        let entry = SimpleEntry(date: Date(), state: monitoringState)
+        let timeline = Timeline(entries: [entry], policy: .never)
+        completion(timeline)
+    }
+}
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let isMonitoring: Bool
+    let state: ComplicationState
 }
 
 struct MindfulPacerStatusEntryView : View {
     var entry: Provider.Entry
-    
     @Environment(\.widgetFamily) var family
+
+    private var iconName: String {
+        switch entry.state {
+        case .active: return "checkmark.circle.fill"
+        case .paused: return "pause.circle.fill"
+        case .inactive: return "xmark.circle.fill"
+        }
+    }
+    
+    private var labelText: String {
+        switch entry.state {
+        case .active: return "Monitoring"
+        case .paused: return "Paused"
+        case .inactive: return "Inactive"
+        }
+    }
+    
+    private var color: Color {
+        switch entry.state {
+        case .active: return .green
+        case .paused: return .yellow
+        case .inactive: return .red
+        }
+    }
 
     @ViewBuilder
     var body: some View {
         switch family {
         case .accessoryCircular:
-            Label("MP", systemImage: entry.isMonitoring ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(entry.isMonitoring ? .accent : .red)
-                .symbolRenderingMode(.hierarchical)
-                .widgetLabel {
-                    Text(entry.isMonitoring ? "Monitoring" : "Inactive")
-                }
+            Image(systemName: iconName)
+                .font(.headline)
+                .widgetLabel { Text(labelText) }
                 .widgetAccentable()
+                .foregroundColor(color)
+                
         case .accessoryRectangular:
             HStack {
-                Image(systemName: entry.isMonitoring ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundStyle(entry.isMonitoring ? .accent : .red)
+                Image(systemName: iconName)
+                    .foregroundStyle(color)
                     .symbolRenderingMode(.hierarchical)
                     .font(.largeTitle.bold())
                 
@@ -63,33 +85,24 @@ struct MindfulPacerStatusEntryView : View {
                     Text("MindfulPacer")
                         .bold()
                         .widgetAccentable()
-                    Text(entry.isMonitoring ? "Monitoring" : "Inactive")
+                    Text(labelText)
                         .font(.footnote.weight(.semibold))
-                        .foregroundColor(entry.isMonitoring ? .accent : .red)
-                    
+                        .foregroundColor(color)
                 }
                 Spacer()
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(.primary.opacity(0.1))
-            )
+            .padding(.leading, 8)
+
         case .accessoryCorner:
-            Image(systemName: entry.isMonitoring ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(entry.isMonitoring ? .accent : .red)
+            Image(systemName: iconName)
+                .foregroundStyle(color)
                 .symbolRenderingMode(.hierarchical)
-                .font(.largeTitle.bold())
+
         case .accessoryInline:
-            Label(entry.isMonitoring ? "Monitoring" : "Inactive", systemImage: entry.isMonitoring ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(entry.isMonitoring ? .accent : .red)
-                .symbolRenderingMode(.hierarchical)
-                .widgetLabel {
-                    Text(entry.isMonitoring ? "Monitoring" : "Inactive")
-                }
-                .widgetAccentable()
+            Label(labelText, systemImage: iconName)
+            
         @unknown default:
-            Label(entry.isMonitoring ? "Monitoring" : "Inactive", systemImage: entry.isMonitoring ? "checkmark.circle.fill" : "xmark.circle.fill")
+            Label(labelText, systemImage: iconName)
         }
     }
 }
@@ -97,27 +110,7 @@ struct MindfulPacerStatusEntryView : View {
 #Preview(as: .accessoryRectangular) {
     MindfulPacerStatus()
 } timeline: {
-    SimpleEntry(date: .now, isMonitoring: true)
-    SimpleEntry(date: .now, isMonitoring: false)
-}
-
-#Preview(as: .accessoryCircular) {
-    MindfulPacerStatus()
-} timeline: {
-    SimpleEntry(date: .now, isMonitoring: true)
-    SimpleEntry(date: .now, isMonitoring: false)
-}
-
-#Preview(as: .accessoryCorner) {
-    MindfulPacerStatus()
-} timeline: {
-    SimpleEntry(date: .now, isMonitoring: true)
-    SimpleEntry(date: .now, isMonitoring: false)
-}
-
-#Preview(as: .accessoryInline) {
-    MindfulPacerStatus()
-} timeline: {
-    SimpleEntry(date: .now, isMonitoring: true)
-    SimpleEntry(date: .now, isMonitoring: false)
+    SimpleEntry(date: .now, state: .active)
+    SimpleEntry(date: .now, state: .paused)
+    SimpleEntry(date: .now, state: .inactive)
 }

@@ -33,174 +33,179 @@ extension AlertState {
 @Observable
 class HomeViewModel {
     var statusMessage: StatusMessage = .notMonitoring
-       var heartRate: Double = 0
-       var isMonitoring: Bool = false
-       var isShowingActiveRules = false
-       var isShowingAppInfoSheet = false
-       var todaysSteps: Int = 0
-       var activeRules: [AlertRule] = []
-       var defaultActivities: [Activity] = []
-       var selectedTab: HomePage = .main
-       var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
-       
-       var showAppInfo: Bool = false
-       var showBatteryInfo: Bool = false
-       var showStatusInfo: Bool = false
-       
-       var alertState: AlertState = .none
-       
-       var heartRateSamples: [(value: Double, date: Date)] = []
-       var hourlyStepData: [(date: Date, steps: Double)] = []
-       
-       var strongAlertCount: Int = 0
-       var mediumAlertCount: Int = 0
-       var lightAlertCount: Int = 0
-       
-       private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-       private let fetchRemindersUseCase: FetchRemindersUseCase
-       
-       var avgHeartRate: Int {
-           guard !heartRateSamples.isEmpty else { return 0 }
-           let sum = heartRateSamples.reduce(0) { $0 + $1.value }
-           return Int(sum / Double(heartRateSamples.count))
-       }
-       
-       var minHeartRate: Int {
-           (heartRateSamples.min(by: { $0.value < $1.value })?.value ?? 0).toInt()
-       }
-       
-       var maxHeartRate: Int {
-           (heartRateSamples.max(by: { $0.value < $1.value })?.value ?? 0).toInt()
-       }
-       
-       var downsampledHeartRateSamples: [(value: Double, date: Date)] {
-           let maxDataPoints = 150
-           guard heartRateSamples.count > maxDataPoints else { return heartRateSamples }
-           var downsampledData: [(value: Double, date: Date)] = []
-           let bucketSize = Double(heartRateSamples.count) / Double(maxDataPoints)
-           for i in 0..<maxDataPoints {
-               let bucketStart = Int(Double(i) * bucketSize)
-               let bucketEnd = Int(Double(i + 1) * bucketSize)
-               guard let bucketSlice = heartRateSamples[safe: bucketStart..<bucketEnd] else { continue }
-               let bucket = Array(bucketSlice)
-               guard !bucket.isEmpty else { continue }
-               if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
-                   downsampledData.append(significantPoint)
-               }
-           }
-           return downsampledData
-       }
-       
-       var heartRateChartYDomain: ClosedRange<Int> {
-           let dataValues = heartRateSamples.map { $0.value }
-           let minDataY = dataValues.min() ?? 60.0
-           let maxDataY = dataValues.max() ?? 100.0
-           let thresholdValues = activeRules.compactMap { rule -> Double? in
-               if case .heartRate(let threshold) = rule.ruleType { return threshold }
-               return nil
-           }
-           let minThresholdY = thresholdValues.min()
-           let maxThresholdY = thresholdValues.max()
-           let overallMin = min(minDataY, minThresholdY ?? minDataY)
-           let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
-           return (Int(overallMin) - 10)...(Int(overallMax) + 10)
-       }
-       
-       var stepsChartYDomain: ClosedRange<Int> {
-           let maxDataY = hourlyStepData.map { $0.steps }.max() ?? 500.0
-           let thresholdValues = activeRules.compactMap { rule -> Double? in
-               if case .steps(let threshold) = rule.ruleType { return threshold }
-               return nil
-           }
-           let maxThresholdY = thresholdValues.max()
-           let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
-           return 0...(Int(overallMax) + 100)
-       }
-       
-       private var refreshTimer: Timer?
-       private var cancellables = Set<AnyCancellable>()
-       
-       init() {
-           let modelContext = ModelContainer.prod.mainContext
-           self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
-           self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
-           
-           loadPersistentCounts()
-           checkForDailyReset()
-           setupSubscriptions()
-           loadDefaultActivities()
-       }
-       
-       private init(isForPreview: Bool) {
-           self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.preview.mainContext)
-           self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.preview.mainContext)
-           
-           self.statusMessage = .monitoring
-           self.isMonitoring = true
-           self.heartRate = 78
-           self.strongAlertCount = 1
-           self.mediumAlertCount = 0
-           self.lightAlertCount = 2
-           
-           let now = Date()
-           var samples: [(value: Double, date: Date)] = []
-           for i in 0..<60 {
-               let timeInterval = Double(i) * -60
-               let date = now.addingTimeInterval(timeInterval)
-               let sineValue = sin(Double(i) * 0.2)
-               let heartRateValue = 75.0 + (sineValue * 15.0) + Double.random(in: -2...2)
-               samples.append((value: heartRateValue, date: date))
-           }
-           self.heartRateSamples = samples.reversed()
-           
-           var stepData: [(date: Date, steps: Double)] = []
-           for i in 0..<12 {
-               let timeInterval = Double(i) * -300
-               let date = now.addingTimeInterval(timeInterval)
-               let steps = Double.random(in: 50...300)
-               stepData.append((date: date, steps: steps))
-           }
-           self.hourlyStepData = stepData.reversed()
-       }
-       
-       private func loadDefaultActivities() {
-           if let activities = fetchDefaultActivitiesUseCase.execute() {
-               self.defaultActivities = activities
-           }
-       }
-       
-       static var mock: HomeViewModel {
-           HomeViewModel(isForPreview: true)
-       }
-       
-       private func setupSubscriptions() {
-           Services.shared.monitorService.$statusMessage
-               .sink { [weak self] newStatus in self?.statusMessage = newStatus }
-               .store(in: &cancellables)
-           Services.shared.monitorService.$heartRate
-               .sink { [weak self] newHeartRate in self?.heartRate = newHeartRate }
-               .store(in: &cancellables)
-           Services.shared.monitorService.$isSessionActive
-               .sink { [weak self] newIsMonitoring in self?.isMonitoring = newIsMonitoring }
-               .store(in: &cancellables)
-           Services.shared.monitorService.alertTriggeredSubject
-               .sink { [weak self] rule in self?.triggerInAppAlert(for: rule) }
-               .store(in: &cancellables)
-           Services.shared.monitorService.$recentHeartRateSamples
-               .sink { [weak self] samples in self?.heartRateSamples = samples }
-               .store(in: &cancellables)
-           Services.shared.monitorService.$activeRules
-               .sink { [weak self] newRules in self?.activeRules = newRules }
-               .store(in: &cancellables)
-           
-           refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
-               Task {
-                   await self?.fetchChartData()
-                   await self?.fetchTodaysSteps()
-                   await self?.updateBattery()
-               }
-           }
-       }
+    var heartRate: Double = 0
+    var isMonitoring: Bool = false
+    var isShowingActiveRules = false
+    var isShowingAppInfoSheet = false
+    var todaysSteps: Int = 0
+    var activeRules: [AlertRule] = []
+    var defaultActivities: [Activity] = []
+    var selectedTab: HomePage = .main
+    var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
+    
+    var showAppInfo: Bool = false
+    var showBatteryInfo: Bool = false
+    var showStatusInfo: Bool = false
+    
+    var alertState: AlertState = .none
+    
+    var heartRateSamples: [(value: Double, date: Date)] = []
+    var hourlyStepData: [(date: Date, steps: Double)] = []
+    
+    var strongAlertCount: Int = 0
+    var mediumAlertCount: Int = 0
+    var lightAlertCount: Int = 0
+    var isManuallyPaused: Bool = false
+    
+    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
+    private let fetchRemindersUseCase: FetchRemindersUseCase
+    
+    var avgHeartRate: Int {
+        guard !heartRateSamples.isEmpty else { return 0 }
+        let sum = heartRateSamples.reduce(0) { $0 + $1.value }
+        return Int(sum / Double(heartRateSamples.count))
+    }
+    
+    var minHeartRate: Int {
+        (heartRateSamples.min(by: { $0.value < $1.value })?.value ?? 0).toInt()
+    }
+    
+    var maxHeartRate: Int {
+        (heartRateSamples.max(by: { $0.value < $1.value })?.value ?? 0).toInt()
+    }
+    
+    var downsampledHeartRateSamples: [(value: Double, date: Date)] {
+        let maxDataPoints = 150
+        guard heartRateSamples.count > maxDataPoints else { return heartRateSamples }
+        var downsampledData: [(value: Double, date: Date)] = []
+        let bucketSize = Double(heartRateSamples.count) / Double(maxDataPoints)
+        for i in 0..<maxDataPoints {
+            let bucketStart = Int(Double(i) * bucketSize)
+            let bucketEnd = Int(Double(i + 1) * bucketSize)
+            guard let bucketSlice = heartRateSamples[safe: bucketStart..<bucketEnd] else { continue }
+            let bucket = Array(bucketSlice)
+            guard !bucket.isEmpty else { continue }
+            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
+                downsampledData.append(significantPoint)
+            }
+        }
+        return downsampledData
+    }
+    
+    var heartRateChartYDomain: ClosedRange<Int> {
+        let dataValues = heartRateSamples.map { $0.value }
+        let minDataY = dataValues.min() ?? 60.0
+        let maxDataY = dataValues.max() ?? 100.0
+        let thresholdValues = activeRules.compactMap { rule -> Double? in
+            if case .heartRate(let threshold) = rule.ruleType { return threshold }
+            return nil
+        }
+        let minThresholdY = thresholdValues.min()
+        let maxThresholdY = thresholdValues.max()
+        let overallMin = min(minDataY, minThresholdY ?? minDataY)
+        let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
+        return (Int(overallMin) - 10)...(Int(overallMax) + 10)
+    }
+    
+    var stepsChartYDomain: ClosedRange<Int> {
+        let maxDataY = hourlyStepData.map { $0.steps }.max() ?? 500.0
+        let thresholdValues = activeRules.compactMap { rule -> Double? in
+            if case .steps(let threshold) = rule.ruleType { return threshold }
+            return nil
+        }
+        let maxThresholdY = thresholdValues.max()
+        let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
+        return 0...(Int(overallMax) + 100)
+    }
+    
+    private var refreshTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        let modelContext = ModelContainer.prod.mainContext
+        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
+        
+        loadPersistentCounts()
+        checkForDailyReset()
+        setupSubscriptions()
+        loadDefaultActivities()
+    }
+    
+    private init(isForPreview: Bool) {
+        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.preview.mainContext)
+        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.preview.mainContext)
+        
+        self.statusMessage = .monitoring
+        self.isMonitoring = true
+        self.heartRate = 78
+        self.strongAlertCount = 1
+        self.mediumAlertCount = 0
+        self.lightAlertCount = 2
+        
+        let now = Date()
+        var samples: [(value: Double, date: Date)] = []
+        for i in 0..<60 {
+            let timeInterval = Double(i) * -60
+            let date = now.addingTimeInterval(timeInterval)
+            let sineValue = sin(Double(i) * 0.2)
+            let heartRateValue = 75.0 + (sineValue * 15.0) + Double.random(in: -2...2)
+            samples.append((value: heartRateValue, date: date))
+        }
+        self.heartRateSamples = samples.reversed()
+        
+        var stepData: [(date: Date, steps: Double)] = []
+        for i in 0..<12 {
+            let timeInterval = Double(i) * -300
+            let date = now.addingTimeInterval(timeInterval)
+            let steps = Double.random(in: 50...300)
+            stepData.append((date: date, steps: steps))
+        }
+        self.hourlyStepData = stepData.reversed()
+    }
+    
+    private func loadDefaultActivities() {
+        if let activities = fetchDefaultActivitiesUseCase.execute() {
+            self.defaultActivities = activities
+        }
+    }
+    
+    static var mock: HomeViewModel {
+        HomeViewModel(isForPreview: true)
+    }
+    
+    private func setupSubscriptions() {
+        Services.shared.monitorService.$statusMessage
+            .sink { [weak self] newStatus in self?.statusMessage = newStatus }
+            .store(in: &cancellables)
+        Services.shared.monitorService.$heartRate
+            .sink { [weak self] newHeartRate in self?.heartRate = newHeartRate }
+            .store(in: &cancellables)
+        Services.shared.monitorService.$isSessionActive
+            .sink { [weak self] newIsMonitoring in self?.isMonitoring = newIsMonitoring }
+            .store(in: &cancellables)
+        Services.shared.monitorService.alertTriggeredSubject
+            .sink { [weak self] rule in self?.triggerInAppAlert(for: rule) }
+            .store(in: &cancellables)
+        Services.shared.monitorService.$recentHeartRateSamples
+            .sink { [weak self] samples in self?.heartRateSamples = samples }
+            .store(in: &cancellables)
+        Services.shared.monitorService.$activeRules
+            .sink { [weak self] newRules in self?.activeRules = newRules }
+            .store(in: &cancellables)
+        Services.shared.monitorService.$isManuallyPaused
+                  .receive(on: DispatchQueue.main)
+                  .sink { [weak self] isPaused in self?.isManuallyPaused = isPaused }
+                  .store(in: &cancellables)
+        
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
+            Task {
+                await self?.fetchChartData()
+                await self?.fetchTodaysSteps()
+                await self?.updateBattery()
+            }
+        }
+    }
     
     func onAppear() {
         Services.shared.systemDelegate.configure()
@@ -225,67 +230,75 @@ class HomeViewModel {
     func requestCreateReflectionOnPhone() {
         Services.shared.systemDelegate.requestCreateReflectionOnPhone()
     }
-       
-       func fetchChartData() async {
-           self.hourlyStepData = await Services.shared.monitorService.fetchHourlyStepData()
-       }
-       
-       func fetchTodaysSteps() async {
-           let steps = await Services.shared.monitorService.fetchTodaysSteps()
-           self.todaysSteps = Int(steps)
-       }
-       
-       private func triggerInAppAlert(for rule: AlertRule) {
-           guard alertState == .none else { return }
-           guard let alertID = rule.alertID else { return }
-           self.alertState = .showing(rule: rule, alertID: alertID)
-           
-           switch rule.reminderType {
-           case .light:
-               lightAlertCount += 1
-               WKInterfaceDevice.current().play(.success)
-           case .medium:
-               mediumAlertCount += 1
-               WKInterfaceDevice.current().play(.stop)
-           case .strong:
-               strongAlertCount += 1
-               Task {
-                   for _ in 0..<3 {
-                       WKInterfaceDevice.current().play(.failure)
-                       try? await Task.sleep(for: .milliseconds(500))
-                   }
-               }
-           }
-           savePersistentCounts()
-           UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
-       }
-       
-       func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
-           guard case .showing(let rule, _) = alertState else { return }
-           
-           if shouldAddDetails {
-               Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
-                   id: alertID,
-                   reminderID: rule.id
-               )
-           } else {
-               Services.shared.systemDelegate.createAndSendReflection(
-                   reminderID: rule.id,
-                   alertID: alertID,
-                   activity: nil,
-                   subactivity: nil
-               )
-           }
-           self.alertState = .none
-       }
-       
-       func dismissAlertOverlay() {
-           self.alertState = .none
-       }
-       
-       func rejectStrongAlert() {
-           self.alertState = .none
-       }
+    
+    func togglePauseResume() {
+        if isManuallyPaused {
+            Services.shared.monitorService.resumeMonitoring()
+        } else {
+            Services.shared.monitorService.pauseMonitoring()
+        }
+    }
+    
+    func fetchChartData() async {
+        self.hourlyStepData = await Services.shared.monitorService.fetchHourlyStepData()
+    }
+    
+    func fetchTodaysSteps() async {
+        let steps = await Services.shared.monitorService.fetchTodaysSteps()
+        self.todaysSteps = Int(steps)
+    }
+    
+    private func triggerInAppAlert(for rule: AlertRule) {
+        guard alertState == .none else { return }
+        guard let alertID = rule.alertID else { return }
+        self.alertState = .showing(rule: rule, alertID: alertID)
+        
+        switch rule.reminderType {
+        case .light:
+            lightAlertCount += 1
+            WKInterfaceDevice.current().play(.success)
+        case .medium:
+            mediumAlertCount += 1
+            WKInterfaceDevice.current().play(.stop)
+        case .strong:
+            strongAlertCount += 1
+            Task {
+                for _ in 0..<3 {
+                    WKInterfaceDevice.current().play(.failure)
+                    try? await Task.sleep(for: .milliseconds(500))
+                }
+            }
+        }
+        savePersistentCounts()
+        UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
+    }
+    
+    func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
+        guard case .showing(let rule, _) = alertState else { return }
+        
+        if shouldAddDetails {
+            Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
+                id: alertID,
+                reminderID: rule.id
+            )
+        } else {
+            Services.shared.systemDelegate.createAndSendReflection(
+                reminderID: rule.id,
+                alertID: alertID,
+                activity: nil,
+                subactivity: nil
+            )
+        }
+        self.alertState = .none
+    }
+    
+    func dismissAlertOverlay() {
+        self.alertState = .none
+    }
+    
+    func rejectStrongAlert() {
+        self.alertState = .none
+    }
     
     private func checkForDailyReset() {
         let userDefaults = UserDefaults.standard

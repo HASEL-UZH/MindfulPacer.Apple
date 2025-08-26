@@ -23,6 +23,7 @@ enum StatusMessage: String {
     case permissionDenied = "Permission Denied"
     case error = "An Error Occurred"
     case syncing = "Syncing..."
+    case paused = "Monitoring Paused"
     
     var symbolName: String {
         switch self {
@@ -32,6 +33,7 @@ enum StatusMessage: String {
         case .permissionDenied: return "lock.slash"
         case .error: return "exclamationmark.triangle"
         case .syncing: return "arrow.triangle.2.circlepath.circle"
+        case .paused: return "pause"
         }
     }
     
@@ -43,6 +45,7 @@ enum StatusMessage: String {
         case .permissionDenied: return .red
         case .error: return .orange
         case .syncing: return .cyan
+        case .paused: return .yellow
         }
     }
     
@@ -60,6 +63,8 @@ enum StatusMessage: String {
             return "An unexpected error occurred. Please try restarting the app."
         case .syncing:
             return "Syncing your latest reminders from iCloud..."
+        case .paused:
+            return "Monitoring is temporarily paused. Tap the play button to resume."
         }
     }
 }
@@ -88,7 +93,7 @@ public struct AlertRule: Identifiable, Sendable {
     let duration: TimeInterval
     let alertMessage: String
     let interval: Reminder.Interval
-
+    
     var triggerDate: Date? = nil
     var dipDate: Date? = nil
     var collectedData: [(value: Double, date: Date)] = []
@@ -99,12 +104,13 @@ public struct AlertRule: Identifiable, Sendable {
 
 @MainActor
 final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, @unchecked Sendable {
-        
+    
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
     @Published var statusMessage: StatusMessage = .notMonitoring
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
+    @Published var isManuallyPaused: Bool = false
     
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
     let mediumAlertCancelledSubject = PassthroughSubject<Void, Never>()
@@ -112,7 +118,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     var isAppInForeground: Bool = false
-
+    
     private var workoutBuilder: HKLiveWorkoutBuilder?
     
     private var fetchRemindersUseCase: FetchRemindersUseCase?
@@ -147,14 +153,39 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         print("DEBUGY: Refreshing state triggered.")
         let hasRules = updateMonitoringRules()
         
-        if isSessionActive {
+        if isManuallyPaused {
+            self.statusMessage = .paused
+        } else if isSessionActive {
             self.statusMessage = .monitoring
         } else {
             self.statusMessage = hasRules ? .notMonitoring : .noReminders
         }
+        
         print("DEBUGY: Final status set to: \(self.statusMessage.rawValue)")
         
         _startOrStopMonitoring(hasRules: hasRules)
+    }
+    
+    func pauseMonitoring() {
+        guard isSessionActive, !isManuallyPaused else { return }
+        print("DEBUGY: Pausing monitoring session.")
+        workoutSession?.pause()
+        self.isManuallyPaused = true
+        self.statusMessage = .paused
+        
+        self.sharedUserDefaults?.set(ComplicationState.paused.rawValue, forKey: "monitoringState")
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
+    
+    func resumeMonitoring() {
+        guard isSessionActive, isManuallyPaused else { return }
+        print("DEBUGY: Resuming monitoring session.")
+        workoutSession?.resume()
+        self.isManuallyPaused = false
+        self.statusMessage = .monitoring
+        
+        self.sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
     
     func fetchTodaysSteps() async -> Double {
@@ -219,6 +250,11 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func _startOrStopMonitoring(hasRules: Bool) {
+        guard !isManuallyPaused else {
+            print("DEBUGY: Monitoring is manually paused. Will not start new session.")
+            return
+        }
+        
         let sessionIsRunning = workoutSession?.state == .running
         if hasRules && !sessionIsRunning {
             startWorkoutSession()
@@ -253,7 +289,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 self.statusMessage = .monitoring
                 self.startStepsTimer()
                 
-                self.sharedUserDefaults?.set(true, forKey: "isMonitoringActive")
+                self.sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
                 print("DEBUGY: Complication timeline reloaded (State: Active)")
             } catch {
@@ -271,12 +307,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         workoutBuilder = nil
         isSessionActive = false
         heartRate = 0
+        isManuallyPaused = false
         statusMessage = .notMonitoring
         activeRules = []
         
-        self.sharedUserDefaults?.set(false, forKey: "isMonitoringActive")
+        self.sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
-        print("DEBUGY: Complication timeline reloaded (State: Inactive)")
     }
     
     func requestAuthorization() async throws -> Bool {
@@ -531,7 +567,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
         }
         Services.shared.systemDelegate.cacheTriggerData(samples, for: alertID)
-
+        
         if isAppInForeground {
             print("DEBUGY: App is in foreground. Triggering IN-APP alert.")
             

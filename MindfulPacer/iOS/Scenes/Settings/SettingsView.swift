@@ -382,11 +382,9 @@ struct SettingsView: View {
                             Button {
                                 openURL(institute.url)
                             } label: {
-                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    institute.logo
-                                        .resizable()
-                                        .scaledToFill()
-                                }
+                                institute.logo
+                                    .resizable()
+                                    .scaledToFill()
                             }
                         }
                     }

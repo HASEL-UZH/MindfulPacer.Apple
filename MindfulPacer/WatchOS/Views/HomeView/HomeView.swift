@@ -166,17 +166,83 @@ struct HomeView: View {
                 .buttonStyle(.plain)
             }
             
-            HStack {
+            VStack {
+                HStack {
+                    Button {
+                        viewModel.togglePauseResume()
+                    } label: {
+                        Icon(
+                            name: viewModel.isManuallyPaused ? "play" : "pause",
+                            color: viewModel.isManuallyPaused ? .green : .yellow,
+                            background: true
+                        )
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(!viewModel.isMonitoring)
+                    
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    Button {
+                        viewModel.showBatteryInfo.toggle()
+                    } label: {
+                        Icon(
+                            name: viewModel.batteryImageName,
+                            color: viewModel.batteryTintColor,
+                            background: true
+                        )
+                    }
+                    .buttonStyle(.borderless)
+                    .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(
+                        """
+                        Percentage: \(Int(viewModel.batteryLevel * 100))%
+                        ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
+                        """
+                        )
+                    }
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    Button {
+                        viewModel.showAppInfo.toggle()
+                    } label: {
+                        Icon(image: "MindfulPacer Icon", background: true)
+                    }
+                    .buttonStyle(.borderless)
+                    .alert("App Info", isPresented: $viewModel.showAppInfo) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(
+                        """
+                        App Version: \(AppInfoService.appVersion)
+                        Build Number: \(AppInfoService.buildNumber)
+                        """
+                        )
+                    }
+                }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(.primary.opacity(0.1))
+                }
+                
                 Button {
                     viewModel.showStatusInfo.toggle()
                 } label: {
-                    Icon(
-                        name: viewModel.statusMessage.symbolName,
-                        color: viewModel.statusMessage.color,
-                        background: true
+                    Label(
+                        viewModel.statusMessage.rawValue,
+                        systemImage: viewModel.statusMessage.symbolName
                     )
+                    .foregroundStyle(viewModel.statusMessage.color)
+                    .font(.footnote.weight(.thin))
                 }
-                .buttonStyle(.borderless)
                 .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
                     Button("OK", role: .cancel) {}
                 } message: {
@@ -187,57 +253,7 @@ struct HomeView: View {
                         """
                     )
                 }
-                
-                Spacer()
-                Divider()
-                Spacer()
-                
-                Button {
-                    viewModel.showBatteryInfo.toggle()
-                } label: {
-                    Icon(
-                        name: viewModel.batteryImageName,
-                        color: viewModel.batteryTintColor,
-                        background: true
-                    )
-                }
                 .buttonStyle(.borderless)
-                .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text(
-                        """
-                        Percentage: \(Int(viewModel.batteryLevel * 100))%
-                        ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
-                        """
-                    )
-                }
-                
-                Spacer()
-                Divider()
-                Spacer()
-                
-                Button {
-                    viewModel.showAppInfo.toggle()
-                } label: {
-                    Icon(image: "MindfulPacer Icon", background: true)
-                }
-                .buttonStyle(.borderless)
-                .alert("App Info", isPresented: $viewModel.showAppInfo) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text(
-                        """
-                        App Version: \(AppInfoService.appVersion)
-                        Build Number: \(AppInfoService.buildNumber)
-                        """
-                    )
-                }
-            }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(.primary.opacity(0.1))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
