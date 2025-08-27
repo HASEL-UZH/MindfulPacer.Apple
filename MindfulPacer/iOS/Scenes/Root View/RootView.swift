@@ -20,6 +20,7 @@ enum Tab: String {
 
 enum RootSheet: Identifiable {
     case onboardingView
+    case whatsNewView
     
     var id: Int {
         hashValue
@@ -46,6 +47,7 @@ struct RootView: View {
             .tabItem {
                 Label("Home", systemImage: "house")
             }
+            
             .tag(Tab.home)
             
             AnalyticsView()
@@ -84,6 +86,13 @@ struct RootView: View {
             OnboardingView()
                 .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
+        case .whatsNewView:
+            WhatsNewView(viewModel: viewModel) {
+                viewModel.markWhatsNewSeen()
+                viewModel.activeSheet = nil
+            }
+            .presentationCornerRadius(16)
+            .interactiveDismissDisabled()
         }
     }
 }

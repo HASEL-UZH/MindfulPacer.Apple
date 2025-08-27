@@ -1,5 +1,5 @@
 {
-  "originHash" : "fc3c805bab5a785310373a727fea6f14897631e6b6e5b2877efe4e5a57b365b7",
+  "originHash" : "0598175a0418e9556cbbdccff164c601100cd56d65ccb524c0da40bbd0f3849b",
   "pins" : [
     {
       "identity" : "cardstack",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "6b4930da67b462d3f200472c902dd016d37a554d",
         "version" : "2.7.7"
+      }
+    },
+    {
+      "identity" : "whatsnewkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SvenTiigi/WhatsNewKit.git",
+      "state" : {
+        "revision" : "6157c77e8be9b3d2310bc680681b61a8d9e290ac",
+        "version" : "2.2.1"
       }
     }
   ],

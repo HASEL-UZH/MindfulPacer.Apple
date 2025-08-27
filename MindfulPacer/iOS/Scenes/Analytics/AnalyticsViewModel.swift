@@ -57,7 +57,8 @@ class AnalyticsViewModel {
     
     var heartRateChartData: [ChartDataItem] = []
     var stepsChartData: [ChartDataItem] = []
-    
+    var cumulativeStepsChartData: [ChartDataItem] = []
+
     var downsampledChartData: [ChartDataItem] {
         let maxDataPoints = 100
         
@@ -81,7 +82,6 @@ class AnalyticsViewModel {
             }
         }
         
-        print("DEBUGY ANALYTICS: Downsampling from \(chartData.count) to \(downsampledData.count) points.")
         return downsampledData
     }
     
@@ -96,8 +96,16 @@ class AnalyticsViewModel {
     
     var chartThresholds: [(reminderType: Reminder.ReminderType, threshold: Int)] = []
     
+    var weeklyStepsChartData: [ChartDataItem] = []
+    
     var chartData: [ChartDataItem] {
-        selectedMeasurementType == .heartRate ? heartRateChartData : stepsChartData
+        if selectedMeasurementType == .steps && selectedPeriod == .week {
+            return weeklyStepsChartData
+        } else if selectedMeasurementType == .steps {
+            return stepsChartData
+        } else {
+            return heartRateChartData
+        }
     }
     
     var minValue: Double {
@@ -286,11 +294,20 @@ class AnalyticsViewModel {
         fetchStepsUseCase.execute(for: selectedPeriod) { result in
             switch result {
             case .success(let success):
-                Task { @MainActor in
-                    self.stepsChartData = success
-                }
+                Task { @MainActor in self.stepsChartData = success }
             case .failure:
-                print("Could not fetch heart data")
+                print("Could not fetch cumulative steps data")
+            }
+        }
+        
+        if selectedPeriod == .week {
+            fetchStepsUseCase.executeBucketed(for: selectedPeriod) { result in
+                switch result {
+                case .success(let success):
+                    Task { @MainActor in self.weeklyStepsChartData = success }
+                case .failure:
+                    print("Could not fetch bucketed weekly steps data")
+                }
             }
         }
     }
@@ -310,6 +327,20 @@ class AnalyticsViewModel {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.updateChartThresholds() // FIXME: Not updating when you do Home -> Create Review Reminder -> Analytics, the newly added threshold doesn't show
+        }
+    }
+    
+    private func fetchCumulativeStepsChartData() {
+        fetchStepsUseCase.execute(for: selectedPeriod) { result in
+            switch result {
+            case .success(let chartDataItems):
+                Task { @MainActor in
+                    self.cumulativeStepsChartData = chartDataItems
+                }
+                
+            case .failure(let error):
+                print("Could not fetch cumulative steps data: \(error.localizedDescription)")
+            }
         }
     }
     

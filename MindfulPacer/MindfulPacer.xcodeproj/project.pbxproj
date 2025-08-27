@@ -194,6 +194,8 @@
 		0DEF86F62E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
+		0DEF86FB2E5DF2FA00BB9C70 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0DEF86FA2E5DF2FA00BB9C70 /* WhatsNewKit */; };
+		0DEF87012E5DF49C00BB9C70 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
@@ -419,6 +421,7 @@
 		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
 		0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationState.swift; sourceTree = "<group>"; };
+		0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCell.swift; sourceTree = "<group>"; };
@@ -466,6 +469,7 @@
 			files = (
 				0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */,
 				0D3006D42C998025008F11C7 /* Algorithms in Frameworks */,
+				0DEF86FB2E5DF2FA00BB9C70 /* WhatsNewKit in Frameworks */,
 				0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */,
 				0DE097C82D96E23F00BE3D6A /* CardStack in Frameworks */,
 				0D36471F2D53862C000F85EF /* SwiftSoup in Frameworks */,
@@ -1045,6 +1049,7 @@
 		0DBA37192C31EF5B00209681 /* Root View */ = {
 			isa = PBXGroup;
 			children = (
+				0DEF86FF2E5DF49400BB9C70 /* Whats New */,
 				0DBA371A2C31EF6000209681 /* RootView.swift */,
 				0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */,
 			);
@@ -1310,6 +1315,14 @@
 			path = "Apple Watch";
 			sourceTree = "<group>";
 		};
+		0DEF86FF2E5DF49400BB9C70 /* Whats New */ = {
+			isa = PBXGroup;
+			children = (
+				0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */,
+			);
+			path = "Whats New";
+			sourceTree = "<group>";
+		};
 		0DF5EDA32E4DF4F9005DB9DE /* RootView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1391,6 +1404,7 @@
 				0D36471E2D53862C000F85EF /* SwiftSoup */,
 				0DF2C3D02D6218BC0036D50E /* Kingfisher */,
 				0DE097C72D96E23F00BE3D6A /* CardStack */,
+				0DEF86FA2E5DF2FA00BB9C70 /* WhatsNewKit */,
 			);
 			productName = MindfulPacer;
 			productReference = 0D8C66302C2DA96000853EDE /* iOS.app */;
@@ -1457,6 +1471,7 @@
 				0D36471D2D53862C000F85EF /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				0DF2C3CF2D6218BC0036D50E /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				0DE097C62D96E23F00BE3D6A /* XCRemoteSwiftPackageReference "CardStack" */,
+				0DEF86F92E5DF2FA00BB9C70 /* XCRemoteSwiftPackageReference "WhatsNewKit" */,
 			);
 			productRefGroup = 0D8C66312C2DA96000853EDE /* Products */;
 			projectDirPath = "";
@@ -1524,6 +1539,7 @@
 				0D0507172E58787000C5123A /* IntervalInfoSheet.swift in Sources */,
 				0DC136C02D50BD7700001D08 /* ArticlesListView.swift in Sources */,
 				0D876BCF2CB6D232007EEEDE /* SystemReportView.swift in Sources */,
+				0DEF87012E5DF49C00BB9C70 /* WhatsNewView.swift in Sources */,
 				0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReflectionUseCase.swift in Sources */,
@@ -2143,6 +2159,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		0DEF86F92E5DF2FA00BB9C70 /* XCRemoteSwiftPackageReference "WhatsNewKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SvenTiigi/WhatsNewKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.1;
+			};
+		};
 		0DF2C3CF2D6218BC0036D50E /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -2178,6 +2202,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0DE097C62D96E23F00BE3D6A /* XCRemoteSwiftPackageReference "CardStack" */;
 			productName = CardStack;
+		};
+		0DEF86FA2E5DF2FA00BB9C70 /* WhatsNewKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DEF86F92E5DF2FA00BB9C70 /* XCRemoteSwiftPackageReference "WhatsNewKit" */;
+			productName = WhatsNewKit;
 		};
 		0DF2C3D02D6218BC0036D50E /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

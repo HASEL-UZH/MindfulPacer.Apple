@@ -96,6 +96,10 @@ protocol HealthKitServiceProtocol {
     func fetchHeartRateDataLast24Hours(
         completion: @Sendable @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
     )
+    func fetchCumulativeStepData(
+        for period: Period,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
+    )
 }
 
 // MARK: - HealthKitService
@@ -305,8 +309,76 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         healthStore?.execute(query)
     }
     
+    // MARK: - Fetch Cumulative Steps Data
+    
+    func fetchCumulativeStepData(
+        for period: Period,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
+    ) {
+        guard let quantityType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
+            return
+        }
+        
+        let startDate: Date
+        if period == .day {
+            startDate = Calendar.current.startOfDay(for: Date())
+        } else {
+            startDate = period.startDate
+        }
+        
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictEndDate)
+        
+        let interval = DateComponents(minute: 15)
+        let anchorDate = Calendar.current.startOfDay(for: Date())
+        
+        let query = HKStatisticsCollectionQuery(
+            quantityType: quantityType,
+            quantitySamplePredicate: predicate,
+            options: [.cumulativeSum],
+            anchorDate: anchorDate,
+            intervalComponents: interval
+        )
+        
+        query.initialResultsHandler = { _, statisticsCollection, error in
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(HealthKitError(type: .unknownError, underlyingError: error))) }
+                return
+            }
+            guard let statisticsCollection = statisticsCollection else {
+                DispatchQueue.main.async { completion(.failure(HealthKitError(type: .failedToFetchSamples))) }
+                return
+            }
+            
+            var runningTotalSamples: [HKQuantitySample] = []
+            var currentRunningTotal: Double = 0.0
+            
+            statisticsCollection.enumerateStatistics(from: startDate, to: Date()) { statistics, stop in
+                if let sum = statistics.sumQuantity() {
+                    let stepsInBucket = sum.doubleValue(for: .count())
+                    currentRunningTotal += stepsInBucket
+                    
+                    let runningTotalQuantity = HKQuantity(unit: .count(), doubleValue: currentRunningTotal)
+                    let runningTotalSample = HKQuantitySample(
+                        type: quantityType,
+                        quantity: runningTotalQuantity,
+                        start: statistics.startDate,
+                        end: statistics.endDate
+                    )
+                    runningTotalSamples.append(runningTotalSample)
+                }
+            }
+            
+            DispatchQueue.main.async {
+                completion(.success(runningTotalSamples))
+            }
+        }
+        
+        healthStore?.execute(query)
+    }
+    
     // MARK: - Fetch Current Measurement Value
-
+    
     func fetchCurrentMeasurement(
         for measurementType: MeasurementType,
         completion: @escaping @Sendable (
