@@ -46,6 +46,7 @@ class HomeViewModel {
     var showAppInfo: Bool = false
     var showBatteryInfo: Bool = false
     var showStatusInfo: Bool = false
+    var showMissedReflectionsInfo: Bool = false
     
     var alertState: AlertState = .none
     
@@ -56,9 +57,11 @@ class HomeViewModel {
     var mediumAlertCount: Int = 0
     var lightAlertCount: Int = 0
     var isManuallyPaused: Bool = false
+    var missedReflectionsCount: Int = 0
     
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let fetchReflectionsUseCase: FetchReflectionsUseCase
     
     var avgHeartRate: Int {
         guard !heartRateSamples.isEmpty else { return 0 }
@@ -125,6 +128,7 @@ class HomeViewModel {
         let modelContext = ModelContainer.prod.mainContext
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
         self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
+        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: modelContext)
         
         loadPersistentCounts()
         checkForDailyReset()
@@ -135,6 +139,7 @@ class HomeViewModel {
     private init(isForPreview: Bool) {
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.preview.mainContext)
         self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.preview.mainContext)
+        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: ModelContainer.preview.mainContext)
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
@@ -203,6 +208,7 @@ class HomeViewModel {
                 await self?.fetchChartData()
                 await self?.fetchTodaysSteps()
                 await self?.updateBattery()
+                await self?.fetchMissedReflections()
             }
         }
     }
@@ -225,6 +231,7 @@ class HomeViewModel {
         let device = WKInterfaceDevice.current()
         device.isBatteryMonitoringEnabled = true
         updateBattery()
+        fetchMissedReflections()
     }
     
     func requestCreateReflectionOnPhone() {
@@ -271,6 +278,7 @@ class HomeViewModel {
         }
         savePersistentCounts()
         UserDefaults.standard.set(Date(), forKey: StorageKeys.lastAlertDate)
+        fetchMissedReflections()
     }
     
     func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
@@ -346,6 +354,12 @@ class HomeViewModel {
         case ..<0.5: return .yellow
         default: return .green
         }
+    }
+    
+    private func fetchMissedReflections() {
+        let allReflections = fetchReflectionsUseCase.execute() ?? []
+        let missedReflections = allReflections.filter { $0.isMissedReflection }
+        missedReflectionsCount = missedReflections.count
     }
 }
 

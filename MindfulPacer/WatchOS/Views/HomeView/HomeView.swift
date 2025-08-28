@@ -150,7 +150,7 @@ struct HomeView: View {
     
     private var mainStatusPage: some View {
         VStack(alignment: .leading) {
-            VStack {
+            HStack {
                 Button {
                     viewModel.selectedTab = .heartRateChart
                 } label: {
@@ -210,21 +210,39 @@ struct HomeView: View {
                     Divider()
                     Spacer()
                     
-                    Button {
-                        viewModel.showAppInfo.toggle()
-                    } label: {
-                        Icon(image: "MindfulPacer Icon", background: true)
-                    }
-                    .buttonStyle(.borderless)
-                    .alert("App Info", isPresented: $viewModel.showAppInfo) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text(
+                    if viewModel.missedReflectionsCount == 0 {
+                        Button {
+                            viewModel.showAppInfo.toggle()
+                        } label: {
+                            Icon(image: "MindfulPacer Icon", background: true)
+                        }
+                        .buttonStyle(.borderless)
+                        .alert("App Info", isPresented: $viewModel.showAppInfo) {
+                            Button("OK", role: .cancel) {}
+                        } message: {
+                            Text(
                         """
                         App Version: \(AppInfoService.appVersion)
                         Build Number: \(AppInfoService.buildNumber)
                         """
-                        )
+                            )
+                        }
+                    } else {
+                        Button {
+                            viewModel.showMissedReflectionsInfo.toggle()
+                        } label: {
+                            Icon(
+                                name: "\(viewModel.missedReflectionsCount).circle.fill",
+                                color: .red,
+                                background: true
+                            )
+                        }
+                        .buttonStyle(.borderless)
+                        .alert("Missed Reflections", isPresented: $viewModel.showMissedReflectionsInfo) {
+                            Button("OK", role: .cancel) {}
+                        } message: {
+                            Text("You have missed reflection(s). Open the MindfulPacer app on your iPhone to view more details.")
+                        }
                     }
                 }
                 .padding()
@@ -241,7 +259,7 @@ struct HomeView: View {
                         systemImage: viewModel.statusMessage.symbolName
                     )
                     .foregroundStyle(viewModel.statusMessage.color)
-                    .font(.footnote.weight(.thin))
+                    .font(.footnote)
                 }
                 .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
                     Button("OK", role: .cancel) {}
@@ -261,20 +279,20 @@ struct HomeView: View {
     }
     
     private var currentHeartRateWidget: some View {
-        HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             Icon(
                 name: "heart.fill",
                 color: Color.pink,
-                background: true
+                background: true,
             )
             
             VStack(alignment: .leading) {
                 if viewModel.isMonitoring {
                     Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
-                        .font(.system(.title2, weight: .bold))
+                        .font(.system(.title3, weight: .bold))
                         .foregroundStyle(Color.primary)
                 } else {
-                    Text("--").font(.system(.title2, weight: .bold))
+                    Text("--").font(.system(.title3, weight: .bold))
                 }
                 
                 Text("bpm")
@@ -292,7 +310,7 @@ struct HomeView: View {
     }
     
     private var currentStepsWidget: some View {
-        HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             Icon(
                 name: "figure.walk",
                 color: Color.teal,
@@ -301,7 +319,7 @@ struct HomeView: View {
             
             VStack(alignment: .leading) {
                 Text(viewModel.todaysSteps, format: .number)
-                    .font(.system(.title2, weight: .bold))
+                    .font(.system(.title3, weight: .bold))
                     .foregroundStyle(Color.primary)
                 
                 Text("steps")

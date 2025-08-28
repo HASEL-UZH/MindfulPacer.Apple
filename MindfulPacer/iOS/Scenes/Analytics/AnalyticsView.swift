@@ -176,7 +176,7 @@ struct AnalyticsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Reflections")
-                            .font(.title.bold())
+                            .font(.title2.bold())
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Button {
@@ -201,19 +201,21 @@ struct AnalyticsView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal)
                 
                 ScrollView(showsIndicators: false) {
-                    ForEach(reflectionBucket.reflections) { reflection in
-                        ReflectionCell(
-                            reflection: reflection,
-                            backgroundColor: Color(.tertiarySystemGroupedBackground)
-                        ) {
-                            viewModel.presentSheet(.editReflectionView(reflection))
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(reflectionBucket.reflections) { reflection in
+                            ReflectionCell(
+                                reflection: reflection,
+                                backgroundColor: Color(.tertiarySystemGroupedBackground)
+                            ) {
+                                viewModel.presentSheet(.editReflectionView(reflection))
+                            }
+                            
+                            Divider()
                         }
-                        
-                        Divider()
                     }
+                    .cornerRadius(16)
                 }
                 .safeAreaPadding(.vertical)
             }

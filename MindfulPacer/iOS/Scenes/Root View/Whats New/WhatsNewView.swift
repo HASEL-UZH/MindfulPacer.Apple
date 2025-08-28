@@ -25,17 +25,21 @@ struct WhatsNewView: View {
                 + Text("MindfulPacer ")
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color("BrandPrimary")],
+                            colors: [
+                                Color.brandPrimary,
+                                Color.brandPrimary.opacity(0.6),
+                                Color.brandPrimary.opacity(0.8)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                + Text("🚀")
+                + Text("🎉")
             }
             .font(.largeTitle.bold())
             .multilineTextAlignment(.center)
             .padding(.top, 64)
-            
+
             VStack(spacing: 32) {
                 ForEach(viewModel.whatsNewFeatures) { feature in
                     whatsNewFeature(feature)
@@ -50,6 +54,7 @@ struct WhatsNewView: View {
             }
             .padding(.horizontal)
         }
+        .background(Color(.systemGroupedBackground))
         .frame(maxHeight: .infinity, alignment: .center)
     }
 
@@ -67,6 +72,8 @@ struct WhatsNewView: View {
                 Text(feature.title).fontWeight(.semibold)
                 Text(feature.description).font(.subheadline)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)

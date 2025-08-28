@@ -96,7 +96,6 @@ public struct AlertRule: Identifiable, Sendable {
     
     var triggerDate: Date? = nil
     var dipDate: Date? = nil
-    var collectedData: [(value: Double, date: Date)] = []
     
     var lastNotificationDate: Date? = nil
     var notificationSent: Bool = false
@@ -113,7 +112,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     @Published var isManuallyPaused: Bool = false
     
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
-    let mediumAlertCancelledSubject = PassthroughSubject<Void, Never>()
     
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
@@ -401,44 +399,93 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private func evaluateHeartRateRules(for currentHeartRate: Double) {
         let now = Date()
         let dipGracePeriod: TimeInterval = 30.0
+        
+        // Print the incoming heart rate so we can see the data stream.
+        print("---")
+        print("DEBUGY: Evaluating HR: \(Int(currentHeartRate)) bpm at \(now.formatted(.dateTime.hour().minute().second()))")
+
         for i in 0..<activeRules.count {
+            // --- Only process heart rate rules ---
             guard activeRules[i].measurementType == .heartRate else { continue }
-            
             guard case .heartRate(let threshold) = activeRules[i].ruleType else { continue }
             
             var rule = activeRules[i]
             
+            print("  - Rule [\(rule.reminderType.rawValue.prefix(1)) for >\(Int(threshold))bpm]:")
+
             if currentHeartRate > threshold {
-                if rule.triggerDate == nil { rule.triggerDate = Date() }
-                rule.dipDate = nil
+                // --- HIGH HEART RATE PATH ---
                 
-                if let triggerDate = rule.triggerDate, now.timeIntervalSince(triggerDate) >= rule.duration {
-                    let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
-                    if let lastNotif = rule.lastNotificationDate, now.timeIntervalSince(lastNotif) < buffer {
-                        print("DEBUGY: Notification being surpressed due to buffer")
+                if rule.triggerDate == nil {
+                    rule.triggerDate = now
+                    print("    - STATUS: HR is HIGH. Timer STARTED at \(now.formatted(.dateTime.hour().minute().second())).")
+                }
+                
+                // Clear any previous dip.
+                if rule.dipDate != nil {
+                    rule.dipDate = nil
+                    print("    - STATUS: HR is HIGH again. Dip timer cancelled.")
+                }
+                
+                if let triggerDate = rule.triggerDate {
+                    let elapsedTime = now.timeIntervalSince(triggerDate)
+                    print("    - CHECK: Timer has been active for \(Int(elapsedTime))s of \(Int(rule.duration))s required.")
+                    
+                    if elapsedTime >= rule.duration {
+                        print("    - MET: Duration requirement met.")
+                        let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
+                        
+                        if let lastNotif = rule.lastNotificationDate {
+                            let timeSinceLastNotif = now.timeIntervalSince(lastNotif)
+                            print("    - BUFFER CHECK: Time since last notification is \(Int(timeSinceLastNotif))s. Buffer is \(Int(buffer))s.")
+                            if timeSinceLastNotif < buffer {
+                                print("    - RESULT: SUPPRESSED (Inside buffer period).")
+                            } else {
+                                print("    - RESULT: SUCCESS! Sending notification.")
+                                let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
+                                let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
+                                self.sendNotification(for: rule, withData: eventData)
+                                rule.lastNotificationDate = now
+                                rule.triggerDate = nil // Reset for the next event.
+                            }
+                        } else {
+                            print("    - BUFFER CHECK: No previous notification. Buffer check passed.")
+                            print("    - RESULT: SUCCESS! Sending notification.")
+                            let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
+                            let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
+                            self.sendNotification(for: rule, withData: eventData)
+                            rule.lastNotificationDate = now
+                            rule.triggerDate = nil // Reset for the next event.
+                        }
                     } else {
-                        let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
-                        let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
-                        self.sendNotification(for: rule, withData: eventData)
-                        rule.lastNotificationDate = now
-                    }
-                    rule.triggerDate = nil
-                }
-            } else {
-                if rule.reminderType == .medium {
-                    if rule.triggerDate != nil {
-                        print("DEBUGY: HR dropped below medium threshold. Sending cancel signal.")
-                        self.mediumAlertCancelledSubject.send()
+                        print("    - RESULT: PENDING (Duration not yet met).")
                     }
                 }
                 
-                if rule.triggerDate != nil {
-                    if rule.dipDate == nil { rule.dipDate = Date() }
-                    if let dipDate = rule.dipDate, Date().timeIntervalSince(dipDate) > dipGracePeriod {
-                        rule.triggerDate = nil
-                        rule.dipDate = nil
-                        rule.collectedData = []
+            } else {
+                // --- LOW HEART RATE PATH ---
+                
+                if let triggerDate = rule.triggerDate {
+                    print("    - STATUS: HR is LOW, but timer was active.")
+                    
+                    if rule.dipDate == nil {
+                        rule.dipDate = now
+                        print("    - CHECK: Dip timer STARTED at \(now.formatted(.dateTime.hour().minute().second())).")
                     }
+                    
+                    if let dipDate = rule.dipDate {
+                        let dipDuration = now.timeIntervalSince(dipDate)
+                        print("    - CHECK: Dip has lasted for \(Int(dipDuration))s of \(Int(dipGracePeriod))s allowed.")
+                        if dipDuration > dipGracePeriod {
+                            print("    - RESULT: TIMER RESET (Dip grace period exceeded).")
+                            rule.triggerDate = nil
+                            rule.dipDate = nil
+                        } else {
+                            print("    - RESULT: PENDING (Inside dip grace period).")
+                        }
+                    }
+                } else {
+                    // This is the normal, idle state. No need to log anything here.
                 }
             }
             activeRules[i] = rule

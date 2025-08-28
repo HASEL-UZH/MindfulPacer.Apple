@@ -418,14 +418,15 @@ struct SettingsView: View {
     // MARK: App Version
     
     private var appVersion: some View {
-        Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
-            .font(.footnote)
-            .foregroundStyle(Color.secondary)
-            .onTapGesture(count: 1) {
-                viewModel.presentSheet(.systemReportView)
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
+        Button {
+            viewModel.presentSheet(.systemReportView)
+        } label: {
+            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
+                .font(.footnote)
+                .foregroundStyle(Color.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal)
     }
 }
 

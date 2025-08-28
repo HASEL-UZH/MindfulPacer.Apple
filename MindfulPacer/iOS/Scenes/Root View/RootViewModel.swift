@@ -135,6 +135,11 @@ class RootViewModel {
                 title: String(localized: "Enhanced Reflections"),
                 description: String(localized: "Visualize the data that led to a triggered reminder."),
                 icon: "chart.xyaxis.line"
+            ),
+            NewFeature(
+                title: String(localized: "Apple Watch Complication"),
+                description: String(localized: "View the status of the continuous monitoring at a glance."),
+                icon: "platter.filled.top.applewatch.case"
             )
         ]
     ]
