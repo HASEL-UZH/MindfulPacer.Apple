@@ -87,12 +87,9 @@ struct RootView: View {
                 .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
         case .whatsNewView:
-            WhatsNewView(viewModel: viewModel) {
-                viewModel.markWhatsNewSeen()
-                viewModel.activeSheet = nil
-            }
-            .presentationCornerRadius(16)
-            .interactiveDismissDisabled()
+            WhatsNewView()
+                .presentationCornerRadius(16)
+                .interactiveDismissDisabled()
         }
     }
 }

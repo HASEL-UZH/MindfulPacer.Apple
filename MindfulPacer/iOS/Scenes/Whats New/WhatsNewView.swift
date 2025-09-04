@@ -13,8 +13,8 @@ struct WhatsNewView: View {
 
     // MARK: Properties
     
-    @Bindable var viewModel: RootViewModel
-    var onContinue: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State var viewModel: WhatsNewViewModel = ScenesContainer.shared.whatsNewViewModel()
 
     // MARK: Body
     
@@ -50,7 +50,8 @@ struct WhatsNewView: View {
             Spacer()
 
             PrimaryButton(title: String(localized: "Continue")) {
-                onContinue()
+                viewModel.markWhatsNewSeen()
+                dismiss()
             }
             .padding(.horizontal)
         }
@@ -83,10 +84,6 @@ struct WhatsNewView: View {
 // MARK: - Preview
 
 #Preview {
-    let viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
-
-    WhatsNewView(
-        viewModel: viewModel,
-        onContinue: { }
-    )
+    let viewModel: WhatsNewViewModel = ScenesContainer.shared.whatsNewViewModel()
+    WhatsNewView(viewModel: viewModel)
 }

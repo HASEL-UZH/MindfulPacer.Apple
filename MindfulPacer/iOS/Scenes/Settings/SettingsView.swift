@@ -14,6 +14,7 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
+    case whatsNew
 
     var id: Int {
         switch self {
@@ -21,6 +22,7 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
+        case .whatsNew: 4
         }
     }
 }
@@ -28,8 +30,16 @@ enum SettingsSheet: Identifiable {
 enum SettingsNavigationDestination: Hashable {
     case algorithms
     case theme
-    case export
+    case dataManagement
     case appleWatch
+}
+
+enum SettingsAlert: Identifiable {
+    case resetDatabaseConfirmation
+    
+    var id: Int {
+        hashValue
+    }
 }
 
 // MARK: - SettingsView
@@ -70,7 +80,7 @@ struct SettingsView: View {
                 // MARK: Data
                 
                 Section {
-                    exportData
+                    dataManagement
                     if modeOfUse == .expanded {
                         algorithms
                     }
@@ -81,6 +91,7 @@ struct SettingsView: View {
                 // MARK: About
                 
                 Section {
+                    whatsNew
                     contactUs
                     roadmap
                     moreInfo
@@ -106,6 +117,9 @@ struct SettingsView: View {
             .sheet(item: $viewModel.activeSheet) { sheet in
                 sheetContent(for: sheet)
             }
+            .alert(item: $viewModel.activeAlert) { alert in
+                alertContent(for: alert)
+            }
             .onAppear {
                 viewModel.onViewAppear()
                 viewModel.setModeOfUse(modeOfUse)
@@ -125,8 +139,8 @@ struct SettingsView: View {
             AlgorithmsView(viewModel: viewModel)
         case .theme:
             ThemeSettingsView()
-        case .export:
-            ExportView(viewModel: viewModel)
+        case .dataManagement:
+            DataManagementView(viewModel: viewModel)
         case .appleWatch:
             AppleWatchView(viewModel: viewModel)
         }
@@ -157,6 +171,19 @@ struct SettingsView: View {
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
+        case .whatsNew:
+            WhatsNewView()
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
+        }
+    }
+    
+    // MARK: Alert Content
+    
+    private func alertContent(for alert: SettingsAlert) -> Alert {
+        switch alert {
+        case .resetDatabaseConfirmation:
+            return resetDatabaseConfirmationAlert
         }
     }
     
@@ -227,14 +254,34 @@ struct SettingsView: View {
         }
     }
     
-    // MARK: Export Data
+    // MARK: Whats New
     
-    private var exportData: some View {
-        NavigationLink(value: SettingsNavigationDestination.export) {
+    private var whatsNew: some View {
+        Button {
+            viewModel.presentSheet(.whatsNew)
+        } label: {
             RoundedListCell(
                 label: IconLabel(
-                    icon: "tray.and.arrow.up.fill",
-                    title: String(localized: "Export Data"),
+                    icon: "party.popper.fill",
+                    title: String(localized: "What's New?"),
+                    description: String(localized: "View the new features"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+    
+    // MARK: Data Management
+    
+    private var dataManagement: some View {
+        NavigationLink(value: SettingsNavigationDestination.dataManagement) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "externaldrive",
+                    title: String(localized: "Manage Data"),
+                    description: String(localized: "Export or delete your data"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 ),
@@ -427,6 +474,19 @@ struct SettingsView: View {
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal)
+    }
+    
+    // MARK: Reset Database Confirmation Alert
+    
+    private var resetDatabaseConfirmationAlert: Alert {
+        Alert(
+            title: Text("Reset Data"),
+            message: Text("All data stored on your device and in iCloud will be deleted, including Reflections and Reminders. This action cannot be reversed. Are you sure you want to proceed?"),
+            primaryButton: .destructive(Text("Delete")) {
+                viewModel.resetDatabase()
+            },
+            secondaryButton: .cancel()
+        )
     }
 }
 

@@ -8,21 +8,6 @@
 import SwiftUI
 import SwiftData
 
-struct AnimatedNumberModifier: @MainActor AnimatableModifier {
-    var value: Double
-    var font: Font
-    
-    var animatableData: Double {
-        get { value }
-        set { value = newValue }
-    }
-    
-    func body(content: Content) -> some View {
-        Text("\(Int(value))")
-            .font(font)
-    }
-}
-
 private struct DismissSheetActionKey: EnvironmentKey {
     static let defaultValue: @Sendable () -> Void = {}
 }

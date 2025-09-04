@@ -170,6 +170,11 @@ extension UseCasesContainer {
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
         self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }
+    
+    @MainActor
+    var resetDatabaseUseCase: Factory<DefaultResetDatabaseUseCase> {
+        self { DefaultResetDatabaseUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
 
     // MARK: - Watch Communication
 

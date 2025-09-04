@@ -7,6 +7,7 @@
 
 import SwiftData
 import SwiftUI
+import Foundation
 
 // MARK: - Schema1
 
@@ -31,11 +32,9 @@ enum SchemaV1: VersionedSchema {
 
 extension ModelContainer {
     /// Container used in production
-
     static let prod: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
@@ -48,7 +47,6 @@ extension ModelContainer {
     static let preview: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {

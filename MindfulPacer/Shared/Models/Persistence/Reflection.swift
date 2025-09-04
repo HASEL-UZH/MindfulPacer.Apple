@@ -137,6 +137,12 @@ extension SchemaV1 {
     @Model
     final class Activity {
         var id: UUID = UUID()
+
+        /// Stable identifier for seeded (default) content.
+        /// Must be optional or have a default to satisfy iCloud Model Requirements.
+        /// Leave empty for user-created activities.
+        var seedKey: String = ""
+
         var name: String = ""
         var icon: String = ""
         @Relationship(inverse: \Subactivity.activity) var subactivities: [Subactivity]?
@@ -144,12 +150,14 @@ extension SchemaV1 {
 
         init(
             id: UUID = UUID(),
+            seedKey: String = "",
             name: String = "",
             icon: String = "",
             subactivities: [Subactivity] = [],
             reflections: [Reflection] = []
         ) {
             self.id = id
+            self.seedKey = seedKey
             self.name = name
             self.icon = icon
             self.subactivities = subactivities
@@ -164,6 +172,12 @@ extension SchemaV1 {
     @Model
     final class Subactivity {
         var id: UUID = UUID()
+
+        /// Stable identifier for seeded (default) content.
+        /// Use namespaced values like "movement.walking".
+        /// Leave empty for user-created subactivities.
+        var seedKey: String = ""
+
         var name: String = ""
         var icon: String = ""
         var activity: Activity?
@@ -171,12 +185,14 @@ extension SchemaV1 {
 
         init(
             id: UUID = UUID(),
+            seedKey: String = "",
             name: String = "",
             icon: String = "",
             activity: Activity? = nil,
             reflections: [Reflection] = []
         ) {
             self.id = id
+            self.seedKey = seedKey
             self.name = name
             self.icon = icon
             self.activity = activity

@@ -217,14 +217,18 @@ class SettingsViewModel {
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
+    private let resetDatabaseUseCase: ResetDatabaseUseCase
     
     // MARK: - Published Properties
     
     var navigationPath: [SettingsNavigationDestination] = []
     var activeSheet: SettingsSheet?
-    
+    var activeAlert: SettingsAlert?
+
     var mailResult: Result<MFMailComposeResult, Error>?
     
+    var isShowingDeleteAllDataAlert: Bool = false
+
     var reflections: [Reflection] = []
     var reminders: [Reminder] = []
     
@@ -253,6 +257,9 @@ class SettingsViewModel {
     var selectedExportDataModel: ExportDataModel = .reminder
     var exportURL: URL?
     var isExporting = false
+    
+    // NEW: Manage Data UI state
+    var isShowingDeleteAllUserDataAlert: Bool = false
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
     var contactSupportSubject: String = "MindfulPacer - Feedback"
@@ -310,6 +317,16 @@ class SettingsViewModel {
         """
     }
     
+    // MARK: - Helpers
+    
+    /// Convenience for the file exporter (CSV vs JSON)
+    var selectedFileUTType: UTType {
+        switch selectedExportFileFormat {
+        case .csv: return .commaSeparatedText
+        case .json: return .json
+        }
+    }
+    
     // MARK: Private Properties
     
     private var modelIdentifier: String {
@@ -360,13 +377,15 @@ class SettingsViewModel {
         fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
         fetchRemindersUseCase: FetchRemindersUseCase,
-        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
+        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
+        resetDatabaseUseCase: ResetDatabaseUseCase
     ) {
         self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
         self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
+        self.resetDatabaseUseCase = resetDatabaseUseCase
         
         loadAllBuffers()
         subscribeToWatchStatus()
@@ -385,6 +404,10 @@ class SettingsViewModel {
     
     func presentSheet(_ sheet: SettingsSheet) {
         activeSheet = sheet
+    }
+    
+    func presentAlert(_ alert: SettingsAlert) {
+        activeAlert = alert
     }
     
     // MARK: - User Actions
@@ -410,6 +433,23 @@ class SettingsViewModel {
         loadAllBuffers()
     }
     
+    func resetDatabase() {
+        Task { @MainActor in
+            do {
+                try await resetDatabaseUseCase.execute()
+                reflections.removeAll()
+                reminders.removeAll()
+                stepData.removeAll()
+                heartRateData.removeAll()
+                missedReflections.removeAll()
+                bufferValues.removeAll()
+                exportURL = nil
+            } catch {
+                print("Reset failed:", error)
+            }
+        }
+    }
+    
     func setModeOfUse(_ modeOfUse: ModeOfUse) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
     }
@@ -432,6 +472,44 @@ class SettingsViewModel {
             exportURL = url
             isExporting = true
         }
+    }
+    
+    // MARK: - Delete All Data
+    
+    func requestDeleteAllUserData() {
+        isShowingDeleteAllUserDataAlert = true
+    }
+    
+    func confirmDeleteAllUserData() {
+        reflections.removeAll()
+        reminders.removeAll()
+        stepData.removeAll()
+        heartRateData.removeAll()
+        missedReflections.removeAll()
+        bufferValues.removeAll()
+        exportURL = nil
+        
+        if let defaults = sharedUserDefaults {
+            for (key, _) in defaults.dictionaryRepresentation() {
+                defaults.removeObject(forKey: key)
+            }
+            defaults.synchronize()
+        }
+        
+        let fm = FileManager.default
+        let directories: [URL?] = [
+            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            fm.urls(for: .cachesDirectory, in: .userDomainMask).first
+        ]
+        for dir in directories.compactMap({ $0 }) {
+            if let enumerator = fm.enumerator(at: dir, includingPropertiesForKeys: nil) {
+                for case let url as URL in enumerator {
+                    try? fm.removeItem(at: url)
+                }
+            }
+        }
+        
+        NotificationCenter.default.post(name: .init("MindfulPacerUserDataDeleted"), object: nil)
     }
     
     // MARK: - Private Methods
@@ -599,3 +677,4 @@ class SettingsViewModel {
         }
     }
 }
+

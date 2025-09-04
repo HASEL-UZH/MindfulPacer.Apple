@@ -161,7 +161,7 @@ extension HomeView {
         // MARK: Subactivity Filter Summary
 
         private var subactivityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubactivities) { subactivity in
+            ForEach(viewModel.reviewFilter.selectedSubactivities, id: \.id) { subactivity in
                 filterItem(
                     icon: subactivity.icon,
                     label: subactivity.name,

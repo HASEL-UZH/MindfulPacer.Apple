@@ -148,8 +148,18 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
                 fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
                 fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
-                fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase()
+                fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase(),
+                resetDatabaseUseCase: UseCasesContainer.shared.resetDatabaseUseCase()
             )
+        }
+    }
+    
+    // MARK: - Whats New
+    
+    @MainActor
+    var whatsNewViewModel: Factory<WhatsNewViewModel> {
+        self {
+            WhatsNewViewModel()
         }
     }
 }

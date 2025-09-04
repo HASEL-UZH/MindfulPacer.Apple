@@ -397,6 +397,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func evaluateHeartRateRules(for currentHeartRate: Double) {
+        guard !isManuallyPaused else { return }
+
         let now = Date()
         let dipGracePeriod: TimeInterval = 30.0
         
@@ -545,6 +547,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func checkStepRules() {
+        guard !isManuallyPaused else { return }
+
         let stepRulesToCheck = self.activeRules.filter { $0.measurementType == .steps }
         guard !stepRulesToCheck.isEmpty else { return }
         
