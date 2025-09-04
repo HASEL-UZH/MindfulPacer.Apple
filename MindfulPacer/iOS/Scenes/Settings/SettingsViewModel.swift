@@ -253,6 +253,7 @@ class SettingsViewModel {
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
     var isExpandedModeOfUseOn: Bool = false
+    var deviceMode: DeviceMode = .iPhoneOnly
     var selectedExportFileFormat: ExportFileFormat = .csv
     var selectedExportDataModel: ExportDataModel = .reminder
     var exportURL: URL?
@@ -444,14 +445,16 @@ class SettingsViewModel {
                 missedReflections.removeAll()
                 bufferValues.removeAll()
                 exportURL = nil
+                presentAlert(.restartApp)
             } catch {
                 print("Reset failed:", error)
             }
         }
     }
     
-    func setModeOfUse(_ modeOfUse: ModeOfUse) {
+    func configure(_ modeOfUse: ModeOfUse, _ deviceMode: DeviceMode) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
+        self.deviceMode = deviceMode
     }
     
     func onExportTapped() {

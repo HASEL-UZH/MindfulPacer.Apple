@@ -80,7 +80,7 @@ struct ReminderTypeInfoSheet: View {
                 .scrollTargetBehavior(.viewAligned)
             } footer: {
                 Label("The strength and duration of the vibration varies by reminder type.", systemImage: "applewatch.radiowaves.left.and.right")
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             .iconLabelGroupBoxStyle(.divider)

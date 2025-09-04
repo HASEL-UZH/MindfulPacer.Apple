@@ -62,6 +62,8 @@
 		0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E11892C864B450023E0A0 /* DeleteReminderUseCase.swift */; };
 		0D4E118D2C871FA30023E0A0 /* ReviewsFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */; };
 		0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E4DA12E698540001C93C1 /* ResetDatabaseUseCase.swift */; };
+		0D4E4DA52E699F3F001C93C1 /* DeviceModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E4DA42E699F3F001C93C1 /* DeviceModeView.swift */; };
+		0D4E4DAA2E69B0A3001C93C1 /* DeviceModeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E4DA92E69B0A3001C93C1 /* DeviceModeSettingsView.swift */; };
 		0D4EBE342C72784A00C1865D /* ReminderTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE332C72784A00C1865D /* ReminderTypeView.swift */; };
 		0D4EBE362C727B6200C1865D /* InfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE352C727B6200C1865D /* InfoSheet.swift */; };
 		0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */; };
@@ -310,6 +312,8 @@
 		0D4E11892C864B450023E0A0 /* DeleteReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteReminderUseCase.swift; sourceTree = "<group>"; };
 		0D4E118C2C871FA30023E0A0 /* ReviewsFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsFilterView.swift; sourceTree = "<group>"; };
 		0D4E4DA12E698540001C93C1 /* ResetDatabaseUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetDatabaseUseCase.swift; sourceTree = "<group>"; };
+		0D4E4DA42E699F3F001C93C1 /* DeviceModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceModeView.swift; sourceTree = "<group>"; };
+		0D4E4DA92E69B0A3001C93C1 /* DeviceModeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceModeSettingsView.swift; sourceTree = "<group>"; };
 		0D4EBE332C72784A00C1865D /* ReminderTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTypeView.swift; sourceTree = "<group>"; };
 		0D4EBE352C727B6200C1865D /* InfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoSheet.swift; sourceTree = "<group>"; };
 		0D4EBE382C727C7A00C1865D /* MeasurementTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementTypeView.swift; sourceTree = "<group>"; };
@@ -549,6 +553,7 @@
 				0DE47A142E4B79A70052959C /* Apple Watch */,
 				0DAC64D72DA2A3AE00BBB741 /* Algorithms */,
 				0DEE75B92E630F1800C79711 /* Data Management */,
+				0D4E4DA62E69B01E001C93C1 /* Device Mode */,
 				0DF93A812D53B3D100121308 /* Export */,
 				0D876BCD2CB6D228007EEEDE /* System Report */,
 				0D5947862CBE740C0019BA24 /* Theme */,
@@ -680,6 +685,22 @@
 				0D1B26B92C8CFE050086FD50 /* ReviewsFilterViewModel.swift */,
 			);
 			path = "Reviews Filter";
+			sourceTree = "<group>";
+		};
+		0D4E4DA32E699F34001C93C1 /* Device Mode */ = {
+			isa = PBXGroup;
+			children = (
+				0D4E4DA42E699F3F001C93C1 /* DeviceModeView.swift */,
+			);
+			path = "Device Mode";
+			sourceTree = "<group>";
+		};
+		0D4E4DA62E69B01E001C93C1 /* Device Mode */ = {
+			isa = PBXGroup;
+			children = (
+				0D4E4DA92E69B0A3001C93C1 /* DeviceModeSettingsView.swift */,
+			);
+			path = "Device Mode";
 			sourceTree = "<group>";
 		};
 		0D4EBE322C72783D00C1865D /* Reminder Type */ = {
@@ -933,6 +954,7 @@
 				0D67F42F2C90E1D7000F6114 /* Activity Promoting Features */,
 				0D67F4292C90E102000F6114 /* Apple Health */,
 				0D67F4232C90DF0F000F6114 /* Apple Watch Connection */,
+				0D4E4DA32E699F34001C93C1 /* Device Mode */,
 				0D67F4322C90E24B000F6114 /* Disclaimer */,
 				0D67F4202C90CA16000F6114 /* Key Features */,
 				0D67F42C2C90E167000F6114 /* Main Features */,
@@ -1560,6 +1582,7 @@
 				0D9351572D12FBBF0028AA61 /* RoadmapView.swift in Sources */,
 				0D67F42B2C90E109000F6114 /* AppleHealthView.swift in Sources */,
 				0D67F43A2C91936D000F6114 /* InitializeNotificationsUseCase.swift in Sources */,
+				0D4E4DAA2E69B0A3001C93C1 /* DeviceModeSettingsView.swift in Sources */,
 				0D500FCA2C7376A700395AEB /* Message.swift in Sources */,
 				0D456AB02C7D07460014CD81 /* FetchReflectionsUseCase.swift in Sources */,
 				0D4EBE4C2C72865F00C1865D /* SummaryView.swift in Sources */,
@@ -1690,6 +1713,7 @@
 				0D9351522D12F9BF0028AA61 /* FetchRoadmapUseCase.swift in Sources */,
 				0D05071B2E58910800C5123A /* FetchMissedReflectionsUseCase.swift in Sources */,
 				0D93514B2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
+				0D4E4DA52E699F3F001C93C1 /* DeviceModeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

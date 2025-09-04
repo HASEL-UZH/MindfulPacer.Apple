@@ -68,8 +68,13 @@ extension OnboardingView {
                     
                     Divider()
                     
-                    InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."))
-                        .padding()
+                    IconLabel(
+                        icon: "info.circle.fill",
+                        title: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."),
+                        labelColor: .secondary
+                    )
+                    .font(.subheadline)
+                    .padding()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background {

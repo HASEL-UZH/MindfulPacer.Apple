@@ -46,18 +46,14 @@ extension OnboardingView {
                         )
                         .frame(maxWidth: .infinity, alignment: .leading)
                     } footer: {
-                        Card(backgroundColor: Color(.tertiarySystemFill)) {
-                            ZStack {
-                                Label {
-                                    Text("You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .tint(Color("BrandPrimary"))
-                                } icon: {
-                                    Icon(name: "envelope", color: .secondary)
-                                }
-                            }
+                        Label {
+                            Text("You can reach out to the following email address in case you have further questions: **support@mindfulpacer.ch**")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .tint(Color("BrandPrimary"))
+                        } icon: {
+                            Icon(name: "envelope.fill", color: .secondary)
                         }
                     }
                     .iconLabelGroupBoxStyle(.divider)

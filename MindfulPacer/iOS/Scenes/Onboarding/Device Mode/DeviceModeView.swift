@@ -1,59 +1,59 @@
 //
-//  ModeOfUseView.swift
+//  DeviceModeView.swift
 //  iOS
 //
-//  Created by Grigor Dochev on 07.11.2024.
+//  Created by Grigor Dochev on 04.09.2025.
 //
 
 import SwiftUI
 
-// MARK: - ModeOfUseView
+// MARK: - DeviceModeView
 
 extension OnboardingView {
-    struct ModeOfUseView: View {
+    struct DeviceModeView: View {
         
         // MARK: Properties
         
         @Bindable var viewModel: OnboardingViewModel
-        @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
+        @AppStorage(DeviceMode.appStorageKey) private var deviceMode: DeviceMode = .iPhoneOnly
         
         // MARK: Body
         
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: String(localized: "Mode of Use"),
+                title: String(localized: "Device Mode"),
                 showSkipButton: false
             ) {
                 IconLabelGroupBox(
                     label:
                         IconLabel(
-                            icon: "power",
-                            title: "MindfulPacer Modes",
+                            icon: "iphone.motion",
+                            title: "Device Selection",
                             labelColor: Color("BrandPrimary"),
                             background: true
                         ),
                     description:
-                        Text(String(localized: "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings."))
+                        Text(String(localized: "Please select which devices you want to use MindfulPacer on."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
                     VStack(spacing: 16) {
-                        ForEach(ModeOfUse.allCases) { mode in
+                        ForEach(DeviceMode.allCases) { mode in
                             SelectableButton(
                                 shape: .roundedRectangle(cornerRadius: 16),
                                 backgroundColor: Color(.tertiarySystemGroupedBackground),
-                                isSelected: viewModel.selectedModeOfUse == mode
+                                isSelected: viewModel.selectedDeviceMode == mode
                             ) {
-                                viewModel.selectedModeOfUse = mode
+                                viewModel.selectedDeviceMode = mode
                             } label: {
                                 IconLabel(
-                                    image: mode.icon,
+                                    icon: mode.icon,
                                     title: mode.localized,
                                     description: mode.description,
-                                    titleColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
-                                    iconColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
-                                    descriptionTextColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary").opacity(0.7) : Color.secondary,
+                                    titleColor: viewModel.selectedDeviceMode == mode ? Color("BrandPrimary") : Color.primary,
+                                    iconColor: viewModel.selectedDeviceMode == mode ? Color("BrandPrimary") : Color.primary,
+                                    descriptionTextColor: viewModel.selectedDeviceMode == mode ? Color("BrandPrimary").opacity(0.7) : Color.secondary,
                                     background: true
                                 )
                                 .font(.subheadline.weight(.semibold))
@@ -70,10 +70,11 @@ extension OnboardingView {
                     .font(.footnote)
                 }
                 .iconLabelGroupBoxStyle(.divider)
+                .iconLabelGroupBoxStyle(.divider)
             }
-            .onChange(of: viewModel.selectedModeOfUse) { _, newValue in
+            .onChange(of: viewModel.selectedDeviceMode) { _, newValue in
                 if let newValue {
-                    modeOfUse = newValue
+                    deviceMode = newValue
                 }
             }
         }
@@ -85,5 +86,5 @@ extension OnboardingView {
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
     
-    OnboardingView.ModeOfUseView(viewModel: viewModel)
+    OnboardingView.DeviceModeView(viewModel: viewModel)
 }

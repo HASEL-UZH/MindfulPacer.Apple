@@ -33,7 +33,12 @@ extension OnboardingView {
                     ) {
                         Text("MindfulPacer can remind you to reflect on your activities, energy management, moods and symptoms, for example at specific times or when a biometric value (such as your heart rate or steps) reaches a certain threshold.")
                     } footer: {
-                        InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Notifications > MindfulPacer."))
+                        IconLabel(
+                            icon: "info.circle.fill",
+                            title: String(localized: "You can always change this permission later, by navigating to Settings > Notifications > MindfulPacer."),
+                            labelColor: .secondary
+                        )
+                        .font(.footnote)
                     }
                 }
                 .iconLabelGroupBoxStyle(.divider)

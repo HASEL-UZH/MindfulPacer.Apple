@@ -53,6 +53,44 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - DeviceMode
+
+enum DeviceMode: String, CaseIterable, Identifiable {
+    case iPhoneOnly
+    case iPhoneAndWatch
+    
+    var id: Self { self }
+    
+    var localized: String {
+        switch self {
+        case .iPhoneOnly: String(localized: "iPhone Only")
+        case .iPhoneAndWatch: String(localized: "iPhone + Apple Watch")
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .iPhoneOnly:
+            "iphone"
+        case .iPhoneAndWatch:
+            "ipod.and.applewatch"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .iPhoneOnly:
+            String(localized: "Use MindfulPacer with just your iPhone. You can log reflections and activities manually without a paired Apple Watch.")
+        case .iPhoneAndWatch:
+            String(localized: "Pair MindfulPacer with your Apple Watch to automatically collect health data, reminders, and activity tracking alongside your reflections.")
+        }
+    }
+    
+    static var appStorageKey: String {
+        "deviceMode"
+    }
+}
+
 // MARK: - RootViewModel
 
 @Observable

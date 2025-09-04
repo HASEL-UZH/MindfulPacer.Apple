@@ -1019,6 +1019,9 @@
         }
       }
     },
+    "Device Mode" : {
+
+    },
     "Diary on Activities & Energy" : {
       "localizations" : {
         "de" : {
@@ -1620,6 +1623,12 @@
           }
         }
       }
+    },
+    "iPhone + Apple Watch" : {
+
+    },
+    "iPhone Only" : {
+
     },
     "Label" : {
       "comment" : "A label in a picker view.",
@@ -2250,6 +2259,9 @@
         }
       }
     },
+    "Open Apple Watch Setup" : {
+
+    },
     "Other Movement" : {
       "localizations" : {
         "de" : {
@@ -2309,6 +2321,9 @@
           }
         }
       }
+    },
+    "Pair MindfulPacer with your Apple Watch to automatically collect health data, reminders, and activity tracking alongside your reflections." : {
+
     },
     "Percentage: %lld%%\n⚠️ Note: Using the app in foreground mode significantly decreases battery life." : {
       "comment" : "A message in the \"Battery Info\" alert that shows the battery level and a note about battery usage.",
@@ -2389,6 +2404,12 @@
           }
         }
       }
+    },
+    "Please restart the app to complete the reset and see the changes take effect." : {
+
+    },
+    "Please select which devices you want to you MindfulPacer on." : {
+
     },
     "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings." : {
       "localizations" : {
@@ -2640,6 +2661,9 @@
         }
       }
     },
+    "Requires Watch App" : {
+
+    },
     "Researching Information" : {
       "localizations" : {
         "de" : {
@@ -2661,6 +2685,9 @@
       }
     },
     "Reset Data" : {
+
+    },
+    "Restart Required" : {
 
     },
     "Roadmap" : {
@@ -3356,6 +3383,9 @@
         }
       }
     },
+    "To use “iPhone + Apple Watch”, install and set up the MindfulPacer Watch app first." : {
+
+    },
     "Total for Day" : {
       "localizations" : {
         "de" : {
@@ -3445,6 +3475,9 @@
           }
         }
       }
+    },
+    "Use MindfulPacer with just your iPhone. You can log reflections and activities manually without a paired Apple Watch." : {
+
     },
     "Use the same setting as your device" : {
       "localizations" : {
@@ -3762,7 +3795,11 @@
         }
       }
     },
+    "You can reach out to the following email address in case you have further questions: **support@mindfulpacer.ch**" : {
+
+    },
     "You can reach out to the following email address in case you have further questions: support@mindfulpacer.ch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

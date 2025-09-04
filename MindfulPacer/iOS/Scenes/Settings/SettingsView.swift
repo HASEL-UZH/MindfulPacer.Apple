@@ -32,10 +32,12 @@ enum SettingsNavigationDestination: Hashable {
     case theme
     case dataManagement
     case appleWatch
+    case deviceMode
 }
 
 enum SettingsAlert: Identifiable {
     case resetDatabaseConfirmation
+    case restartApp
     
     var id: Int {
         hashValue
@@ -50,6 +52,7 @@ struct SettingsView: View {
     
     @Environment(\.openURL) private var openURL
     @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
+    @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
     @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
     @State private var viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
     
@@ -63,6 +66,7 @@ struct SettingsView: View {
                 
                 Section {
                     mindfulPacerExpanded
+                    deviceModeSetting
                     appleWatch
                     viewOnboarding
                 } header: {
@@ -122,7 +126,7 @@ struct SettingsView: View {
             }
             .onAppear {
                 viewModel.onViewAppear()
-                viewModel.setModeOfUse(modeOfUse)
+                viewModel.configure(modeOfUse, deviceMode)
             }
             .onChange(of: viewModel.isExpandedModeOfUseOn) { _, newValue in
                 modeOfUse = (newValue == true ? .expanded : .essentials)
@@ -143,6 +147,8 @@ struct SettingsView: View {
             DataManagementView(viewModel: viewModel)
         case .appleWatch:
             AppleWatchView(viewModel: viewModel)
+        case .deviceMode:
+            DeviceModeSettingsView(viewModel: viewModel)
         }
     }
     
@@ -184,6 +190,8 @@ struct SettingsView: View {
         switch alert {
         case .resetDatabaseConfirmation:
             return resetDatabaseConfirmationAlert
+        case .restartApp:
+            return restartAppAlert
         }
     }
     
@@ -236,6 +244,22 @@ struct SettingsView: View {
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
         .tint(Color.brandPrimary)
+    }
+    
+    // MARK: Device Mode
+    
+    private var deviceModeSetting: some View {
+        NavigationLink(value: SettingsNavigationDestination.deviceMode) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "iphone.motion",
+                    title: String(localized: "Device Mode"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
     }
     
     // MARK: Algorithms
@@ -488,10 +512,21 @@ struct SettingsView: View {
             secondaryButton: .cancel()
         )
     }
+    
+    // MARK: Restart App Alert
+    
+    private var restartAppAlert: Alert {
+        Alert(
+            title: Text("Restart Required"),
+            message: Text("Please restart the app to complete the reset and see the changes take effect."),
+            dismissButton: .default(Text("OK"))
+        )
+    }
 }
 
 // MARK: - Preview
 
 #Preview {
     SettingsView()
+        .tint(.brandPrimary)
 }
