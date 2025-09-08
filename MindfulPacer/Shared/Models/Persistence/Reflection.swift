@@ -42,7 +42,8 @@ extension SchemaV1 {
         var threshold: Int?
         var interval: Reminder.Interval?
         var triggerData: Data?
-        
+        var isRejected: Bool = false
+
         var triggerSamples: [MeasurementSample] {
             get {
                 guard let data = triggerData else { return [] }
@@ -98,7 +99,8 @@ extension SchemaV1 {
             reminderType: Reminder.ReminderType? = nil,
             threshold: Int? = nil,
             interval: Reminder.Interval? = nil,
-            triggerSamples: [MeasurementSample] = []
+            triggerSamples: [MeasurementSample] = [],
+            isRejected: Bool = false
         ) {
             self.id = id
             self.date = date
@@ -119,6 +121,7 @@ extension SchemaV1 {
             self.threshold = threshold
             self.interval = interval
             self.triggerSamples = triggerSamples
+            self.isRejected = isRejected
         }
     }
 }

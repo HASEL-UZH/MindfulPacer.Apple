@@ -89,11 +89,6 @@ extension UseCasesContainer {
     var deleteReflectionUseCase: Factory<DeleteReflectionUseCase> {
         self { DefaultDeleteReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-
-    @MainActor
-    var fetchActionedMissedReflectionsUseCase: Factory<FetchActionedMissedReflectionsUseCase> {
-        self { DefaultFetchActionedMissedReflectionsUseCase() }
-    }
     
     @MainActor
     var fetchDefaultActivitiesUseCase: Factory<DefaultFetchDefaultActivitiesUseCase> {
@@ -114,29 +109,29 @@ extension UseCasesContainer {
     var filterReflectionsUseCase: Factory<DefaultFilterReflectionsUseCase> {
         self { DefaultFilterReflectionsUseCase() }
     }
-
-    @MainActor
-    var markMissedReflectionAsActionedUseCase: Factory<DefaultMarkMissedReflectionAsActionedUseCase> {
-        self { DefaultMarkMissedReflectionAsActionedUseCase() }
-    }
     
     @MainActor
     var saveReflectionUseCase: Factory<DefaultSaveReflectionUseCase> {
         self { DefaultSaveReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-
-    // MARK: - Reminder
-
+    
     @MainActor
-    var checkMissedReflectionsUseCase: Factory<CheckMissedReflectionsUseCase> {
-        self { DefaultCheckMissedReflectionsUseCase(healthKitService: HealthKitService.shared) }
+    var fetchMissedReflectionsUseCase: Factory<DefaultFetchMissedReflectionsUseCase> {
+        self {
+            DefaultFetchMissedReflectionsUseCase(
+                modelContext: ModelContainer.prod.mainContext,
+                healthKitService: HealthKitService.shared
+            )
+        }
     }
+    
+    // MARK: - Reminder
     
     @MainActor
     var createReminderUseCase: Factory<CreateReminderUseCase> {
         self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
-
+    
     @MainActor
     var deleteReminderUseCase: Factory<DeleteReminderUseCase> {
         self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }

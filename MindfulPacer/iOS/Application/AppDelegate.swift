@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import WatchConnectivity
+import BackgroundTasks
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
@@ -27,6 +28,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             print("DEBUGY IPHONE: WCSession not supported on this device.")
         }
         
+        MissedReflectionsMonitorService.shared.registerBackgroundTask()
+
         return true
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
     }
 }

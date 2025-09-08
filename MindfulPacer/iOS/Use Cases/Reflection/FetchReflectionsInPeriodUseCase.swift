@@ -51,7 +51,7 @@ final class DefaultFetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseC
                 groupingInterval = 4 * 3600  // 4 hours
             }
             
-            let sortedReflections = filteredReflections.sorted { $0.date < $1.date }
+            let sortedReflections = filteredReflections.sorted { $0.date < $1.date }.filter { !$0.isMissedReflection && !$0.isRejected }
             var buckets: [ReflectionBucket] = []
             
             if let firstReflection = sortedReflections.first {

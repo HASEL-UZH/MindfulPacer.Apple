@@ -75,13 +75,13 @@ extension SettingsView {
                     }
                 } footer: {
                     if !viewModel.isWatchAppInstalled {
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 4) {
                             IconLabel(
                                 icon: "applewatch",
                                 title: String(localized: "To use “iPhone + Apple Watch”, install and set up the MindfulPacer Watch app first."),
                                 labelColor: .secondary
                             )
-                            .font(.subheadline)
+                            .font(.footnote)
 
                             Button {
                                 viewModel.navigationPath.append(.appleWatch)
@@ -91,7 +91,7 @@ extension SettingsView {
                                     title: String(localized: "Open Apple Watch Setup"),
                                     labelColor: .brandPrimary
                                 )
-                                .font(.subheadline.weight(.semibold))
+                                .font(.footnote.weight(.semibold))
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)

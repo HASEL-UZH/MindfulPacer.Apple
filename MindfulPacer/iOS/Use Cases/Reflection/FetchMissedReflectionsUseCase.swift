@@ -9,26 +9,37 @@ import Foundation
 import SwiftData
 
 protocol FetchMissedReflectionsUseCase {
-    func execute() -> [Reflection]?
+    func execute(
+        reminders: [Reminder],
+        existingReflections: [Reflection],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    )
 }
 
 // MARK: - Use Case Implementation
 
 class DefaultFetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase {
     private let modelContext: ModelContext
-
-    init(modelContext: ModelContext) {
+    private let healthKitService: HealthKitService
+    
+    init(
+        modelContext: ModelContext,
+        healthKitService: HealthKitService
+    ) {
         self.modelContext = modelContext
+        self.healthKitService = healthKitService
     }
-
-    func execute() -> [Reflection]? {
-        do {
-            let descriptor = FetchDescriptor<Reflection>(sortBy: [SortDescriptor(\.date, order: .reverse)])
-            let reflections = try modelContext.fetch(descriptor)
-            return reflections.filter { $0.isMissedReflection }
-        } catch {
-            print("DEBUG: Could not fetch missed reflections")
-            return nil
-        }
+    
+    func execute(
+        reminders: [Reminder],
+        existingReflections: [Reflection],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    ) {
+        healthKitService.checkMissedReflections(
+            reminders: reminders,
+            existingReflections: existingReflections,
+            isDeveloperMode: false,
+            completion: completion
+        )
     }
 }

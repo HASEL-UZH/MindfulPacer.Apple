@@ -232,7 +232,8 @@ class EditReflectionViewModel {
             reminderType: nil,
             threshold: nil,
             interval: nil,
-            triggerSamples: []
+            triggerSamples: [],
+            isRejected: false
         )
         
         print("DEBUGY:", wellBeing)

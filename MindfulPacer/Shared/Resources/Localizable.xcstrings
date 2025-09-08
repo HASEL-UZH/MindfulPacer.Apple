@@ -118,6 +118,16 @@
       },
       "shouldTranslate" : false
     },
+    "%lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld"
+          }
+        }
+      }
+    },
     "•" : {
       "localizations" : {
         "de" : {
@@ -2408,7 +2418,7 @@
     "Please restart the app to complete the reset and see the changes take effect." : {
 
     },
-    "Please select which devices you want to you MindfulPacer on." : {
+    "Please select which devices you want to use MindfulPacer on." : {
 
     },
     "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings." : {

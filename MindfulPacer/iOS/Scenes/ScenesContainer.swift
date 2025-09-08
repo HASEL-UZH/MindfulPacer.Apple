@@ -35,19 +35,17 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                checkMissedReflectionsUseCase: UseCasesContainer.shared.checkMissedReflectionsUseCase(),
                 createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
                 deleteReflectionUseCase: UseCasesContainer.shared.deleteReflectionUseCase(),
-                fetchActionedMissedReflectionsUseCase: UseCasesContainer.shared.fetchActionedMissedReflectionsUseCase(),
                 fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
                 fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
+                fetchMissedReflectionsUseCase: UseCasesContainer.shared.fetchMissedReflectionsUseCase(),
                 fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
                 fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
                 fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase(),
-                filterReflectionsUseCase: UseCasesContainer.shared.filterReflectionsUseCase(),
-                markMissedReflectionAsActionedUseCase: UseCasesContainer.shared.markMissedReflectionAsActionedUseCase()
+                filterReflectionsUseCase: UseCasesContainer.shared.filterReflectionsUseCase()
             )
         }
     }
@@ -144,7 +142,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
             SettingsViewModel(
-                checkMissedReflectionsUseCase: UseCasesContainer.shared.checkMissedReflectionsUseCase(),
                 fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
                 fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
                 fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),

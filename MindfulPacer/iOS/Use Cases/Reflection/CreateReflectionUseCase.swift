@@ -27,7 +27,8 @@ protocol CreateReflectionUseCase {
         reminderType: Reminder.ReminderType?,
         threshold: Int?,
         interval: Reminder.Interval?,
-        triggerSamples: [MeasurementSample]
+        triggerSamples: [MeasurementSample],
+        isRejected: Bool
     ) -> Result<Reflection, Error>
 }
 
@@ -58,7 +59,8 @@ class DefaultCreateReflectionUseCase: CreateReflectionUseCase {
         reminderType: Reminder.ReminderType?,
         threshold: Int?,
         interval: Reminder.Interval?,
-        triggerSamples: [MeasurementSample]
+        triggerSamples: [MeasurementSample],
+        isRejected: Bool
     ) -> Result<Reflection, Error> {
         let reflection = Reflection(
             date: date,
@@ -78,7 +80,8 @@ class DefaultCreateReflectionUseCase: CreateReflectionUseCase {
             reminderType: reminderType,
             threshold: threshold,
             interval: interval,
-            triggerSamples: triggerSamples
+            triggerSamples: triggerSamples,
+            isRejected: isRejected
         )
         
         modelContext.insert(reflection)

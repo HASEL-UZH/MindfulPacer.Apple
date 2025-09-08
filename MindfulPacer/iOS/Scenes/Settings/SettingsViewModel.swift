@@ -212,7 +212,6 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
-    private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
     private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
@@ -259,7 +258,6 @@ class SettingsViewModel {
     var exportURL: URL?
     var isExporting = false
     
-    // NEW: Manage Data UI state
     var isShowingDeleteAllUserDataAlert: Bool = false
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
@@ -267,7 +265,6 @@ class SettingsViewModel {
     
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
-    var missedReflections: [MissedReflection] = []
 
     var bufferValues: [String: TimeInterval] = [:]
 
@@ -374,14 +371,12 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
-        checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
         fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
         fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
         resetDatabaseUseCase: ResetDatabaseUseCase
     ) {
-        self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
         self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
@@ -398,7 +393,6 @@ class SettingsViewModel {
         fetchReflections()
         fetchReminders()
         fetchHealthData()
-        checkMissedReflections()
     }
     
     // MARK: - Presentation
@@ -442,7 +436,6 @@ class SettingsViewModel {
                 reminders.removeAll()
                 stepData.removeAll()
                 heartRateData.removeAll()
-                missedReflections.removeAll()
                 bufferValues.removeAll()
                 exportURL = nil
                 presentAlert(.restartApp)
@@ -488,7 +481,6 @@ class SettingsViewModel {
         reminders.removeAll()
         stepData.removeAll()
         heartRateData.removeAll()
-        missedReflections.removeAll()
         bufferValues.removeAll()
         exportURL = nil
         
@@ -658,26 +650,6 @@ class SettingsViewModel {
     
     private func optionalIntToString(_ value: Int?) -> String {
         return value.map { "\($0)" } ?? ""
-    }
-    
-    private func checkMissedReflections() {
-        let reminders = fetchRemindersUseCase.execute() ?? []
-        
-        checkMissedReflectionsUseCase.execute(
-            reminders: reminders,
-            isDeveloperMode: true
-        ) { [weak self] result in
-            guard let self = self else { return }
-            
-            Task { @MainActor in
-                switch result {
-                case .success(let missedReflections):
-                    self.missedReflections = missedReflections
-                case .failure(let failure):
-                    print("DEBUG:", failure)
-                }
-            }
-        }
     }
 }
 

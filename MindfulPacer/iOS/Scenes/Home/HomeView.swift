@@ -46,6 +46,7 @@ struct HomeView: View {
     
     // MARK: Properties
 
+    @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     var onWidgetTap: () -> Void
     
@@ -83,6 +84,7 @@ struct HomeView: View {
             }
             .onAppear {
                 viewModel.onViewAppear()
+                viewModel.configure(deviceMode)
             }
         }
     }
@@ -91,7 +93,24 @@ struct HomeView: View {
     
     @ViewBuilder
     private var missedReflectionsWidget: some View {
-        if !viewModel.missedReflections.isEmpty {
+        if viewModel.missedReflections.isEmpty {
+            Card {
+                HStack {
+                    IconLabel(
+                        image: "book.pages.fill.badge.checkmark",
+                        title: String(localized: "No Missed Reflections"),
+                        labelColor: .brandPrimary,
+                        background: true
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .layoutPriority(1)
+                    
+                    Spacer()
+                }
+            }
+        } else {
             NavigationLink(value: HomeViewNavigationDestination.missedReflectionsList) {
                 Card {
                     HStack {
@@ -117,15 +136,15 @@ struct HomeView: View {
                             
                             Icon(name: "chevron.right", color: Color(.systemGray2))
                                 .font(.subheadline.weight(.semibold))
+                                .redacted(reason: .init())
                         }
                     }
                 }
             }
-        } else {
-            EmptyView()
+            .redacted(reason: viewModel.isFetchingMissedReflections ? .placeholder : .init())
         }
     }
-    
+
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {

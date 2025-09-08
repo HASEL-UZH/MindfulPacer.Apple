@@ -65,8 +65,8 @@ extension HomeView {
         
         private var missedReflectionsList: some View {
             ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(viewModel.missedReflections) { reflection in
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.displayedMissedReflections) { reflection in
                         IconLabelGroupBox(
                             label: IconLabel(
                                 icon: reflection.measurementType!.icon,
@@ -94,8 +94,39 @@ extension HomeView {
                         .iconLabelGroupBoxStyle(.divider)
                         .padding(.horizontal)
                     }
+
+                    if viewModel.isFetchingMissedReflections {
+                        ProgressView()
+                            .padding(.vertical, 12)
+                    }
+
+                    if !viewModel.displayedMissedReflections.isEmpty {
+                        Text("\(viewModel.displayedMissedReflections.count) of \(viewModel.missedReflections.count)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .padding(.bottom, 8)
+                    }
                 }
-                .padding(.bottom)
+                
+                if viewModel.canLoadMoreMissed && !viewModel.isFetchingMissedReflections {
+                    HStack {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                viewModel.loadMoreMissed()
+                            }
+                        } label: {
+                            IconLabel(
+                                icon: "arrow.down.circle.fill",
+                                title: "Load More",
+                                labelColor: .brandPrimary
+                            )
+                            .font(.subheadline.weight(.semibold))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom)
+                }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Missed Reflections")

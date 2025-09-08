@@ -166,7 +166,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             reminderType: reminder.reminderType,
             threshold: reminder.threshold,
             interval: reminder.interval,
-            triggerSamples: triggerSamples
+            triggerSamples: triggerSamples,
+            isRejected: false
         )
         
         if case .success(let newReflection) = result {
@@ -202,7 +203,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             reminderType: reminder.reminderType,
             threshold: reminder.threshold,
             interval: reminder.interval,
-            triggerSamples: triggerSamples
+            triggerSamples: triggerSamples,
+            isRejected: false
         )
         
         if case .success(let reflection) = result {
