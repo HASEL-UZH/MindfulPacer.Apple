@@ -20,14 +20,12 @@ enum HomeViewSheet: Identifiable {
     case editReflectionView(Reflection?)
     case createReminderView(Reminder?)
     case reviewsFilterView
-    case missedReflections
 
     var id: Int {
         switch self {
         case .editReflectionView: 0
         case .createReminderView: 1
         case .reviewsFilterView: 2
-        case .missedReflections: 3
         }
     }
 }
@@ -46,6 +44,8 @@ struct HomeView: View {
     
     // MARK: Properties
 
+    @Environment(\.openURL) private var openURL
+    @AppStorage("userHasSeenOnboarding") var userHasSeenOnboarding: Bool = false
     @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     var onWidgetTap: () -> Void
@@ -56,6 +56,7 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    healthPermissionsWidget
                     missedReflectionsWidget
                     ReflectionsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
@@ -69,6 +70,9 @@ struct HomeView: View {
                     .ignoresSafeArea()
             }
             .navigationDestination(for: HomeViewNavigationDestination.self, destination: navigationDestination)
+            .refreshable {
+                viewModel.onRefresh()
+            }
             .sheet(item: $viewModel.activeSheet, onDismiss: {
                 withAnimation {
                     viewModel.onSheetDismissed()
@@ -81,14 +85,71 @@ struct HomeView: View {
             }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
+                viewModel.configure(deviceMode)
             }
             .onAppear {
-                viewModel.onViewAppear()
+                viewModel.onViewAppear()          
                 viewModel.configure(deviceMode)
+            }
+            .onChange(of: userHasSeenOnboarding) {
+                viewModel.onRefresh()
             }
         }
     }
     
+    // MARK: Health Kit Permission Widget
+    
+    private var healthPermissionsWidget: some View {
+        Group {
+            switch viewModel.healthPermissionState {
+            case .ok:
+                EmptyView()
+            case .needsRequest:
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            image: "Apple Health",
+                            title: String(localized: "Connect Apple Health"),
+                            labelColor: .pink,
+                            background: true
+                        )
+                ) {
+                    Text("We need Health permission to read steps and heart rate.")
+                        .foregroundStyle(.secondary)
+                } footer: {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            openURL(url)
+                        }
+                    } label: {
+                        IconLabel(
+                            icon: "arrow.up.right.square.fill",
+                            title: String(localized: "Open Settings"),
+                            labelColor: .secondary
+                        )
+                        .font(.subheadline.weight(.semibold))
+                    }
+                }
+            case .unavailable:
+                Card {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.orange)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Health Not Available")
+                                .font(.subheadline.weight(.semibold))
+                            Text("Apple Health isn’t available on this device.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: Missed Reflections Widget
     
     @ViewBuilder
@@ -195,10 +256,6 @@ struct HomeView: View {
                 .presentationDragIndicator(reminder.isNil ? .hidden : .visible)
         case .reviewsFilterView:
             ReflectionsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
-                .presentationCornerRadius(16)
-                .presentationDragIndicator(.visible)
-        case .missedReflections:
-            MissedReflectionsView(viewModel: viewModel)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         }

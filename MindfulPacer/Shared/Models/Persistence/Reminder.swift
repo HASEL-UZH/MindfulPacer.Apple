@@ -130,6 +130,14 @@ extension Reminder {
             }
         }
         
+        var image: Image {
+            switch self {
+            case .light: Image(.lightReminder)
+            case .medium: Image(.mediumReminder)
+            case .strong: Image(.strongReminder)
+            }
+        }
+        
         var icon: String {
             switch self {
             case .light: "sun.min"

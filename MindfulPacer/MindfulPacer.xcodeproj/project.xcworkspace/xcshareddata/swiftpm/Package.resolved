@@ -1,15 +1,6 @@
 {
-  "originHash" : "77ba531b14283edbe771311991faf7fdd51f62cce6d1f845b89cb6d2f242cb35",
+  "originHash" : "40adedf176acac50ebce89c395cfdc459c94400dc7c0a575a2101d598d880399",
   "pins" : [
-    {
-      "identity" : "cardstack",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/notsobigcompany/CardStack.git",
-      "state" : {
-        "revision" : "33417ef29fdc4169712cb3b8bf0ddbd7b6ef52c5",
-        "version" : "1.0.0"
-      }
-    },
     {
       "identity" : "factory",
       "kind" : "remoteSourceControl",

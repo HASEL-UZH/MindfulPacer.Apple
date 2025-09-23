@@ -33,8 +33,8 @@ extension SettingsView {
                                     icon: theme.icon,
                                     title: theme.localized,
                                     description: theme.description,
-                                    labelColor: self.theme == theme ? .brandPrimary : theme.labelColor,
-                                    descriptionTextColor: self.theme == theme ? .brandPrimary : theme.labelColor.opacity(0.7),
+                                    labelColor: self.theme == theme ? .brandPrimary : .primary,
+                                    descriptionTextColor: self.theme == theme ? .brandPrimary : .primary.opacity(0.7),
                                     background: true
                                 )
                                 .font(.subheadline.weight(.semibold))

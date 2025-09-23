@@ -40,6 +40,7 @@ extension SettingsView {
                                 if isSelectable {
                                     viewModel.deviceMode = mode
                                     deviceMode = mode
+                                    viewModel.presentAlert(.restartApp)
                                 }
                             } label: {
                                 IconLabel(
@@ -50,22 +51,23 @@ extension SettingsView {
                                     : (isSelectable ? .primary : .secondary),
                                     iconColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
                                     : (isSelectable ? .primary : .secondary),
-                                    descriptionTextColor: viewModel.deviceMode == mode ? Color("BrandPrimary").opacity(0.7)
-                                    : (isSelectable ? .secondary : .secondary.opacity(0.7)),
+                                    descriptionTextColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
+                                    : (isSelectable ? .secondary : .secondary),
                                     background: true
                                 )
-                                .redacted(reason: (mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled) ? .placeholder : .init())
+                                .redacted(reason: (mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled) ? .invalidated : .init())
                                 .font(.subheadline.weight(.semibold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .overlay(alignment: .bottomTrailing) {
                                     if mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled {
-                                        Label(
-                                            String(localized: "Requires Watch App"),
-                                            systemImage: "exclamationmark.triangle.fill"
+                                        IconLabel(
+                                            icon: "exclamationmark.triangle.fill",
+                                            title: String(localized: "Requires Watch App"),
+                                            labelColor: .secondary
                                         )
                                         .font(.caption2.weight(.semibold))
                                         .padding(6)
-                                        .background(.thinMaterial, in: Capsule())
+                                        .background(.thickMaterial, in: Capsule())
                                     }
                                 }
                                 .opacity(isSelectable ? 1.0 : 0.6)

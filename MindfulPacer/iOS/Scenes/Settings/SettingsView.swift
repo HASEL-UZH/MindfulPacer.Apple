@@ -518,7 +518,7 @@ struct SettingsView: View {
     private var restartAppAlert: Alert {
         Alert(
             title: Text("Restart Required"),
-            message: Text("Please restart the app to complete the reset and see the changes take effect."),
+            message: Text("Please restart the app to see the changes take effect."),
             dismissButton: .default(Text("OK"))
         )
     }

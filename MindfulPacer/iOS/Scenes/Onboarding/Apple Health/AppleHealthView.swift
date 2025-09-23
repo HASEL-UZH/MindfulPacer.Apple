@@ -23,31 +23,16 @@ extension OnboardingView {
                 viewModel: viewModel,
                 title: String(localized: "Connect to Apple Health")
             ) {
-                VStack(alignment: .leading, spacing: 0) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack {
-                            Label(title: {
-                                Text("Apple Health Integration")
-                            }, icon: {
-                                Image(.appleHealthIconOfficial)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
-                                    .padding(4)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.black.opacity(0.1))
-                                    }
-                            })
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.subheadline.weight(.semibold))
-                            .lineLimit(1)
-                            .layoutPriority(1)
-                        }
-                        .padding()
-                        
-                        Divider()
-                        
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            image: "Apple Health",
+                            title: String(localized: "Apple Health Integration"),
+                            labelColor: Color("BrandPrimary"),
+                            background: true
+                        )
+                ) {
+                    VStack(alignment: .leading, spacing: 16) {
                         CroppedIPhoneImage(
                             Image(.appleHealthPermission),
                             heightRatio: 0.8,
@@ -63,24 +48,16 @@ extension OnboardingView {
                             """
                         )
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
                     }
-                    
-                    Divider()
-                    
+                } footer: {
                     IconLabel(
                         icon: "info.circle.fill",
                         title: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."),
                         labelColor: .secondary
                     )
-                    .font(.subheadline)
-                    .padding()
+                    .font(.footnote)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                }
+                .iconLabelGroupBoxStyle(.divider)
             }
         }
     }

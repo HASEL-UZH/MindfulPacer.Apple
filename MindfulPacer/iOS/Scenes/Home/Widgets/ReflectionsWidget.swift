@@ -52,7 +52,7 @@ extension HomeView {
         }
 
         // MARK: Create Reflection Button
-
+        
         private var createReflectionButton: some View {
             Button {
                 viewModel.presentSheet(.editReflectionView(nil))
@@ -62,12 +62,12 @@ extension HomeView {
                     title: String(localized: "Create Reflection"),
                     labelColor: Color("BrandPrimary")
                 )
-                    .font(.subheadline.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
             }
         }
-
+        
         // MARK: Recent Reflections Summary
-
+        
         private var recentReflectionsSummary: some View {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(viewModel.recentReflections, id: \.id) { reflection in

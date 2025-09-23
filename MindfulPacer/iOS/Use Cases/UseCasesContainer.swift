@@ -27,6 +27,11 @@ extension UseCasesContainer {
     // MARK: - Health
 
     @MainActor
+    var checkHealthPermissionsUseCase: Factory<DefaultCheckHealthPermissionsUseCase> {
+        self { DefaultCheckHealthPermissionsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
     var fetchCurrentHeartRateUseCase: Factory<DefaultFetchCurrentHeartRateUseCase> {
         self { DefaultFetchCurrentHeartRateUseCase(healthKitService: HealthKitService.shared) }
     }

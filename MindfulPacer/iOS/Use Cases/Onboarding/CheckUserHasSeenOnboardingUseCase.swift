@@ -11,7 +11,7 @@ import SwiftUI
 protocol CheckUserHasSeenOnboardingUseCase {
     func execute() -> Bool
 }
-
+ 
 // MARK: - Use Case Implementation
 
 class DefaultCheckUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase {

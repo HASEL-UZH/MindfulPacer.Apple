@@ -7,33 +7,26 @@
 
 import Foundation
 import BackgroundTasks
-import SwiftData
 import UserNotifications
 import SwiftUI
 
 @MainActor
-class MissedReflectionsMonitorService {
+final class MissedReflectionsMonitorService {
     
     static let shared = MissedReflectionsMonitorService()
     
-    @AppStorage(DeviceMode.appStorageKey) private var deviceMode: DeviceMode = .iPhoneOnly
-    
-    private let taskIdentifier = "com.mindfulpacer.checkMissedReflections"
+    private let taskIdentifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
     
     private init() {}
     
+    // MARK: - Public
+    
     func scheduleAppRefresh() {
-        guard deviceMode == .iPhoneOnly else {
-            print("DEBUGY BG: Device mode is iPhone+Watch. Skipping background task scheduling.")
-            return
-        }
-        
         let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
-        
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("DEBUGY BG: iPhone-only mode is active. Missed reflections check task scheduled.")
+            print("DEBUGY BG: Scheduled Missed Reflections check.")
         } catch {
             print("DEBUGY BG: Could not schedule task: \(error)")
         }
@@ -41,72 +34,71 @@ class MissedReflectionsMonitorService {
     
     func registerBackgroundTask() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: taskIdentifier, using: nil) { task in
-            Task {
-                await self.handleAppRefresh(task: task as! BGAppRefreshTask)
+            guard let refresh = task as? BGAppRefreshTask else {
+                task.setTaskCompleted(success: false)
+                return
+            }
+            // Hop to the main queue explicitly to avoid strict-concurrency 'Sendable' warnings.
+            DispatchQueue.main.async {
+                self.handleAppRefreshOnMain(task: refresh)
             }
         }
     }
     
-    private func handleAppRefresh(task: BGAppRefreshTask) async {
+    // MARK: - Private (MainActor)
+    
+    private func handleAppRefreshOnMain(task: BGAppRefreshTask) {
+        // Always re-schedule first so the task stays alive.
         scheduleAppRefresh()
         
-        guard deviceMode == .iPhoneOnly else {
-            task.setTaskCompleted(success: true)
-            return
+        var didComplete = false
+        func complete(_ success: Bool) {
+            guard !didComplete else { return }
+            didComplete = true
+            task.setTaskCompleted(success: success)
         }
         
+        // If the system expires us, complete once.
         task.expirationHandler = {
-            task.setTaskCompleted(success: false)
+            DispatchQueue.main.async {
+                print("DEBUGY BG: Task expired.")
+                complete(false)
+            }
         }
         
-        let modelContext = ModelContainer.prod.mainContext
-        let fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
-        let fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: modelContext)
-        
-        // This is your existing use case.
-        let checkMissedReflectionsUseCase = DefaultFetchMissedReflectionsUseCase(
-            modelContext: modelContext,
-            healthKitService: HealthKitService.shared
-        )
+        // Resolve use cases on main (avoids sending non-Sendable SwiftData models across actors/threads)
+        let fetchRemindersUseCase = UseCasesContainer.shared.fetchRemindersUseCase()
+        let fetchReflectionsUseCase = UseCasesContainer.shared.fetchReflectionsUseCase()
+        let fetchMissedReflectionsUseCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
         
         let reminders = fetchRemindersUseCase.execute() ?? []
         let existingReflections = fetchReflectionsUseCase.execute() ?? []
         
-        do {
-            var newMissedReflections: [Reflection] = []
-            
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                checkMissedReflectionsUseCase.execute(
-                    reminders: reminders,
-                    existingReflections: existingReflections
-                ) { result in
-                    switch result {
-                    case .success(let refs):
-                        newMissedReflections = refs
-                        continuation.resume()
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
+        // Bridge the callback without Swift concurrency primitives to dodge strict 'Sendable' checks.
+        fetchMissedReflectionsUseCase.execute(
+            reminders: reminders,
+            existingReflections: existingReflections
+        ) { result in
+            switch result {
+            case .success(let refs):
+                let count = refs.count
+                if count > 0 {
+                    self.postMissedReflectionsNotification(count: count)
+                } else {
+                    print("DEBUGY BG: No new missed reflections found.")
                 }
+                complete(true)
+            case .failure(let error):
+                print("DEBUGY BG: Check missed reflections failed with error: \(error)")
+                complete(false)
             }
-            
-            if !newMissedReflections.isEmpty {
-                self.sendMissedReflectionsNotification(count: newMissedReflections.count)
-            } else {
-                print("DEBUGY BG: No new missed reflections found.")
-            }
-            
-            task.setTaskCompleted(success: true)
-        } catch {
-            print("DEBUGY BG: Check missed reflections failed with error: \(error)")
-            task.setTaskCompleted(success: false)
         }
     }
     
-    private func sendMissedReflectionsNotification(count: Int) {
+    private func postMissedReflectionsNotification(count: Int) {
         let content = UNMutableNotificationContent()
         content.title = "You Have Missed Reflections"
-        content.body = "You have \(count) new missed reflection(s) waiting for you."
+        content.body  = "You have \(count) new missed reflection(s) waiting for you."
         content.sound = .default
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)

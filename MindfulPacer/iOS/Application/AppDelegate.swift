@@ -13,11 +13,14 @@ import BackgroundTasks
 class AppDelegate: NSObject, UIApplicationDelegate {
     
     private let connectivityService = ConnectivityService.shared
-
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
+        
+        MissedReflectionsMonitorService.shared.registerBackgroundTask()
+        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
         
         if WCSession.isSupported() {
             let session = WCSession.default
@@ -28,8 +31,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             print("DEBUGY IPHONE: WCSession not supported on this device.")
         }
         
-        MissedReflectionsMonitorService.shared.registerBackgroundTask()
-
         return true
     }
     

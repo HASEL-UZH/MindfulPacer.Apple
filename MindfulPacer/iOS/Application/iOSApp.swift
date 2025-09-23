@@ -12,6 +12,7 @@ import SwiftData
 struct IOSApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "BrandPrimary")
@@ -24,5 +25,10 @@ struct IOSApp: App {
                 .tint(Color("BrandPrimary"))
         }
         .modelContainer(.prod)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .background {
+                MissedReflectionsMonitorService.shared.scheduleAppRefresh()
+            }
+        }
     }
 }

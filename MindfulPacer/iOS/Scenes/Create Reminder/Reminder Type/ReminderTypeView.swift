@@ -54,7 +54,12 @@ extension CreateReminderView {
                         selectedItem: &viewModel.selectedReminderType
                     )
                 } label: {
-                    HStack {
+                    HStack(spacing: 16) {
+                        reminderType.image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 128)
+                        
                         IconLabel(
                             icon: "circle.fill",
                             title: reminderType.localized,
@@ -73,18 +78,11 @@ extension CreateReminderView {
         // MARK: Description
         
         private var description: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Choose a Reminder type, which will be reflected in the color of the Reminder notifications you receive.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                
-                Button("Learn More") {
-                    viewModel.presentSheet(.reminderTypeInfo)
-                }
-                .font(.subheadline.weight(.semibold))
-            }
-            .padding(.horizontal)
+            Label("The strength and duration of the vibration varies by reminder type.", systemImage: "applewatch.radiowaves.left.and.right")
+                .font(.footnote)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
         }
     }
 }

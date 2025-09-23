@@ -73,7 +73,7 @@ enum DeviceMode: String, CaseIterable, Identifiable {
         case .iPhoneOnly:
             "iphone"
         case .iPhoneAndWatch:
-            "ipod.and.applewatch"
+            "applewatch"
         }
     }
     

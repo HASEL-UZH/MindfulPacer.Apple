@@ -19,6 +19,7 @@ class HomeViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
+    private let checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase
     private let createReflectionUseCase: CreateReflectionUseCase
     private let deleteReflectionUseCase: DeleteReflectionUseCase
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
@@ -40,6 +41,7 @@ class HomeViewModel {
     var reflections: [Reflection] = []
     var missedReflections: [Reflection] = []
     var filteredReflections: [Reflection] = []
+    var healthPermissionState: HealthPermissionsState = .ok
     
     var deviceMode: DeviceMode = .iPhoneOnly
 
@@ -93,6 +95,7 @@ class HomeViewModel {
     
     init(
         modelContext: ModelContext,
+        checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase,
         createReflectionUseCase: CreateReflectionUseCase,
         deleteReflectionUseCase: DeleteReflectionUseCase,
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
@@ -106,6 +109,7 @@ class HomeViewModel {
         filterReflectionsUseCase: FilterReflectionsUseCase
     ) {
         self.modelContext = modelContext
+        self.checkHealthPermissionsUseCase = checkHealthPermissionsUseCase
         self.createReflectionUseCase = createReflectionUseCase
         self.deleteReflectionUseCase = deleteReflectionUseCase
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
@@ -126,6 +130,13 @@ class HomeViewModel {
     func onViewFirstAppear() {
         setupBindings()
         resetMissedPagination()
+        fetchReminders()
+        fetchReflections()
+        fetchCurrentSteps()
+        fetchCurrentHeartRate()
+        fetchHealthData()
+        fetchMissedReflections()
+        checkHealthPermissions()
     }
     
     func onViewAppear() {
@@ -134,6 +145,17 @@ class HomeViewModel {
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchHealthData()
+        checkHealthPermissions()
+    }
+    
+    func onRefresh() {
+        checkHealthPermissions()
+        fetchReminders()
+        fetchReflections()
+        fetchCurrentSteps()
+        fetchCurrentHeartRate()
+        fetchHealthData()
+        fetchMissedReflections()
     }
     
     func onSheetDismissed() {
@@ -349,11 +371,14 @@ class HomeViewModel {
     }
     
     private func fetchReflections() {
-        isFetchingMissedReflections = true
-
         reminders = fetchRemindersUseCase.execute() ?? []
         let allReflections = fetchReflectionsUseCase.execute() ?? []
         reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
+    }
+    
+    private func fetchMissedReflections() {
+        isFetchingMissedReflections = true
+        let allReflections = fetchReflectionsUseCase.execute() ?? []
 
         switch deviceMode {
         case .iPhoneOnly:
@@ -382,5 +407,14 @@ class HomeViewModel {
     
     private func fetchReminders() {
         reminders = fetchRemindersUseCase.execute() ?? []
+    }
+    
+    private func checkHealthPermissions() {
+        checkHealthPermissionsUseCase.execute { [weak self] state in
+            Task { @MainActor in
+                self?.healthPermissionState = state
+                print("DEBUGY: Health", state)
+            }
+        }
     }
 }

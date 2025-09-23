@@ -19,9 +19,9 @@ struct IntervalInfoSheet: View {
                 ) {
                     Text(
                         """
-                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.
+                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.
                         
-                        For example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer.
+                        For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.
                         """
                     )
                 }
@@ -31,9 +31,9 @@ struct IntervalInfoSheet: View {
                 ) {
                     Text(
                         """
-                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.
+                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.
                         
-                        For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.
+                        For example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer.
                         """
                     )
                 }

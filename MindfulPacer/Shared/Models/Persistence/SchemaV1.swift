@@ -31,17 +31,6 @@ enum SchemaV1: VersionedSchema {
 // MARK: - Container
 
 extension ModelContainer {
-    /// Container used in production
-    static let prod: ModelContainer = {
-        let schema = Schema(CurrentScheme.models)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("DEBUG: Failed to initialize ModelContainer.")
-        }
-    }()
-
     /// Container used for previews
     @MainActor
     static let preview: ModelContainer = {
@@ -51,6 +40,27 @@ extension ModelContainer {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("DEBUG: Failed to initialize ModelContainer.")
+        }
+    }()
+}
+
+// MARK: - Production Container
+
+@MainActor
+extension ModelContainer {
+    static let prod: ModelContainer = {
+        let schema = Schema(CurrentScheme.models)
+
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .private("iCloud.Cloud.com.MindfulPacer.Apple.iOS")
+        )
+
+        do {
+            return try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
         }
     }()
 }

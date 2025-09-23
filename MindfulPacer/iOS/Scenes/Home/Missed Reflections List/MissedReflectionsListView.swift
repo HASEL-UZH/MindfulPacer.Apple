@@ -66,7 +66,7 @@ extension HomeView {
         private var missedReflectionsList: some View {
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    ForEach(viewModel.displayedMissedReflections) { reflection in
+                    ForEach(viewModel.displayedMissedReflections, id: \.id) { reflection in
                         IconLabelGroupBox(
                             label: IconLabel(
                                 icon: reflection.measurementType!.icon,

@@ -68,6 +68,14 @@ enum Period: String, CaseIterable {
     }
 }
 
+// MARK: - HealthPermissionsState
+
+enum HealthPermissionsState {
+    case ok
+    case needsRequest
+    case unavailable
+}
+
 // MARK: - HealthKitServiceProtocol
 
 protocol HealthKitServiceProtocol {
@@ -96,6 +104,7 @@ protocol HealthKitServiceProtocol {
         for period: Period,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
+    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void)
 }
 
 // MARK: - HealthKitService
@@ -545,42 +554,42 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
     ) {
         let calendar = Calendar.current
-
+        
         struct DayKey: Hashable, Sendable {
             let dayStart: Date
             let measurementType: Reminder.MeasurementType
         }
-
+        
         struct MinuteKey: Hashable, Sendable {
             let minuteBucket: Int64
             let measurementType: Reminder.MeasurementType
         }
-
+        
         @Sendable func minuteBucket(for date: Date) -> Int64 {
             Int64(date.timeIntervalSince1970 / 60.0)
         }
-
+        
         let handledReflections = existingReflections.filter { $0.isRejected || $0.activity != nil }
-
+        
         let existingDayKeys: Set<DayKey> = Set(
             handledReflections.compactMap { r in
                 guard let mt = r.measurementType else { return nil }
                 return DayKey(dayStart: calendar.startOfDay(for: r.date), measurementType: mt)
             }
         )
-
+        
         let existingMinuteKeys: Set<MinuteKey> = Set(
             handledReflections.compactMap { r in
                 guard let mt = r.measurementType else { return nil }
                 return MinuteKey(minuteBucket: minuteBucket(for: r.date), measurementType: mt)
             }
         )
-
+        
         let rejectedWithoutType = existingReflections.filter { $0.isRejected && $0.measurementType == nil }
         let rejectedAnyTypeDayKeys: Set<Date> = Set(rejectedWithoutType.map { calendar.startOfDay(for: $0.date) })
         let rejectedAnyTypeMinuteBuckets: Set<Int64> = Set(rejectedWithoutType.map { minuteBucket(for: $0.date) })
         let rejectedExactTimestamps: Set<Int64> = Set(rejectedWithoutType.map { Int64($0.date.timeIntervalSince1970) })
-
+        
         self.fetchHeartRateDataLast24Hours { heartRateSamples in
             let fetchStepsAndProcess: (@escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) -> Void = { stepCompletion in
                 let hasDayPeriodStepsReminder = reminders.contains { $0.measurementType == .steps && $0.interval == .oneDay }
@@ -590,14 +599,14 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                     self.fetchStepDataLast24Hours(completion: stepCompletion)
                 }
             }
-
+            
             fetchStepsAndProcess { stepSamples in
                 var potentialNewReflections: [Reflection] = []
                 var lastTriggerTimes: [String: Date] = [:]
-
+                
                 for reminder in reminders {
                     let context: IntervalContext = reminder.measurementType == .steps ? .steps : .heartRate
-
+                    
                     if reminder.measurementType == .steps {
                         let dataSource = stepSamples
                         if reminder.interval == .oneDay {
@@ -607,8 +616,8 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                 let dayStart = calendar.startOfDay(for: windowEnd)
                                 let key = DayKey(dayStart: dayStart, measurementType: reminder.measurementType)
                                 let eventExists =
-                                    existingDayKeys.contains(key) ||
-                                    rejectedAnyTypeDayKeys.contains(dayStart)
+                                existingDayKeys.contains(key) ||
+                                rejectedAnyTypeDayKeys.contains(dayStart)
                                 if !eventExists {
                                     let triggerSamples: [MeasurementSample] = dataSource.map {
                                         MeasurementSample(type: .steps, value: $0.stepCount, date: $0.endDate)
@@ -655,9 +664,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
                                         let bucket = minuteBucket(for: windowEnd)
                                         let eventExists =
-                                            existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
-                                            rejectedAnyTypeMinuteBuckets.contains(bucket) ||
-                                            rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
                                         if !eventExists {
                                             var triggerSamples: [MeasurementSample] = []
                                             for i in stride(from: currentIndex, through: 0, by: -1) {
@@ -707,9 +716,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
                                         let bucket = minuteBucket(for: windowEnd)
                                         let eventExists =
-                                            existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
-                                            rejectedAnyTypeMinuteBuckets.contains(bucket) ||
-                                            rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
                                         if !eventExists {
                                             let triggerSamples = [
                                                 MeasurementSample(type: .heartRate, value: bpm, date: sample.startDate)
@@ -754,9 +763,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
                                         let bucket = minuteBucket(for: windowEnd)
                                         let eventExists =
-                                            existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
-                                            rejectedAnyTypeMinuteBuckets.contains(bucket) ||
-                                            rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
                                         if !eventExists {
                                             let triggerSamples: [MeasurementSample] = windowSamples.map {
                                                 MeasurementSample(type: .heartRate, value: $0.stepCount, date: $0.startDate)
@@ -792,7 +801,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                         }
                     }
                 }
-
+                
                 struct ReflectionKey: Hashable {
                     let measurementType: Reminder.MeasurementType
                     let date: Date
@@ -810,7 +819,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                         filteredReflections.append(lightReflection)
                     }
                 }
-
+                
                 DispatchQueue.main.async {
                     completion(.success(filteredReflections.sorted { $0.date > $1.date }))
                 }
@@ -1023,5 +1032,54 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
         
         healthStore.execute(query)
+    }
+    
+    // MARK: - Check Permission Status
+    
+    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void) {
+        guard HKHealthStore.isHealthDataAvailable(), let healthStore = healthStore else {
+            completion(.unavailable)
+            return
+        }
+        
+        let workoutType = HKObjectType.workoutType()
+        let shareStatus = healthStore.authorizationStatus(for: workoutType)
+        
+        switch shareStatus {
+        case .notDetermined:
+            completion(.needsRequest)        // never asked -> show request UI
+            return
+        case .sharingDenied:
+            completion(.needsRequest)        // user turned access off in Settings -> show "Open Settings"
+            return
+        case .sharingAuthorized:
+            break                            // continue to evaluate read prompt status
+        @unknown default:
+            completion(.unavailable)
+            return
+        }
+        
+        guard
+            let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
+            let stepType = HKObjectType.quantityType(forIdentifier: .stepCount)
+        else {
+            completion(.unavailable)
+            return
+        }
+        
+        healthStore.getRequestStatusForAuthorization(toShare: [workoutType], read: [heartRateType, stepType]) { status, _ in
+            DispatchQueue.main.async {
+                switch status {
+                case .shouldRequest:
+                    completion(.needsRequest) // we can still prompt for read
+                case .unnecessary:
+                    completion(.ok)           // already prompted; HK can't tell if read was later revoked
+                case .unknown:
+                    completion(.unavailable)
+                @unknown default:
+                    completion(.unavailable)
+                }
+            }
+        }
     }
 }
