@@ -27,7 +27,7 @@ struct IOSApp: App {
         .modelContainer(.prod)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .background {
-                MissedReflectionsMonitorService.shared.scheduleAppRefresh()
+//                MissedReflectionsMonitorService.shared.scheduleAppRefresh()
             }
         }
     }

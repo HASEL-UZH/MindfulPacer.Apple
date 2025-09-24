@@ -19,8 +19,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         
-        MissedReflectionsMonitorService.shared.registerBackgroundTask()
-        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
+//        MissedReflectionsMonitorService.shared.registerBackgroundTask()
+//        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
         
         if WCSession.isSupported() {
             let session = WCSession.default
@@ -35,6 +35,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
+//        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
     }
 }

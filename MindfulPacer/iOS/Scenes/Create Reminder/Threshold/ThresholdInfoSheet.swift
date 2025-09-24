@@ -35,8 +35,6 @@ struct ThresholdInfoSheet: View {
                         The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
                         
                         Please note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.
-                        
-                        For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.
                         """
                     )
                 }

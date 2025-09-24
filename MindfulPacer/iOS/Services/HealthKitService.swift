@@ -884,7 +884,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             statsCollection.enumerateStatistics(from: startOfDay, to: now) { statistics, stop in
                 if let sum = statistics.sumQuantity() {
                     let stepCount = sum.doubleValue(for: HKUnit.count())
-                    if stepCount > 0 { // Only include intervals with non-zero steps
+                    if stepCount > 0 {
                         results.append((statistics.startDate, statistics.endDate, stepCount))
                     }
                 }
@@ -925,7 +925,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
-        // Use 1-minute intervals for aggregation
         let interval = DateComponents(minute: 1)
         let anchorDate = last24Hours
         
@@ -1047,13 +1046,13 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         
         switch shareStatus {
         case .notDetermined:
-            completion(.needsRequest)        // never asked -> show request UI
+            completion(.needsRequest)
             return
         case .sharingDenied:
-            completion(.needsRequest)        // user turned access off in Settings -> show "Open Settings"
+            completion(.needsRequest)
             return
         case .sharingAuthorized:
-            break                            // continue to evaluate read prompt status
+            break
         @unknown default:
             completion(.unavailable)
             return
@@ -1071,9 +1070,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             DispatchQueue.main.async {
                 switch status {
                 case .shouldRequest:
-                    completion(.needsRequest) // we can still prompt for read
+                    completion(.needsRequest)
                 case .unnecessary:
-                    completion(.ok)           // already prompted; HK can't tell if read was later revoked
+                    completion(.ok)
                 case .unknown:
                     completion(.unavailable)
                 @unknown default:
