@@ -156,6 +156,7 @@ struct CreateReminderView: View {
                     Button("Save") {
                         viewModel.saveReminder(reminder)
                     }
+                    .buttonStyle(.borderedProminent)
                     .fontWeight(.semibold)
                     .disabled(viewModel.isSaveButtonDisabled)
                 }

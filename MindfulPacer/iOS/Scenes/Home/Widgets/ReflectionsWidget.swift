@@ -19,7 +19,7 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            NavigationLink(value: HomeViewNavigationDestination.reviewsList) {
+            NavigationLink(value: HomeNavigationDestination.reviewsList) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "book.pages.fill",

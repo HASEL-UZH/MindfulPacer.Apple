@@ -14,19 +14,22 @@ protocol FetchMissedReflectionsUseCase {
         existingReflections: [Reflection],
         completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
     )
+    
+    func execute(
+        reminderConfigs: [BackgroundReminderConfig],
+        existingReflections: [Reflection],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    )
 }
 
 // MARK: - Use Case Implementation
 
-class DefaultFetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase {
-    private let modelContext: ModelContext
+final class DefaultFetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase {
     private let healthKitService: HealthKitService
     
     init(
-        modelContext: ModelContext,
         healthKitService: HealthKitService
     ) {
-        self.modelContext = modelContext
         self.healthKitService = healthKitService
     }
     
@@ -37,6 +40,29 @@ class DefaultFetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase {
     ) {
         healthKitService.checkMissedReflections(
             reminders: reminders,
+            existingReflections: existingReflections,
+            isDeveloperMode: false,
+            completion: completion
+        )
+    }
+    
+    func execute(
+        reminderConfigs: [BackgroundReminderConfig],
+        existingReflections: [Reflection],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    ) {
+        let transientReminders: [Reminder] = reminderConfigs.map { cfg in
+            Reminder(
+                id: cfg.id,
+                measurementType: cfg.measurementType,
+                reminderType: cfg.reminderType,
+                threshold: cfg.threshold,
+                interval: cfg.interval
+            )
+        }
+        
+        healthKitService.checkMissedReflections(
+            reminders: transientReminders,
             existingReflections: existingReflections,
             isDeveloperMode: false,
             completion: completion

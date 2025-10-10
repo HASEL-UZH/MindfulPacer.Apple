@@ -14,6 +14,7 @@ extension CreateReminderView {
         
         // MARK: Properties
 
+        @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
         @Bindable var viewModel: CreateReminderViewModel
 
         // MARK: Body
@@ -25,7 +26,9 @@ extension CreateReminderView {
 
                 VStack(spacing: 16) {
                     reminderTypeSelectionList
-                    description
+                    if deviceMode == .iPhoneAndWatch {
+                        description
+                    }
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -55,10 +58,12 @@ extension CreateReminderView {
                     )
                 } label: {
                     HStack(spacing: 16) {
-                        reminderType.image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 128)
+                        if deviceMode == .iPhoneAndWatch {
+                            reminderType.image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 128)
+                        }
                         
                         IconLabel(
                             icon: "circle.fill",

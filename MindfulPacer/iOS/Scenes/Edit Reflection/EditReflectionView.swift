@@ -120,6 +120,7 @@ struct EditReflectionView: View {
                             viewModel.saveReflection(reflection)
                             dismiss()
                         }
+                        .buttonStyle(.borderedProminent)
                         .fontWeight(.semibold)
                         .disabled(viewModel.isSaveButtonDisabled)
                     }
@@ -579,75 +580,103 @@ struct EditReflectionView: View {
 struct TriggerDataChartView: View {
     
     let reflection: Reflection
-    
     @State private var selectedDate: Date?
     
-    var samples: [MeasurementSample] { reflection.triggerSamples }
+    private var samples: [MeasurementSample] { reflection.triggerSamples }
     
-    private var measurementType: Reminder.MeasurementType? {
-        samples.first?.type
-    }
+    // MARK: - Derived flags & helpers
     
-    private var eventStartDate: Date? {
-        samples.first?.date
-    }
+    private var measurementType: Reminder.MeasurementType? { samples.first?.type }
+    private var isSteps: Bool { measurementType == .steps }
+    private var isOneDay: Bool { reflection.interval == .oneDay }
+    private var windowSeconds: TimeInterval { reflection.interval?.timeInterval ?? 0 }
     
-    private var eventEndDate: Date? {
-        samples.last?.date
-    }
+    private var eventStartDate: Date? { chartSeries.first?.date }
+    private var eventEndDate: Date? { chartSeries.last?.date }
     
     private var xAxisValues: [Date] {
         guard let startDate = eventStartDate, let endDate = eventEndDate else { return [] }
-        let middleDate = startDate.addingTimeInterval((endDate.timeIntervalSince(startDate)) / 2)
-        return [startDate, middleDate, endDate]
+        let mid = startDate.addingTimeInterval(endDate.timeIntervalSince(startDate) / 2)
+        return [startDate, mid, endDate]
     }
     
-    private var downsampledSamples: [MeasurementSample] {
-        let maxDataPoints = 200
+    private func rollingSumSeries(_ data: [MeasurementSample], window: TimeInterval) -> [MeasurementSample] {
+        guard window > 0 else { return data }
+        var out: [MeasurementSample] = []
+        var q: [(Date, Double)] = []
+        var sum: Double = 0
         
-        guard samples.count > maxDataPoints else {
-            return samples
+        for s in data.sorted(by: { $0.date < $1.date }) {
+            sum += s.value
+            q.append((s.date, s.value))
+            let cutoff = s.date.addingTimeInterval(-window)
+            while let first = q.first, first.0 < cutoff {
+                sum -= first.1
+                q.removeFirst()
+            }
+            out.append(.init(type: s.type, value: sum, date: s.date))
         }
+        return out
+    }
+    
+    private func runningTotalSeries(_ data: [MeasurementSample]) -> [MeasurementSample] {
+        var out: [MeasurementSample] = []
+        var total: Double = 0
+        for s in data.sorted(by: { $0.date < $1.date }) {
+            total += s.value
+            out.append(.init(type: s.type, value: total, date: s.date))
+        }
+        return out
+    }
+    
+    private var chartSeries: [MeasurementSample] {
+        guard !samples.isEmpty else { return [] }
+        if isSteps {
+            return isOneDay
+            ? runningTotalSeries(samples)
+            : rollingSumSeries(samples, window: windowSeconds)
+        } else {
+            // Heart rate stays as raw BPM
+            return samples.sorted(by: { $0.date < $1.date })
+        }
+    }
+    
+    private var downsampledChartSeries: [MeasurementSample] {
+        let data = chartSeries
+        let maxDataPoints = 200
+        guard data.count > maxDataPoints else { return data }
         
-        var downsampledData: [MeasurementSample] = []
-        let bucketSize = Double(samples.count) / Double(maxDataPoints)
-        
+        var out: [MeasurementSample] = []
+        let bucketSize = Double(data.count) / Double(maxDataPoints)
         for i in 0..<maxDataPoints {
-            let bucketStart = Int(Double(i) * bucketSize)
-            let bucketEnd = Int(Double(i + 1) * bucketSize)
-            
-            guard let bucketSlice = samples[safe: bucketStart..<bucketEnd] else { continue }
-            let bucket = Array(bucketSlice)
-            guard !bucket.isEmpty else { continue }
-            
-            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
-                downsampledData.append(significantPoint)
+            let start = Int(Double(i) * bucketSize)
+            let end   = Int(Double(i + 1) * bucketSize)
+            if let slice = data[safe: start..<end] {
+                let bucket = Array(slice)
+                if let pick = bucket.max(by: { $0.value < $1.value }) {
+                    out.append(pick)
+                }
             }
         }
-        
-        return downsampledData
+        return out
     }
-    
+        
     private var yDomain: ClosedRange<Double> {
-        let values = samples.map { $0.value }
+        let values = chartSeries.map { $0.value }
         let minY = values.min() ?? 0
         let maxY = values.max() ?? 100
         let threshold = Double(reflection.threshold ?? Int(maxY))
-        
         let overallMin = min(minY, threshold)
         let overallMax = max(maxY, threshold)
-        
-        let padding = (overallMax - overallMin) * 0.1
-        return (overallMin - (padding + 5))...(overallMax + (padding + 5))
+        let padding = max(5, (overallMax - overallMin) * 0.1)
+        return (overallMin - padding)...(overallMax + padding)
     }
     
     private var selectedSample: MeasurementSample? {
         guard let selectedDate else { return nil }
-        return samples.min(by: { abs($0.date.distance(to: selectedDate)) < abs($1.date.distance(to: selectedDate)) })
-    }
-    
-    private var minValue: Double {
-        samples.map(\.value).min() ?? 0
+        return chartSeries.min {
+            abs($0.date.distance(to: selectedDate)) < abs($1.date.distance(to: selectedDate))
+        }
     }
     
     private var chartColor: Color {
@@ -657,61 +686,57 @@ struct TriggerDataChartView: View {
     private var xAxisFormatStyle: Date.FormatStyle {
         if let interval = reflection.interval {
             switch interval {
-            case .immediately:
-                return .dateTime.hour().minute().second()
-            case .oneMinute:
-                return .dateTime.hour().minute().second()
-            case .fiveMinutes:
-                return .dateTime.hour().minute()
-            case .tenMinutes:
-                return .dateTime.hour().minute()
-            case .fifteenMinutes:
-                return .dateTime.hour().minute()
-            case .thirtyMinutes:
-                return .dateTime.hour().minute()
-            case .oneHour:
-                return .dateTime.hour().minute()
-            case .twoHours:
-                return .dateTime.hour().minute()
-            case .fourHours:
-                return .dateTime.hour()
-            case .oneDay:
-                return .dateTime.hour()
+            case .immediately:    return .dateTime.hour().minute().second()
+            case .oneMinute:      return .dateTime.hour().minute().second()
+            case .fiveMinutes:    return .dateTime.hour().minute()
+            case .tenMinutes:     return .dateTime.hour().minute()
+            case .fifteenMinutes: return .dateTime.hour().minute()
+            case .thirtyMinutes:  return .dateTime.hour().minute()
+            case .oneHour:        return .dateTime.hour().minute()
+            case .twoHours:       return .dateTime.hour().minute()
+            case .fourHours:      return .dateTime.hour()
+            case .oneDay:         return .dateTime.hour()
             }
-        } else {
-            return .dateTime.hour().minute().second()
         }
+        return .dateTime.hour().minute().second()
     }
     
     private var triggerWindowStartDate: Date? {
-        guard let endDate = eventEndDate, let interval = reflection.interval?.timeInterval else { return nil }
-        return endDate.addingTimeInterval(-interval)
+        guard let end = eventEndDate, let interval = reflection.interval?.timeInterval else { return nil }
+        return end.addingTimeInterval(-interval)
+    }
+    private var triggerWindowEndDate: Date? { eventEndDate }
+    
+    private var yLabel: String {
+        if isSteps {
+            return isOneDay ? "Steps (running total)" : "Steps (rolling sum)"
+        } else {
+            return "BPM"
+        }
     }
     
-    private var triggerWindowEndDate: Date? {
-        return eventEndDate
-    }
+    // MARK: - Body
     
     var body: some View {
-        if samples.isEmpty {
+        if chartSeries.isEmpty {
             Text("No trigger data was saved for this reflection.")
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .frame(height: 150)
         } else {
             Chart {
-                if let startDate = triggerWindowStartDate, let endDate = triggerWindowEndDate {
+                if let start = triggerWindowStartDate, let end = triggerWindowEndDate {
                     RectangleMark(
-                        xStart: .value("Start", startDate),
-                        xEnd: .value("End", endDate)
+                        xStart: .value("Start", start),
+                        xEnd: .value("End", end)
                     )
                     .foregroundStyle(chartColor.opacity(0.1))
                 }
                 
-                ForEach(downsampledSamples, id: \.date) { sample in
+                ForEach(downsampledChartSeries, id: \.date) { s in
                     LineMark(
-                        x: .value("Time", sample.date),
-                        y: .value("BPM", sample.value)
+                        x: .value("Time", s.date),
+                        y: .value(yLabel, s.value)
                     )
                     .foregroundStyle(chartColor)
                     .interpolationMethod(.catmullRom)
@@ -736,18 +761,17 @@ struct TriggerDataChartView: View {
                 }
             }
             .chartOverlay { proxy in
-                GeometryReader { geometry in
+                GeometryReader { geo in
                     if let selectedDate {
-                        let datePosition = proxy.position(forX: selectedDate) ?? 0
-                        
+                        let xPos = proxy.position(forX: selectedDate) ?? 0
                         Rectangle()
                             .fill(chartColor.opacity(0.3))
-                            .frame(width: 2, height: geometry.size.height)
-                            .position(x: datePosition, y: geometry.size.height / 2)
+                            .frame(width: 2, height: geo.size.height)
+                            .position(x: xPos, y: geo.size.height / 2)
                         
-                        if let selectedSample {
-                            valuePopover(for: selectedSample)
-                                .position(x: datePosition, y: geometry.size.height / 2 - 40)
+                        if let s = selectedSample {
+                            valuePopover(for: s)
+                                .position(x: xPos, y: geo.size.height / 2 - 40)
                         }
                     }
                 }
@@ -755,6 +779,8 @@ struct TriggerDataChartView: View {
             .chartXSelection(value: $selectedDate)
         }
     }
+    
+    // MARK: - Popover
     
     @ViewBuilder
     private func valuePopover(for sample: MeasurementSample) -> some View {
@@ -764,11 +790,27 @@ struct TriggerDataChartView: View {
                 .foregroundColor(chartColor)
             
             HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text(String(Int(sample.value)))
-                    .font(.body.weight(.bold))
-                Text(measurementType == .heartRate ? "bpm" : "steps")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                if isSteps {
+                    if isOneDay {
+                        Text("\(Int(sample.value))")
+                            .font(.body.weight(.bold))
+                        Text("steps total")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("\(Int(sample.value))")
+                            .font(.body.weight(.bold))
+                        Text("steps in window")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                } else {
+                    Text("\(Int(sample.value))")
+                        .font(.body.weight(.bold))
+                    Text("bpm")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .padding(8)

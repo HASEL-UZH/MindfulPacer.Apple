@@ -9,14 +9,14 @@ import SwiftUI
 
 // MARK: - Presentation Enums
 
-enum HomeViewNavigationDestination: Hashable {
+enum HomeNavigationDestination: Hashable {
     case reviewsList
     case remindersList
     case analytics
     case missedReflectionsList
 }
 
-enum HomeViewSheet: Identifiable {
+enum HomeSheet: Identifiable {
     case editReflectionView(Reflection?)
     case createReminderView(Reminder?)
     case reviewsFilterView
@@ -30,7 +30,16 @@ enum HomeViewSheet: Identifiable {
     }
 }
 
-enum HomeViewToast: Identifiable {
+enum HomeAlert: Identifiable {
+    case watchAppNotInstalled
+    case watchNotPaired
+    
+    var id: Int {
+        hashValue
+    }
+}
+
+enum HomeToast: Identifiable {
     case successfullyCreatedReflection
     
     var id: Int {
@@ -39,6 +48,37 @@ enum HomeViewToast: Identifiable {
 }
 
 // MARK: - HomeView
+
+import SwiftUI
+import UserNotifications
+
+struct NotificationTestButton: View {
+    var body: some View {
+        Button("Send Test Notification") {
+            sendTestNotification()
+        }
+        .buttonStyle(.borderedProminent)
+    }
+
+    private func sendTestNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "🔔 Test Notification"
+        content.body = "If you see this, your local notifications are working."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ Failed to schedule notification:", error.localizedDescription)
+            } else {
+                print("✅ Test notification scheduled")
+            }
+        }
+    }
+}
+
 
 struct HomeView: View {
     
@@ -56,6 +96,7 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    NotificationTestButton()
                     healthPermissionsWidget
                     missedReflectionsWidget
                     ReflectionsWidget(viewModel: viewModel)
@@ -69,7 +110,7 @@ struct HomeView: View {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
             }
-            .navigationDestination(for: HomeViewNavigationDestination.self, destination: navigationDestination)
+            .navigationDestination(for: HomeNavigationDestination.self, destination: navigationDestination)
             .refreshable {
                 viewModel.onRefresh()
             }
@@ -83,6 +124,9 @@ struct HomeView: View {
             .toast(item: $viewModel.activeToast) { toast in
                 toastContent(for: toast)
             }
+            .alert(item: $viewModel.activeAlert) { alert in
+                alertContent(for: alert)
+            }
             .onViewFirstAppear {
                 viewModel.onViewFirstAppear()
                 viewModel.configure(deviceMode)
@@ -93,6 +137,25 @@ struct HomeView: View {
             }
             .onChange(of: userHasSeenOnboarding) {
                 viewModel.onRefresh()
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if viewModel.watchConnectionStatus == .appNotInstalled {
+                        Button {
+                            viewModel.presentAlert(.watchAppNotInstalled)
+                        } label: {
+                            Image(systemName: "exclamationmark.applewatch")
+                                .foregroundStyle(.orange)
+                        }
+                    } else if viewModel.watchConnectionStatus == .noWatchPaired {
+                        Button {
+                            viewModel.presentAlert(.watchNotPaired)
+                        } label: {
+                            Image(systemName: "applewatch.slash")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                }
             }
         }
     }
@@ -172,7 +235,7 @@ struct HomeView: View {
                 }
             }
         } else {
-            NavigationLink(value: HomeViewNavigationDestination.missedReflectionsList) {
+            NavigationLink(value: HomeNavigationDestination.missedReflectionsList) {
                 Card {
                     HStack {
                         IconLabel(
@@ -189,7 +252,7 @@ struct HomeView: View {
                         Spacer(minLength: 16)
                         
                         HStack(spacing: 4) {
-                            Text(String(viewModel.missedReflections.count))
+                            Text(viewModel.missedReflections.count > 10 ? "10+" : String(viewModel.missedReflections.count))
                                 .fontWeight(.semibold)
                                 .foregroundStyle(.red)
                                 .fixedSize(horizontal: true, vertical: false)
@@ -227,7 +290,7 @@ struct HomeView: View {
     // MARK: Navigation Destination
     
     @ViewBuilder
-    private func navigationDestination(for destination: HomeViewNavigationDestination) -> some View {
+    private func navigationDestination(for destination: HomeNavigationDestination) -> some View {
         switch destination {
         case .reviewsList:
             ReflectionsListView(viewModel: viewModel)
@@ -243,7 +306,7 @@ struct HomeView: View {
     // MARK: Sheet Content
 
     @ViewBuilder
-    private func sheetContent(for sheet: HomeViewSheet) -> some View {
+    private func sheetContent(for sheet: HomeSheet) -> some View {
         switch sheet {
         case .editReflectionView(let reflection):
             EditReflectionView(reflection: reflection)
@@ -261,9 +324,20 @@ struct HomeView: View {
         }
     }
     
+    // MARK: Alert Content
+    
+    private func alertContent(for alert: HomeAlert) -> Alert {
+        switch alert {
+        case .watchAppNotInstalled:
+            return watchAppNotInstalledAlert
+        case .watchNotPaired:
+            return watchNotPairedAlert
+        }
+    }
+    
     // MARK: Toast Content
     
-    private func toastContent(for toast: HomeViewToast) -> some View {
+    private func toastContent(for toast: HomeToast) -> some View {
         switch toast {
         case .successfullyCreatedReflection:
             Toast(
@@ -272,6 +346,29 @@ struct HomeView: View {
             )
             .toastStyle(.success)
         }
+    }
+    
+    // MARK: - Watch App Not Installed Alert
+    
+    private var watchAppNotInstalledAlert: Alert {
+        Alert(
+            title: Text("Watch App Not Installed"),
+            message: Text("You have not installed MindfulPacer on your Apple Watch. Please navigate to Settings > Apple Watch for instructions on how to do this."),
+            dismissButton: .default(Text("OK"))
+        )
+    }
+    
+    // MARK: Watch Not Paired Alert
+    
+    private var watchNotPairedAlert: Alert {
+        Alert(
+            title: Text("Watch Not Paired"),
+            message: Text("Your Apple Watch is not paired with this iPhone."),
+            primaryButton: .default(Text("Learn How to Pair")) {
+                openURL(URL(string: "https://support.apple.com/en-us/HT204505")!)
+            },
+            secondaryButton: .cancel()
+        )
     }
 }
 

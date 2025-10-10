@@ -124,7 +124,6 @@ extension UseCasesContainer {
     var fetchMissedReflectionsUseCase: Factory<DefaultFetchMissedReflectionsUseCase> {
         self {
             DefaultFetchMissedReflectionsUseCase(
-                modelContext: ModelContainer.prod.mainContext,
                 healthKitService: HealthKitService.shared
             )
         }

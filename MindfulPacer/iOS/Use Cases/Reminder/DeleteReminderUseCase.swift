@@ -9,11 +9,13 @@ import Foundation
 import SwiftData
 
 protocol DeleteReminderUseCase {
+    @MainActor
     func execute(reminder: Reminder)
 }
 
 // MARK: - Use Case Implementation
 
+@MainActor
 class DefaultDeleteReminderUseCase: DeleteReminderUseCase {
     private let modelContext: ModelContext
     private let watchUpdateService: WatchUpdateService
@@ -25,6 +27,7 @@ class DefaultDeleteReminderUseCase: DeleteReminderUseCase {
 
     func execute(reminder: Reminder) {
         modelContext.delete(reminder)
+        BackgroundRemindersStore.shared.remove(id: reminder.id)
         watchUpdateService.notifyWatchOfReminderChange()
         try? modelContext.save()
     }

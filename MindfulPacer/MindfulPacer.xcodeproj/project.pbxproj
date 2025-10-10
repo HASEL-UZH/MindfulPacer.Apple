@@ -101,6 +101,7 @@
 		0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */; };
 		0D6AEB4F2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB4E2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift */; };
 		0D6AEB512C9DA7B000D8D22F /* FetchStepsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB502C9DA7B000D8D22F /* FetchStepsUseCase.swift */; };
+		0D72DCA42E97DE7D0056DB80 /* HelloBGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D72DCA32E97DE7D0056DB80 /* HelloBGService.swift */; };
 		0D7BA38A2CDD60700086A47F /* ModeOfUseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */; };
 		0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B52C6EA3D20023EE2D /* InfoBox.swift */; };
@@ -143,6 +144,8 @@
 		0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */; };
 		0DA77E402D1596C50057DFA2 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA77E3F2D1596C50057DFA2 /* Toast.swift */; };
 		0DAC64D92DA2A3B400BBB741 /* AlgorithmsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */; };
+		0DB378002E8A5F2200398391 /* BackgroundRemindersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB377FF2E8A5F2200398391 /* BackgroundRemindersStore.swift */; };
+		0DB378022E8A80A100398391 /* DateSelectionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB378012E8A80A100398391 /* DateSelectionSheet.swift */; };
 		0DB5D8F22E6E130E00ED2D1A /* MissedReflectionsMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB5D8F12E6E130E00ED2D1A /* MissedReflectionsMonitorService.swift */; };
 		0DBA371B2C31EF6000209681 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA371A2C31EF6000209681 /* RootView.swift */; };
 		0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBA373A2C32087300209681 /* WatchOSApp.swift */; };
@@ -211,7 +214,6 @@
 		0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C42C6D529000BB773F /* CreateReflectionUseCase.swift */; };
 		0DF5EDBD2E4F45D8005DB9DE /* FetchReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D456AAF2C7D07460014CD81 /* FetchReflectionsUseCase.swift */; };
 		0DF93A802D53AFEF00121308 /* RoadmapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */; };
-		0DF93A852D53B3F500121308 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A842D53B3F500121308 /* ExportView.swift */; };
 		0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */; };
 		0DF93A922D58EFF300121308 /* StepsChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A912D58EFF300121308 /* StepsChartView.swift */; };
 		0DFCA1D02C623FAC0000C87C /* EditReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1CF2C623FAC0000C87C /* EditReflectionView.swift */; };
@@ -345,6 +347,8 @@
 		0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		0D6AEB4E2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchHeartRateUseCase.swift; sourceTree = "<group>"; };
 		0D6AEB502C9DA7B000D8D22F /* FetchStepsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchStepsUseCase.swift; sourceTree = "<group>"; };
+		0D72DCA32E97DE7D0056DB80 /* HelloBGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelloBGService.swift; sourceTree = "<group>"; };
+		0D72DCA52E97DF5D0056DB80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeOfUseView.swift; sourceTree = "<group>"; };
 		0D8203B32C6E9D680023EE2D /* IconLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabel.swift; sourceTree = "<group>"; };
 		0D8203B52C6EA3D20023EE2D /* InfoBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBox.swift; sourceTree = "<group>"; };
@@ -381,12 +385,13 @@
 		0DA6CB062C37F8C400FE1E61 /* UseCasesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesContainer.swift; sourceTree = "<group>"; };
 		0DA6CB0E2C37F92E00FE1E61 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		0DA6CB192C38370800FE1E61 /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
-		0DA6CB1A2C38373600FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1B2C38374500FE1E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchOS.entitlements; sourceTree = "<group>"; };
 		0DA6CB312C39581400FE1E61 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
 		0DA77E3F2D1596C50057DFA2 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		0DAC64D82DA2A3B400BBB741 /* AlgorithmsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmsView.swift; sourceTree = "<group>"; };
+		0DB377FF2E8A5F2200398391 /* BackgroundRemindersStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRemindersStore.swift; sourceTree = "<group>"; };
+		0DB378012E8A80A100398391 /* DateSelectionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionSheet.swift; sourceTree = "<group>"; };
 		0DB5D8F12E6E130E00ED2D1A /* MissedReflectionsMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsMonitorService.swift; sourceTree = "<group>"; };
 		0DBA371A2C31EF6000209681 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0DBA37382C32087300209681 /* WatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -437,7 +442,6 @@
 		0DF5EDB42E4F2F79005DB9DE /* AppInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoService.swift; sourceTree = "<group>"; };
 		0DF5EDB92E4F4330005DB9DE /* SelectActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectActivityView.swift; sourceTree = "<group>"; };
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
-		0DF93A842D53B3F500121308 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
 		0DF93A912D58EFF300121308 /* StepsChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsChartView.swift; sourceTree = "<group>"; };
 		0DFCA1CF2C623FAC0000C87C /* EditReflectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReflectionView.swift; sourceTree = "<group>"; };
@@ -531,6 +535,7 @@
 				0D9634392D5B52E70038E257 /* Charts */,
 				0D3006C22C937461008F11C7 /* AnalyticsView.swift */,
 				0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */,
+				0DB378012E8A80A100398391 /* DateSelectionSheet.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -542,7 +547,6 @@
 				0DAC64D72DA2A3AE00BBB741 /* Algorithms */,
 				0DEE75B92E630F1800C79711 /* Data Management */,
 				0D4E4DA62E69B01E001C93C1 /* Device Mode */,
-				0DF93A812D53B3D100121308 /* Export */,
 				0D876BCD2CB6D228007EEEDE /* System Report */,
 				0D5947862CBE740C0019BA24 /* Theme */,
 				0D3006C72C943444008F11C7 /* SettingsView.swift */,
@@ -913,9 +917,9 @@
 		0D8C66322C2DA96000853EDE /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				0D72DCA52E97DF5D0056DB80 /* Info.plist */,
 				0DA6CB192C38370800FE1E61 /* iOS.entitlements */,
 				0D5F32752E828A3E00E4EC35 /* iOS.prod.entitlements */,
-				0DA6CB1A2C38373600FE1E61 /* Info.plist */,
 				0DC3FDD12C2EDCBA00335543 /* Application */,
 				0DC3FDD02C2EDCB400335543 /* Common UI */,
 				0D93514E2D12F9820028AA61 /* Data */,
@@ -970,6 +974,7 @@
 				0DC136B12D4E784300001D08 /* BlogRepository.swift */,
 				0D9351532D12F9DD0028AA61 /* DataContainer.swift */,
 				0D93514F2D12F98D0028AA61 /* RoadmapRepository.swift */,
+				0DB377FF2E8A5F2200398391 /* BackgroundRemindersStore.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1242,6 +1247,7 @@
 			children = (
 				0D8C66332C2DA96000853EDE /* iOSApp.swift */,
 				0DE47A122E4B6E4D0052959C /* AppDelegate.swift */,
+				0D72DCA32E97DE7D0056DB80 /* HelloBGService.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -1371,14 +1377,6 @@
 				0DF5EDAE2E4E6A14005DB9DE /* StepsChartView.swift */,
 			);
 			path = Charts;
-			sourceTree = "<group>";
-		};
-		0DF93A812D53B3D100121308 /* Export */ = {
-			isa = PBXGroup;
-			children = (
-				0DF93A842D53B3F500121308 /* ExportView.swift */,
-			);
-			path = Export;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1560,7 +1558,6 @@
 				0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReflectionUseCase.swift in Sources */,
-				0DF93A852D53B3F500121308 /* ExportView.swift in Sources */,
 				0D4AF7352C9A12B50067D24E /* MailView.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
 				0DE3B1152E5B32F80070C4A2 /* BufferManager.swift in Sources */,
@@ -1605,6 +1602,7 @@
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
 				0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */,
+				0DB378002E8A5F2200398391 /* BackgroundRemindersStore.swift in Sources */,
 				0D3006CA2C943463008F11C7 /* SettingsViewModel.swift in Sources */,
 				0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */,
 				0D500FC62C73567700395AEB /* TriggerWatchNotificationUseCase.swift in Sources */,
@@ -1613,6 +1611,7 @@
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
 				0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */,
 				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
+				0D72DCA42E97DE7D0056DB80 /* HelloBGService.swift in Sources */,
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
 				0D67F4312C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift in Sources */,
 				0DA31AAA2CD0DCDC00C9E3EA /* SymptomValueView.swift in Sources */,
@@ -1653,6 +1652,7 @@
 				0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */,
 				0DC136AB2D4E75DF00001D08 /* OutreachViewModel.swift in Sources */,
 				0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */,
+				0DB378022E8A80A100398391 /* DateSelectionSheet.swift in Sources */,
 				0D9AB0CF2C6E8B3600BB773F /* CreateReminderViewModel.swift in Sources */,
 				0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
 				0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */,
@@ -1794,7 +1794,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = Debug;
 		};
@@ -1828,7 +1828,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = Release;
 		};
@@ -1918,7 +1918,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1968,7 +1968,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = "Debug-Dev";
 		};
@@ -2002,7 +2002,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = "Debug-Dev";
 		};
@@ -2092,7 +2092,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2142,7 +2142,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = "Debug-Prod";
 		};
@@ -2176,7 +2176,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = "Debug-Prod";
 		};
@@ -2323,7 +2323,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2365,7 +2365,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2415,7 +2415,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = Debug;
 		};
@@ -2449,7 +2449,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.6;
 			};
 			name = Release;
 		};

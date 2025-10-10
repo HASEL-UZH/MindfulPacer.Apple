@@ -1,40 +1,29 @@
 //
 //  AppDelegate.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 12.08.2025.
 //
 
-import Foundation
 import UIKit
-import WatchConnectivity
-import BackgroundTasks
+import UserNotifications
+
+final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    // Show banners in foreground
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                            willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .list, .sound])
+    }
+}
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    
-    private let connectivityService = ConnectivityService.shared
-    
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
-    ) -> Bool {
-        
-//        MissedReflectionsMonitorService.shared.registerBackgroundTask()
-//        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
-        
-        if WCSession.isSupported() {
-            let session = WCSession.default
-            session.delegate = connectivityService
-            session.activate()
-            print("DEBUGY IPHONE: AppDelegate configured WCSession delegate.")
-        } else {
-            print("DEBUGY IPHONE: WCSession not supported on this device.")
-        }
-        
+    private let notificationDelegate = NotificationDelegate()
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // You request auth in onboarding; here we only set delegate so banners show in foreground.
+        UNUserNotificationCenter.current().delegate = notificationDelegate
+
+        // Optionally kick off an initial schedule so the handler can run later.
+        Task { await HelloBGService.shared.schedule(in: 60) }
         return true
-    }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) {
-//        MissedReflectionsMonitorService.shared.scheduleAppRefresh()
     }
 }

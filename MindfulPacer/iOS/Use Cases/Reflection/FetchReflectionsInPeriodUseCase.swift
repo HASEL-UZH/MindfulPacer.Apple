@@ -20,7 +20,7 @@ struct ReflectionBucket: Identifiable {
 // MARK: - FetchReflectionsInPeriodUseCase
 
 protocol FetchReflectionsInPeriodUseCase {
-    func execute(period: Period) -> [ReflectionBucket]
+    func execute(period: Period, endDate: Date) -> [ReflectionBucket]
 }
 
 // MARK: - Use Case Implementation
@@ -32,23 +32,24 @@ final class DefaultFetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseC
         self.modelContext = modelContext
     }
     
-    func execute(period: Period) -> [ReflectionBucket] {
+    func execute(period: Period, endDate: Date) -> [ReflectionBucket] {
         do {
             let descriptor = FetchDescriptor<Reflection>(sortBy: [SortDescriptor(\Reflection.date, order: .reverse)])
             let allReflections = try modelContext.fetch(descriptor)
             
+            let start = period.startDate(relativeTo: endDate)
             let filteredReflections = allReflections.filter { reflection in
-                reflection.date >= period.startDate && reflection.date <= Date()
+                reflection.date >= start && reflection.date <= endDate
             }
             
             let groupingInterval: TimeInterval
             switch period {
             case .oneHour, .twoHours:
-                groupingInterval = 5 * 60    // 5 minutes
+                groupingInterval = 5 * 60
             case .day:
-                groupingInterval = 15 * 60   // 15 minutes
+                groupingInterval = 15 * 60
             case .week:
-                groupingInterval = 4 * 3600  // 4 hours
+                groupingInterval = 4 * 3600
             }
             
             let sortedReflections = filteredReflections.sorted { $0.date < $1.date }.filter { !$0.isMissedReflection && !$0.isRejected }

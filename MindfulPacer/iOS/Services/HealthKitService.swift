@@ -16,19 +16,24 @@ enum Period: String, CaseIterable {
     case day = "D"
     case week = "W"
     
-    var startDate: Date {
+    static func activeCases(for date: Date) -> [Period] {
+        if Calendar.current.isDateInToday(date) {
+            return Period.allCases
+        } else {
+            return [.day, .week]
+        }
+    }
+    
+    func startDate(endingAt endDate: Date) -> Date {
         switch self {
         case .oneHour:
-            return Calendar.current
-                .date(byAdding: .hour, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -1, to: endDate)!
         case .twoHours:
-            return Calendar.current
-                .date(byAdding: .hour, value: -2, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -2, to: endDate)!
         case .day:
-            return Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .day, value: 0, to: endDate)!
         case .week:
-            return Calendar.current
-                .date(byAdding: .weekOfYear, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: endDate)!
         }
     }
     
@@ -66,6 +71,23 @@ enum Period: String, CaseIterable {
         case .week: .day
         }
     }
+    
+    func startDate(relativeTo endDate: Date = Date()) -> Date {
+        switch self {
+        case .oneHour:
+            return Calendar.current.date(byAdding: .hour, value: -1, to: endDate)!
+        case .twoHours:
+            return Calendar.current.date(byAdding: .hour, value: -2, to: endDate)!
+        case .day:
+            return Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
+        case .week:
+            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: endDate)!
+        }
+    }
+    
+    func window(relativeTo endDate: Date = Date()) -> (start: Date, end: Date) {
+        (startDate(relativeTo: endDate), endDate)
+    }
 }
 
 // MARK: - HealthPermissionsState
@@ -85,6 +107,7 @@ protocol HealthKitServiceProtocol {
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
     func fetchCurrentMeasurement(
@@ -102,6 +125,7 @@ protocol HealthKitServiceProtocol {
     )
     func fetchCumulativeStepData(
         for period: Period,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
     func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void)
@@ -166,6 +190,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
         guard let quantityType = HKQuantityType.quantityType(
@@ -175,9 +200,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
+        let (start, end) = period.window(relativeTo: endDate)
         let predicate = HKQuery.predicateForSamples(
-            withStart: period.startDate,
-            end: Date(),
+            withStart: start,
+            end: end,
             options: .strictEndDate
         )
         
@@ -186,9 +212,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 using: quantityType,
                 predicate: predicate,
                 period: period,
+                endDate: endDate,
                 completion: completion
             )
-        } else if measurementType == .heartRate {
+        } else {
             fetchHeartRateData(
                 using: quantityType,
                 predicate: predicate,
@@ -203,21 +230,20 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         using quantityType: HKQuantityType,
         predicate: NSPredicate,
         period: Period,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
-        // Define the interval dynamically based on the period
         let interval: DateComponents
         switch period {
         case .oneHour, .twoHours:
-            interval = DateComponents(minute: 15) // 15-minute buckets for 1 hour and 2 hours
+            interval = DateComponents(minute: 15)
         case .day:
-            interval = DateComponents(hour: 1) // 1-hour buckets for 1 day
+            interval = DateComponents(hour: 1)
         case .week:
-            interval = DateComponents(day: 1) // 1-day buckets for 1 week
+            interval = DateComponents(day: 1)
         }
         
-        // Define the anchor date (start of the day)
-        let anchorDate = Calendar.current.startOfDay(for: Date())
+        let anchorDate = Calendar.current.startOfDay(for: endDate)
         
         let query = HKStatisticsCollectionQuery(
             quantityType: quantityType,
@@ -243,12 +269,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
             
             var samples: [HKQuantitySample] = []
+            let (start, end) = period.window(relativeTo: endDate)
             
-            // Process statistics into appropriate buckets
-            statisticsCollection.enumerateStatistics(
-                from: period.startDate,
-                to: Date()
-            ) { statistics, _ in
+            statisticsCollection.enumerateStatistics(from: start, to: end) { statistics, _ in
                 if let sum = statistics.sumQuantity() {
                     let sample = HKQuantitySample(
                         type: quantityType,
@@ -318,6 +341,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     
     func fetchCumulativeStepData(
         for period: Period,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
@@ -325,17 +349,19 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
-        let startDate: Date
-        if period == .day {
-            startDate = Calendar.current.startOfDay(for: Date())
-        } else {
-            startDate = period.startDate
-        }
+        let startDate: Date = {
+            if period == .day {
+                return Calendar.current.startOfDay(for: endDate)
+            } else {
+                return period.startDate(relativeTo: endDate)
+            }
+        }()
         
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictEndDate)
+        // Use the provided endDate instead of Date()
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         
         let interval = DateComponents(minute: 15)
-        let anchorDate = Calendar.current.startOfDay(for: Date())
+        let anchorDate = Calendar.current.startOfDay(for: endDate)
         
         let query = HKStatisticsCollectionQuery(
             quantityType: quantityType,
@@ -358,7 +384,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             var runningTotalSamples: [HKQuantitySample] = []
             var currentRunningTotal: Double = 0.0
             
-            statisticsCollection.enumerateStatistics(from: startDate, to: Date()) { statistics, stop in
+            statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                 if let sum = statistics.sumQuantity() {
                     let stepsInBucket = sum.doubleValue(for: .count())
                     currentRunningTotal += stepsInBucket
@@ -439,7 +465,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 
                 let totalSteps = sum.doubleValue(for: HKUnit.count())
                 
-                // Define the HKSampleQuery to get the timestamp
                 let sortDescriptor = NSSortDescriptor(
                     key: HKSampleSortIdentifierStartDate,
                     ascending: false
@@ -565,11 +590,44 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             let measurementType: Reminder.MeasurementType
         }
         
-        @Sendable func minuteBucket(for date: Date) -> Int64 {
+        @Sendable
+        func minuteBucket(for date: Date) -> Int64 {
             Int64(date.timeIntervalSince1970 / 60.0)
         }
         
         let handledReflections = existingReflections.filter { $0.isRejected || $0.activity != nil }
+        
+        let handledTimesByType: [Reminder.MeasurementType: [Date]] = {
+            var tmp: [Reminder.MeasurementType: [Date]] = [:]
+            for r in handledReflections {
+                if let mt = r.measurementType {
+                    tmp[mt, default: []].append(r.date)
+                }
+            }
+            for (k, v) in tmp {
+                tmp[k] = v.sorted()
+            }
+            return tmp
+        }()
+        
+        @Sendable
+        func hasHandledNear(
+            _ date: Date,
+            measurementType: Reminder.MeasurementType,
+            interval: Reminder.Interval,
+            context: IntervalContext
+        ) -> Bool {
+            let buffer = interval.buffer(for: context)
+            guard buffer > 0, let times = handledTimesByType[measurementType], !times.isEmpty else {
+                return false
+            }
+            for t in times {
+                if abs(t.timeIntervalSince(date)) <= buffer {
+                    return true
+                }
+            }
+            return false
+        }
         
         let existingDayKeys: Set<DayKey> = Set(
             handledReflections.compactMap { r in
@@ -609,15 +667,22 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                     
                     if reminder.measurementType == .steps {
                         let dataSource = stepSamples
+                        
                         if reminder.interval == .oneDay {
                             let totalSteps = dataSource.reduce(0.0) { $0 + $1.stepCount }
                             if totalSteps > Double(reminder.threshold) {
                                 let windowEnd = dataSource.max(by: { $0.endDate < $1.endDate })?.endDate ?? Date()
+                                
+                                if hasHandledNear(windowEnd, measurementType: .steps, interval: reminder.interval, context: context) {
+                                    continue
+                                }
+                                
                                 let dayStart = calendar.startOfDay(for: windowEnd)
                                 let key = DayKey(dayStart: dayStart, measurementType: reminder.measurementType)
                                 let eventExists =
                                 existingDayKeys.contains(key) ||
                                 rejectedAnyTypeDayKeys.contains(dayStart)
+                                
                                 if !eventExists {
                                     let triggerSamples: [MeasurementSample] = dataSource.map {
                                         MeasurementSample(type: .steps, value: $0.stepCount, date: $0.endDate)
@@ -652,13 +717,19 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                 let currentSample = dataSource[currentIndex]
                                 let windowEnd = currentSample.endDate
                                 let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
+                                
                                 var totalStepsInWindow: Double = 0
                                 for i in stride(from: currentIndex, through: 0, by: -1) {
                                     let sample = dataSource[i]
                                     if sample.startDate < windowStart { break }
                                     totalStepsInWindow += sample.stepCount
                                 }
+                                
                                 if totalStepsInWindow > Double(reminder.threshold) {
+                                    if hasHandledNear(windowEnd, measurementType: .steps, interval: reminder.interval, context: context) {
+                                        continue
+                                    }
+                                    
                                     let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
                                     let buffer = reminder.interval.buffer(for: context)
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
@@ -667,6 +738,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                         existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
                                         rejectedAnyTypeMinuteBuckets.contains(bucket) ||
                                         rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
                                         if !eventExists {
                                             var triggerSamples: [MeasurementSample] = []
                                             for i in stride(from: currentIndex, through: 0, by: -1) {
@@ -675,6 +747,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                                 triggerSamples.append(MeasurementSample(type: .steps, value: s.stepCount, date: s.endDate))
                                             }
                                             triggerSamples.reverse()
+                                            
                                             potentialNewReflections.append(
                                                 Reflection(
                                                     id: UUID(),
@@ -706,11 +779,17 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                         }
                     } else if reminder.measurementType == .heartRate {
                         let dataSource = heartRateSamples
+                        
                         if reminder.interval == .immediately {
                             for sample in dataSource {
                                 let bpm = sample.stepCount
                                 if bpm > Double(reminder.threshold) {
                                     let windowEnd = sample.startDate
+                                    
+                                    if hasHandledNear(windowEnd, measurementType: .heartRate, interval: reminder.interval, context: context) {
+                                        continue
+                                    }
+                                    
                                     let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
                                     let buffer = reminder.interval.buffer(for: context)
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
@@ -719,6 +798,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                         existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
                                         rejectedAnyTypeMinuteBuckets.contains(bucket) ||
                                         rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
                                         if !eventExists {
                                             let triggerSamples = [
                                                 MeasurementSample(type: .heartRate, value: bpm, date: sample.startDate)
@@ -756,8 +836,14 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                 let currentSample = dataSource[currentIndex]
                                 let windowEnd = currentSample.startDate
                                 let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
+                                
                                 let windowSamples = dataSource.filter { $0.startDate >= windowStart && $0.startDate <= windowEnd }
                                 if !windowSamples.isEmpty && windowSamples.allSatisfy({ $0.stepCount > Double(reminder.threshold) }) {
+                                    
+                                    if hasHandledNear(windowEnd, measurementType: .heartRate, interval: reminder.interval, context: context) {
+                                        continue
+                                    }
+                                    
                                     let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
                                     let buffer = reminder.interval.buffer(for: context)
                                     if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
@@ -766,6 +852,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                                         existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
                                         rejectedAnyTypeMinuteBuckets.contains(bucket) ||
                                         rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
                                         if !eventExists {
                                             let triggerSamples: [MeasurementSample] = windowSamples.map {
                                                 MeasurementSample(type: .heartRate, value: $0.stepCount, date: $0.startDate)

@@ -19,7 +19,7 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            NavigationLink(value: HomeViewNavigationDestination.remindersList) {
+            NavigationLink(value: HomeNavigationDestination.remindersList) {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "bell.badge.fill",

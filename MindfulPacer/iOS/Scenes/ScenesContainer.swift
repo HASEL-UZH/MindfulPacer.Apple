@@ -143,10 +143,8 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
             SettingsViewModel(
-                fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
                 fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
                 fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
-                fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase(),
                 resetDatabaseUseCase: UseCasesContainer.shared.resetDatabaseUseCase()
             )
         }

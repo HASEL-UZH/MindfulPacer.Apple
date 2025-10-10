@@ -26,7 +26,7 @@ extension EditReflectionView {
                 } description: {
                     Text("There are no subactivities for this activity.")
                 }
-                .navigationTitle("Subactivity")
+                .navigationTitle(viewModel.selectedActivity.unsafelyUnwrapped.name)
                 .background {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()
@@ -61,7 +61,7 @@ extension EditReflectionView {
                     }
                     .padding(.horizontal)
                 }
-                .navigationTitle("Subactivity")
+                .navigationTitle(viewModel.selectedActivity.unsafelyUnwrapped.name)
                 .background {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()

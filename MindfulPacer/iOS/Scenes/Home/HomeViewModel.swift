@@ -34,8 +34,10 @@ class HomeViewModel {
     
     // MARK: - Published Properties
     
-    var activeSheet: HomeViewSheet?
-    var activeToast: HomeViewToast?
+    var activeSheet: HomeSheet?
+    var activeAlert: HomeAlert?
+    var activeToast: HomeToast?
+    
     var reviewFilter: ReflectionFilter = ReflectionFilter()
     var reviewSorting: ReflectionSorting = .dateDescending
     var reflections: [Reflection] = []
@@ -44,7 +46,7 @@ class HomeViewModel {
     var healthPermissionState: HealthPermissionsState = .ok
     
     var deviceMode: DeviceMode = .iPhoneOnly
-
+    
     var isFetchingMissedReflections = false
     
     var recentReflections: [Reflection] {
@@ -62,11 +64,11 @@ class HomeViewModel {
     var displayedMissedReflections: [Reflection] {
         Array(missedReflections.prefix(min(missedVisibleCount, missedReflections.count)))
     }
-
+    
     var canLoadMoreMissed: Bool {
         missedVisibleCount < missedReflections.count
     }
-
+    
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     
@@ -84,6 +86,22 @@ class HomeViewModel {
     
     var missedReflectionsWidgetTitle: String {
         missedReflections.count > 1 ? "\(missedReflections.count) Missed Reflections" : "1 Missed Reflection"
+    }
+    
+    var watchConnectionStatus: WatchConnectionStatus = .initializing
+    var watchConnectionSpeed: WatchConnectionSpeed = .noResponse
+    
+    var isWatchPaired: Bool {
+        return watchConnectionStatus != .noWatchPaired
+    }
+    
+    var isWatchAppInstalled: Bool {
+        switch watchConnectionStatus {
+        case .noWatchPaired, .appNotInstalled:
+            return false
+        default:
+            return true
+        }
     }
     
     // MARK: - Private Properties
@@ -123,6 +141,7 @@ class HomeViewModel {
         self.filterReflectionsUseCase = filterReflectionsUseCase
         
         subscribeToWatchEvents()
+        subscribeToWatchStatus()
     }
     
     // MARK: - View Lifecycle
@@ -200,7 +219,7 @@ class HomeViewModel {
         missedReflections.removeAll { $0.id == reflection.id }
         clampMissedPaginationAfterMutation()
     }
-
+    
     func acceptMissedReflection(reflection: Reflection) {
         missedReflections.removeAll { $0.id == reflection.id }
         clampMissedPaginationAfterMutation()
@@ -245,11 +264,15 @@ class HomeViewModel {
     
     // MARK: - Presentation
     
-    func presentSheet(_ sheet: HomeViewSheet) {
+    func presentSheet(_ sheet: HomeSheet) {
         activeSheet = sheet
     }
     
-    func presentToast(_ toast: HomeViewToast) {
+    func presentAlert(_ alert: HomeAlert) {
+        activeAlert = alert
+    }
+    
+    func presentToast(_ toast: HomeToast) {
         activeToast = toast
     }
     
@@ -379,7 +402,7 @@ class HomeViewModel {
     private func fetchMissedReflections() {
         isFetchingMissedReflections = true
         let allReflections = fetchReflectionsUseCase.execute() ?? []
-
+        
         switch deviceMode {
         case .iPhoneOnly:
             fetchMissedReflectionsUseCase.execute(
@@ -390,6 +413,7 @@ class HomeViewModel {
                 switch result {
                 case .success(let fetchedMissedReflections):
                     self.missedReflections = fetchedMissedReflections
+                    self.missedReflections = self.missedReflections.filter { $0.triggerSamples.count > 1 }
                     self.resetMissedPagination()
                 case .failure(let failure):
                     print("DEBUGY:", failure.localizedDescription)
@@ -416,5 +440,17 @@ class HomeViewModel {
                 print("DEBUGY: Health", state)
             }
         }
+    }
+    
+    private func subscribeToWatchStatus() {
+        ConnectivityService.shared.$connectionStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in self?.watchConnectionStatus = status }
+            .store(in: &cancellables)
+        
+        ConnectivityService.shared.$connectionSpeed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] speed in self?.watchConnectionSpeed = speed }
+            .store(in: &cancellables)
     }
 }

@@ -11,10 +11,12 @@ import SwiftUI
 
 enum AnalyticsViewSheet: Identifiable {
     case editReflectionView(Reflection?)
+    case dateSelection
     
     var id: Int {
         switch self {
         case .editReflectionView: 0
+        case .dateSelection: 1
         }
     }
 }
@@ -40,12 +42,21 @@ struct AnalyticsView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
-                            ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                                Button {
-                                    viewModel.selectedMeasurementType = measurementType
-                                } label: {
+                            Picker(selection: $viewModel.selectedMeasurementType) {
+                                ForEach(MeasurementType.allCases, id: \.self) { measurementType in
                                     Label(measurementType.localized, systemImage: measurementType.icon)
                                 }
+                            } label: {
+                                Label("Measurement Type", systemImage: "ruler.fill")
+                                Text(viewModel.selectedMeasurementType.localized)
+                            }
+                            .pickerStyle(.menu)
+                            
+                            Button {
+                                viewModel.presentSheet(.dateSelection)
+                            } label: {
+                                Label("Selected Date", systemImage: "calendar")
+                                Text(viewModel.selectedDateForPeriod.formatted(.dateTime.day().month()))
                             }
                         } label: {
                             Text("View Options")
@@ -87,7 +98,7 @@ struct AnalyticsView: View {
         ) {
             VStack(spacing: 16) {
                 Picker(selection: $viewModel.selectedPeriod) {
-                    ForEach(Period.allCases, id: \.self) { period in
+                    ForEach(Period.activeCases(for: viewModel.selectedDateForPeriod), id: \.self) { period in
                         Text(period.displayName)
                             .tag(period.displayName)
                     }
@@ -142,7 +153,7 @@ struct AnalyticsView: View {
                 EmptyStateView(
                     image: "book.pages",
                     title: String(localized: "No Reflections"),
-                    description: String(localized: "There are no reflections within the last \(viewModel.selectedPeriod.description).")
+                    description: String(localized: "There are no reflections.")
                 )
             } else {
                 ScrollView(showsIndicators: false) {
@@ -283,6 +294,10 @@ struct AnalyticsView: View {
                 .interactiveDismissDisabled(reflection.isNil)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
+        case .dateSelection:
+            DateSelectionSheet(viewModel: viewModel)
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
         }
     }
 }

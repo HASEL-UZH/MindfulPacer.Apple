@@ -10,6 +10,7 @@ import SwiftData
 import WatchConnectivity
 
 protocol CreateReminderUseCase {
+    @MainActor
     func execute(
         measurementType: MeasurementType,
         reminderType: Reminder.ReminderType,
@@ -20,6 +21,7 @@ protocol CreateReminderUseCase {
 
 // MARK: - Use Case Implementation
 
+@MainActor
 class DefaultCreateReminderUseCase: CreateReminderUseCase {
     private let modelContext: ModelContext
     private let watchUpdateService: WatchUpdateService
@@ -46,6 +48,7 @@ class DefaultCreateReminderUseCase: CreateReminderUseCase {
         
         do {
             try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: reminder))
             watchUpdateService.notifyWatchOfReminderChange()
             return .success(reminder)
         } catch {

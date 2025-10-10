@@ -22,28 +22,53 @@ struct PrimaryButton: View {
     // MARK: Body
 
     var body: some View {
-        Button {
-            action()
-        } label: {
-            if let icon {
-                IconLabel(
-                    icon: icon,
-                    title: title,
-                    labelColor: isEnabled ? .white : Color(.systemGray2)
-                )
-                .frame(height: 40)
-                .frame(maxWidth: .infinity)
-                .fontWeight(.semibold)
-            } else {
-                Text(title)
+        if #available(iOS 26.0, *) {
+            Button {
+                action()
+            } label: {
+                if let icon {
+                    IconLabel(
+                        icon: icon,
+                        title: title,
+                        labelColor: isEnabled ? .white : Color(.systemGray2)
+                    )
                     .frame(height: 40)
                     .frame(maxWidth: .infinity)
                     .fontWeight(.semibold)
+                } else {
+                    Text(title)
+                        .frame(height: 40)
+                        .frame(maxWidth: .infinity)
+                        .fontWeight(.semibold)
+                }
             }
+            .tint(color)
+            .buttonStyle(.glassProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 16))
+        } else {
+            Button {
+                action()
+            } label: {
+                if let icon {
+                    IconLabel(
+                        icon: icon,
+                        title: title,
+                        labelColor: isEnabled ? .white : Color(.systemGray2)
+                    )
+                    .frame(height: 40)
+                    .frame(maxWidth: .infinity)
+                    .fontWeight(.semibold)
+                } else {
+                    Text(title)
+                        .frame(height: 40)
+                        .frame(maxWidth: .infinity)
+                        .fontWeight(.semibold)
+                }
+            }
+            .tint(color)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 16))
         }
-        .tint(color)
-        .buttonStyle(.borderedProminent)
-        .buttonBorderShape(.roundedRectangle(radius: 16))
     }
 }
 

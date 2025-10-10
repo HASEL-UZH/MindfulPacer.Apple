@@ -4,6 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
+		<string>com.MindfulPacer.Apple.iOS.hello</string>
 		<string>com.MindfulPacer.Apple.iOS.checkMissedReflections</string>
 	</array>
 	<key>NSUserNotificationUsageDescription</key>
@@ -14,9 +15,5 @@
 		<string>remote-notification</string>
 		<string>processing</string>
 	</array>
-	<key>UILaunchImageFile</key>
-	<string>MindfulPacer Icon</string>
-	<key>UILaunchImageFile~iphone</key>
-	<string>MindfulPacer Icon</string>
 </dict>
 </plist>

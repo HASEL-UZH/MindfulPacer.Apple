@@ -392,7 +392,9 @@ struct DefaultActivityData {
 
     // swiftlint:disable:next function_body_length
     static func initializeData() {
+        
         // MARK: Activities
+        
         let movement = Activity(name: String(localized: "Movement"), icon: "figure.run")
         let transportation = Activity(name: String(localized: "Transportation"), icon: "tram")
         let household = Activity(name: String(localized: "Household"), icon: "house")
@@ -403,6 +405,7 @@ struct DefaultActivityData {
         let others = Activity(name: String(localized: "Others"), icon: "ellipsis")
 
         // MARK: Movement Subactivities
+        
         let standUp = Subactivity(name: String(localized: "Stand Up"), icon: "figure.stand", activity: movement)
         let walking = Subactivity(name: String(localized: "Walking"), icon: "figure.walk", activity: movement)
         let running = Subactivity(name: String(localized: "Running"), icon: "figure.run", activity: movement)
@@ -414,8 +417,11 @@ struct DefaultActivityData {
         let dancing = Subactivity(name: String(localized: "Dancing"), icon: "figure.dance", activity: movement)
         let swimming = Subactivity(name: String(localized: "Swimming"), icon: "figure.pool.swim", activity: movement)
         let otherMovement = Subactivity(name: String(localized: "Other Movement"), icon: "ellipsis", activity: movement)
-
+        let layingDown = Subactivity(name: String(localized: "Laying Down"), icon: "sofa.fill", activity: movement)
+        let sitting = Subactivity(name: String(localized: "Sitting"), icon: "chair.fill", activity: movement)
+        
         // MARK: Transportation Subactivities
+        
         let drivingCar = Subactivity(name: String(localized: "Driving Car"), icon: "car", activity: transportation)
         let publicTransportation = Subactivity(name: String(localized: "Public Transportation"), icon: "bus", activity: transportation)
         let bikingTransportation = Subactivity(name: String(localized: "Biking"), icon: "bicycle", activity: transportation)
@@ -423,6 +429,7 @@ struct DefaultActivityData {
         let otherTransportation = Subactivity(name: String(localized: "Other Transportation"), icon: "ellipsis", activity: transportation)
 
         // MARK: Household Subactivities
+        
         let washingClothes = Subactivity(name: String(localized: "Washing Clothes"), icon: "washer", activity: household)
         let washingDishes = Subactivity(name: String(localized: "Washing Dishes"), icon: "dishwasher", activity: household)
         let cleaning = Subactivity(name: String(localized: "Cleaning"), icon: "bubbles.and.sparkles", activity: household)
@@ -433,6 +440,7 @@ struct DefaultActivityData {
         let fixingThings = Subactivity(name: String(localized: "Fixing Things"), icon: "hammer", activity: household)
 
         // MARK: Selfcare Subactivities
+        
         let personalHygiene = Subactivity(name: String(localized: "Personal Hygiene"), icon: "shower", activity: selfcare)
         let sleep = Subactivity(name: String(localized: "Sleep"), icon: "bed.double", activity: selfcare)
         let gettingDressed = Subactivity(name: String(localized: "Getting Dressed"), icon: "tshirt", activity: selfcare)
@@ -443,6 +451,7 @@ struct DefaultActivityData {
         let relaxation = Subactivity(name: String(localized: "Relaxation"), icon: "beach.umbrella", activity: selfcare)
 
         // MARK: Cognitive Subactivities
+        
         let thinkingOrBrainstorming = Subactivity(name: String(localized: "Thinking or Brainstorming"), icon: "brain.head.profile", activity: cognitive)
         let reading = Subactivity(name: String(localized: "Reading"), icon: "book", activity: cognitive)
         let writing = Subactivity(name: String(localized: "Writing"), icon: "pencil.line", activity: cognitive)
@@ -452,16 +461,20 @@ struct DefaultActivityData {
         let readingTheNews = Subactivity(name: String(localized: "Reading the News"), icon: "newspaper", activity: cognitive)
         let playingMusic = Subactivity(name: String(localized: "Playing Music"), icon: "pianokeys", activity: cognitive)
         let learningSomething = Subactivity(name: String(localized: "Learning Something"), icon: "globe.desk", activity: cognitive)
-
+        let craftWork = Subactivity(name: String(localized: "Craft Work"), icon: "paintbrush.fill", activity: cognitive)
+        
         // MARK: Interactions & Social Subactivities
+        
         let meetingCloseFriends = Subactivity(name: String(localized: "Meeting Close Friends"), icon: "person.3", activity: interactionsAndSocial)
         let meetingNewPeople = Subactivity(name: String(localized: "Meeting New People"), icon: "person.line.dotted.person", activity: interactionsAndSocial)
         let meetingFamily = Subactivity(name: String(localized: "Meeting Family"), icon: "figure.2.and.child.holdinghands", activity: interactionsAndSocial)
         let onlineSocializing = Subactivity(name: String(localized: "Online Socializing"), icon: "bubble.left.and.text.bubble.right", activity: interactionsAndSocial)
         let groupActivities = Subactivity(name: String(localized: "Group Activities"), icon: "person.3.sequence.fill", activity: interactionsAndSocial)
         let attendingEvents = Subactivity(name: String(localized: "Attending Events"), icon: "theatermasks", activity: interactionsAndSocial)
-
+        let phoneCalls = Subactivity(name: String(localized: "Phone Calls"), icon: "phone.connection.fill", activity: interactionsAndSocial)
+        
         // MARK: Work Subactivities
+        
         let workOnTasks = Subactivity(name: String(localized: "Work on Tasks"), icon: "desktopcomputer", activity: work)
         let researchingInformation = Subactivity(name: String(localized: "Researching Information"), icon: "rectangle.and.text.magnifyingglass", activity: work)
         let meetings = Subactivity(name: String(localized: "Meetings"), icon: "play.laptopcomputer", activity: work)
@@ -471,16 +484,98 @@ struct DefaultActivityData {
         let learning = Subactivity(name: String(localized: "Learning"), icon: "character.book.closed", activity: work)
         let projectManagement = Subactivity(name: String(localized: "Project Management"), icon: "gearshape.2", activity: work)
         let breaks = Subactivity(name: String(localized: "Breaks"), icon: "mug", activity: work)
+        
+        movement.subactivities = [
+            standUp,
+            walking,
+            running,
+            walkingTheStairs,
+            bikingMovement,
+            hiking,
+            yoga,
+            stretching,
+            dancing,
+            swimming,
+            otherMovement,
+            layingDown,
+            sitting
+        ]
+        
+        transportation.subactivities = [
+            drivingCar,
+            publicTransportation,
+            bikingTransportation,
+            flying,
+            otherTransportation
+        ]
+        
+        household.subactivities = [
+            washingClothes,
+            washingDishes,
+            cleaning,
+            cooking,
+            tidyingUp,
+            groceryShopping,
+            gardening,
+            fixingThings
+        ]
+        
+        selfcare.subactivities = [
+            personalHygiene,
+            sleep,
+            gettingDressed,
+            eating,
+            meditation,
+            visitingDoctorOrTherapist,
+            exercising,
+            relaxation
+        ]
+        
+        cognitive.subactivities = [
+            thinkingOrBrainstorming,
+            reading,
+            writing,
+            watchingTV,
+            usingComputerTabletPhone,
+            gaming,
+            readingTheNews,
+            playingMusic,
+            learningSomething,
+            craftWork
+        ]
+        
+        interactionsAndSocial.subactivities = [
+            meetingCloseFriends,
+            meetingNewPeople,
+            meetingFamily,
+            onlineSocializing,
+            groupActivities,
+            attendingEvents,
+            phoneCalls
+        ]
+        
+        work.subactivities = [
+            workOnTasks,
+            researchingInformation,
+            meetings,
+            emailAndChat,
+            helpingOthers,
+            networking,
+            learning,
+            projectManagement,
+            breaks
+        ]
 
-        movement.subactivities = [standUp, walking, running, walkingTheStairs, bikingMovement, hiking, yoga, stretching, dancing, swimming, otherMovement]
-        transportation.subactivities = [drivingCar, publicTransportation, bikingTransportation, flying, otherTransportation]
-        household.subactivities = [washingClothes, washingDishes, cleaning, cooking, tidyingUp, groceryShopping, gardening, fixingThings]
-        selfcare.subactivities = [personalHygiene, sleep, gettingDressed, eating, meditation, visitingDoctorOrTherapist, exercising, relaxation]
-        cognitive.subactivities = [thinkingOrBrainstorming, reading, writing, watchingTV, usingComputerTabletPhone, gaming, readingTheNews, playingMusic, learningSomething]
-        interactionsAndSocial.subactivities = [meetingCloseFriends, meetingNewPeople, meetingFamily, onlineSocializing, groupActivities, attendingEvents]
-        work.subactivities = [workOnTasks, researchingInformation, meetings, emailAndChat, helpingOthers, networking, learning, projectManagement, breaks]
-
-        activities = [movement, transportation, household, selfcare, cognitive, interactionsAndSocial, work, others]
+        activities = [
+            movement,
+            transportation,
+            household,
+            selfcare,
+            cognitive,
+            interactionsAndSocial,
+            work,
+            others
+        ]
     }
     
     static var allActivities: [Activity] {
