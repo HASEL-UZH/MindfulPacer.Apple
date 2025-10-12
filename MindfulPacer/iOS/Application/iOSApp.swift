@@ -14,7 +14,6 @@ struct IOSApp: App {
             RootView()
                 .tint(Color("BrandPrimary"))
         }
-        // iOS 17+ SwiftUI-managed registration (no classic register anywhere)
         .backgroundTask(.appRefresh(HelloBGService.identifier)) {
             await HelloBGService.shared.handleTask()
         }

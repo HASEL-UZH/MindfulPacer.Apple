@@ -49,37 +49,6 @@ enum HomeToast: Identifiable {
 
 // MARK: - HomeView
 
-import SwiftUI
-import UserNotifications
-
-struct NotificationTestButton: View {
-    var body: some View {
-        Button("Send Test Notification") {
-            sendTestNotification()
-        }
-        .buttonStyle(.borderedProminent)
-    }
-
-    private func sendTestNotification() {
-        let content = UNMutableNotificationContent()
-        content.title = "🔔 Test Notification"
-        content.body = "If you see this, your local notifications are working."
-        content.sound = .default
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("❌ Failed to schedule notification:", error.localizedDescription)
-            } else {
-                print("✅ Test notification scheduled")
-            }
-        }
-    }
-}
-
-
 struct HomeView: View {
     
     // MARK: Properties
@@ -96,7 +65,6 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    NotificationTestButton()
                     healthPermissionsWidget
                     missedReflectionsWidget
                     ReflectionsWidget(viewModel: viewModel)
