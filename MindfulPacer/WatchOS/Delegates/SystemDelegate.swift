@@ -17,7 +17,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var createReflectionUseCase: CreateReflectionUseCase?
     private var alertDataCache: [UUID: [MeasurementSample]] = [:]
-    private let pendingNotificationsKey = "pendingNotificationsKey"
+//    private let pendingNotificationsKey = "pendingNotificationsKey"
 
     @MainActor
     func configure() {
@@ -88,7 +88,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             return
         }
         
-        clearPendingNotification(alertID: alertID)
+//        clearPendingNotification(alertID: alertID)
 
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
@@ -116,29 +116,29 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         completionHandler([])
     }
     
-    private func clearPendingNotification(alertID: UUID) {
-        let userDefaults = UserDefaults.standard
-        var allPending = getPendingNotifications()
-        
-        allPending.removeAll { $0.alertID == alertID }
-        
-        do {
-            let data = try JSONEncoder().encode(allPending)
-            userDefaults.set(data, forKey: pendingNotificationsKey)
-            print("DEBUGY: Cleared pending notification with alertID \(alertID)")
-        } catch {
-            print("DEBUGY: ERROR - Failed to clear pending notification: \(error)")
-        }
-    }
-
-    private func getPendingNotifications() -> [PendingNotification] {
-        let userDefaults = UserDefaults.standard
-        guard let data = userDefaults.data(forKey: pendingNotificationsKey),
-              let pending = try? JSONDecoder().decode([PendingNotification].self, from: data) else {
-            return []
-        }
-        return pending
-    }
+//    private func clearPendingNotification(alertID: UUID) {
+//        let userDefaults = UserDefaults.standard
+//        var allPending = getPendingNotifications()
+//        
+//        allPending.removeAll { $0.alertID == alertID }
+//        
+//        do {
+//            let data = try JSONEncoder().encode(allPending)
+//            userDefaults.set(data, forKey: pendingNotificationsKey)
+//            print("DEBUGY: Cleared pending notification with alertID \(alertID)")
+//        } catch {
+//            print("DEBUGY: ERROR - Failed to clear pending notification: \(error)")
+//        }
+//    }
+//
+//    private func getPendingNotifications() -> [PendingNotification] {
+//        let userDefaults = UserDefaults.standard
+//        guard let data = userDefaults.data(forKey: pendingNotificationsKey),
+//              let pending = try? JSONDecoder().decode([PendingNotification].self, from: data) else {
+//            return []
+//        }
+//        return pending
+//    }
     
     @MainActor
     func createAndSendReflection(reminderID: UUID, alertID: UUID, activity: Activity?, subactivity: Subactivity?) {

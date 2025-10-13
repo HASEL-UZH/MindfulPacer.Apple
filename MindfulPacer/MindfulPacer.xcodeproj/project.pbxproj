@@ -216,6 +216,11 @@
 		0DF93A802D53AFEF00121308 /* RoadmapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */; };
 		0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */; };
 		0DF93A922D58EFF300121308 /* StepsChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF93A912D58EFF300121308 /* StepsChartView.swift */; };
+		0DFB6E5F2E9C5C1500606316 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFB6E5E2E9C5C1500606316 /* AppLog.swift */; };
+		0DFB6E612E9CE8C400606316 /* LogWire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFB6E602E9CE8C400606316 /* LogWire.swift */; };
+		0DFB6E622E9CE8C400606316 /* LogWire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFB6E602E9CE8C400606316 /* LogWire.swift */; };
+		0DFB6E642E9CE8F200606316 /* LogPipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFB6E632E9CE8F200606316 /* LogPipe.swift */; };
+		0DFB6E672E9CE91C00606316 /* LiveLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFB6E662E9CE91C00606316 /* LiveLogStore.swift */; };
 		0DFCA1D02C623FAC0000C87C /* EditReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1CF2C623FAC0000C87C /* EditReflectionView.swift */; };
 		0DFCA1D22C623FB40000C87C /* EditReflectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1D12C623FB40000C87C /* EditReflectionViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -444,6 +449,10 @@
 		0DF93A7F2D53AFEF00121308 /* RoadmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapViewModel.swift; sourceTree = "<group>"; };
 		0DF93A8B2D56074000121308 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
 		0DF93A912D58EFF300121308 /* StepsChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsChartView.swift; sourceTree = "<group>"; };
+		0DFB6E5E2E9C5C1500606316 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		0DFB6E602E9CE8C400606316 /* LogWire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogWire.swift; sourceTree = "<group>"; };
+		0DFB6E632E9CE8F200606316 /* LogPipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogPipe.swift; sourceTree = "<group>"; };
+		0DFB6E662E9CE91C00606316 /* LiveLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveLogStore.swift; sourceTree = "<group>"; };
 		0DFCA1CF2C623FAC0000C87C /* EditReflectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReflectionView.swift; sourceTree = "<group>"; };
 		0DFCA1D12C623FB40000C87C /* EditReflectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReflectionViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -525,6 +534,7 @@
 				0D9AB0AA2C6B8BC100BB773F /* Extensions */,
 				0DC3FDCD2C2EDC9F00335543 /* Models */,
 				0DDD33992C7BB6CB00A0B091 /* Resources */,
+				0DFB6E602E9CE8C400606316 /* LogWire.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -930,6 +940,7 @@
 				0DC3FDCB2C2EDC9200335543 /* Services */,
 				0DC3FDC92C2EDC8500335543 /* Use Cases */,
 				0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */,
+				0DFB6E662E9CE91C00606316 /* LiveLogStore.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -1076,6 +1087,8 @@
 		0DBA37392C32087300209681 /* WatchOS */ = {
 			isa = PBXGroup;
 			children = (
+				0DFB6E5E2E9C5C1500606316 /* AppLog.swift */,
+				0DFB6E632E9CE8F200606316 /* LogPipe.swift */,
 				0DBA373A2C32087300209681 /* WatchOSApp.swift */,
 				0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */,
 				0D5F32762E828A5D00E4EC35 /* WatchOS.prod.entitlements */,
@@ -1587,6 +1600,7 @@
 				0DCE3A842E70317D005FCCCF /* CheckHealthPermissionsUseCase.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */,
+				0DFB6E612E9CE8C400606316 /* LogWire.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DC136B02D4E780100001D08 /* BlogService.swift in Sources */,
 				0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */,
@@ -1612,6 +1626,7 @@
 				0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */,
 				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
 				0D72DCA42E97DE7D0056DB80 /* HelloBGService.swift in Sources */,
+				0DFB6E672E9CE91C00606316 /* LiveLogStore.swift in Sources */,
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
 				0D67F4312C90E1E4000F6114 /* ActivityPromotingFeaturesView.swift in Sources */,
 				0DA31AAA2CD0DCDC00C9E3EA /* SymptomValueView.swift in Sources */,
@@ -1706,10 +1721,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DD858952C71468700061F63 /* ConnectivityError.swift in Sources */,
+				0DFB6E642E9CE8F200606316 /* LogPipe.swift in Sources */,
 				0D67F4422C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0D352C822E4891560039055F /* SystemDelegate.swift in Sources */,
 				0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
+				0DFB6E622E9CE8C400606316 /* LogWire.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
 				0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */,
 				0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
@@ -1733,6 +1750,7 @@
 				0DF5EDB52E4F2F79005DB9DE /* AppInfoService.swift in Sources */,
 				0DE3B1142E5B32F80070C4A2 /* BufferManager.swift in Sources */,
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
+				0DFB6E5F2E9C5C1500606316 /* AppLog.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
 				0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */,

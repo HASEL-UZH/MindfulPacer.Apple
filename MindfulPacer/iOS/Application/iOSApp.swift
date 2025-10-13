@@ -14,8 +14,8 @@ struct IOSApp: App {
             RootView()
                 .tint(Color("BrandPrimary"))
         }
-        .backgroundTask(.appRefresh(HelloBGService.identifier)) {
-            await HelloBGService.shared.handleTask()
+        .backgroundTask(.appRefresh(MissedReflectionsMonitorService.identifier)) {
+            await MissedReflectionsMonitorService.shared.handleTask()
         }
     }
 }

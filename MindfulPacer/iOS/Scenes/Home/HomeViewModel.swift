@@ -412,7 +412,7 @@ class HomeViewModel {
                 guard let self else { return }
                 switch result {
                 case .success(let fetchedMissedReflections):
-                    self.missedReflections = fetchedMissedReflections
+                    self.missedReflections = Array(fetchedMissedReflections.prefix(100))
                     self.missedReflections = self.missedReflections.filter { $0.triggerSamples.count > 1 }
                     self.resetMissedPagination()
                 case .failure(let failure):

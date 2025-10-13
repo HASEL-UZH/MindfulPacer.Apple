@@ -137,7 +137,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         NotificationCenter.default.publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                print("DEBUGY: CloudKit data change detected. Refreshing state.")
+                LOGI("Sync", "CloudKit data change detected. Refreshing state.")
                 self?.refreshState()
             }
             .store(in: &cancellables)
@@ -148,7 +148,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     func refreshState() {
-        print("DEBUGY: Refreshing state triggered.")
+        LOGI("Monitor", "Refreshing state triggered.")
         let hasRules = updateMonitoringRules()
         
         if isManuallyPaused {
@@ -159,14 +159,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             self.statusMessage = hasRules ? .notMonitoring : .noReminders
         }
         
-        print("DEBUGY: Final status set to: \(self.statusMessage.rawValue)")
-        
+        LOGI("Monitor", "Final status set to: \(self.statusMessage.rawValue)")
+
         _startOrStopMonitoring(hasRules: hasRules)
     }
     
     func pauseMonitoring() {
         guard isSessionActive, !isManuallyPaused else { return }
-        print("DEBUGY: Pausing monitoring session.")
+        LOGI("Monitor", "Pausing monitoring session.")
         workoutSession?.pause()
         self.isManuallyPaused = true
         self.statusMessage = .paused
@@ -177,7 +177,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     
     func resumeMonitoring() {
         guard isSessionActive, isManuallyPaused else { return }
-        print("DEBUGY: Resuming monitoring session.")
+        LOGI("Monitor", "Resuming monitoring session.")
         workoutSession?.resume()
         self.isManuallyPaused = false
         self.statusMessage = .monitoring
@@ -208,10 +208,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             
             let totalSteps = sum.doubleValue(for: HKUnit.count())
             
-            print("DEBUGY: Fetched today's steps: \(totalSteps)")
+            LOGI("Steps", "Fetched today's steps: \(totalSteps)")
             return totalSteps
         } catch {
-            print("DEBUGY: ERROR - Failed to fetch today's steps: \(error.localizedDescription)")
+            LOGE("Steps", "Failed to fetch today's steps: \(error.localizedDescription)")
             return 0
         }
     }
@@ -240,7 +240,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 interval: reminder.interval
             )
         }
-        
+        LOGI("Monitor", "Loaded \(self.activeRules.count) rules.")
         let hasActiveRules = !self.activeRules.isEmpty
         self.statusMessage = hasActiveRules ? .monitoring : .noReminders
         
@@ -254,6 +254,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
         
         let sessionIsRunning = workoutSession?.state == .running
+        LOGD("Monitor", "_startOrStopMonitoring(hasRules: \(hasRules), paused: \(isManuallyPaused), sessionRunning: \(sessionIsRunning))")
         if hasRules && !sessionIsRunning {
             startWorkoutSession()
         } else if !hasRules && sessionIsRunning {
@@ -275,6 +276,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 configuration.activityType = .mindAndBody
                 configuration.locationType = .unknown
                 
+                LOGI("Workout", "Starting workout session.")
+
                 self.workoutSession = try HKWorkoutSession(healthStore: self.healthStore, configuration: configuration)
                 self.workoutBuilder = self.workoutSession?.associatedWorkoutBuilder()
                 self.workoutSession?.delegate = self
@@ -287,11 +290,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 self.statusMessage = .monitoring
                 self.startStepsTimer()
                 
+                LOGI("Workout", "Complication timeline reloaded (State: Active)")
+
                 self.sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
                 print("DEBUGY: Complication timeline reloaded (State: Active)")
             } catch {
                 self.statusMessage = .error
+                LOGE("Workout", "Workout session start failed.")
             }
         }
     }
@@ -309,6 +315,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         statusMessage = .notMonitoring
         activeRules = []
         
+        LOGI("Workout", "Ending workout session.")
         self.sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
@@ -405,6 +412,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         // Print the incoming heart rate so we can see the data stream.
         print("---")
         print("DEBUGY: Evaluating HR: \(Int(currentHeartRate)) bpm at \(now.formatted(.dateTime.hour().minute().second()))")
+        LOGD("HR", "Evaluating HR: \(Int(currentHeartRate)) bpm")
 
         for i in 0..<activeRules.count {
             // --- Only process heart rate rules ---
@@ -412,7 +420,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             guard case .heartRate(let threshold) = activeRules[i].ruleType else { continue }
             
             var rule = activeRules[i]
-            
+            LOGD("HR", "Rule [\(rule.reminderType.rawValue.prefix(1)) for >\(Int(threshold))bpm]")
             print("  - Rule [\(rule.reminderType.rawValue.prefix(1)) for >\(Int(threshold))bpm]:")
 
             if currentHeartRate > threshold {
@@ -421,6 +429,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 if rule.triggerDate == nil {
                     rule.triggerDate = now
                     print("    - STATUS: HR is HIGH. Timer STARTED at \(now.formatted(.dateTime.hour().minute().second())).")
+                    LOGD("HR", "Timer started")
                 }
                 
                 // Clear any previous dip.
@@ -432,7 +441,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 if let triggerDate = rule.triggerDate {
                     let elapsedTime = now.timeIntervalSince(triggerDate)
                     print("    - CHECK: Timer has been active for \(Int(elapsedTime))s of \(Int(rule.duration))s required.")
-                    
+                    LOGD("HR", "Timer elapsed: \(Int(elapsedTime))s of \(Int(rule.duration))s")
+
                     if elapsedTime >= rule.duration {
                         print("    - MET: Duration requirement met.")
                         let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
@@ -444,6 +454,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                                 print("    - RESULT: SUPPRESSED (Inside buffer period).")
                             } else {
                                 print("    - RESULT: SUCCESS! Sending notification.")
+                                LOGI("Notify", "Triggering in-app notification for HR rule")
                                 let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
                                 let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
                                 self.sendNotification(for: rule, withData: eventData)
@@ -498,9 +509,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         stepsCheckTimer?.invalidate()
         stepsCheckTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
+                LOGI("Timer", "Steps timer fired. Checking step rules.")
                 print("DEBUGY: Steps timer fired. Checking step rules.")
                 self?.checkStepRules()
-                self?.processMissedNotifications()
+//                self?.processMissedNotifications()
             }
         }
     }
@@ -580,7 +592,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                             
                             if let lastNotif = self.activeRules[index].lastNotificationDate, now.timeIntervalSince(lastNotif) < buffer {
                                 print("DEBUGY: Steps Rule met for \(rule.id), but in buffer period. Suppressing.")
+                                LOGI("Steps", "Step rule suppressed due to buffer.")
                             } else {
+                                LOGI("Steps", "Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
                                 print("DEBUGY: Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
                                 self.sendNotification(for: self.activeRules[index], with: totalSteps)
                                 self.activeRules[index].notificationSent = true
@@ -621,14 +635,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         
         if isAppInForeground {
             print("DEBUGY: App is in foreground. Triggering IN-APP alert.")
-            
+            LOGI("Notify", "App is in foreground. Triggering IN-APP alert.")
             var ruleToSend = rule
             ruleToSend.alertID = alertID
             self.alertTriggeredSubject.send(ruleToSend)
             
         } else {
             print("DEBUGY: App is in background. Sending SYSTEM notification.")
-            
+            LOGI("Notify", "App is in background. Sending SYSTEM notification.")
             let content = UNMutableNotificationContent()
             content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
             content.body = rule.alertMessage

@@ -4,9 +4,9 @@
 
 import UIKit
 import UserNotifications
+import BackgroundTasks
 
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
-    // Show banners in foreground
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
                                             willPresent notification: UNNotification,
                                             withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -21,7 +21,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
-        Task { await HelloBGService.shared.schedule(in: 60) }
+        // Seed the first run; subsequent runs are chained from handleTask()
+        Task { await MissedReflectionsMonitorService.shared.schedule(in: 5 * 60) }
         return true
     }
 }

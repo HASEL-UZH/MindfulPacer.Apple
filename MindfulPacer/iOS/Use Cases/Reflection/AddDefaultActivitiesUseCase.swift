@@ -51,6 +51,7 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         let icon: String
     }
 
+    // TODO: Need to add the new subactivities here
     // Activities
     private let activityCatalog: [SeedActivity] = [
         .init(key: "movement", name: String(localized: "Movement"), icon: "figure.run"),

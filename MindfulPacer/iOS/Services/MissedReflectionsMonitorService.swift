@@ -2,7 +2,7 @@
 //  MissedReflectionsMonitorService.swift
 //  iOS
 //
-//  Created by Grigor Dochev on 07.09.2025.
+//  iOS 17+ : driven via SwiftUI `.backgroundTask(.appRefresh(...))`
 //
 
 import Foundation
@@ -16,14 +16,13 @@ import os
 @MainActor
 private enum DefaultsStore {
     static var shared: UserDefaults {
-        // App group first, fall back to standard (e.g. unit tests)
         UserDefaults(suiteName: "group.com.MindfulPacer") ?? .standard
     }
 }
 
 enum BGDebug {
     static let log = Logger(subsystem: "com.MindfulPacer", category: "BackgroundTasks")
-
+    
     enum Keys {
         static let lastSchedule = "BGDebug.lastSchedule"
         static let lastRunStart = "BGDebug.lastRunStart"
@@ -33,24 +32,24 @@ enum BGDebug {
         static let runsCount    = "BGDebug.runsCount"
         static let lastFound    = "BGDebug.lastFoundCount"
     }
-
+    
     @MainActor @discardableResult
     static func set(_ key: String, value: Any?) -> Any? {
         DefaultsStore.shared.set(value, forKey: key)
         return value
     }
-
+    
     @MainActor
     static func touch(_ key: String) {
         set(key, value: ISO8601DateFormatter().string(from: Date()))
     }
-
+    
     @MainActor
     static func increment(_ key: String) {
         let n = DefaultsStore.shared.integer(forKey: key)
         DefaultsStore.shared.set(n + 1, forKey: key)
     }
-
+    
     @MainActor
     static func dumpState(prefix: String = "BGDebug") {
         let d = DefaultsStore.shared
@@ -58,128 +57,84 @@ enum BGDebug {
     }
 }
 
-@MainActor
-final class MissedReflectionsMonitorService {
+// MARK: - Service
+
+actor MissedReflectionsMonitorService {
     
     static let shared = MissedReflectionsMonitorService()
+    nonisolated static let identifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
     
-    private let taskIdentifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
-    
-    private init() {}
-    
-    // MARK: - Public
-    
-    func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60)
+    func handleTask() async {
+        schedule(in: 5 * 60)
+        
+        await MainActor.run {
+            BGDebug.touch(BGDebug.Keys.lastRunStart)
+            BGDebug.log.info("BG ▶︎ handleAppRefresh START")
+        }
+        
         do {
-            try BGTaskScheduler.shared.submit(request)
-            BGDebug.touch(BGDebug.Keys.lastSchedule)
-            BGDebug.log.info("BG ▶︎ scheduled app refresh (earliestBeginDate ~5m).")
-        } catch {
-            BGDebug.set(BGDebug.Keys.lastError, value: "schedule error: \(error.localizedDescription)")
-            BGDebug.log.error("BG ✖︎ schedule failed: \(error.localizedDescription, privacy: .public)")
-        }
-    }
-    
-    func registerBackgroundTask() {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: taskIdentifier, using: nil) { task in
-            guard let refresh = task as? BGAppRefreshTask else {
-                BGDebug.log.error("BG ✖︎ received non-refresh task.")
-                task.setTaskCompleted(success: false)
-                return
+            let cachedReminders = await MainActor.run {
+                BackgroundRemindersStore.shared.load()
             }
-            BGDebug.log.info("BG ▶︎ received app refresh task callback.")
-            DispatchQueue.main.async {
-                self.handleAppRefreshOnMain(task: refresh)
-            }
-        }
-        BGDebug.log.info("BG ▶︎ registerBackgroundTask completed for \(self.taskIdentifier, privacy: .public)")
-    }
-    
-    /// Debug helper to introspect pending BG requests and dump our last-known state
-    func dumpPendingTasks(reason: String) {
-        if #available(iOS 17.0, *) {
-            BGTaskScheduler.shared.getPendingTaskRequests { requests in
-                let list = requests
-                    .map { req in
-                        if let r = req as? BGAppRefreshTaskRequest {
-                            return "\(r.identifier) @ \(String(describing: r.earliestBeginDate))"
-                        } else {
-                            return req.identifier
+            
+            let count = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Int, Error>) in
+                Task { @MainActor in
+                    let useCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
+                    useCase.execute(reminderConfigs: cachedReminders, existingReflections: []) { result in
+                        switch result {
+                        case .success(let refs):
+                            cont.resume(returning: refs.count)
+                        case .failure(let error):
+                            cont.resume(throwing: error)
                         }
                     }
-                    .joined(separator: " | ")
-                BGDebug.log.info("BG [\(reason, privacy: .public)] pending: \(list, privacy: .public)")
+                }
             }
-        } else {
-            BGDebug.log.info("BG [\(reason, privacy: .public)] pending requests not available on this iOS.")
-        }
-        BGDebug.dumpState(prefix: "BG STATE \(reason)")
-    }
-    
-    // MARK: - Private (MainActor)
-    
-    @MainActor
-    private func handleAppRefreshOnMain(task: BGAppRefreshTask) {
-        // Chain next run early to keep the pipeline alive
-        scheduleAppRefresh()
-        
-        BGDebug.touch(BGDebug.Keys.lastRunStart)
-        BGDebug.log.info("BG ▶︎ handleAppRefreshOnMain START")
-        
-        var didComplete = false
-        func complete(_ success: Bool, result: String) {
-            guard !didComplete else { return }
-            didComplete = true
-            BGDebug.touch(BGDebug.Keys.lastRunEnd)
-            BGDebug.set(BGDebug.Keys.lastResult, value: result)
-            task.setTaskCompleted(success: success)
-            BGDebug.dumpState(prefix: "BG COMPLETE")
-            #if DEBUG
-            let content = UNMutableNotificationContent()
-            content.title = "BG Task \(success ? "Success" : "Failed")"
-            content.body  = "Result=\(result)"
-            UNUserNotificationCenter.current()
-                .add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
-            #endif
-        }
-        
-        task.expirationHandler = { [weak self] in
-            DispatchQueue.main.async {
-                BGDebug.log.error("BG ⚠︎ Task expired by system.")
-                BGDebug.set(BGDebug.Keys.lastError, value: "expired")
-                self?.dumpPendingTasks(reason: "expired")
-                complete(false, result: "expired")
-            }
-        }
-        
-        let fetchMissedReflectionsUseCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
-        let cachedReminders = BackgroundRemindersStore.shared.load()
-        
-        fetchMissedReflectionsUseCase.execute(
-            reminderConfigs: cachedReminders,
-            existingReflections: []
-        ) { result in
-            switch result {
-            case .success(let refs):
-                let count = refs.count
+            
+            await MainActor.run {
                 BGDebug.increment(BGDebug.Keys.runsCount)
                 BGDebug.set(BGDebug.Keys.lastFound, value: count)
                 BGDebug.log.info("BG ✔︎ Fetched missed reflections. count=\(count, privacy: .public)")
-                if count > 0 {
-                    self.postMissedReflectionsNotification(count: count)
-                }
-                complete(true, result: "success(\(count))")
-            case .failure(let error):
+            }
+            
+            if count > 0 {
+                await postMissedReflectionsNotification(count: count)
+            }
+            
+            await MainActor.run {
+                BGDebug.touch(BGDebug.Keys.lastRunEnd)
+                BGDebug.set(BGDebug.Keys.lastResult, value: "success(\(count))")
+                BGDebug.dumpState(prefix: "BG COMPLETE")
+            }
+        } catch {
+            await MainActor.run {
+                BGDebug.touch(BGDebug.Keys.lastRunEnd)
                 BGDebug.set(BGDebug.Keys.lastError, value: "execute error: \(error.localizedDescription)")
+                BGDebug.set(BGDebug.Keys.lastResult, value: "failure")
                 BGDebug.log.error("BG ✖︎ execute failed: \(error.localizedDescription, privacy: .public)")
-                complete(false, result: "failure")
+                BGDebug.dumpState(prefix: "BG COMPLETE (failure)")
             }
         }
     }
     
-    func postMissedReflectionsNotification(count: Int) {
+    func schedule(in seconds: TimeInterval) {
+        let req = BGAppRefreshTaskRequest(identifier: Self.identifier)
+        req.earliestBeginDate = Date(timeIntervalSinceNow: seconds)
+        do {
+            try BGTaskScheduler.shared.submit(req)
+            Task { @MainActor in
+                BGDebug.touch(BGDebug.Keys.lastSchedule)
+                BGDebug.log.info("BG ▶︎ scheduled app refresh (earliestBeginDate ~\(Int(seconds))s).")
+            }
+        } catch {
+            Task { @MainActor in
+                BGDebug.set(BGDebug.Keys.lastError, value: "schedule error: \(error.localizedDescription)")
+                BGDebug.log.error("BG ✖︎ schedule failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+    
+    private func postMissedReflectionsNotification(count: Int) async {
         let content = UNMutableNotificationContent()
         content.title = "You Have Missed Reflections"
         content.body  = "You have \(count) new missed reflection(s) waiting for you."
@@ -187,8 +142,11 @@ final class MissedReflectionsMonitorService {
         #if DEBUG
         content.subtitle = "(\(ISO8601DateFormatter().string(from: Date())))"
         #endif
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request)
-        BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public)")
+        _ = try? await UNUserNotificationCenter.current().add(
+            UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        )
+        await MainActor.run {
+            BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public)")
+        }
     }
 }

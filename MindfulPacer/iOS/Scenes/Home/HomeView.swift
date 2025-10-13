@@ -96,15 +96,15 @@ struct HomeView: View {
                 alertContent(for: alert)
             }
             .onViewFirstAppear {
-                viewModel.onViewFirstAppear()
                 viewModel.configure(deviceMode)
+                viewModel.onViewFirstAppear()
             }
             .onAppear {
-                viewModel.onViewAppear()          
                 viewModel.configure(deviceMode)
+                viewModel.onViewAppear()
             }
-            .onChange(of: userHasSeenOnboarding) {
-                viewModel.onRefresh()
+            .onChange(of: deviceMode) {
+                viewModel.configure(deviceMode)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
