@@ -397,6 +397,7 @@ class HomeViewModel {
         reminders = fetchRemindersUseCase.execute() ?? []
         let allReflections = fetchReflectionsUseCase.execute() ?? []
         reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
+        applyFilterAndSorting(reviewFilter, reviewSorting)
     }
     
     private func fetchMissedReflections() {

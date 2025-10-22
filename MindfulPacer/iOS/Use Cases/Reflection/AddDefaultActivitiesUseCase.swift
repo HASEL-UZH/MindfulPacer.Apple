@@ -78,7 +78,9 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         .init(key: "movement.dancing", parentKey: "movement", name: String(localized: "Dancing"), icon: "figure.dance"),
         .init(key: "movement.swimming", parentKey: "movement", name: String(localized: "Swimming"), icon: "figure.pool.swim"),
         .init(key: "movement.other", parentKey: "movement", name: String(localized: "Other Movement"), icon: "ellipsis"),
-
+        .init(key: "movement.layingDown", parentKey: "movement", name: String(localized: "Laying Down"), icon: "sofa.fill"),
+        .init(key: "movement.sitting", parentKey: "movement",name: String(localized: "Sitting"), icon: "chair.fill"),
+        
         // Transportation
         .init(key: "transportation.driving", parentKey: "transportation", name: String(localized: "Driving Car"), icon: "car"),
         .init(key: "transportation.public", parentKey: "transportation", name: String(localized: "Public Transportation"), icon: "bus"),
@@ -116,7 +118,8 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         .init(key: "cognitive.news", parentKey: "cognitive", name: String(localized: "Reading the News"), icon: "newspaper"),
         .init(key: "cognitive.playingMusic", parentKey: "cognitive", name: String(localized: "Playing Music"), icon: "pianokeys"),
         .init(key: "cognitive.learning", parentKey: "cognitive", name: String(localized: "Learning Something"), icon: "globe.desk"),
-
+        .init(key: "cognitive.craftWork", parentKey: "cognitive", name: String(localized: "Craft Work"), icon: "paintbrush.fill"),
+        
         // Interactions & Social
         .init(key: "social.closeFriends", parentKey: "social", name: String(localized: "Meeting Close Friends"), icon: "person.3"),
         .init(key: "social.newPeople", parentKey: "social", name: String(localized: "Meeting New People"), icon: "person.line.dotted.person"),
@@ -124,7 +127,8 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         .init(key: "social.online", parentKey: "social", name: String(localized: "Online Socializing"), icon: "bubble.left.and.text.bubble.right"),
         .init(key: "social.groupActivities", parentKey: "social", name: String(localized: "Group Activities"), icon: "person.3.sequence.fill"),
         .init(key: "social.events", parentKey: "social", name: String(localized: "Attending Events"), icon: "theatermasks"),
-
+        .init(key: "social.phoneCalls", parentKey: "social", name: String(localized: "Phone Calls"), icon: "phone.connection.fill"),
+        
         // Work
         .init(key: "work.tasks", parentKey: "work", name: String(localized: "Work on Tasks"), icon: "desktopcomputer"),
         .init(key: "work.research", parentKey: "work", name: String(localized: "Researching Information"), icon: "rectangle.and.text.magnifyingglass"),

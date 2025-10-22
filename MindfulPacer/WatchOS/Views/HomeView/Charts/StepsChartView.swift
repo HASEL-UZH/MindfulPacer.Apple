@@ -33,7 +33,7 @@ struct StepsChartView: View {
                 }
             }
             
-            if !viewModel.hourlyStepData.isEmpty {
+            if viewModel.hasStepsData {
                 Chart {
                     ForEach(viewModel.hourlyStepData, id: \.date) { dataPoint in
                         LineMark(
@@ -44,7 +44,7 @@ struct StepsChartView: View {
                     }
                     
                     
-                    ForEach(viewModel.activeRules.filter { $0.measurementType == .steps }) { rule in
+                    ForEach(viewModel.stepsThresholdRules) { rule in
                         if case .steps(let threshold) = rule.ruleType {
                             RuleMark(y: .value("Threshold", threshold))
                                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
@@ -79,10 +79,11 @@ struct StepsChartView: View {
                     Spacer()
                 }
             } else {
+                let state = viewModel.emptyState(for: .steps)
                 ContentUnavailableView(
-                    "No Data",
-                    systemImage: "chart.xyaxis.line",
-                    description: Text("Please check the monitoring status.")
+                    state.title,
+                    systemImage: state.symbol,
+                    description: Text(state.subtitle)
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }

@@ -36,7 +36,6 @@ extension HomeView {
                 } else if viewModel.filteredReflections.isEmpty {
                     filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
-                    
                 } else {
                     RoundedList {
                         ForEach(viewModel.filteredReflections, id: \.id) { reflection in

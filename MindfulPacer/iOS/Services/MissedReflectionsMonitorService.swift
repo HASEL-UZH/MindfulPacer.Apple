@@ -2,8 +2,6 @@
 //  MissedReflectionsMonitorService.swift
 //  iOS
 //
-//  iOS 17+ : driven via SwiftUI `.backgroundTask(.appRefresh(...))`
-//
 
 import Foundation
 import BackgroundTasks
@@ -11,10 +9,9 @@ import UserNotifications
 import SwiftUI
 import os
 
-// MARK: - BGDebug (shared user defaults + logging)
+// MARK: - BGDebug
 
-@MainActor
-private enum DefaultsStore {
+enum DefaultsStore {
     static var shared: UserDefaults {
         UserDefaults(suiteName: "group.com.MindfulPacer") ?? .standard
     }
@@ -57,50 +54,73 @@ enum BGDebug {
     }
 }
 
-// MARK: - Service
+// MARK: - MissedReflectionsMonitorService
 
 actor MissedReflectionsMonitorService {
-    
     static let shared = MissedReflectionsMonitorService()
     nonisolated static let identifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
-    
+
+    // MARK: Mode check
+    private func isiPhoneOnly() -> Bool {
+        DeviceMode.current(from: DefaultsStore.shared) == .iPhoneOnly
+    }
+
+    // Call this when the user toggles DeviceMode in settings.
+    func onDeviceModeChanged(_ newMode: DeviceMode) {
+        if newMode == .iPhoneOnly {
+            schedule(in: 5 * 60) // (re)schedule soon
+        } else {
+            BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.identifier)
+            Task { @MainActor in
+                BGDebug.log.info("BG ▶︎ cancelled pending app refresh (mode=Watch).")
+            }
+        }
+    }
+
+    // MARK: Entry point from BGTask handler
     func handleTask() async {
+        // Bail fast if not iPhone-only
+        guard isiPhoneOnly() else {
+            await MainActor.run {
+                BGDebug.log.info("BG ⏭ skipped (mode != iPhoneOnly)")
+                BGDebug.touch(BGDebug.Keys.lastRunStart)
+                BGDebug.touch(BGDebug.Keys.lastRunEnd)
+                BGDebug.set(BGDebug.Keys.lastResult, value: "skipped_due_to_mode")
+            }
+            // Do NOT reschedule—let App/Settings change drive that.
+            return
+        }
+
+        // Normal flow
         schedule(in: 5 * 60)
-        
+
         await MainActor.run {
             BGDebug.touch(BGDebug.Keys.lastRunStart)
             BGDebug.log.info("BG ▶︎ handleAppRefresh START")
         }
-        
+
         do {
-            let cachedReminders = await MainActor.run {
-                BackgroundRemindersStore.shared.load()
-            }
-            
+            let cachedReminders = await MainActor.run { BackgroundRemindersStore.shared.load() }
             let count = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Int, Error>) in
                 Task { @MainActor in
                     let useCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
                     useCase.execute(reminderConfigs: cachedReminders, existingReflections: []) { result in
                         switch result {
-                        case .success(let refs):
-                            cont.resume(returning: refs.count)
-                        case .failure(let error):
-                            cont.resume(throwing: error)
+                        case .success(let refs): cont.resume(returning: refs.count)
+                        case .failure(let e):    cont.resume(throwing: e)
                         }
                     }
                 }
             }
-            
+
             await MainActor.run {
                 BGDebug.increment(BGDebug.Keys.runsCount)
                 BGDebug.set(BGDebug.Keys.lastFound, value: count)
-                BGDebug.log.info("BG ✔︎ Fetched missed reflections. count=\(count, privacy: .public)")
+                BGDebug.log.info("BG ✔︎ missed reflections count=\(count, privacy: .public)")
             }
-            
-            if count > 0 {
-                await postMissedReflectionsNotification(count: count)
-            }
-            
+
+            if count > 0 { await postMissedReflectionsNotification(count: count) }
+
             await MainActor.run {
                 BGDebug.touch(BGDebug.Keys.lastRunEnd)
                 BGDebug.set(BGDebug.Keys.lastResult, value: "success(\(count))")
@@ -116,15 +136,23 @@ actor MissedReflectionsMonitorService {
             }
         }
     }
-    
+
     func schedule(in seconds: TimeInterval) {
+        // Gate scheduling too
+        guard isiPhoneOnly() else {
+            Task { @MainActor in
+                BGDebug.log.info("BG ⏭ not scheduling (mode != iPhoneOnly)")
+            }
+            return
+        }
+
         let req = BGAppRefreshTaskRequest(identifier: Self.identifier)
         req.earliestBeginDate = Date(timeIntervalSinceNow: seconds)
         do {
             try BGTaskScheduler.shared.submit(req)
             Task { @MainActor in
                 BGDebug.touch(BGDebug.Keys.lastSchedule)
-                BGDebug.log.info("BG ▶︎ scheduled app refresh (earliestBeginDate ~\(Int(seconds))s).")
+                BGDebug.log.info("BG ▶︎ scheduled app refresh (~\(Int(seconds))s)")
             }
         } catch {
             Task { @MainActor in
@@ -142,9 +170,11 @@ actor MissedReflectionsMonitorService {
         #if DEBUG
         content.subtitle = "(\(ISO8601DateFormatter().string(from: Date())))"
         #endif
+
         _ = try? await UNUserNotificationCenter.current().add(
             UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         )
+
         await MainActor.run {
             BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public)")
         }

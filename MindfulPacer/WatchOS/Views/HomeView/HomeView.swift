@@ -26,30 +26,16 @@ enum HomePage {
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
-    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage.tag(HomePage.main)
             HeartRateChartView(viewModel: viewModel).tag(HomePage.heartRateChart)
             StepsChartView(viewModel: viewModel).tag(HomePage.stepsChart)
-            LogsView().tag(HomePage.logs)
         }
         .tabViewStyle(.carousel)
         .onAppear {
-            LOGI("UI", "HomeView appeared. Setting isAppInForeground = true.")
-            _ = LogPipe.shared   // ensure WC session is up
-            Services.shared.monitorService.isAppInForeground = true
             viewModel.onAppear()
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                LOGI("UI", "Scene became ACTIVE. Set isAppInForeground = true.")
-                Services.shared.monitorService.isAppInForeground = true
-            } else {
-                LOGI("UI", "Scene became INACTIVE/BACKGROUND. Set isAppInForeground = false.")
-                Services.shared.monitorService.isAppInForeground = false
-            }
         }
         .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
             SelectActivityView(
@@ -79,9 +65,20 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     VStack(spacing: 8) {
                         Label {
-                            Text("\(rule.reminderType.rawValue) Reminder").font(.headline.weight(.bold))
+                            Text(rule.measurementType.localized)
+                                .font(.headline.weight(.bold))
                         } icon: {
-                            Image(systemName: "circle.fill").foregroundStyle(rule.reminderType.color)
+                            Image(systemName: rule.measurementType.icon)
+                                .foregroundStyle(rule.measurementType.color)
+                        }
+                        .foregroundColor(.white)
+                        
+                        Label {
+                            Text("\(rule.reminderType.rawValue) Reminder")
+                                .font(.headline.weight(.bold))
+                        } icon: {
+                            Image(systemName: "circle.fill")
+                                .foregroundStyle(rule.reminderType.color)
                         }
                         .foregroundColor(.white)
 
@@ -90,15 +87,24 @@ struct HomeView: View {
                             .font(.body)
                             .layoutPriority(1)
                     }
-
+                    
                     VStack {
-                        Button { viewModel.handleStrongAlertAction(shouldAddDetails: true, alertID: alertID) } label: {
-                            Text("Accept & Add Details").fontWeight(.semibold)
+                        Button {
+                            viewModel.handleStrongAlertAction(shouldAddDetails: true, alertID: alertID)
+                        } label: {
+                            Text("Accept & Add Details")
+                                .fontWeight(.semibold)
                         }
-                        Button { viewModel.handleStrongAlertAction(shouldAddDetails: false, alertID: alertID) } label: {
+                        
+                        Button {
+                            viewModel.handleStrongAlertAction(shouldAddDetails: false, alertID: alertID)
+                        } label: {
                             Text("Accept & Add Details Later")
                         }
-                        Button { viewModel.dismissAlertOverlay() } label: {
+                        
+                        Button {
+                            viewModel.dismissAlertOverlay()
+                        } label: {
                             Text("Delete")
                         }
                     }
@@ -113,14 +119,25 @@ struct HomeView: View {
         }
         .transition(.opacity.animation(.easeInOut))
     }
-
+    
     private var mainStatusPage: some View {
         VStack(alignment: .leading) {
             HStack {
-                Button { viewModel.selectedTab = .heartRateChart } label: { currentHeartRateWidget }.buttonStyle(.plain)
-                Button { viewModel.selectedTab = .stepsChart }     label: { currentStepsWidget    }.buttonStyle(.plain)
+                Button {
+                    viewModel.selectedTab = .heartRateChart
+                } label: {
+                    currentHeartRateWidget
+                }
+                .buttonStyle(.plain)
+                
+                Button {
+                    viewModel.selectedTab = .stepsChart
+                } label: {
+                    currentStepsWidget
+                }
+                .buttonStyle(.plain)
             }
-
+            
             VStack {
                 HStack {
                     Button {
@@ -234,39 +251,6 @@ struct HomeView: View {
         .padding()
         .background { RoundedRectangle(cornerRadius: 16).fill(Color.primary.opacity(0.1)) }
         .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
-    }
-}
-
-struct LogsView: View {
-    @ObservedObject private var log = AppLog.shared
-    @State private var filter = ""
-    var body: some View {
-        VStack(spacing: 6) {
-            HStack {
-                Text("Logs").font(.headline)
-                Spacer()
-                Button("Clear") { log.clear() }
-                    .buttonStyle(.bordered)
-                    .tint(.red)
-            }
-            TextField("Filter…", text: $filter)
-            ScrollViewReader { proxy in
-                List(filteredEntries) { e in
-                    Text(e.line)
-                        .font(.system(size: 11, weight: .regular, design: .monospaced))
-                        .id(e.id)
-                }
-                .listStyle(.plain)
-                .onChange(of: log.entries.count) { _, _ in
-                    if let last = filteredEntries.last { proxy.scrollTo(last.id, anchor: .bottom) }
-                }
-            }
-        }
-        .padding(.horizontal, 8)
-    }
-    private var filteredEntries: [LogEntry] {
-        guard !filter.isEmpty else { return log.entries }
-        return log.entries.filter { $0.line.localizedCaseInsensitiveContains(filter) }
     }
 }
 

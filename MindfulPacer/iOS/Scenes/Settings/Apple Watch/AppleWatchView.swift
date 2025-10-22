@@ -16,12 +16,7 @@ extension SettingsView {
         
         @Environment(\.openURL) private var openURL
         @Bindable var viewModel: SettingsViewModel
-        
-        @ObservedObject private var logs = LiveLogsStore.shared
-        @State private var filter = ""
-        @State private var isExporting = false
-        @State private var exportURL: URL?
-        
+
         // MARK: Body
         
         var body: some View {
@@ -66,71 +61,8 @@ extension SettingsView {
                         .iconLabelGroupBoxStyle(.divider)
                     }
                     .frame(maxWidth: .infinity)
-                    
-                    Section {
-                        IconLabelGroupBox(
-                            label: IconLabel(
-                                icon: "doc.text.magnifyingglass",
-                                title: "Live Logs",
-                                labelColor: .blue,
-                                background: true
-                            ),
-                            description: Text("Streamed from Apple Watch in real time for troubleshooting.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        ) {
-                            VStack(spacing: 12) {
-                                
-                                // Controls
-                                HStack(spacing: 8) {
-                                    TextField("Filter…", text: $filter)
-                                        .textFieldStyle(.roundedBorder)
-                                        .font(.subheadline)
-                                    
-                                    Button("Clear") {
-                                        logs.clear()
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .tint(.red)
-                                }
-                                
-                                // List
-                                LogsTextListView(lines: filteredLines)
-                                
-                                // Export
-                                HStack(spacing: 12) {
-                                    Button {
-                                        do {
-                                            let url = try logs.export()
-                                            exportURL = url
-                                            isExporting = true
-                                        } catch {
-                                            // no-op; keep UI simple
-                                        }
-                                    } label: {
-                                        Label("Export .log", systemImage: "square.and.arrow.up")
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                    
-                                    Text("\(logs.lines.count) lines")
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        .iconLabelGroupBoxStyle(.divider)
-                    }
                 }
                 .navigationTitle("Apple Watch")
-                .sheet(isPresented: $isExporting) {
-                    if let url = exportURL {
-                        ShareLink(item: url) { Text("Share Log File") }
-                            .presentationDetents([.medium])
-                            .padding()
-                    }
-                }
                 .onAppear {
                     ConnectivityService.shared.startPinging()
                 }
@@ -157,46 +89,6 @@ extension SettingsView {
                         .ignoresSafeArea()
                 }
             }
-        }
-        
-        private var filteredLines: [String] {
-            guard !filter.isEmpty else { return logs.lines }
-            return logs.lines.filter { $0.localizedCaseInsensitiveContains(filter) }
-        }
-    }
-}
-
-// MARK: - LogsTextListView
-
-private struct LogsTextListView: View {
-    let lines: [String]
-
-    var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 4) {
-                    ForEach(lines.indices, id: \.self) { idx in
-                        Text(lines[idx])
-                            .font(.system(size: 12, weight: .regular, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .id(idx)
-                    }
-                }
-                .padding(.vertical, 4)
-                .onChange(of: lines.count) { _, _ in
-                    if let last = lines.indices.last {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            proxy.scrollTo(last, anchor: .bottom)
-                        }
-                    }
-                }
-            }
-            .frame(maxHeight: 360)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.secondarySystemBackground))
-            )
         }
     }
 }

@@ -2,17 +2,36 @@
 //  HealthMonitoringService.swift
 //  WatchOS
 //
-//  Created by Grigor Dochev on 09.08.2025.
-//
 
 import Foundation
 import HealthKit
-import SwiftData
 import UserNotifications
 import Combine
 import SwiftUI
 import CoreData
 import WidgetKit
+
+enum AppGroupPaths {
+    static let groupID = "group.com.MindfulPacer"
+
+    @discardableResult
+    static func prepareApplicationSupport() -> URL? {
+        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) else {
+            print("AppGroup container not found")
+            return nil
+        }
+        let appSupport = container
+            .appendingPathComponent("Library", isDirectory: true)
+            .appendingPathComponent("Application Support", isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
+            return appSupport
+        } catch {
+            print("Failed to create Application Support in group: \(error)")
+            return nil
+        }
+    }
+}
 
 // MARK: - StatusMessage
 
@@ -24,7 +43,7 @@ enum StatusMessage: String {
     case error = "An Error Occurred"
     case syncing = "Syncing..."
     case paused = "Monitoring Paused"
-    
+
     var symbolName: String {
         switch self {
         case .monitoring: return "checkmark"
@@ -36,7 +55,7 @@ enum StatusMessage: String {
         case .paused: return "pause"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .monitoring: return .green
@@ -48,7 +67,7 @@ enum StatusMessage: String {
         case .paused: return .yellow
         }
     }
-    
+
     var description: String {
         switch self {
         case .monitoring:
@@ -73,7 +92,6 @@ private let pendingNotificationsKey = "pendingNotificationsKey"
 
 struct PendingNotification: Codable, Identifiable {
     var id: UUID { alertID }
-    
     let alertID: UUID
     let reminderID: UUID
     let sentDate: Date
@@ -93,218 +111,191 @@ public struct AlertRule: Identifiable, Sendable {
     let duration: TimeInterval
     let alertMessage: String
     let interval: Reminder.Interval
-    
+
     var triggerDate: Date? = nil
     var dipDate: Date? = nil
-    
     var lastNotificationDate: Date? = nil
     var notificationSent: Bool = false
 }
 
+// MARK: - Service
+
 @MainActor
 final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, @unchecked Sendable {
-    
+
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
     @Published var statusMessage: StatusMessage = .notMonitoring
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
     @Published var isManuallyPaused: Bool = false
-    
+
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
-    
+
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
-    var isAppInForeground: Bool = false
-    
     private var workoutBuilder: HKLiveWorkoutBuilder?
-    
+
+    var isAppInForeground: Bool = true
+
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var cancellables = Set<AnyCancellable>()
-    
-    private var stepsCheckTimer: Timer?
-    
+
+    private var stepsTimer: DispatchSourceTimer?
+
     override init() {
         super.init()
+        _ = AppGroupPaths.prepareApplicationSupport()
         subscribeToCloudKitChanges()
     }
-    
+
     private var sharedUserDefaults: UserDefaults? {
-        return UserDefaults(suiteName: "group.com.MindfulPacer")
+        UserDefaults(suiteName: "group.com.MindfulPacer")
     }
-    
+
+    // MARK: - CloudKit change handling (debounced)
+
     private func subscribeToCloudKitChanges() {
         NotificationCenter.default.publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
-            .receive(on: DispatchQueue.main)
+            .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
-                LOGI("Sync", "CloudKit data change detected. Refreshing state.")
-                self?.refreshState()
+                guard let self else { return }
+                self.refreshState()
             }
             .store(in: &cancellables)
     }
-    
+
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
     }
-    
-    func refreshState() {
-        LOGI("Monitor", "Refreshing state triggered.")
-        let hasRules = updateMonitoringRules()
-        
-        if isManuallyPaused {
-            self.statusMessage = .paused
-        } else if isSessionActive {
-            self.statusMessage = .monitoring
-        } else {
-            self.statusMessage = hasRules ? .notMonitoring : .noReminders
-        }
-        
-        LOGI("Monitor", "Final status set to: \(self.statusMessage.rawValue)")
 
-        _startOrStopMonitoring(hasRules: hasRules)
-    }
-    
-    func pauseMonitoring() {
-        guard isSessionActive, !isManuallyPaused else { return }
-        LOGI("Monitor", "Pausing monitoring session.")
-        workoutSession?.pause()
-        self.isManuallyPaused = true
-        self.statusMessage = .paused
-        
-        self.sharedUserDefaults?.set(ComplicationState.paused.rawValue, forKey: "monitoringState")
-        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
-    }
-    
-    func resumeMonitoring() {
-        guard isSessionActive, isManuallyPaused else { return }
-        LOGI("Monitor", "Resuming monitoring session.")
-        workoutSession?.resume()
-        self.isManuallyPaused = false
-        self.statusMessage = .monitoring
-        
-        self.sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
-        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
-    }
-    
-    func fetchTodaysSteps() async -> Double {
-        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-        
-        let now = Date()
-        let startDate = Calendar.current.startOfDay(for: now)
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
-        
-        let query = HKStatisticsQueryDescriptor(
-            predicate: .quantitySample(type: stepType, predicate: predicate),
-            options: .cumulativeSum
-        )
-        
-        do {
-            let result = try await query.result(for: healthStore)
-            
-            guard let sum = result?.sumQuantity() else {
-                print("DEBUGY: Fetched today's steps: 0 (no data)")
-                return 0
-            }
-            
-            let totalSteps = sum.doubleValue(for: HKUnit.count())
-            
-            LOGI("Steps", "Fetched today's steps: \(totalSteps)")
-            return totalSteps
-        } catch {
-            LOGE("Steps", "Failed to fetch today's steps: \(error.localizedDescription)")
-            return 0
+    // MARK: - State refresh
+
+    func refreshState() {
+        let hadRules = !activeRules.isEmpty
+        let hasRules = rebuildRulesPreservingState()
+
+        if isManuallyPaused {
+            statusMessage = .paused
+        } else if isSessionActive {
+            statusMessage = .monitoring
+        } else {
+            statusMessage = hasRules ? .notMonitoring : .noReminders
         }
+
+        _startOrStopMonitoring(hasRules: hasRules, previouslyHadRules: hadRules)
     }
-    
-    private func updateMonitoringRules() -> Bool {
-        guard let useCase = fetchRemindersUseCase else {
+
+    private func rebuildRulesPreservingState() -> Bool {
+        guard let useCase = fetchRemindersUseCase else { return false }
+        let reminders = useCase.execute() ?? []
+
+        var oldByID: [UUID: AlertRule] = [:]
+        for r in activeRules { oldByID[r.id] = r }
+
+        var next: [AlertRule] = []
+        next.reserveCapacity(reminders.count)
+
+        for rem in reminders {
+            let newRuleType: RuleType = (rem.measurementType == .heartRate)
+            ? .heartRate(threshold: Double(rem.threshold))
+            : .steps(threshold: Double(rem.threshold))
+
+            var newRule = AlertRule(
+                id: rem.id,
+                measurementType: rem.measurementType,
+                reminderType: rem.reminderType,
+                ruleType: newRuleType,
+                duration: rem.interval.timeInterval,
+                alertMessage: rem.triggerSummary,
+                interval: rem.interval
+            )
+
+            if let old = oldByID[rem.id],
+               rulesConfigEqual(lhs: old, rhs: newRule) {
+                newRule.triggerDate = old.triggerDate
+                newRule.dipDate = old.dipDate
+                newRule.lastNotificationDate = old.lastNotificationDate
+                newRule.notificationSent = old.notificationSent
+            }
+            next.append(newRule)
+        }
+
+        activeRules = next
+        return !next.isEmpty
+    }
+
+    private func rulesConfigEqual(lhs: AlertRule, rhs: AlertRule) -> Bool {
+        guard lhs.id == rhs.id,
+              lhs.measurementType == rhs.measurementType,
+              lhs.reminderType == rhs.reminderType,
+              lhs.interval == rhs.interval,
+              lhs.duration == rhs.duration,
+              lhs.alertMessage == rhs.alertMessage else {
             return false
         }
-        let allReminders = useCase.execute() ?? []
-        
-        self.activeRules = allReminders.map { reminder in
-            let ruleType: RuleType
-            if reminder.measurementType == .heartRate {
-                ruleType = .heartRate(threshold: Double(reminder.threshold))
-            } else {
-                ruleType = .steps(threshold: Double(reminder.threshold))
-            }
-            
-            return AlertRule(
-                id: reminder.id,
-                measurementType: reminder.measurementType,
-                reminderType: reminder.reminderType,
-                ruleType: ruleType,
-                duration: reminder.interval.timeInterval,
-                alertMessage: reminder.triggerSummary,
-                interval: reminder.interval
-            )
+        switch (lhs.ruleType, rhs.ruleType) {
+        case (.heartRate(let a), .heartRate(let b)): return a == b
+        case (.steps(let a), .steps(let b)): return a == b
+        default: return false
         }
-        LOGI("Monitor", "Loaded \(self.activeRules.count) rules.")
-        let hasActiveRules = !self.activeRules.isEmpty
-        self.statusMessage = hasActiveRules ? .monitoring : .noReminders
-        
-        return hasActiveRules
     }
-    
-    private func _startOrStopMonitoring(hasRules: Bool) {
-        guard !isManuallyPaused else {
-            print("DEBUGY: Monitoring is manually paused. Will not start new session.")
-            return
-        }
-        
-        let sessionIsRunning = workoutSession?.state == .running
-        LOGD("Monitor", "_startOrStopMonitoring(hasRules: \(hasRules), paused: \(isManuallyPaused), sessionRunning: \(sessionIsRunning))")
+
+    // MARK: - Start/Stop monitoring
+
+    private func _startOrStopMonitoring(hasRules: Bool, previouslyHadRules: Bool) {
+        guard !isManuallyPaused else { return }
+        let sessionIsRunning = (workoutSession?.state == .running)
+
         if hasRules && !sessionIsRunning {
             startWorkoutSession()
         } else if !hasRules && sessionIsRunning {
             endWorkoutSession()
+        } else if hasRules && previouslyHadRules {
+            // No-op: rules still exist; we preserved timers so don't restart anything.
         }
     }
-    
+
     private func startWorkoutSession() {
         guard workoutSession == nil else { return }
+
         Task {
             do {
                 let isAuthorized = try await requestAuthorization()
                 guard isAuthorized else {
-                    self.statusMessage = .permissionDenied
+                    statusMessage = .permissionDenied
                     return
                 }
-                
+
                 let configuration = HKWorkoutConfiguration()
                 configuration.activityType = .mindAndBody
                 configuration.locationType = .unknown
-                
-                LOGI("Workout", "Starting workout session.")
 
-                self.workoutSession = try HKWorkoutSession(healthStore: self.healthStore, configuration: configuration)
-                self.workoutBuilder = self.workoutSession?.associatedWorkoutBuilder()
-                self.workoutSession?.delegate = self
-                self.workoutBuilder?.delegate = self
-                self.workoutBuilder?.dataSource = HKLiveWorkoutDataSource(healthStore: self.healthStore, workoutConfiguration: configuration)
-                
-                self.workoutSession?.startActivity(with: Date())
-                try await self.workoutBuilder?.beginCollection(at: Date())
-                self.isSessionActive = true
-                self.statusMessage = .monitoring
-                self.startStepsTimer()
-                
-                LOGI("Workout", "Complication timeline reloaded (State: Active)")
+                let session = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+                let builder = session.associatedWorkoutBuilder()
+                session.delegate = self
+                builder.delegate = self
+                builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
 
-                self.sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+                self.workoutSession = session
+                self.workoutBuilder = builder
+
+                session.startActivity(with: Date())
+                try await builder.beginCollection(at: Date())
+                isSessionActive = true
+                statusMessage = .monitoring
+                startStepsTimer()
+
+                sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
-                print("DEBUGY: Complication timeline reloaded (State: Active)")
             } catch {
-                self.statusMessage = .error
-                LOGE("Workout", "Workout session start failed.")
+                statusMessage = .error
             }
         }
     }
-    
+
     private func endWorkoutSession() {
-        stepsCheckTimer?.invalidate()
-        stepsCheckTimer = nil
+        stopStepsTimer()
         workoutSession?.end()
         workoutBuilder?.discardWorkout()
         workoutSession = nil
@@ -313,336 +304,244 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         heartRate = 0
         isManuallyPaused = false
         statusMessage = .notMonitoring
-        activeRules = []
-        
-        LOGI("Workout", "Ending workout session.")
-        self.sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
+
+        sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
-    
+
+    // MARK: - HealthKit
+
     func requestAuthorization() async throws -> Bool {
         let typesToShare: Set = [HKObjectType.workoutType()]
         let typesToRead: Set = [
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
             HKObjectType.quantityType(forIdentifier: .stepCount)!
         ]
-        
-        return try await withCheckedThrowingContinuation { continuation in
+
+        return try await withCheckedThrowingContinuation { cont in
             healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                continuation.resume(returning: success)
+                if let error { cont.resume(throwing: error); return }
+                cont.resume(returning: success)
             }
         }
     }
-    
+
     nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
         for type in collectedTypes {
-            guard let quantityType = type as? HKQuantityType, quantityType.identifier == HKQuantityTypeIdentifier.heartRate.rawValue else { continue }
-            let statistics = workoutBuilder.statistics(for: quantityType)
-            let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
-            if let value = statistics?.mostRecentQuantity()?.doubleValue(for: heartRateUnit) {
+            guard let quantityType = type as? HKQuantityType,
+                  quantityType.identifier == HKQuantityTypeIdentifier.heartRate.rawValue else { continue }
+            let stats = workoutBuilder.statistics(for: quantityType)
+            let unit = HKUnit.count().unitDivided(by: .minute())
+            if let value = stats?.mostRecentQuantity()?.doubleValue(for: unit) {
                 Task { @MainActor in
                     self.processHeartRate(value)
                 }
             }
         }
     }
-    
+    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}
+    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
+    nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+
+    // MARK: - Steps timer
+
+    private func startStepsTimer() {
+        stepsTimer?.cancel()
+        let t = DispatchSource.makeTimerSource(queue: .main)
+        t.schedule(deadline: .now() + 300, repeating: 300)
+        t.setEventHandler { [weak self] in
+            guard let self else { return }
+            self.checkStepRules()
+        }
+        stepsTimer = t
+        t.resume()
+    }
+
+    private func stopStepsTimer() {
+        stepsTimer?.cancel()
+        stepsTimer = nil
+    }
+
+    // MARK: - Fetch helpers
+
+    func fetchTodaysSteps() async -> Double {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        let now = Date()
+        let startDate = Calendar.current.startOfDay(for: now)
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: .quantitySample(type: stepType, predicate: predicate),
+            options: .cumulativeSum
+        )
+        do {
+            let result = try await descriptor.result(for: healthStore)
+            guard let sum = result?.sumQuantity() else { return 0 }
+            return sum.doubleValue(for: .count())
+        } catch {
+            return 0
+        }
+    }
+
     func fetchHourlyStepData() async -> [(date: Date, steps: Double)] {
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         let now = Date()
-        let startDate = now.addingTimeInterval(-3600) // 1 hour ago
+        let startDate = now.addingTimeInterval(-3600)
         let anchorDate = Calendar.current.startOfDay(for: now)
-        let interval = DateComponents(minute: 5) // Still aggregate in 5-minute chunks
-        
+        let interval = DateComponents(minute: 5)
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
-        
-        let queryDescriptor = HKStatisticsCollectionQueryDescriptor(
+
+        let qd = HKStatisticsCollectionQueryDescriptor(
             predicate: .quantitySample(type: stepType, predicate: predicate),
             options: .cumulativeSum,
             anchorDate: anchorDate,
             intervalComponents: interval
         )
-        
+
         do {
-            let collection = try await queryDescriptor.result(for: healthStore)
-            var cumulativeStepData: [(date: Date, steps: Double)] = []
-            var runningTotal: Double = 0.0
-            
-            // Enumerate through the 5-minute intervals in the last hour.
-            collection.enumerateStatistics(from: startDate, to: now) { statistics, stop in
-                if let sum = statistics.sumQuantity() {
-                    let stepsInInterval = sum.doubleValue(for: .count())
-                    // Add the steps from this interval to our running total.
-                    runningTotal += stepsInInterval
-                    // Append the CUMULATIVE total with the interval's end date.
-                    cumulativeStepData.append((date: statistics.endDate, steps: runningTotal))
+            let collection = try await qd.result(for: healthStore)
+            var cumulative: [(date: Date, steps: Double)] = []
+            var total = 0.0
+            collection.enumerateStatistics(from: startDate, to: now) { stats, _ in
+                if let sum = stats.sumQuantity() {
+                    total += sum.doubleValue(for: .count())
+                    cumulative.append((stats.endDate, total))
                 }
             }
-            print("DEBUGY: Fetched \(cumulativeStepData.count) intervals of CUMULATIVE step data.")
-            return cumulativeStepData
+            return cumulative
         } catch {
-            print("DEBUGY: ERROR - Failed to fetch hourly step data: \(error.localizedDescription)")
             return []
         }
     }
-    
+
+    // MARK: - Heart rate processing
+
     private func processHeartRate(_ newHeartRate: Double) {
-        self.heartRate = newHeartRate
-        
+        heartRate = newHeartRate
         let now = Date()
-        self.recentHeartRateSamples.append((value: newHeartRate, date: now))
-        
+        recentHeartRateSamples.append((value: newHeartRate, date: now))
         let oneHourAgo = now.addingTimeInterval(-3600)
-        self.recentHeartRateSamples.removeAll { $0.date < oneHourAgo }
-        
-        self.evaluateHeartRateRules(for: newHeartRate)
+        recentHeartRateSamples.removeAll { $0.date < oneHourAgo }
+        evaluateHeartRateRules(for: newHeartRate)
     }
-    
+
     private func evaluateHeartRateRules(for currentHeartRate: Double) {
         guard !isManuallyPaused else { return }
 
         let now = Date()
-        let dipGracePeriod: TimeInterval = 30.0
-        
-        // Print the incoming heart rate so we can see the data stream.
-        print("---")
-        print("DEBUGY: Evaluating HR: \(Int(currentHeartRate)) bpm at \(now.formatted(.dateTime.hour().minute().second()))")
-        LOGD("HR", "Evaluating HR: \(Int(currentHeartRate)) bpm")
+        let dipGrace: TimeInterval = 30.0
 
         for i in 0..<activeRules.count {
-            // --- Only process heart rate rules ---
-            guard activeRules[i].measurementType == .heartRate else { continue }
-            guard case .heartRate(let threshold) = activeRules[i].ruleType else { continue }
-            
             var rule = activeRules[i]
-            LOGD("HR", "Rule [\(rule.reminderType.rawValue.prefix(1)) for >\(Int(threshold))bpm]")
-            print("  - Rule [\(rule.reminderType.rawValue.prefix(1)) for >\(Int(threshold))bpm]:")
+            guard rule.measurementType == .heartRate else { continue }
+            guard case .heartRate(let threshold) = rule.ruleType else { continue }
 
             if currentHeartRate > threshold {
-                // --- HIGH HEART RATE PATH ---
-                
-                if rule.triggerDate == nil {
-                    rule.triggerDate = now
-                    print("    - STATUS: HR is HIGH. Timer STARTED at \(now.formatted(.dateTime.hour().minute().second())).")
-                    LOGD("HR", "Timer started")
-                }
-                
-                // Clear any previous dip.
-                if rule.dipDate != nil {
-                    rule.dipDate = nil
-                    print("    - STATUS: HR is HIGH again. Dip timer cancelled.")
-                }
-                
-                if let triggerDate = rule.triggerDate {
-                    let elapsedTime = now.timeIntervalSince(triggerDate)
-                    print("    - CHECK: Timer has been active for \(Int(elapsedTime))s of \(Int(rule.duration))s required.")
-                    LOGD("HR", "Timer elapsed: \(Int(elapsedTime))s of \(Int(rule.duration))s")
+                if rule.triggerDate == nil { rule.triggerDate = now }
+                if rule.dipDate != nil { rule.dipDate = nil }
 
-                    if elapsedTime >= rule.duration {
-                        print("    - MET: Duration requirement met.")
+                if let started = rule.triggerDate {
+                    let elapsed = now.timeIntervalSince(started)
+                    if elapsed >= rule.duration {
                         let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
-                        
-                        if let lastNotif = rule.lastNotificationDate {
-                            let timeSinceLastNotif = now.timeIntervalSince(lastNotif)
-                            print("    - BUFFER CHECK: Time since last notification is \(Int(timeSinceLastNotif))s. Buffer is \(Int(buffer))s.")
-                            if timeSinceLastNotif < buffer {
-                                print("    - RESULT: SUPPRESSED (Inside buffer period).")
-                            } else {
-                                print("    - RESULT: SUCCESS! Sending notification.")
-                                LOGI("Notify", "Triggering in-app notification for HR rule")
-                                let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
-                                let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
-                                self.sendNotification(for: rule, withData: eventData)
-                                rule.lastNotificationDate = now
-                                rule.triggerDate = nil // Reset for the next event.
-                            }
+                        if let last = rule.lastNotificationDate, now.timeIntervalSince(last) < buffer {
+                            // Suppress inside buffer
                         } else {
-                            print("    - BUFFER CHECK: No previous notification. Buffer check passed.")
-                            print("    - RESULT: SUCCESS! Sending notification.")
-                            let dataWindowStart = triggerDate.addingTimeInterval(-(rule.duration * 0.20))
-                            let eventData = self.recentHeartRateSamples.filter { $0.date >= dataWindowStart }
-                            self.sendNotification(for: rule, withData: eventData)
+                            let dataWindowStart = started.addingTimeInterval(-(rule.duration * 0.20))
+                            let eventData = recentHeartRateSamples.filter { $0.date >= dataWindowStart }
+                            sendNotification(for: rule, withData: eventData)
                             rule.lastNotificationDate = now
-                            rule.triggerDate = nil // Reset for the next event.
+                            rule.triggerDate = nil
                         }
-                    } else {
-                        print("    - RESULT: PENDING (Duration not yet met).")
                     }
                 }
-                
             } else {
-                // --- LOW HEART RATE PATH ---
-                
-                if let triggerDate = rule.triggerDate {
-                    print("    - STATUS: HR is LOW, but timer was active.")
-                    
-                    if rule.dipDate == nil {
-                        rule.dipDate = now
-                        print("    - CHECK: Dip timer STARTED at \(now.formatted(.dateTime.hour().minute().second())).")
+                if rule.triggerDate != nil {
+                    if rule.dipDate == nil { rule.dipDate = now }
+                    if let dipStart = rule.dipDate, now.timeIntervalSince(dipStart) > dipGrace {
+                        rule.triggerDate = nil
+                        rule.dipDate = nil
                     }
-                    
-                    if let dipDate = rule.dipDate {
-                        let dipDuration = now.timeIntervalSince(dipDate)
-                        print("    - CHECK: Dip has lasted for \(Int(dipDuration))s of \(Int(dipGracePeriod))s allowed.")
-                        if dipDuration > dipGracePeriod {
-                            print("    - RESULT: TIMER RESET (Dip grace period exceeded).")
-                            rule.triggerDate = nil
-                            rule.dipDate = nil
-                        } else {
-                            print("    - RESULT: PENDING (Inside dip grace period).")
-                        }
-                    }
-                } else {
-                    // This is the normal, idle state. No need to log anything here.
                 }
             }
             activeRules[i] = rule
         }
     }
-    
-    private func startStepsTimer() {
-        stepsCheckTimer?.invalidate()
-        stepsCheckTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                LOGI("Timer", "Steps timer fired. Checking step rules.")
-                print("DEBUGY: Steps timer fired. Checking step rules.")
-                self?.checkStepRules()
-//                self?.processMissedNotifications()
-            }
-        }
-    }
-    
-    private func processMissedNotifications() {
-        let userDefaults = UserDefaults.standard
-        let allPending = getPendingNotifications()
-        guard !allPending.isEmpty else { return }
-        
-        let now = Date()
-        let missedThreshold: TimeInterval = 600
-        
-        var stillPending: [PendingNotification] = []
-        var notificationsToRemoveFromCenter: [String] = []
-        
-        for pending in allPending {
-            if now.timeIntervalSince(pending.sentDate) > missedThreshold {
-                print("DEBUGY: Processing missed notification with alertID \(pending.alertID)")
-                
-                Services.shared.systemDelegate.createAndSendReflection(
-                    reminderID: pending.reminderID,
-                    alertID: pending.alertID,
-                    activity: nil,
-                    subactivity: nil
-                )
-                
-                notificationsToRemoveFromCenter.append(pending.alertID.uuidString)
-            } else {
-                stillPending.append(pending)
-            }
-        }
-        
-        if !notificationsToRemoveFromCenter.isEmpty {
-            print("DEBUGY: Removing \(notificationsToRemoveFromCenter.count) old notifications from Notification Center.")
-            UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: notificationsToRemoveFromCenter)
-        }
-        
-        do {
-            let data = try JSONEncoder().encode(stillPending)
-            userDefaults.set(data, forKey: pendingNotificationsKey)
-        } catch {
-            print("DEBUGY: ERROR - Failed to save updated pending list: \(error)")
-        }
-    }
-    
+
+    // MARK: - Steps rules
+
     private func checkStepRules() {
         guard !isManuallyPaused else { return }
 
-        let stepRulesToCheck = self.activeRules.filter { $0.measurementType == .steps }
-        guard !stepRulesToCheck.isEmpty else { return }
-        
-        let now = Date()
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-        
-        for rule in stepRulesToCheck {
+        let stepRules = activeRules.filter { $0.measurementType == .steps }
+        guard !stepRules.isEmpty else { return }
+
+        let now = Date()
+
+        for rule in stepRules {
             guard case .steps(let threshold) = rule.ruleType else { continue }
-            
-            let endDate = Date()
+
+            let endDate = now
             let startDate = endDate.addingTimeInterval(-rule.duration)
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
-            
-            let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
-                guard let result = result, let sum = result.sumQuantity() else {
-                    if let error = error { print("DEBUGY: Steps query failed: \(error.localizedDescription)") }
-                    return
-                }
-                let totalSteps = sum.doubleValue(for: HKUnit.count())
-                
+
+            let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { [weak self] _, result, error in
+                guard let self else { return }
+                guard error == nil, let sum = result?.sumQuantity() else { return }
+                let total = sum.doubleValue(for: .count())
+
                 Task { @MainActor in
-                    guard let index = self.activeRules.firstIndex(where: { $0.id == rule.id }) else {
-                        return
-                    }
-                    
-                    if totalSteps > threshold {
-                        if !self.activeRules[index].notificationSent {
-                            let buffer = BufferManager.shared.buffer(for: self.activeRules[index].interval, context: .steps)
-                            
-                            if let lastNotif = self.activeRules[index].lastNotificationDate, now.timeIntervalSince(lastNotif) < buffer {
-                                print("DEBUGY: Steps Rule met for \(rule.id), but in buffer period. Suppressing.")
-                                LOGI("Steps", "Step rule suppressed due to buffer.")
+                    guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
+
+                    if total > threshold {
+                        if !self.activeRules[idx].notificationSent {
+                            let buffer = BufferManager.shared.buffer(for: self.activeRules[idx].interval, context: .steps)
+                            if let last = self.activeRules[idx].lastNotificationDate,
+                               now.timeIntervalSince(last) < buffer {
+                                // Suppressed by buffer
                             } else {
-                                LOGI("Steps", "Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
-                                print("DEBUGY: Step threshold EXCEEDED for rule \(rule.id). Sending notification.")
-                                self.sendNotification(for: self.activeRules[index], with: totalSteps)
-                                self.activeRules[index].notificationSent = true
-                                self.activeRules[index].lastNotificationDate = now
+                                self.sendNotification(for: self.activeRules[idx], with: total)
+                                self.activeRules[idx].notificationSent = true
+                                self.activeRules[idx].lastNotificationDate = now
                             }
                         }
                     } else {
-                        if self.activeRules[index].notificationSent {
-                            print("DEBUGY: Step count below threshold for rule \(rule.id). Resetting flag.")
-                            self.activeRules[index].notificationSent = false
+                        if self.activeRules[idx].notificationSent {
+                            self.activeRules[idx].notificationSent = false
                         }
                     }
                 }
             }
-            self.healthStore.execute(query)
+            healthStore.execute(query)
         }
     }
-    
+
+    // MARK: - Notifications
+
     private func sendNotification(
         for rule: AlertRule,
         with steps: Double? = nil,
         withData heartRateData: [(value: Double, date: Date)] = []
     ) {
         let alertID = UUID()
-        
+
         var samples: [MeasurementSample] = []
         switch rule.measurementType {
         case .heartRate:
-            samples = heartRateData.map {
-                MeasurementSample(type: .heartRate, value: $0.value, date: $0.date)
-            }
+            samples = heartRateData.map { MeasurementSample(type: .heartRate, value: $0.value, date: $0.date) }
         case .steps:
-            if let totalSteps = steps {
-                samples = [MeasurementSample(type: .steps, value: totalSteps, date: Date())]
+            if let total = steps {
+                samples = [MeasurementSample(type: .steps, value: total, date: Date())]
             }
         }
+
         Services.shared.systemDelegate.cacheTriggerData(samples, for: alertID)
-        
+
         if isAppInForeground {
-            print("DEBUGY: App is in foreground. Triggering IN-APP alert.")
-            LOGI("Notify", "App is in foreground. Triggering IN-APP alert.")
-            var ruleToSend = rule
-            ruleToSend.alertID = alertID
-            self.alertTriggeredSubject.send(ruleToSend)
-            
+            var r = rule
+            r.alertID = alertID
+            alertTriggeredSubject.send(r)
         } else {
-            print("DEBUGY: App is in background. Sending SYSTEM notification.")
-            LOGI("Notify", "App is in background. Sending SYSTEM notification.")
             let content = UNMutableNotificationContent()
             content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
             content.body = rule.alertMessage
@@ -652,27 +551,28 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 "alert_id": alertID.uuidString,
                 "reminder_id": rule.id.uuidString
             ]
-            
-            let request = UNNotificationRequest(identifier: alertID.uuidString, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
-            UNUserNotificationCenter.current().add(request)
+            let req = UNNotificationRequest(
+                identifier: alertID.uuidString,
+                content: content,
+                trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            )
+            UNUserNotificationCenter.current().add(req)
         }
     }
-    
+
     private func logPendingNotification(alertID: UUID, reminderID: UUID) {
         let userDefaults = UserDefaults.standard
         let newPending = PendingNotification(alertID: alertID, reminderID: reminderID, sentDate: Date())
-        
         do {
-            var allPending = getPendingNotifications()
-            allPending.append(newPending)
-            let data = try JSONEncoder().encode(allPending)
+            var all = getPendingNotifications()
+            all.append(newPending)
+            let data = try JSONEncoder().encode(all)
             userDefaults.set(data, forKey: pendingNotificationsKey)
-            print("DEBUGY: Logged new pending notification with alertID \(alertID)")
         } catch {
-            print("DEBUGY: ERROR - Failed to log pending notification: \(error)")
+            // ignore
         }
     }
-    
+
     private func getPendingNotifications() -> [PendingNotification] {
         let userDefaults = UserDefaults.standard
         guard let data = userDefaults.data(forKey: pendingNotificationsKey),
@@ -682,7 +582,23 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         return pending
     }
     
-    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}
-    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
-    nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+    func pauseMonitoring() {
+        guard isSessionActive, !isManuallyPaused else { return }
+        workoutSession?.pause()
+        isManuallyPaused = true
+        statusMessage = .paused
+
+        sharedUserDefaults?.set(ComplicationState.paused.rawValue, forKey: "monitoringState")
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
+
+    func resumeMonitoring() {
+        guard isSessionActive, isManuallyPaused else { return }
+        workoutSession?.resume()
+        isManuallyPaused = false
+        statusMessage = .monitoring
+
+        sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
 }

@@ -52,7 +52,6 @@ struct SettingsView: View {
     
     @Environment(\.openURL) private var openURL
     @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
-    @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
     @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
     @State private var viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
     
@@ -126,7 +125,7 @@ struct SettingsView: View {
             }
             .onAppear {
                 viewModel.onViewAppear()
-                viewModel.configure(modeOfUse, deviceMode)
+                viewModel.configure(modeOfUse, DeviceMode.current(from: DefaultsStore.shared))
             }
             .onChange(of: viewModel.isExpandedModeOfUseOn) { _, newValue in
                 modeOfUse = (newValue == true ? .expanded : .essentials)

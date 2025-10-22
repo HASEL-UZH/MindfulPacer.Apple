@@ -55,9 +55,15 @@ struct HomeView: View {
 
     @Environment(\.openURL) private var openURL
     @AppStorage("userHasSeenOnboarding") var userHasSeenOnboarding: Bool = false
-    @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     var onWidgetTap: () -> Void
+    
+    @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
+    private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
+    
+    private var deviceMode: DeviceMode {
+        DeviceMode(rawValue: deviceModeRaw) ?? .iPhoneAndWatch
+    }
     
     // MARK: Body
 

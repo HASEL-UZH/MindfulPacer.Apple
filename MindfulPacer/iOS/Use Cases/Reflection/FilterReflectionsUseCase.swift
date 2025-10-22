@@ -16,54 +16,52 @@ protocol FilterReflectionsUseCase {
 class DefaultFilterReflectionsUseCase: FilterReflectionsUseCase {
     func execute(reflections: [Reflection], filters: ReflectionFilter, sorting: ReflectionSorting) -> [Reflection] {
 
-        // Adjust toDate to include the entire day (set time to 23:59:59)
-        let adjustedToDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: filters.toDate) ?? filters.toDate
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: filters.fromDate)
+        let endExclusive = cal.startOfNextDay(for: filters.toDate)
+        let dateRange = start..<endExclusive
+
+        let isDateFilterActive = true
+        let areOtherFiltersActive =
+            !filters.selectedActivities.isEmpty ||
+            !filters.selectedSubactivities.isEmpty ||
+            !filters.selectedMoods.isEmpty ||
+            filters.triggeredCrash
 
         let filteredReflections = reflections.filter { reflection in
+            let isWithinDateRange = dateRange.contains(reflection.date)
 
-            var matches = false
-
-            // Check if date range filter is active
-            let isDateFilterActive = filters.fromDate != .distantPast || filters.toDate != .distantFuture
-            let isWithinDateRange = reflection.date >= filters.fromDate && reflection.date <= adjustedToDate
-
-            // Check if any non-date filters are active
-            let areOtherFiltersActive = filters.activeFilterCount > 0
-
-            // If there are no non-date filters, only apply date range filter
-            if !areOtherFiltersActive && isDateFilterActive {
+            if isDateFilterActive && !areOtherFiltersActive {
                 return isWithinDateRange
             }
 
-            // Apply Activity Filter (match any selected activity)
+            var matches = false
+
             if !filters.selectedActivities.isEmpty {
-                matches = matches || (reflection.activity.map { filters.selectedActivities.contains($0) } ?? false)
+                if let activity = reflection.activity {
+                    matches = matches || filters.selectedActivities.contains(activity)
+                }
             }
 
-            // Apply Subactivity Filter (match any selected subactivity)
             if !filters.selectedSubactivities.isEmpty {
-                matches = matches || (reflection.subactivity.map { filters.selectedSubactivities.contains($0) } ?? false)
+                if let sub = reflection.subactivity {
+                    matches = matches || filters.selectedSubactivities.contains(sub)
+                }
             }
 
-            // Apply Mood Filter (match any selected mood)
             if !filters.selectedMoods.isEmpty {
-                matches = matches || (reflection.mood.map { filters.selectedMoods.contains($0) } ?? false)
+                if let mood = reflection.mood {
+                    matches = matches || filters.selectedMoods.contains(mood)
+                }
             }
 
-            // Apply Triggered Crash Filter
             if filters.triggeredCrash {
                 matches = matches || reflection.didTriggerCrash
             }
 
-            // If date filter is active and other filters are applied, reflections must match both
-            if isDateFilterActive {
-                matches = matches && isWithinDateRange
-            }
-
-            return matches
+            return (isDateFilterActive ? (matches && isWithinDateRange) : matches)
         }
 
-        // Apply sorting
         return filteredReflections.sorted(by: sorting.comparator)
     }
 }

@@ -13,12 +13,18 @@ extension CreateReminderView {
     struct ReminderTypeView: View {
         
         // MARK: Properties
-
-        @AppStorage(DeviceMode.appStorageKey) var deviceMode: DeviceMode = .iPhoneOnly
+        
         @Bindable var viewModel: CreateReminderViewModel
-
+        
+        @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
+        private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
+        
+        private var deviceMode: DeviceMode {
+            DeviceMode(rawValue: deviceModeRaw) ?? .iPhoneAndWatch
+        }
+        
         // MARK: Body
-
+        
         var body: some View {
             ZStack {
                 Color(.systemGroupedBackground)

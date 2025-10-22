@@ -236,7 +236,13 @@ class SettingsViewModel {
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
     var isExpandedModeOfUseOn: Bool = false
-    var deviceMode: DeviceMode = .iPhoneOnly
+    var deviceMode: DeviceMode = DeviceMode.current(from: DefaultsStore.shared) {
+        didSet {
+            guard oldValue != deviceMode else { return }
+            DefaultsStore.shared.set(deviceMode.rawValue, forKey: DeviceMode.appStorageKey)
+            Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(deviceMode) }
+        }
+    }
     var selectedExportFileFormat: ExportFileFormat = .csv
     var selectedExportDataModel: ExportDataModel = .reminder
     var exportURL: URL?

@@ -3,7 +3,6 @@
 //
 
 import SwiftUI
-import BackgroundTasks
 
 @main
 struct IOSApp: App {

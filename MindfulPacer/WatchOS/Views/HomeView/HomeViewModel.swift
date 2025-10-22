@@ -63,10 +63,98 @@ class HomeViewModel {
     private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     
+    enum ChartMetric { case heartRate, steps }
+
+    struct ChartEmptyState {
+        let title: String
+        let subtitle: String
+        let symbol: String
+    }
+
+    // Convenience flags
+    var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
+    var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
+
+    func emptyState(for metric: ChartMetric) -> ChartEmptyState {
+        // Highest priority: permission
+        if statusMessage == .permissionDenied {
+            return ChartEmptyState(
+                title: "Health Permission Needed",
+                subtitle: "Enable \(metric == .heartRate ? "Heart Rate" : "Steps") access in the Health settings on your iPhone.",
+                symbol: "hand.raised.fill"
+            )
+        }
+
+        // Paused by user
+        if isManuallyPaused {
+            return ChartEmptyState(
+                title: "Monitoring Paused",
+                subtitle: "Resume monitoring to continue collecting \(metric == .heartRate ? "heart rate" : "step") data.",
+                symbol: "pause.circle.fill"
+            )
+        }
+
+        // Not monitoring (session off)
+        if !isMonitoring && metric == .heartRate {
+            return ChartEmptyState(
+                title: "Monitoring is Off",
+                subtitle: "Start monitoring to see your last hour of heart rate.",
+                symbol: "play.circle.fill"
+            )
+        }
+
+        // No recent samples despite being OK otherwise
+        switch metric {
+        case .heartRate:
+            return ChartEmptyState(
+                title: "No Recent Heart Rate",
+                subtitle: "We didn’t receive heart rate in the last hour. Keep your watch snug and try moving a bit.",
+                symbol: "waveform.path.ecg"
+            )
+        case .steps:
+            return ChartEmptyState(
+                title: "No Recent Steps",
+                subtitle: "No step data recorded for the last hour.",
+                symbol: "figure.walk"
+            )
+        }
+    }
+
+    
     var avgHeartRate: Int {
         guard !heartRateSamples.isEmpty else { return 0 }
         let sum = heartRateSamples.reduce(0) { $0 + $1.value }
         return Int(sum / Double(heartRateSamples.count))
+    }
+    
+    var heartRateThresholdRules: [AlertRule] {
+        let allowed: [Reminder.Interval] = [.fifteenMinutes, .oneMinute, .fiveMinutes]
+        return activeRules.filter { rule in
+            allowed.contains(rule.interval) &&
+            (rule.measurementType == .heartRate)
+        }
+    }
+
+    var stepsThresholdRules: [AlertRule] {
+        let allowed: [Reminder.Interval] = [.thirtyMinutes, .oneHour]
+        return activeRules.filter { rule in
+            allowed.contains(rule.interval) &&
+            (rule.measurementType == .steps)
+        }
+    }
+    
+    private var heartRateDisplayedThresholds: [Double] {
+        heartRateThresholdRules.compactMap {
+            if case .heartRate(let t) = $0.ruleType { return t }
+            return nil
+        }
+    }
+
+    private var stepsDisplayedThresholds: [Double] {
+        stepsThresholdRules.compactMap {
+            if case .steps(let t) = $0.ruleType { return t }
+            return nil
+        }
     }
     
     var minHeartRate: Int {
@@ -95,30 +183,39 @@ class HomeViewModel {
         return downsampledData
     }
     
-    var heartRateChartYDomain: ClosedRange<Int> {
-        let dataValues = heartRateSamples.map { $0.value }
-        let minDataY = dataValues.min() ?? 60.0
-        let maxDataY = dataValues.max() ?? 100.0
-        let thresholdValues = activeRules.compactMap { rule -> Double? in
-            if case .heartRate(let threshold) = rule.ruleType { return threshold }
-            return nil
+    var heartRateChartYDomain: ClosedRange<Double> {
+        let dataMin = heartRateSamples.map(\.value).min() ?? 60.0
+        let dataMax = heartRateSamples.map(\.value).max() ?? 100.0
+
+        let thrMin = heartRateDisplayedThresholds.min()
+        let thrMax = heartRateDisplayedThresholds.max()
+
+        let overallMin = min(dataMin, thrMin ?? dataMin)
+        let overallMax = max(dataMax, thrMax ?? dataMax)
+
+        guard overallMax > overallMin else {
+            return paddedDomain(min: overallMin - 1, max: overallMax + 1)
         }
-        let minThresholdY = thresholdValues.min()
-        let maxThresholdY = thresholdValues.max()
-        let overallMin = min(minDataY, minThresholdY ?? minDataY)
-        let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
-        return (Int(overallMin) - 10)...(Int(overallMax) + 10)
+        return paddedDomain(min: overallMin, max: overallMax)
     }
     
-    var stepsChartYDomain: ClosedRange<Int> {
-        let maxDataY = hourlyStepData.map { $0.steps }.max() ?? 500.0
-        let thresholdValues = activeRules.compactMap { rule -> Double? in
-            if case .steps(let threshold) = rule.ruleType { return threshold }
-            return nil
+    var stepsChartYDomain: ClosedRange<Double> {
+        let dataValues = hourlyStepData.map(\.steps)
+        let dataMin = dataValues.min() ?? 0
+        let dataMax = dataValues.max() ?? max(500, dataMin)
+
+        let thrMin = stepsDisplayedThresholds.min()
+        let thrMax = stepsDisplayedThresholds.max()
+
+        var overallMin = min(dataMin, thrMin ?? dataMin)
+        var overallMax = max(dataMax, thrMax ?? dataMax)
+
+        overallMin = max(0, overallMin)
+
+        guard overallMax > overallMin else {
+            return paddedDomain(min: overallMin, max: overallMax + 1)
         }
-        let maxThresholdY = thresholdValues.max()
-        let overallMax = max(maxDataY, maxThresholdY ?? maxDataY)
-        return 0...(Int(overallMax) + 100)
+        return paddedDomain(min: overallMin, max: overallMax)
     }
     
     private var refreshTimer: Timer?
@@ -190,8 +287,11 @@ class HomeViewModel {
             .sink { [weak self] newIsMonitoring in self?.isMonitoring = newIsMonitoring }
             .store(in: &cancellables)
         Services.shared.monitorService.alertTriggeredSubject
-            .sink { [weak self] rule in self?.triggerInAppAlert(for: rule) }
-            .store(in: &cancellables)
+               .receive(on: DispatchQueue.main)
+               .sink { [weak self] rule in
+                   self?.triggerInAppAlert(for: rule)
+               }
+               .store(in: &cancellables)
         Services.shared.monitorService.$recentHeartRateSamples
             .sink { [weak self] samples in self?.heartRateSamples = samples }
             .store(in: &cancellables)
@@ -360,6 +460,19 @@ class HomeViewModel {
         let allReflections = fetchReflectionsUseCase.execute() ?? []
         let missedReflections = allReflections.filter { $0.isMissedReflection }
         missedReflectionsCount = missedReflections.count
+    }
+    
+    private func paddedDomain(
+        min minValue: Double,
+        max maxValue: Double,
+        padFraction: Double = 0.25,
+        minSpan: Double = 10
+    ) -> ClosedRange<Double> {
+        let span = maxValue - minValue
+        let pad = Swift.max(span * padFraction, minSpan * 0.1)
+        let lo = minValue - pad
+        let hi = maxValue + pad
+        return lo...hi
     }
 }
 

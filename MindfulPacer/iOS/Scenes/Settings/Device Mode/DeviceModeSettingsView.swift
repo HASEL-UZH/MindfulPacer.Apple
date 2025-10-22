@@ -7,12 +7,23 @@
 
 import SwiftUI
 
+// MARK: - DeviceModeSettingsView
+
 extension SettingsView {
     struct DeviceModeSettingsView: View {
 
         @Bindable var viewModel: SettingsViewModel
-        @AppStorage(DeviceMode.appStorageKey) private var deviceMode: DeviceMode = .iPhoneOnly
-
+        
+        @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
+        private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
+        
+        private var deviceModeBinding: Binding<DeviceMode> {
+            Binding<DeviceMode>(
+                get: { DeviceMode(rawValue: deviceModeRaw) ?? .iPhoneAndWatch },
+                set: { deviceModeRaw = $0.rawValue }
+            )
+        }
+        
         var body: some View {
             ScrollView {
                 IconLabelGroupBox(
@@ -31,7 +42,7 @@ extension SettingsView {
                     VStack(spacing: 16) {
                         ForEach(DeviceMode.allCases) { mode in
                             let isSelectable = (mode == .iPhoneOnly) || viewModel.isWatchAppInstalled
-                            
+
                             SelectableButton(
                                 shape: .roundedRectangle(cornerRadius: 16),
                                 backgroundColor: Color(.tertiarySystemGroupedBackground),
@@ -39,7 +50,9 @@ extension SettingsView {
                             ) {
                                 if isSelectable {
                                     viewModel.deviceMode = mode
-                                    deviceMode = mode
+                                    deviceModeBinding.wrappedValue = mode
+                                    // Start/stop BG task immediately
+                                    Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(mode) }
                                     viewModel.presentAlert(.restartApp)
                                 }
                             } label: {
@@ -48,11 +61,11 @@ extension SettingsView {
                                     title: mode.localized,
                                     description: mode.description,
                                     titleColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                    : (isSelectable ? .primary : .secondary),
+                                        : (isSelectable ? .primary : .secondary),
                                     iconColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                    : (isSelectable ? .primary : .secondary),
+                                        : (isSelectable ? .primary : .secondary),
                                     descriptionTextColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                    : (isSelectable ? .secondary : .secondary),
+                                        : (isSelectable ? .secondary : .secondary),
                                     background: true
                                 )
                                 .redacted(reason: (mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled) ? .invalidated : .init())
@@ -105,17 +118,28 @@ extension SettingsView {
             .background(Color(.systemGroupedBackground))
             .navigationTitle(String(localized: "Device Mode"))
             .onAppear {
-                if viewModel.deviceMode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled {
+                if !viewModel.isWatchAppInstalled && deviceModeBinding.wrappedValue == .iPhoneAndWatch {
+                    deviceModeBinding.wrappedValue = .iPhoneOnly
                     viewModel.deviceMode = .iPhoneOnly
-                    deviceMode = .iPhoneOnly
+                    Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(.iPhoneOnly) }
+                } else {
+                    if viewModel.deviceMode != deviceModeBinding.wrappedValue {
+                        viewModel.deviceMode = deviceModeBinding.wrappedValue
+                    }
                 }
             }
-            .onChange(of: viewModel.deviceMode) { _, newValue in
-                deviceMode = newValue
+            .onChange(of: deviceModeRaw) { _, _ in
+                let mode = deviceModeBinding.wrappedValue
+                if viewModel.deviceMode != mode {
+                    viewModel.deviceMode = mode
+                }
+                Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(mode) }
             }
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     let viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()

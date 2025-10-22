@@ -34,7 +34,7 @@ struct HeartRateChartView: View {
                 }
             }
             
-            if viewModel.isMonitoring && !viewModel.heartRateSamples.isEmpty {
+            if viewModel.hasHeartRateData {
                 Chart {
                     ForEach(viewModel.downsampledHeartRateSamples, id: \.date) { sample in
                         LineMark(
@@ -44,7 +44,7 @@ struct HeartRateChartView: View {
                         .foregroundStyle(.pink)
                     }
                     
-                    ForEach(viewModel.activeRules.filter { $0.measurementType == .heartRate }) { rule in
+                    ForEach(viewModel.heartRateThresholdRules) { rule in
                         if case .heartRate(let threshold) = rule.ruleType {
                             RuleMark(y: .value("Threshold", threshold))
                                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
@@ -84,10 +84,11 @@ struct HeartRateChartView: View {
                     Spacer()
                 }
             } else {
+                let state = viewModel.emptyState(for: .heartRate)
                 ContentUnavailableView(
-                    "No Data",
-                    systemImage: "chart.xyaxis.line",
-                    description: Text("Please check the monitoring status.")
+                    state.title,
+                    systemImage: state.symbol,
+                    description: Text(state.subtitle)
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
@@ -97,7 +98,58 @@ struct HeartRateChartView: View {
     }
 }
 
+struct BatteryRingView: View {
+    let level: Double
+    var lineWidth: CGFloat = 8
+    var size: CGFloat = 48
+
+    private var clampedLevel: Double {
+        guard level >= 0 else { return -1 }
+        return min(max(level, 0), 1)
+    }
+
+    private var displayText: String {
+        clampedLevel < 0 ? "--%" : "\(Int(clampedLevel * 100))%"
+    }
+
+    private var tint: Color {
+        guard clampedLevel >= 0 else { return .secondary }
+        switch clampedLevel {
+        case ..<0.2: return .red
+        case ..<0.5: return .yellow
+        default: return .green
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(.primary.opacity(0.12), lineWidth: lineWidth)
+
+            if clampedLevel >= 0 {
+                Circle()
+                    .trim(from: 0, to: max(0.02, clampedLevel))
+                    .stroke(
+                        tint,
+                        style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.3), value: clampedLevel)
+            }
+
+            Text(displayText)
+                .font(.caption2.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(.primary)
+        }
+        .frame(width: size, height: size)
+        .accessibilityLabel("Battery \(displayText)")
+        .accessibilityAddTraits(.isStaticText)
+    }
+}
+
+
 #Preview {
-    //    HeartRateChartView(viewModel: .mock)
-    HeartRateChartView(viewModel: HomeViewModel())
+    HeartRateChartView(viewModel: .mock)
+    //    HeartRateChartView(viewModel: HomeViewModel())
 }
