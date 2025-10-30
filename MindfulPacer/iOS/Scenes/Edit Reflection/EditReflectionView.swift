@@ -450,7 +450,11 @@ struct EditReflectionView: View {
                             title: String(localized: "Reminder"),
                             labelColor: Color("BrandPrimary"),
                             background: true
-                        )
+                        ),
+                        description:
+                            Text("View the data that triggered this reminder.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     ) {
                         Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
                             HStack(spacing: 16) {
@@ -478,19 +482,8 @@ struct EditReflectionView: View {
                             .foregroundStyle(Color.primary)
                         }
                     } footer: {
-                        DisclosureGroup {
-                            TriggerDataChartView(reflection: reflection)
-                                .frame(height: 250)
-                                .padding(.top)
-                        } label: {
-                            IconLabel(
-                                icon: "chart.xyaxis.line",
-                                title: "Chart",
-                                description: "View the data that triggered this reminder",
-                                labelColor: .primary
-                            )
-                            .font(.subheadline.weight(.semibold))
-                        }
+                        TriggerDataChartView(reflection: reflection)
+                            .frame(height: 250)
                     }
                     .iconLabelGroupBoxStyle(.divider)
                 } else {

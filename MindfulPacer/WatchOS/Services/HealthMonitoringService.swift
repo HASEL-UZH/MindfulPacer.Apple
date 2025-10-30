@@ -490,23 +490,36 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 guard error == nil, let sum = result?.sumQuantity() else { return }
                 let total = sum.doubleValue(for: .count())
 
-                Task { @MainActor in
-                    guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
+                // Keep UI mutations on main, but build series off-main
+                if total > threshold {
+                    Task {
+                        // Find the current index on MainActor
+                        let idx = await MainActor.run { self.activeRules.firstIndex(where: { $0.id == rule.id }) }
+                        guard let idx else { return }
 
-                    if total > threshold {
-                        if !self.activeRules[idx].notificationSent {
-                            let buffer = BufferManager.shared.buffer(for: self.activeRules[idx].interval, context: .steps)
-                            if let last = self.activeRules[idx].lastNotificationDate,
-                               now.timeIntervalSince(last) < buffer {
-                                // Suppressed by buffer
-                            } else {
-                                self.sendNotification(for: self.activeRules[idx], with: total)
-                                self.activeRules[idx].notificationSent = true
-                                self.activeRules[idx].lastNotificationDate = now
-                            }
+                        // Respect buffer
+                        let (interval, last) = await MainActor.run {
+                            (self.activeRules[idx].interval, self.activeRules[idx].lastNotificationDate)
                         }
-                    } else {
-                        if self.activeRules[idx].notificationSent {
+                        let buffer = await MainActor.run {
+                            BufferManager.shared.buffer(for: interval, context: .steps)
+                        }
+                        if let last, now.timeIntervalSince(last) < buffer { return }
+
+                        // Build per-minute series for the chart window
+                        let series = await self.buildStepSeries(for: await MainActor.run { self.activeRules[idx] }, windowEnd: now)
+
+                        // Send notification + update state on MainActor
+                        await MainActor.run {
+                            self.sendNotification(for: self.activeRules[idx], stepsSeries: series)
+                            self.activeRules[idx].notificationSent = true
+                            self.activeRules[idx].lastNotificationDate = now
+                        }
+                    }
+                } else {
+                    Task { @MainActor in
+                        if let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }),
+                           self.activeRules[idx].notificationSent {
                             self.activeRules[idx].notificationSent = false
                         }
                     }
@@ -520,7 +533,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private func sendNotification(
         for rule: AlertRule,
-        with steps: Double? = nil,
+        stepsSeries: [MeasurementSample]? = nil,
         withData heartRateData: [(value: Double, date: Date)] = []
     ) {
         let alertID = UUID()
@@ -530,8 +543,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         case .heartRate:
             samples = heartRateData.map { MeasurementSample(type: .heartRate, value: $0.value, date: $0.date) }
         case .steps:
-            if let total = steps {
-                samples = [MeasurementSample(type: .steps, value: total, date: Date())]
+            // Use the per-minute series if provided; otherwise fall back to a single point
+            if let stepsSeries, !stepsSeries.isEmpty {
+                samples = stepsSeries
+            } else {
+                // fallback: single timestamp sample; not ideal but preserves behavior
+                samples = [MeasurementSample(type: .steps, value: 0, date: Date())]
             }
         }
 
@@ -600,5 +617,72 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
         sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
+    
+    private func fetchStepBuckets(
+        from start: Date,
+        to end: Date,
+        bucket: DateComponents = DateComponents(minute: 1)
+    ) async -> [(date: Date, steps: Double)] {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        let anchorDate = Calendar.current.startOfDay(for: end)
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+
+        if #available(watchOS 10.0, *) {
+            let qd = HKStatisticsCollectionQueryDescriptor(
+                predicate: .quantitySample(type: stepType, predicate: predicate),
+                options: .cumulativeSum,
+                anchorDate: anchorDate,
+                intervalComponents: bucket
+            )
+            do {
+                let collection = try await qd.result(for: healthStore)
+                var out: [(Date, Double)] = []
+                collection.enumerateStatistics(from: start, to: end) { stats, _ in
+                    if let sum = stats.sumQuantity() {
+                        let count = sum.doubleValue(for: .count())
+                        if count > 0 { out.append((stats.endDate, count)) }
+                    }
+                }
+                return out
+            } catch {
+                return []
+            }
+        } else {
+            return await withCheckedContinuation { cont in
+                let query = HKStatisticsCollectionQuery(
+                    quantityType: stepType,
+                    quantitySamplePredicate: predicate,
+                    options: [.cumulativeSum],
+                    anchorDate: anchorDate,
+                    intervalComponents: bucket
+                )
+                query.initialResultsHandler = { _, collection, _ in
+                    guard let collection else { cont.resume(returning: []); return }
+                    var out: [(Date, Double)] = []
+                    collection.enumerateStatistics(from: start, to: end) { stats, _ in
+                        if let sum = stats.sumQuantity() {
+                            let count = sum.doubleValue(for: .count())
+                            if count > 0 { out.append((stats.endDate, count)) }
+                        }
+                    }
+                    cont.resume(returning: out)
+                }
+                self.healthStore.execute(query)
+            }
+        }
+    }
+    
+    private func buildStepSeries(for rule: AlertRule, windowEnd: Date) async -> [MeasurementSample] {
+        let windowStart = windowEnd.addingTimeInterval(-rule.duration)
+
+        // For .oneDay rules, still send per-bucket raw samples
+        let start = (rule.interval == .oneDay)
+            ? Calendar.current.startOfDay(for: windowEnd)
+            : windowStart
+
+        let buckets = await fetchStepBuckets(from: start, to: windowEnd, bucket: DateComponents(minute: 1))
+        // Map to MeasurementSample (raw bucket values)
+        return buckets.map { MeasurementSample(type: .steps, value: $0.steps, date: $0.date) }
     }
 }

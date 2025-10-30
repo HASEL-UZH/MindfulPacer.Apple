@@ -76,6 +76,8 @@
 		0D500FED2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */; };
 		0D500FF62C75242A00395AEB /* CreateReminderUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D500FF52C75242A00395AEB /* CreateReminderUseCase.swift */; };
+		0D5770762EB234E600C5304B /* OnboardingGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5770752EB234E600C5304B /* OnboardingGate.swift */; };
+		0D5770782EB234FF00C5304B /* FinishOnIPhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5770772EB234FF00C5304B /* FinishOnIPhoneView.swift */; };
 		0D5947882CBE74170019BA24 /* ThemeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5947872CBE74170019BA24 /* ThemeSettingsView.swift */; };
 		0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
 		0D5EA1A52C4D806600527AB0 /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */; };
@@ -323,6 +325,8 @@
 		0D500FEA2C749B2700395AEB /* MoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodView.swift; sourceTree = "<group>"; };
 		0D500FEC2C749C5300395AEB /* ProcessInfo+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extensions.swift"; sourceTree = "<group>"; };
 		0D500FF52C75242A00395AEB /* CreateReminderUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReminderUseCase.swift; sourceTree = "<group>"; };
+		0D5770752EB234E600C5304B /* OnboardingGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGate.swift; sourceTree = "<group>"; };
+		0D5770772EB234FF00C5304B /* FinishOnIPhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishOnIPhoneView.swift; sourceTree = "<group>"; };
 		0D5947872CBE74170019BA24 /* ThemeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSettingsView.swift; sourceTree = "<group>"; };
 		0D5EA1A32C4D806600527AB0 /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
 		0D5F32752E828A3E00E4EC35 /* iOS.prod.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.prod.entitlements; sourceTree = "<group>"; };
@@ -630,6 +634,7 @@
 				0DF5EDA42E4DF4FE005DB9DE /* HomeView */,
 				0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */,
 				0DF5EDB92E4F4330005DB9DE /* SelectActivityView.swift */,
+				0D5770772EB234FF00C5304B /* FinishOnIPhoneView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1084,6 +1089,7 @@
 				0D352C842E48ABFE0039055F /* Views */,
 				0D352C852E48AC760039055F /* Delegates */,
 				0D352C862E48AC920039055F /* Services */,
+				0D5770752EB234E600C5304B /* OnboardingGate.swift */,
 			);
 			path = WatchOS;
 			sourceTree = "<group>";
@@ -1708,6 +1714,7 @@
 				0DF5EDA82E4DF5FD005DB9DE /* HomeViewModel.swift in Sources */,
 				0DC136AD2D4E77E500001D08 /* BlogArticle.swift in Sources */,
 				0D67F4362C91933B000F6114 /* NotificationError.swift in Sources */,
+				0D5770782EB234FF00C5304B /* FinishOnIPhoneView.swift in Sources */,
 				0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */,
 				0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
@@ -1715,6 +1722,7 @@
 				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
 				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
 				0DF5EDBB2E4F4367005DB9DE /* SaveReflectionUseCase.swift in Sources */,
+				0D5770762EB234E600C5304B /* OnboardingGate.swift in Sources */,
 				0DEF86F62E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
 				0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */,

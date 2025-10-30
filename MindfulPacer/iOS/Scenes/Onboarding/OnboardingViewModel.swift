@@ -279,6 +279,7 @@ class OnboardingViewModel {
             navigationPath.append(.disclaimer)
         case .disclaimer:
             toggleUserHasSeenOnboardingUseCase.execute()
+            WatchOnboardingBridge.shared.notifyCompletedNow()
             shouldDismiss = true
         }
     }

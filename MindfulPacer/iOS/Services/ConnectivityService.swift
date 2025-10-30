@@ -91,6 +91,43 @@ class WatchEventCoordinator {
     private init() {}
 }
 
+// MARK: - WatchOnboardingBridge
+
+@MainActor
+final class WatchOnboardingBridge {
+    static let shared = WatchOnboardingBridge()
+    private init() {}
+
+    private var session: WCSession { .default }
+
+    func pushStatus(completed: Bool) {
+        guard WCSession.isSupported() else { return }
+        let payload: [String: Any] = [
+            OnboardingWire.keyType: OnboardingWire.typeOnboarding,
+            OnboardingWire.keyOnboardingCompleted: completed
+        ]
+        if session.activationState == .activated {
+            do {
+                try session.updateApplicationContext(payload)
+            } catch {
+                session.transferUserInfo(payload)
+            }
+        } else {
+            session.transferUserInfo(payload)
+        }
+    }
+
+    func notifyCompletedNow() {
+        guard WCSession.isSupported() else { return }
+        if session.activationState == .activated {
+            session.sendMessage(
+                [MessageKeys.command: MessageCommand.onboardingCompleted.rawValue],
+                replyHandler: nil, errorHandler: nil
+            )
+        }
+        pushStatus(completed: true)
+    }
+}
 
 // MARK: - ConnectivityServiceProtocol
 
@@ -229,9 +266,19 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             replyHandler([:])
             return
         }
-        if command == .ping {
+
+        switch command {
+        case .ping:
             replyHandler(["ack": "pong"])
-        } else {
+
+        case .requestOnboardingStatus:
+            let completed = OnboardingStatus.isCompleted()
+            replyHandler([
+                MessageKeys.command: MessageCommand.onboardingStatus.rawValue,
+                OnboardingWire.keyOnboardingCompleted: completed
+            ])
+
+        default:
             replyHandler([:])
         }
     }

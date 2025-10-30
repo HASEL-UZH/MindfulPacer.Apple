@@ -8,6 +8,13 @@
 import Foundation
 import SwiftUI
 
+enum OnboardingStatus {
+    static let key = "userHasSeenOnboarding"
+    static func isCompleted(defaults: UserDefaults = DefaultsStore.shared) -> Bool {
+        defaults.bool(forKey: key)
+    }
+}
+
 protocol CheckUserHasSeenOnboardingUseCase {
     func execute() -> Bool
 }

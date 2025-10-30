@@ -98,57 +98,6 @@ struct HeartRateChartView: View {
     }
 }
 
-struct BatteryRingView: View {
-    let level: Double
-    var lineWidth: CGFloat = 8
-    var size: CGFloat = 48
-
-    private var clampedLevel: Double {
-        guard level >= 0 else { return -1 }
-        return min(max(level, 0), 1)
-    }
-
-    private var displayText: String {
-        clampedLevel < 0 ? "--%" : "\(Int(clampedLevel * 100))%"
-    }
-
-    private var tint: Color {
-        guard clampedLevel >= 0 else { return .secondary }
-        switch clampedLevel {
-        case ..<0.2: return .red
-        case ..<0.5: return .yellow
-        default: return .green
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(.primary.opacity(0.12), lineWidth: lineWidth)
-
-            if clampedLevel >= 0 {
-                Circle()
-                    .trim(from: 0, to: max(0.02, clampedLevel))
-                    .stroke(
-                        tint,
-                        style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .animation(.easeInOut(duration: 0.3), value: clampedLevel)
-            }
-
-            Text(displayText)
-                .font(.caption2.weight(.semibold))
-                .monospacedDigit()
-                .foregroundStyle(.primary)
-        }
-        .frame(width: size, height: size)
-        .accessibilityLabel("Battery \(displayText)")
-        .accessibilityAddTraits(.isStaticText)
-    }
-}
-
-
 #Preview {
     HeartRateChartView(viewModel: .mock)
     //    HeartRateChartView(viewModel: HomeViewModel())

@@ -11,14 +11,13 @@ import WatchConnectivity
 import SwiftData
 
 class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate, WCSessionDelegate, @unchecked Sendable {
-        
+    
     private let alertCacheKey = "com.mindfulpacer.alertDataCache"
-
+    
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var createReflectionUseCase: CreateReflectionUseCase?
     private var alertDataCache: [UUID: [MeasurementSample]] = [:]
-//    private let pendingNotificationsKey = "pendingNotificationsKey"
-
+    
     @MainActor
     func configure() {
         guard self.fetchRemindersUseCase == nil else { return }
@@ -34,36 +33,36 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     }
     
     @MainActor
-       func cacheTriggerData(_ data: [MeasurementSample], for alertID: UUID) {
-           print("DEBUGY: Encoding and caching \(data.count) samples for alertID \(alertID) in UserDefaults.")
-           do {
-               var cache = retrieveFullCache()
-               let encodedData = try JSONEncoder().encode(data)
-               cache[alertID.uuidString] = encodedData
-               let cacheData = try JSONEncoder().encode(cache)
-               UserDefaults.standard.set(cacheData, forKey: alertCacheKey)
-           } catch {
-               print("DEBUGY: ERROR - Failed to encode and cache trigger data: \(error)")
-           }
-       }
-       
+    func cacheTriggerData(_ data: [MeasurementSample], for alertID: UUID) {
+        print("DEBUGY: Encoding and caching \(data.count) samples for alertID \(alertID) in UserDefaults.")
+        do {
+            var cache = retrieveFullCache()
+            let encodedData = try JSONEncoder().encode(data)
+            cache[alertID.uuidString] = encodedData
+            let cacheData = try JSONEncoder().encode(cache)
+            UserDefaults.standard.set(cacheData, forKey: alertCacheKey)
+        } catch {
+            print("DEBUGY: ERROR - Failed to encode and cache trigger data: \(error)")
+        }
+    }
+    
     
     private func retrieveTriggerData(for alertID: UUID) -> [MeasurementSample]? {
-           print("DEBUGY: Retrieving data for alertID \(alertID) from UserDefaults.")
-           var cache = retrieveFullCache()
-           
-           guard let data = cache[alertID.uuidString] else {
-               print("DEBUGY: ERROR - No data found in UserDefaults cache for alertID \(alertID).")
-               return nil
-           }
-           
-           cache.removeValue(forKey: alertID.uuidString)
-           
-           try? UserDefaults.standard.set(JSONEncoder().encode(cache), forKey: alertCacheKey)
-           
-           return try? JSONDecoder().decode([MeasurementSample].self, from: data)
-       }
-
+        print("DEBUGY: Retrieving data for alertID \(alertID) from UserDefaults.")
+        var cache = retrieveFullCache()
+        
+        guard let data = cache[alertID.uuidString] else {
+            print("DEBUGY: ERROR - No data found in UserDefaults cache for alertID \(alertID).")
+            return nil
+        }
+        
+        cache.removeValue(forKey: alertID.uuidString)
+        
+        try? UserDefaults.standard.set(JSONEncoder().encode(cache), forKey: alertCacheKey)
+        
+        return try? JSONDecoder().decode([MeasurementSample].self, from: data)
+    }
+    
     private func retrieveFullCache() -> [String: Data] {
         guard let data = UserDefaults.standard.data(forKey: alertCacheKey),
               let cache = try? JSONDecoder().decode([String: Data].self, from: data) else {
@@ -88,8 +87,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             return
         }
         
-//        clearPendingNotification(alertID: alertID)
-
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
@@ -116,30 +113,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         completionHandler([])
     }
     
-//    private func clearPendingNotification(alertID: UUID) {
-//        let userDefaults = UserDefaults.standard
-//        var allPending = getPendingNotifications()
-//        
-//        allPending.removeAll { $0.alertID == alertID }
-//        
-//        do {
-//            let data = try JSONEncoder().encode(allPending)
-//            userDefaults.set(data, forKey: pendingNotificationsKey)
-//            print("DEBUGY: Cleared pending notification with alertID \(alertID)")
-//        } catch {
-//            print("DEBUGY: ERROR - Failed to clear pending notification: \(error)")
-//        }
-//    }
-//
-//    private func getPendingNotifications() -> [PendingNotification] {
-//        let userDefaults = UserDefaults.standard
-//        guard let data = userDefaults.data(forKey: pendingNotificationsKey),
-//              let pending = try? JSONDecoder().decode([PendingNotification].self, from: data) else {
-//            return []
-//        }
-//        return pending
-//    }
-    
     @MainActor
     func createAndSendReflection(reminderID: UUID, alertID: UUID, activity: Activity?, subactivity: Subactivity?) {
         guard let fetchRemindersUseCase else { return }
@@ -150,7 +123,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
         
         let triggerSamples = self.retrieveTriggerData(for: alertID) ?? []
-
+        
         print("DEBUGY: triggerSamples", triggerSamples)
         
         guard let createReflectionUseCase else { return }
@@ -192,7 +165,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
         
         let triggerSamples = self.retrieveTriggerData(for: alertID) ?? []
-
+        
         let result = createReflectionUseCase.execute(
             date: Date(),
             activity: nil, subactivity: nil, mood: nil, didTriggerCrash: false,
@@ -238,10 +211,10 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         print("DEBUGY WATCH: SystemDelegate's request method called.")
         
         guard WCSession.default.isReachable else {
-                print("DEBUGY WATCH: ERROR - iPhone is not reachable. Message will NOT be sent.")
-                return
-            }
-            
+            print("DEBUGY WATCH: ERROR - iPhone is not reachable. Message will NOT be sent.")
+            return
+        }
+        
         print("DEBUGY WATCH: iPhone is reachable. Sending message...")
         let message: [String: Any] = [MessageKeys.command: MessageCommand.requestCreateReflection.rawValue]
         
@@ -277,6 +250,19 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
                 }
             case .ping:
                 replyHandler(["ack": "pong"])
+            case .onboardingCompleted:
+                Task { @MainActor in
+                    OnboardingGate.shared.setCompleted(true)
+                }
+                replyHandler([:])
+                
+            case .onboardingStatus:
+                if let ok = message[OnboardingWire.keyOnboardingCompleted] as? Bool {
+                    Task { @MainActor in
+                        OnboardingGate.shared.setCompleted(ok)
+                    }
+                }
+                replyHandler([:])
             default:
                 break
             }
@@ -299,6 +285,26 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
             print("Error sending reflection request to phone: \(error.localizedDescription)")
             
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+        if let type = applicationContext[OnboardingWire.keyType] as? String,
+           type == OnboardingWire.typeOnboarding,
+           let ok = applicationContext[OnboardingWire.keyOnboardingCompleted] as? Bool {
+            Task { @MainActor in
+                OnboardingGate.shared.setCompleted(ok)
+            }
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        if let type = userInfo[OnboardingWire.keyType] as? String,
+           type == OnboardingWire.typeOnboarding,
+           let ok = userInfo[OnboardingWire.keyOnboardingCompleted] as? Bool {
+            Task { @MainActor in
+                OnboardingGate.shared.setCompleted(ok)
+            }
         }
     }
 }

@@ -151,20 +151,22 @@ struct HomeView: View {
                     .disabled(!viewModel.isMonitoring)
 
                     Spacer(); Divider(); Spacer()
-
-                    Button { viewModel.showBatteryInfo.toggle() } label: {
-                        Icon(name: viewModel.batteryImageName, color: viewModel.batteryTintColor, background: true)
+                    
+                    Button {
+                        viewModel.showBatteryInfo.toggle()
+                    } label: {
+                        BatteryBarView(level: Double(viewModel.batteryLevel))
                     }
                     .buttonStyle(.borderless)
                     .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
                         Button("OK", role: .cancel) {}
                     } message: {
                         Text("""
-                        Percentage: \(Int(viewModel.batteryLevel * 100))%
+                        Percentage: \(viewModel.batteryLevel >= 0 ? "\(Int(viewModel.batteryLevel * 100))%" : "Unknown")
                         ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
                         """)
                     }
-
+                    
                     Spacer(); Divider(); Spacer()
 
                     if viewModel.missedReflectionsCount == 0 {
@@ -251,6 +253,84 @@ struct HomeView: View {
         .padding()
         .background { RoundedRectangle(cornerRadius: 16).fill(Color.primary.opacity(0.1)) }
         .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
+    }
+}
+
+struct BatteryBarView: View {
+    let level: Double
+    private let minFill: CGFloat = 0.02
+
+    private var clampedLevel: Double {
+        guard level >= 0 else { return -1 }
+        return min(max(level, 0), 1)
+    }
+
+    private var tint: Color {
+        guard clampedLevel >= 0 else { return .secondary }
+        switch clampedLevel {
+        case ..<0.2: return .red
+        case ..<0.5: return .yellow
+        default: return .green
+        }
+    }
+
+    /// Visible bar proportions (kept smaller to avoid looking oversized inside the square)
+    private var barWidthRatio: CGFloat { 0.72 }
+    private var barHeightRatio: CGFloat { 0.35 }
+    private var capWidthRatio: CGFloat { 0.06 }
+
+    private var displayText: String {
+        clampedLevel < 0 ? "--%" : "\(Int(clampedLevel * 100))%"
+    }
+
+    var body: some View {
+        ZStack {
+            GeometryReader { geo in
+                let container = min(geo.size.width, geo.size.height)
+                let barW = container * barWidthRatio
+                let barH = container * barHeightRatio
+                let capW = container * capWidthRatio
+                let cornerR = barH * 0.4
+
+                RoundedRectangle(cornerRadius: cornerR, style: .continuous)
+                    .fill(.primary.opacity(0.12))
+                    .frame(width: barW, height: barH)
+                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
+
+                if clampedLevel >= 0 {
+                    let inset: CGFloat = barH * 0.15
+                    let fillAvailable = barW - inset * 2
+                    let fillW = max(fillAvailable * CGFloat(max(minFill, clampedLevel)), cornerR)
+
+                    RoundedRectangle(cornerRadius: cornerR * 0.75, style: .continuous)
+                        .fill(tint)
+                        .frame(width: fillW, height: barH - inset * 2)
+                        .position(
+                            x: geo.size.width / 2 - (barW - fillW) / 2 + inset,
+                            y: geo.size.height / 2
+                        )
+                        .animation(.easeInOut(duration: 0.3), value: clampedLevel)
+                }
+
+                RoundedRectangle(cornerRadius: cornerR * 0.4, style: .continuous)
+                    .fill(.primary.opacity(0.25))
+                    .frame(width: capW, height: barH * 0.6)
+                    .position(
+                        x: geo.size.width / 2 + barW / 2 + capW / 2 - 1,
+                        y: geo.size.height / 2
+                    )
+            }
+        }
+        .frame(width: 24, height: 24)
+        .padding(4)
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .foregroundStyle(tint.opacity(0.1))
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(tint.opacity(0.1), lineWidth: 1.5)
+            }
+        }
     }
 }
 

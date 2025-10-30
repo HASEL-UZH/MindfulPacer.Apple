@@ -71,6 +71,8 @@ class HomeViewModel {
         let symbol: String
     }
 
+    private var activitiesPollTask: Task<Void, Never>?
+    
     // Convenience flags
     var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
     var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
@@ -303,6 +305,18 @@ class HomeViewModel {
                   .sink { [weak self] isPaused in self?.isManuallyPaused = isPaused }
                   .store(in: &cancellables)
         
+        OnboardingGate.shared.$isOnboardingCompleted
+            .removeDuplicates()
+            .sink { [weak self] completed in
+                guard let self = self else { return }
+                if completed {
+                    self.startActivitiesPolling()
+                } else {
+                    self.stopActivitiesPolling()
+                }
+            }
+            .store(in: &cancellables)
+        
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
                 await self?.fetchChartData()
@@ -473,6 +487,48 @@ class HomeViewModel {
         let lo = minValue - pad
         let hi = maxValue + pad
         return lo...hi
+    }
+    
+    private func startActivitiesPolling(
+        retryEvery seconds: UInt64 = 3,
+        maxDuration: TimeInterval = 180
+    ) {
+        guard activitiesPollTask == nil else { return }
+
+        activitiesPollTask = Task { [weak self] in
+            guard let self = self else { return }
+            let start = Date()
+
+            self.loadDefaultActivities()
+            if !self.defaultActivities.isEmpty {
+                self.stopActivitiesPolling()
+                Services.shared.monitorService.refreshState()
+                return
+            }
+
+            while Date().timeIntervalSince(start) < maxDuration {
+                if Task.isCancelled { return }
+                try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                self.loadDefaultActivities()
+                if !self.defaultActivities.isEmpty {
+                    self.stopActivitiesPolling()
+                    Services.shared.monitorService.refreshState()
+                    Task {
+                        await self.fetchTodaysSteps()
+                        await self.fetchChartData()
+                    }
+                    return
+                }
+            }
+
+            // Give up after timeout (harmless; user can reopen, which will retry)
+            self.stopActivitiesPolling()
+        }
+    }
+
+    private func stopActivitiesPolling() {
+        activitiesPollTask?.cancel()
+        activitiesPollTask = nil
     }
 }
 

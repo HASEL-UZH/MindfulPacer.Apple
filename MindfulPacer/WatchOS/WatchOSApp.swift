@@ -15,6 +15,7 @@ struct WatchOSApp: App {
     
     @StateObject private var navigationManager = Services.shared.navigationManager
     private let systemDelegate = Services.shared.systemDelegate
+    @StateObject private var gate = OnboardingGate.shared
 
     init() {
         Services.shared.configure()
@@ -31,8 +32,12 @@ struct WatchOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(navigationManager)
+            if gate.isOnboardingCompleted {
+                RootView()
+                    .environmentObject(navigationManager)
+            } else {
+                FinishOnIPhoneView()
+            }
         }
         .modelContainer(.prod)
     }
