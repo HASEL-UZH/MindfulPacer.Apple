@@ -43,14 +43,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Need access to health data for heart rate and step count."
+            "value" : "This app reads your heart rate to detect high heart rate events and reads your step count to alert you based on your activity goals."
           }
         }
       }
@@ -61,14 +61,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Need access to health data for heart rate and step count."
+            "value" : "This app creates workout sessions in the background to monitor your heart rate continuously."
           }
         }
       }

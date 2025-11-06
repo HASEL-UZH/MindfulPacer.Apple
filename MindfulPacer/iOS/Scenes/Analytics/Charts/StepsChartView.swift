@@ -34,13 +34,34 @@ struct StepsChartView: View {
                             .lineStyle(.init(lineWidth: 1, dash: [5]))
                     }
                     
-                    ForEach(viewModel.chartData) { data in
-                        BarMark(
-                            x: .value("Time", viewModel.midDate(for: data)),
-                            y: .value("Steps", data.value)
-                        )
-                        .foregroundStyle(viewModel.selectedMeasurementType.color)
-                        .opacity((viewModel.selectedDate == viewModel.midDate(for: data) || viewModel.selectedDate == nil) ? 1.0 : 0.3)
+                    if viewModel.selectedPeriod == .week {
+                        ForEach(viewModel.chartData) { data in
+                            BarMark(
+                                x: .value("Time", viewModel.midDate(for: data)),
+                                y: .value("Steps", data.value)
+                            )
+                            .foregroundStyle(viewModel.selectedMeasurementType.color)
+                            .opacity((viewModel.selectedDate == viewModel.midDate(for: data) || viewModel.selectedDate == nil) ? 1.0 : 0.3)
+                        }
+                    } else {
+                        ForEach(viewModel.downsampledChartData) { data in
+                            let midDate = viewModel.midDate(for: data)
+                            
+                            AreaMark(
+                                x: .value("Time", midDate),
+                                yStart: .value("Value", data.value),
+                                yEnd: .value("Min Value", 0)
+                            )
+                            .foregroundStyle(Gradient(colors: [viewModel.selectedMeasurementType.color.opacity(0.5), .clear]))
+                            .interpolationMethod(.catmullRom)
+                            
+                            LineMark(
+                                x: .value("Time", midDate),
+                                y: .value("Steps", data.value)
+                            )
+                            .foregroundStyle(viewModel.selectedMeasurementType.color)
+                            .interpolationMethod(.catmullRom)
+                        }
                     }
                     
                     if let selectedDate = viewModel.selectedDate {
@@ -51,17 +72,12 @@ struct StepsChartView: View {
                 .chartXScale(domain: viewModel.xDomain)
                 .chartXSelection(value: viewModel.snappedSelectedDate)
                 .chartXAxis {
-                    AxisMarks(values: .automatic(desiredCount: 5)) {
-                        switch viewModel.granularity {
-                        case .day:
+                    if viewModel.selectedPeriod == .week {
+                        AxisMarks(values: .automatic(desiredCount: 5)) {
                             AxisValueLabel(format: .dateTime.weekday())
-                        case .hour:
-                            AxisValueLabel(format: .dateTime.hour())
-                        case .minute:
-                            AxisValueLabel(format: .dateTime.hour().minute())
                         }
-                        AxisGridLine()
-                        AxisTick()
+                    } else {
+                        AxisMarks(values: .automatic(desiredCount: 5))
                     }
                 }
                 .chartYAxis {

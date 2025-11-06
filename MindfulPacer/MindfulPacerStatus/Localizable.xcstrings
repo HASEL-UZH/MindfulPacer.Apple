@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "MindfulPacer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        }
+      }
+    },
+    "Monitoring Status" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoring Status"
+          }
+        }
+      }
+    },
+    "See if MindfulPacer monitoring is active at a glance." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf einen Blick erkennen, ob das MindfulPacer Monitoring aktiv ist."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

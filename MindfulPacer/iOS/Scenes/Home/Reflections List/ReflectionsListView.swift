@@ -36,10 +36,9 @@ extension HomeView {
                 } else if viewModel.filteredReflections.isEmpty {
                     filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
-                    
                 } else {
                     RoundedList {
-                        ForEach(viewModel.filteredReflections) { reflection in
+                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
                             ReflectionCell(reflection: reflection) {
                                 viewModel.presentSheet(.editReflectionView(reflection))
                             }
@@ -161,7 +160,7 @@ extension HomeView {
         // MARK: Subactivity Filter Summary
 
         private var subactivityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubactivities) { subactivity in
+            ForEach(viewModel.reviewFilter.selectedSubactivities, id: \.id) { subactivity in
                 filterItem(
                     icon: subactivity.icon,
                     label: subactivity.name,

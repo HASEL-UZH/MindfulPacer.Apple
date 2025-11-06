@@ -11,10 +11,12 @@ import SwiftUI
 
 enum AnalyticsViewSheet: Identifiable {
     case editReflectionView(Reflection?)
+    case dateSelection
     
     var id: Int {
         switch self {
         case .editReflectionView: 0
+        case .dateSelection: 1
         }
     }
 }
@@ -26,61 +28,55 @@ struct AnalyticsView: View {
     // MARK: Properties
     
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
-    
+
     // MARK: Body
     
     var body: some View {
         NavigationStack {
-            GeometryReader { proxy in
-                VStack(spacing: 16) {
-                    chart
-                        .frame(height: proxy.size.height / 2)
-                        .padding(.horizontal)
-                    
-                    Group {
-                        if viewModel.selectedReflectionBucket.isNotNil {
-                            reflectionsInBucket
-                        } else {
-                            reflectionsInPeriod
-                        }
-                    }
-                    .frame(height: proxy.size.height / 2)
+            chart
+                .navigationTitle("Analytics")
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
                 }
-            }
-            .navigationTitle("Analytics")
-            .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                            Button {
-                                viewModel.selectedMeasurementType = measurementType
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Picker(selection: $viewModel.selectedMeasurementType) {
+                                ForEach(MeasurementType.allCases, id: \.self) { measurementType in
+                                    Label(measurementType.localized, systemImage: measurementType.icon)
+                                }
                             } label: {
-                                Label(measurementType.localized, systemImage: measurementType.icon)
+                                Label("Measurement Type", systemImage: "ruler.fill")
+                                Text(viewModel.selectedMeasurementType.localized)
                             }
+                            .pickerStyle(.menu)
+                            
+                            Button {
+                                viewModel.presentSheet(.dateSelection)
+                            } label: {
+                                Label("Selected Date", systemImage: "calendar")
+                                Text(viewModel.selectedDateForPeriod.formatted(.dateTime.day().month()))
+                            }
+                        } label: {
+                            Text("View Options")
                         }
-                    } label: {
-                        Text("View Options")
+                        .tint(Color("BrandPrimary"))
                     }
-                    .tint(Color("BrandPrimary"))
                 }
-            }
-            .sheet(item: $viewModel.activeSheet, onDismiss: {
-                withAnimation {
-                    viewModel.onSheetDismissed()
+                .sheet(item: $viewModel.activeSheet, onDismiss: {
+                    withAnimation {
+                        viewModel.onSheetDismissed()
+                    }
+                }, content: { sheet in
+                    sheetContent(for: sheet)
+                })
+                .onViewFirstAppear {
+                    viewModel.onViewFirstAppear()
                 }
-            }, content: { sheet in
-                sheetContent(for: sheet)
-            })
-            .onViewFirstAppear {
-                viewModel.onViewFirstAppear()
-            }
-            .onAppear {
-                viewModel.onViewAppear()
-            }
+                .onAppear {
+                    viewModel.onViewAppear()
+                }
         }
     }
     
@@ -102,9 +98,9 @@ struct AnalyticsView: View {
         ) {
             VStack(spacing: 16) {
                 Picker(selection: $viewModel.selectedPeriod) {
-                    ForEach(Period.allCases, id: \.self) { period in
+                    ForEach(Period.activeCases(for: viewModel.selectedDateForPeriod), id: \.self) { period in
                         Text(period.displayName)
-                            .tag(period)
+                            .tag(period.displayName)
                     }
                 } label: {
                     EmptyView()
@@ -117,50 +113,65 @@ struct AnalyticsView: View {
                 case .steps:
                     StepsChartView(viewModel: viewModel)
                 }
+                
+                Divider()
+                
+                if viewModel.selectedReflectionBucket.isNotNil {
+                    reflectionsInBucket
+                } else {
+                    reflectionsInPeriod
+                }
+            }
+        } footer: {
+            Button {
+                viewModel.presentSheet(.editReflectionView(nil))
+            } label: {
+                IconLabel(
+                    icon: "plus.circle",
+                    title: String(localized: "Create Reflection"),
+                    labelColor: Color("BrandPrimary")
+                )
+                .font(.subheadline.weight(.semibold))
             }
         }
+        .iconLabelGroupBoxStyle(.divider)
         .overlay(alignment: .top) {
             selectedValueDetail
         }
+        .padding([.horizontal, .bottom])
     }
     
     // MARK: Reflections in Period
     
     private var reflectionsInPeriod: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("Reflections")
-                    .font(.title.bold())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Button {
-                    viewModel.presentSheet(.editReflectionView(nil))
-                } label: {
-                    IconLabel(
-                        icon: "plus.circle",
-                        title: String(localized: "Create Reflection"),
-                        labelColor: Color("BrandPrimary")
-                    )
-                    .font(.subheadline.weight(.semibold))
-                }
-            }
-            .padding(.horizontal)
+            Text("Reflections")
+                .font(.title2.bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             if viewModel.reflectionsInPeriod.isEmpty {
                 EmptyStateView(
                     image: "book.pages",
                     title: String(localized: "No Reflections"),
-                    description: String(localized: "There are no reflections within the last \(viewModel.selectedPeriod.description).")
+                    description: String(localized: "There are no reflections.")
                 )
             } else {
-                RoundedList {
-                    ForEach(viewModel.reflectionsInPeriod) { reflectionBucket in
-                        ForEach(reflectionBucket.reflections) { reflection in
-                            ReflectionCell(reflection: reflection) {
-                                viewModel.presentSheet(.editReflectionView(reflection))
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(viewModel.reflectionsInPeriod) { reflectionBucket in
+                            ForEach(reflectionBucket.reflections) { reflection in
+                                ReflectionCell(
+                                    reflection: reflection,
+                                    backgroundColor: Color(.tertiarySystemGroupedBackground)
+                                ) {
+                                    viewModel.presentSheet(.editReflectionView(reflection))
+                                }
+                                
+                                Divider()
                             }
                         }
                     }
+                    .cornerRadius(16)
                 }
                 .safeAreaPadding(.vertical)
             }
@@ -176,7 +187,7 @@ struct AnalyticsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Reflections")
-                            .font(.title.bold())
+                            .font(.title2.bold())
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Button {
@@ -201,14 +212,21 @@ struct AnalyticsView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal)
                 
-                RoundedList {
-                    ForEach(reflectionBucket.reflections) { reflection in
-                        ReflectionCell(reflection: reflection) {
-                            viewModel.presentSheet(.editReflectionView(reflection))
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(reflectionBucket.reflections) { reflection in
+                            ReflectionCell(
+                                reflection: reflection,
+                                backgroundColor: Color(.tertiarySystemGroupedBackground)
+                            ) {
+                                viewModel.presentSheet(.editReflectionView(reflection))
+                            }
+                            
+                            Divider()
                         }
                     }
+                    .cornerRadius(16)
                 }
                 .safeAreaPadding(.vertical)
             }
@@ -237,7 +255,7 @@ struct AnalyticsView: View {
                         case .steps:
                             switch viewModel.selectedPeriod {
                             case .oneHour, .twoHours, .day:
-                                Text("\(selectedChartDataItem.startDate.formatted(.dateTime.minute().hour())) - \(selectedChartDataItem.endDate.formatted(.dateTime.minute().hour()))")
+                                Text("\(selectedChartDataItem.startDate.formatted(.dateTime.minute().hour()))")
                             case .week:
                                 Text("Total for Day")
                             }
@@ -276,6 +294,10 @@ struct AnalyticsView: View {
                 .interactiveDismissDisabled(reflection.isNil)
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
+        case .dateSelection:
+            DateSelectionSheet(viewModel: viewModel)
+                .presentationCornerRadius(16)
+                .presentationDragIndicator(.visible)
         }
     }
 }
@@ -283,5 +305,10 @@ struct AnalyticsView: View {
 // MARK: - Preview
 
 #Preview {
-    AnalyticsView()
+    TabView {
+        AnalyticsView()
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+    }
 }

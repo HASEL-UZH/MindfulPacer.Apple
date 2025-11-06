@@ -20,7 +20,7 @@ struct HeartRateChartView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.chartData.isEmpty {
+            if viewModel.downsampledChartData.isEmpty {
                 EmptyStateView(
                     image: viewModel.chartEmptyStateImage,
                     title: viewModel.chartEmptyStateTitle,
@@ -34,7 +34,7 @@ struct HeartRateChartView: View {
                             .lineStyle(.init(lineWidth: 1, dash: [5]))
                     }
                     
-                    ForEach(viewModel.chartData) { data in
+                    ForEach(viewModel.downsampledChartData) { data in
                         AreaMark(
                             x: .value("Time", data.startDate),
                             yStart: .value("Value", data.value),

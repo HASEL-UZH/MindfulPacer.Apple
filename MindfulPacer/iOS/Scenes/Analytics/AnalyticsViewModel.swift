@@ -44,9 +44,11 @@ class AnalyticsViewModel {
     // MARK: - Published Properties
     
     var activeSheet: AnalyticsViewSheet?
-
+    
     var reflectionsInPeriod: [ReflectionBucket] = []
     var reminders: [Reminder] = []
+    
+    var selectedDateForPeriod: Date = Date.now
     
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
@@ -57,6 +59,33 @@ class AnalyticsViewModel {
     
     var heartRateChartData: [ChartDataItem] = []
     var stepsChartData: [ChartDataItem] = []
+    var cumulativeStepsChartData: [ChartDataItem] = []
+    
+    var downsampledChartData: [ChartDataItem] {
+        let maxDataPoints = 100
+        
+        guard chartData.count > maxDataPoints else {
+            return chartData
+        }
+        
+        var downsampledData: [ChartDataItem] = []
+        let bucketSize = Double(chartData.count) / Double(maxDataPoints)
+        
+        for i in 0..<maxDataPoints {
+            let bucketStart = Int(Double(i) * bucketSize)
+            let bucketEnd = Int(Double(i + 1) * bucketSize)
+            
+            guard let bucketSlice = chartData[safe: bucketStart..<bucketEnd] else { continue }
+            let bucket = Array(bucketSlice)
+            guard !bucket.isEmpty else { continue }
+            
+            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
+                downsampledData.append(significantPoint)
+            }
+        }
+        
+        return downsampledData
+    }
     
     var selectedDate: Date? {
         didSet {
@@ -69,8 +98,16 @@ class AnalyticsViewModel {
     
     var chartThresholds: [(reminderType: Reminder.ReminderType, threshold: Int)] = []
     
+    var weeklyStepsChartData: [ChartDataItem] = []
+    
     var chartData: [ChartDataItem] {
-        selectedMeasurementType == .heartRate ? heartRateChartData : stepsChartData
+        if selectedMeasurementType == .steps && selectedPeriod == .week {
+            return weeklyStepsChartData
+        } else if selectedMeasurementType == .steps {
+            return stepsChartData
+        } else {
+            return heartRateChartData
+        }
     }
     
     var minValue: Double {
@@ -156,7 +193,7 @@ class AnalyticsViewModel {
     var chartEmptyStateImage: String {
         selectedMeasurementType == .heartRate ? "chart.xyaxis.line" : "chart.bar.xaxis"
     }
-
+    
     var chartEmptyStateTitle: String {
         selectedMeasurementType == .heartRate ? String(localized: "No heart rate data") : String(localized: "No steps data")
     }
@@ -166,7 +203,16 @@ class AnalyticsViewModel {
     }
     
     var chartDescriptionText: String {
-        selectedMeasurementType.localized + " " + String(localized: "data within") + " " + String(localized: "the last") + " " + "\(selectedPeriod.description)."
+        if Calendar.current.isDateInToday(selectedDateForPeriod) {
+            return selectedMeasurementType.localized + " " + String(localized: "data within") + " " + String(localized: "the last") + " " + "\(selectedPeriod.description)."
+        } else {
+            if selectedPeriod == .week {
+                return selectedMeasurementType.localized + " " + String(localized: "data for last 7 days from ") + selectedDateForPeriod.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()) + "."
+            } else if selectedPeriod == .day {
+                return selectedMeasurementType.localized + " " + String(localized: "data on ") + selectedDateForPeriod.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()) + "."
+            }
+        }
+        return ""
     }
     
     var granularity: ChartGranularity {
@@ -209,6 +255,18 @@ class AnalyticsViewModel {
     
     // MARK: - User Actions
     
+    func onTodayTapped() {
+        selectedDateForPeriod = Date.now
+        onSelectedDateForPeriodChanged()
+    }
+
+    func onSelectedDateForPeriodChanged() {
+        selectedDate = nil
+        selectedChartDataItem = nil
+        refreshChart()
+        selectedPeriod = .day
+    }
+    
     // MARK: - Presentation
     
     func presentSheet(_ sheet: AnalyticsViewSheet) {
@@ -220,7 +278,7 @@ class AnalyticsViewModel {
     }
     
     // MARK: - Chart Related
-
+    
     func getXUnitForPeriod(_ period: Period) -> Calendar.Component {
         switch period {
         case .oneHour, .twoHours:
@@ -243,7 +301,7 @@ class AnalyticsViewModel {
     }
     
     private func fetchHeartRateChartData() {
-        fetchHeartRateUseCase.execute(for: selectedPeriod) { result in
+        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
             switch result {
             case .success(let success):
                 Task { @MainActor in
@@ -256,15 +314,26 @@ class AnalyticsViewModel {
     }
     
     private func fetchStepsChartData() {
-        fetchStepsUseCase.execute(for: selectedPeriod) { result in
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
             switch result {
             case .success(let success):
-                Task { @MainActor in
-                    self.stepsChartData = success
-                }
+                Task { @MainActor in self.stepsChartData = success }
             case .failure:
-                print("Could not fetch heart data")
+                print("Could not fetch cumulative steps data")
             }
+        }
+        
+        if selectedPeriod == .week {
+            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+                switch result {
+                case .success(let success):
+                    Task { @MainActor in self.weeklyStepsChartData = success }
+                case .failure:
+                    print("Could not fetch bucketed weekly steps data")
+                }
+            }
+        } else {
+            self.weeklyStepsChartData = []
         }
     }
     
@@ -286,8 +355,21 @@ class AnalyticsViewModel {
         }
     }
     
+    private func fetchCumulativeStepsChartData() {
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+            switch result {
+            case .success(let chartDataItems):
+                Task { @MainActor in
+                    self.cumulativeStepsChartData = chartDataItems
+                }
+            case .failure(let error):
+                print("Could not fetch cumulative steps data: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     private func updateReflectionsInPeriod() {
-        reflectionsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod)
+        reflectionsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod, endDate: selectedDateForPeriod)
     }
     
     private func updateChartThresholds() {
@@ -301,5 +383,14 @@ class AnalyticsViewModel {
                 (reminder.reminderType, reminder.threshold)
             }
             .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+    }
+}
+
+fileprivate extension Array {
+    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
+        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
+            return self[range]
+        }
+        return nil
     }
 }

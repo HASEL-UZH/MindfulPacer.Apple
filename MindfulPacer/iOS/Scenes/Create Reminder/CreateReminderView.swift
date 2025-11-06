@@ -114,11 +114,11 @@ struct CreateReminderView: View {
     private func sheetContent(for sheet: CreateReminderSheet) -> some View {
         switch sheet {
         case .reminderTypeInfo:
-            reminderTypeInfoSheet
+            ReminderTypeInfoSheet()
         case .heartRateThresholdInfo:
-            thresholdInfoSheet
+            ThresholdInfoSheet()
         case .intervalInfo:
-            intervalInfoSheet
+            IntervalInfoSheet()
         }
     }
 
@@ -156,6 +156,7 @@ struct CreateReminderView: View {
                     Button("Save") {
                         viewModel.saveReminder(reminder)
                     }
+                    .buttonStyle(.borderedProminent)
                     .fontWeight(.semibold)
                     .disabled(viewModel.isSaveButtonDisabled)
                 }
@@ -186,130 +187,32 @@ struct CreateReminderView: View {
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
 
-            VStack(spacing: 32) {
+            VStack {
                 Text("Create Reminder")
                     .font(.largeTitle.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
-
-                Image("Create Reminder")
-                    .resizable()
-                    .scaledToFit()
-
-                Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            icon: "exclamationmark.applewatch",
+                            title: "Reminder",
+                            labelColor: .brandPrimary,
+                            background: true
+                        )
+                ) {
+                    VStack(spacing: 16) {
+                        Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
+                    }
+                }
             }
 
             Spacer()
         }
         .padding()
     }
-
-    // MARK: Reminder Type Info Sheet
-
-    private var reminderTypeInfoSheet: some View {
-        InfoSheet(
-            title: String(localized: "Reminder Type Information"),
-            info: String(localized: "You can choose between three different Reminder types.")
-        ) {
-                Text(
-                    """
-                    1. **Light**: shows a yellow color 🟡.
-                    2. **Medium**: shows an orange color 🟠.
-                    3. **Strong**: shows a red color 🔴.
-                    """
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline)
-            }
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
-            .presentationCornerRadius(16)
-    }
-
-    // MARK: Threshold Info Sheet
-
-    // swiftlint:disable trailing_whitespace
-    private var thresholdInfoSheet: some View {
-        InfoSheet(
-            title: String(localized: "Threshold Information"),
-            info: String(localized: "Set a threshold that triggers a reminder when reached for a specified interval.")
-        ) {
-            VStack(spacing: 16) {
-                IconLabelGroupBox(
-                    label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
-                ) {
-                    Text(
-                        """
-                        The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
-                        
-                        For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.
-                        """
-                    )
-                    
-                }
-
-                IconLabelGroupBox(
-                    label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
-                ) {
-                    Text(
-                        """
-                        The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
-                        
-                        Please note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.
-                        
-                        For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.\n\nPlease note that you can set the interval on the next page.
-                        """
-                    )
-                }
-            }
-            .font(.subheadline)
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
-    }
-
-    // MARK: Interval Info Sheet
-
-    private var intervalInfoSheet: some View {
-        InfoSheet(
-            title: String(localized: "Interval Information"),
-            info: String(localized: "Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
-        ) {
-            VStack(spacing: 16) {
-                IconLabelGroupBox(
-                    label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
-                ) {
-                    Text(
-                        """
-                        The period during which the heart rate, as measured by the Apple Watch, must stay at or above the specified threshold for the Reminder to be triggered.
-                        
-                        For example: Do a quick reflection when the detected heart rate is greater than 120 for 30 seconds or longer.
-                        """
-                    )
-                }
-
-                IconLabelGroupBox(
-                    label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
-                ) {
-                    Text(
-                        """
-                        The period during which the total number of steps, as measured by the Apple Watch, must stay at or above the threshold for the Reminder to be triggered.
-                        
-                        For example: Do a quick reflection when completing 2000 or more steps within 30 minutes.
-                        """
-                    )
-                }
-            }
-            .font(.subheadline)
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
-    }
-    // swiftlint:enable trailing_whitespace
-
+    
     // MARK: Unable to Save Reminder Alert
 
     private var unableToSaveReminderAlert: Alert {

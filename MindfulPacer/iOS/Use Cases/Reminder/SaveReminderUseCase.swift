@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 
 protocol SaveReminderUseCase {
+    @MainActor
     func execute(
         existingReminder: Reminder,
         newMeasurementType: MeasurementType,
@@ -21,11 +22,14 @@ protocol SaveReminderUseCase {
 
 // MARK: - Use Case Implementation
 
+@MainActor
 class DefaultSaveReminderUseCase: SaveReminderUseCase {
     private let modelContext: ModelContext
-
-    init(modelContext: ModelContext) {
+    private let watchUpdateService: WatchUpdateService
+    
+    init(modelContext: ModelContext, watchUpdateService: WatchUpdateService) {
         self.modelContext = modelContext
+        self.watchUpdateService = watchUpdateService
     }
 
     func execute(
@@ -42,6 +46,8 @@ class DefaultSaveReminderUseCase: SaveReminderUseCase {
 
         do {
             try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: existingReminder))
+            watchUpdateService.notifyWatchOfReminderChange()
             return .success(existingReminder)
         } catch {
             return .failure(error)

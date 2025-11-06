@@ -28,7 +28,7 @@ extension EditReflectionView {
 
                         VStack(spacing: 16) {
                             HStack(spacing: 16) {
-                                ForEach(0 ..< 4, id: \.self) { index in
+                                ForEach(0 ..< symptom.numOptions, id: \.self) { index in
                                     VStack(spacing: 12) {
                                         SelectableButton(
                                             shape: .circle,

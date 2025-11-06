@@ -1,15 +1,6 @@
 {
-  "originHash" : "fc3c805bab5a785310373a727fea6f14897631e6b6e5b2877efe4e5a57b365b7",
+  "originHash" : "40adedf176acac50ebce89c395cfdc459c94400dc7c0a575a2101d598d880399",
   "pins" : [
-    {
-      "identity" : "cardstack",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/notsobigcompany/CardStack.git",
-      "state" : {
-        "revision" : "33417ef29fdc4169712cb3b8bf0ddbd7b6ef52c5",
-        "version" : "1.0.0"
-      }
-    },
     {
       "identity" : "factory",
       "kind" : "remoteSourceControl",
@@ -26,24 +17,6 @@
       "state" : {
         "revision" : "3db26ab625d194c38e68c1a40e43d1bc12743fe0",
         "version" : "8.2.0"
-      }
-    },
-    {
-      "identity" : "swift-algorithms",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-algorithms.git",
-      "state" : {
-        "revision" : "f6919dfc309e7f1b56224378b11e28bab5bccc42",
-        "version" : "1.2.0"
-      }
-    },
-    {
-      "identity" : "swift-numerics",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-numerics.git",
-      "state" : {
-        "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
-        "version" : "1.0.2"
       }
     },
     {

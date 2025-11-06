@@ -1,17 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "Untitled.png",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename" : "exportB36CBFBF-6535-4DEB-9A86-A52B792583B9.png",
+      "idiom" : "universal"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "exportD0345C82-DCC3-4ACB-B356-A77CDEA4E0BE.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

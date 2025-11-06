@@ -9,6 +9,7 @@ import Foundation
 import MessageUI
 import SwiftUI
 import UniformTypeIdentifiers
+import Combine
 
 // MARK: - Theme
 
@@ -108,19 +109,22 @@ enum SupportingInstitute: String, CaseIterable, Identifiable {
 
 enum ExportFileFormat: String, CaseIterable, Identifiable {
     case csv
-    case json
     
     var description: String {
         switch self {
         case .csv: ".CSV"
-        case .json: ".JSON"
         }
     }
     
     var fileExtension: String {
         switch self {
         case .csv: ".csv"
-        case .json: ".json"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .csv: "document.fill"
         }
     }
     
@@ -132,8 +136,6 @@ enum ExportFileFormat: String, CaseIterable, Identifiable {
 enum ExportDataModel: String, CaseIterable, Identifiable {
     case reflection
     case reminder
-    case heartRateLast24Hours
-    case stepsLast24Hours
     
     var id: String { self.rawValue }
     
@@ -141,8 +143,6 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "Reflections"
         case .reminder: "Reminders"
-        case .heartRateLast24Hours: "Heart Rate (24 Hours)"
-        case .stepsLast24Hours: "Steps (24 Hours)"
         }
     }
     
@@ -150,8 +150,6 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "book.pages.fill"
         case .reminder: "bell.badge.fill"
-        case .heartRateLast24Hours: "heart.fill"
-        case .stepsLast24Hours: "figure.walk"
         }
     }
     
@@ -159,8 +157,6 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection: "MindfulPacer_Reflections"
         case .reminder: "MindfulPacer_Reminders"
-        case .heartRateLast24Hours: "MindfulPacer_HeartRate_24_Hours"
-        case .stepsLast24Hours: "MindfulPacer_Steps_24_Hours"
         }
     }
     
@@ -168,8 +164,6 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
         switch self {
         case .reflection, .reminder:
             return [.csv]
-        case .heartRateLast24Hours, .stepsLast24Hours:
-            return [.json]
         }
     }
 }
@@ -178,7 +172,7 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
 
 struct ExportDocument: FileDocument {
     static var readableContentTypes: [UTType] {
-        return [.commaSeparatedText, .spreadsheet, .json]
+        return [.commaSeparatedText, .spreadsheet]
     }
     
     var fileURL: URL
@@ -204,39 +198,68 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
-    private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
-    private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
-    private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
+    private let resetDatabaseUseCase: ResetDatabaseUseCase
     
     // MARK: - Published Properties
     
     var navigationPath: [SettingsNavigationDestination] = []
     var activeSheet: SettingsSheet?
+    var activeAlert: SettingsAlert?
     
     var mailResult: Result<MFMailComposeResult, Error>?
     
+    var isShowingDeleteAllDataAlert: Bool = false
+    
     var reflections: [Reflection] = []
     var reminders: [Reminder] = []
+    
+    var watchConnectionStatus: WatchConnectionStatus = .initializing
+    var watchConnectionSpeed: WatchConnectionSpeed = .noResponse
+    
+    var isWatchPaired: Bool {
+        return watchConnectionStatus != .noWatchPaired
+    }
+    
+    var isWatchAppInstalled: Bool {
+        switch watchConnectionStatus {
+        case .noWatchPaired, .appNotInstalled:
+            return false
+        default:
+            return true
+        }
+    }
     
     var isFetchingRoadmap: Bool = false
     var roadmapItems: [RoadmapItem] = []
     var isInternetConnected: Bool = true
     var fetchErrorMessage: String?
     var isExpandedModeOfUseOn: Bool = false
+    var deviceMode: DeviceMode = DeviceMode.current(from: DefaultsStore.shared) {
+        didSet {
+            guard oldValue != deviceMode else { return }
+            DefaultsStore.shared.set(deviceMode.rawValue, forKey: DeviceMode.appStorageKey)
+            Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(deviceMode) }
+        }
+    }
     var selectedExportFileFormat: ExportFileFormat = .csv
     var selectedExportDataModel: ExportDataModel = .reminder
     var exportURL: URL?
     var isExporting = false
+    
+    var isShowingDeleteAllUserDataAlert: Bool = false
     
     var contactSupportRecipient: String = "support@mindfulpacer.ch"
     var contactSupportSubject: String = "MindfulPacer - Feedback"
     
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
-    var missedReflections: [MissedReflection] = []
-
+    
+    var bufferValues: [String: TimeInterval] = [:]
+    
+    private var cancellables = Set<AnyCancellable>()
+    
     var isGermanLanguage: Bool {
         Locale.current.language.languageCode?.identifier == "de"
     }
@@ -247,6 +270,10 @@ class SettingsViewModel {
     
     var landingPageURL: URL {
         isGermanLanguage ? URL(string: "https://mindfulpacer.ch/")! : URL(string: "https://mindfulpacer.ch/en/mindfulpacer-english/")!
+    }
+    
+    var appleWatchInstallationHelp: URL {
+        isGermanLanguage ? URL(string: "https://support.apple.com/de-ch/109023")! : URL(string: "https://support.apple.com/en-us/109023")!
     }
     
     var appVersion: String {
@@ -276,6 +303,14 @@ class SettingsViewModel {
         Model Name: \(modelName)
         Model Identifier: \(modelIdentifier)
         """
+    }
+    
+    // MARK: - Helpers
+    
+    var selectedFileUTType: UTType {
+        switch selectedExportFileFormat {
+        case .csv: return .commaSeparatedText
+        }
     }
     
     // MARK: Private Properties
@@ -324,17 +359,16 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
-        checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
-        fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
         fetchRemindersUseCase: FetchRemindersUseCase,
-        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
+        resetDatabaseUseCase: ResetDatabaseUseCase
     ) {
-        self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
-        self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
-        self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
+        self.resetDatabaseUseCase = resetDatabaseUseCase
+        
+        loadAllBuffers()
+        subscribeToWatchStatus()
     }
     
     // MARK: - View Events
@@ -342,8 +376,6 @@ class SettingsViewModel {
     func onViewAppear() {
         fetchReflections()
         fetchReminders()
-        fetchHealthData()
-        checkMissedReflections()
     }
     
     // MARK: - Presentation
@@ -352,25 +384,65 @@ class SettingsViewModel {
         activeSheet = sheet
     }
     
+    func presentAlert(_ alert: SettingsAlert) {
+        activeAlert = alert
+    }
+    
     // MARK: - User Actions
     
-    func setModeOfUse(_ modeOfUse: ModeOfUse) {
+    func saveBuffer(for interval: Reminder.Interval, type: Reminder.MeasurementType, newBufferInSeconds: TimeInterval) {
+        let key = StorageKeys.bufferKey(for: interval, type: type)
+        sharedUserDefaults?.set(newBufferInSeconds, forKey: key)
+        bufferValues[key] = newBufferInSeconds
+    }
+    
+    func resetBuffersToDefaults() {
+        let measurementTypes: [Reminder.MeasurementType] = [.heartRate, .steps]
+        
+        for type in measurementTypes {
+            let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
+            for interval in intervals {
+                let key = StorageKeys.bufferKey(for: interval, type: type)
+                // Remove the custom value from UserDefaults.
+                sharedUserDefaults?.removeObject(forKey: key)
+            }
+        }
+        
+        loadAllBuffers()
+    }
+    
+    func resetDatabase() {
+        Task { @MainActor in
+            do {
+                try await resetDatabaseUseCase.execute()
+                reflections.removeAll()
+                reminders.removeAll()
+                stepData.removeAll()
+                heartRateData.removeAll()
+                bufferValues.removeAll()
+                exportURL = nil
+                presentAlert(.restartApp)
+            } catch {
+                print("Reset failed:", error)
+            }
+        }
+    }
+    
+    func configure(_ modeOfUse: ModeOfUse, _ deviceMode: DeviceMode) {
         isExpandedModeOfUseOn = modeOfUse == .expanded
+        self.deviceMode = deviceMode
     }
     
     func onExportTapped() {
         let exportedFileURL: URL?
         
-        // Set the export format based on the data model
         switch selectedExportDataModel {
         case .reflection, .reminder:
             selectedExportFileFormat = .csv
-            exportedFileURL = exportToCSV(reflections: selectedExportDataModel == .reflection ? reflections : [],
-                                         reminders: selectedExportDataModel == .reminder ? reminders : [])
-        case .heartRateLast24Hours, .stepsLast24Hours:
-            selectedExportFileFormat = .json
-            exportedFileURL = exportToJSON(heartRateData: selectedExportDataModel == .heartRateLast24Hours ? heartRateData : [],
-                                          stepData: selectedExportDataModel == .stepsLast24Hours ? stepData : [])
+            exportedFileURL = exportToCSV(
+                reflections: selectedExportDataModel == .reflection ? reflections : [],
+                reminders: selectedExportDataModel == .reminder ? reminders : []
+            )
         }
         
         if let url = exportedFileURL {
@@ -379,7 +451,56 @@ class SettingsViewModel {
         }
     }
     
+    // MARK: - Delete All Data
+    
+    func requestDeleteAllUserData() {
+        isShowingDeleteAllUserDataAlert = true
+    }
+    
+    func confirmDeleteAllUserData() {
+        reflections.removeAll()
+        reminders.removeAll()
+        stepData.removeAll()
+        heartRateData.removeAll()
+        bufferValues.removeAll()
+        exportURL = nil
+        
+        if let defaults = sharedUserDefaults {
+            for (key, _) in defaults.dictionaryRepresentation() {
+                defaults.removeObject(forKey: key)
+            }
+            defaults.synchronize()
+        }
+        
+        let fm = FileManager.default
+        let directories: [URL?] = [
+            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            fm.urls(for: .cachesDirectory, in: .userDomainMask).first
+        ]
+        for dir in directories.compactMap({ $0 }) {
+            if let enumerator = fm.enumerator(at: dir, includingPropertiesForKeys: nil) {
+                for case let url as URL in enumerator {
+                    try? fm.removeItem(at: url)
+                }
+            }
+        }
+        
+        NotificationCenter.default.post(name: .init("MindfulPacerUserDataDeleted"), object: nil)
+    }
+    
     // MARK: - Private Methods
+    
+    private func subscribeToWatchStatus() {
+        ConnectivityService.shared.$connectionStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in self?.watchConnectionStatus = status }
+            .store(in: &cancellables)
+        
+        ConnectivityService.shared.$connectionSpeed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] speed in self?.watchConnectionSpeed = speed }
+            .store(in: &cancellables)
+    }
     
     private func fetchReflections() {
         reflections = fetchReflectionsUseCase.execute() ?? []
@@ -389,59 +510,150 @@ class SettingsViewModel {
         reminders = fetchRemindersUseCase.execute() ?? []
     }
     
-    private func fetchHealthData() {
-        fetchStepDataLast24HoursUseCase.execute { [weak self] stepData in
-            guard let self = self else { return }
-            Task { @MainActor in
-                self.stepData = stepData
-            }
-        }
+    private func loadAllBuffers() {
+        var loadedValues: [String: TimeInterval] = [:]
+        let measurementTypes: [Reminder.MeasurementType] = [.heartRate, .steps]
         
-        fetchHeartRateDataLast24HoursUseCase.execute { [weak self] heartRateData in
-            guard let self = self else { return }
-            Task { @MainActor in
-                self.heartRateData = heartRateData
+        for type in measurementTypes {
+            let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
+            for interval in intervals {
+                let key = StorageKeys.bufferKey(for: interval, type: type)
+                
+                if let savedValue = sharedUserDefaults?.object(forKey: key) as? TimeInterval {
+                    loadedValues[key] = savedValue
+                } else {
+                    let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
+                    loadedValues[key] = BufferManager.shared.buffer(for: interval, context: context)
+                }
             }
         }
+        self.bufferValues = loadedValues
     }
     
     private func exportToCSV(reflections: [Reflection], reminders: [Reminder]) -> URL? {
-        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + ExportFileFormat.csv.fileExtension
+        let fileName = selectedExportDataModel.fileName
+        + "_" + Date.now.formatted(.dateTime.day().month().year())
+        + ExportFileFormat.csv.fileExtension
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         
-        var csvText = ""
+        var rows: [[String]] = []
         
-        if selectedExportDataModel == .reflection {
-            csvText.append("Date,Activity,Subactivity,Mood,DidTriggerCrash,WellBeing,Fatigue,ShortnessOfBreath,SleepDisorder,CognitiveImpairment,PhysicalPain,DepressionOrAnxiety,AdditionalInfo\n")
+        switch selectedExportDataModel {
+        case .reflection:
+            // Header
+            rows.append([
+                "Date (Local ISO)",
+                "Time (Local)",
+                "Weekday",
+                "Activity",
+                "Subactivity",
+                "Mood Emoji",
+                "Mood",
+                "Triggered Crash",
+                "Well-being (0–4)",
+                "Well-being (Label)",
+                "Fatigue (0–3)",
+                "Fatigue (Label)",
+                "Shortness of Breath (0–3)",
+                "Shortness of Breath (Label)",
+                "Sleep Disorder (0–3)",
+                "Sleep Disorder (Label)",
+                "Cognitive Impairment (0–3)",
+                "Cognitive Impairment (Label)",
+                "Physical Pain (0–3)",
+                "Physical Pain (Label)",
+                "Depression/Anxiety (0–3)",
+                "Depression/Anxiety (Label)",
+                "Measurement Type",
+                "Reminder Type",
+                "Threshold",
+                "Interval",
+                "Reminder Summary",
+                "Additional Info"
+            ])
             
-            for reflection in reflections {
-                let formattedDate = DateFormatter.localizedString(from: reflection.date, dateStyle: .medium, timeStyle: .short)
-                let activityName = reflection.activity?.name ?? ""
-                let subactivityName = reflection.subactivity?.name ?? ""
-                let moodText = reflection.mood?.text ?? ""
-                let moodEmoji = reflection.mood?.emoji ?? ""
-                let additionalInfo = reflection.additionalInformation.replacingOccurrences(of: "\"", with: "\"\"")
+            for r in reflections {
+                let date = r.date
+                let dateISO = localISO8601String(from: date)
+                let timeText = timeFormatter.string(from: date)
+                let weekday = weekdayFormatter.string(from: date)
                 
-                let csvLine = """
-                \(formattedDate),\(activityName),\(subactivityName),\(moodEmoji) \(moodText),\(reflection.didTriggerCrash),\(optionalIntToString(reflection.wellBeing)),\(optionalIntToString(reflection.fatigue)),\(optionalIntToString(reflection.shortnessOfBreath)),\(optionalIntToString(reflection.sleepDisorder)),\(optionalIntToString(reflection.cognitiveImpairment)),\(optionalIntToString(reflection.physicalPain)),\(optionalIntToString(reflection.depressionOrAnxiety)),"\(additionalInfo)"
-                """
+                let moodEmoji = r.mood?.emoji ?? ""
+                let moodText = r.mood?.text ?? ""
                 
-                csvText.append(csvLine + "\n")
+                func val(_ v: Int?) -> String { v.map(String.init) ?? "" }
+                
+                let row: [String] = [
+                    dateISO,
+                    timeText,
+                    weekday,
+                    r.activity?.name ?? "",
+                    r.subactivity?.name ?? "",
+                    moodEmoji,
+                    moodText,
+                    r.didTriggerCrash ? "Yes" : "No",
+                    val(r.wellBeing),
+                    labelFor(.wellBeing(r.wellBeing)),
+                    val(r.fatigue),
+                    labelFor(.fatigue(r.fatigue)),
+                    val(r.shortnessOfBreath),
+                    labelFor(.shortnessOfBreath(r.shortnessOfBreath)),
+                    val(r.sleepDisorder),
+                    labelFor(.sleepDisorder(r.sleepDisorder)),
+                    val(r.cognitiveImpairment),
+                    labelFor(.cognitiveImpairment(r.cognitiveImpairment)),
+                    val(r.physicalPain),
+                    labelFor(.physicalPain(r.physicalPain)),
+                    val(r.depressionOrAnxiety),
+                    labelFor(.depressionOrAnxiety(r.depressionOrAnxiety)),
+                    r.measurementType?.localized ?? "",
+                    r.reminderType?.localized ?? "",
+                    r.threshold.map(String.init) ?? "",
+                    r.interval?.rawValue ?? "",
+                    r.reminderTriggerSummary,
+                    r.additionalInformation
+                ]
+                rows.append(row)
             }
-        } else if selectedExportDataModel == .reminder {
-            csvText.append("ID,MeasurementType,ReminderType,Threshold,Interval\n")
             
-            for reminder in reminders {
-                let csvLine = """
-                \(reminder.id),\(reminder.measurementType.rawValue),\(reminder.reminderType.rawValue),\(reminder.threshold),\(reminder.interval.rawValue)
-                """
-                csvText.append(csvLine + "\n")
+        case .reminder:
+            // Header
+            rows.append([
+                "ID",
+                "Measurement Type",
+                "Reminder Type",
+                "Threshold",
+                "Threshold Units",
+                "Interval",
+                "Human Summary"
+            ])
+            
+            for rem in reminders {
+                rows.append([
+                    rem.id.uuidString,
+                    rem.measurementType.localized,
+                    rem.reminderType.localized,
+                    String(rem.threshold),
+                    rem.thresholdUnits,
+                    rem.interval.rawValue,
+                    rem.triggerSummary
+                ])
             }
         }
         
+        // Build CSV text (quote every field, escape quotes)
+        let csvText = rows
+            .map { $0.map(csvEscape).joined(separator: ",") }
+            .joined(separator: "\r\n")
+        
+        // Prepend UTF-8 BOM to help Excel auto-detect UTF-8 (esp. emojis)
+        let bom = Data([0xEF, 0xBB, 0xBF])
         do {
-            try csvText.write(to: path, atomically: true, encoding: .utf8)
-            print("Export successful. File saved at: \(path)")
+            var data = bom
+            if let body = csvText.data(using: .utf8) {
+                data.append(body)
+            }
+            try data.write(to: path, options: .atomic)
             return path
         } catch {
             print("Failed to create CSV file: \(error)")
@@ -449,62 +661,78 @@ class SettingsViewModel {
         }
     }
     
-    private func exportToJSON(heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)], stepData: [(startDate: Date, endDate: Date, stepCount: Double)]) -> URL? {
-        let fileName = selectedExportDataModel.fileName + "_" + Date.now.formatted(.dateTime.day().month().year()) + ExportFileFormat.json.fileExtension
-        let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        
-        var jsonArray: [[String: Any]] = []
-        
-        if selectedExportDataModel == .heartRateLast24Hours {
-            jsonArray = heartRateData.map { entry in
-                [
-                    "startDate": ISO8601DateFormatter().string(from: entry.startDate),
-                    "endDate": ISO8601DateFormatter().string(from: entry.endDate),
-                    "heartRate": Int(entry.stepCount)
-                ]
-            }
-        } else if selectedExportDataModel == .stepsLast24Hours {
-            jsonArray = stepData.map { entry in
-                [
-                    "startDate": ISO8601DateFormatter().string(from: entry.startDate),
-                    "endDate": ISO8601DateFormatter().string(from: entry.endDate),
-                    "stepCount": Int(entry.stepCount)
-                ]
-            }
+    // MARK: - CSV Helpers
+
+    private func csvEscape(_ field: String) -> String {
+        // Always quote. Escape internal quotes by doubling.
+        let escaped = field.replacingOccurrences(of: "\"", with: "\"\"")
+        return "\"\(escaped)\""
+    }
+
+    // MARK: - Formatting Helpers
+
+    private var timeFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.locale = .current
+        df.timeZone = .current
+        df.dateStyle = .none
+        df.timeStyle = .short
+        return df
+    }
+
+    private var weekdayFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.locale = .current
+        df.timeZone = .current
+        df.dateFormat = "EEEE"
+        return df
+    }
+
+    private func localISO8601String(from date: Date) -> String {
+        // ISO8601 with local time zone for human-friendliness in Excel/Numbers
+        let df = DateFormatter()
+        df.locale = .current
+        df.timeZone = .current
+        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
+        return df.string(from: date)
+    }
+
+    // MARK: - Labels for Symptoms
+
+    private func labelFor(_ symptom: Reflection.Symptom) -> String {
+        switch symptom {
+        case .wellBeing(let v): return labelWellBeing(v)
+        default: return labelSeverity(symptom.value)
         }
-        
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
-            try jsonData.write(to: path, options: .atomic)
-            print("Export successful. File saved at: \(path)")
-            return path
-        } catch {
-            print("Failed to create JSON file: \(error)")
-            return nil
+    }
+
+    private func labelWellBeing(_ value: Int?) -> String {
+        switch value {
+        case 0: return String(localized: "Very Low")
+        case 1: return String(localized: "Low")
+        case 2: return String(localized: "Moderate")
+        case 3: return String(localized: "High")
+        case 4: return String(localized: "Very High")
+        default: return String(localized: "Not Set")
         }
+    }
+
+    private func labelSeverity(_ value: Int?) -> String {
+        switch value {
+        case 0: return String(localized: "Absent")
+        case 1: return String(localized: "Mild")
+        case 2: return String(localized: "Moderate")
+        case 3: return String(localized: "Severe")
+        default: return String(localized: "Not Set")
+        }
+    }
+
+    private var sharedUserDefaults: UserDefaults? {
+        return UserDefaults(suiteName: "group.com.MindfulPacer")
     }
     
     private func optionalIntToString(_ value: Int?) -> String {
         return value.map { "\($0)" } ?? ""
     }
-    
-    private func checkMissedReflections() {
-        let reminders = fetchRemindersUseCase.execute() ?? []
-        
-        checkMissedReflectionsUseCase.execute(
-            reminders: reminders,
-            isDeveloperMode: true
-        ) { [weak self] result in
-            guard let self = self else { return }
-            
-            Task { @MainActor in
-                switch result {
-                case .success(let missedReflections):
-                    self.missedReflections = missedReflections
-                case .failure(let failure):
-                    print("DEBUG:", failure)
-                }
-            }
-        }
-    }
 }
+

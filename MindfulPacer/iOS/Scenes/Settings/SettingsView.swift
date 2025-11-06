@@ -14,7 +14,7 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
-    case missedReflectionsListView
+    case whatsNew
 
     var id: Int {
         switch self {
@@ -22,7 +22,7 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
-        case .missedReflectionsListView: 4
+        case .whatsNew: 4
         }
     }
 }
@@ -30,7 +30,18 @@ enum SettingsSheet: Identifiable {
 enum SettingsNavigationDestination: Hashable {
     case algorithms
     case theme
-    case export
+    case dataManagement
+    case appleWatch
+    case deviceMode
+}
+
+enum SettingsAlert: Identifiable {
+    case resetDatabaseConfirmation
+    case restartApp
+    
+    var id: Int {
+        hashValue
+    }
 }
 
 // MARK: - SettingsView
@@ -49,12 +60,19 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
+                
+                // MARK: General
+                
                 Section {
                     mindfulPacerExpanded
+                    deviceModeSetting
+                    appleWatch
                     viewOnboarding
                 } header: {
                     sectionHeader(title: String(localized: "General"))
                 }
+                
+                // MARK: Appearance
                 
                 Section {
                     themeSettings
@@ -62,8 +80,10 @@ struct SettingsView: View {
                     sectionHeader(title: String(localized: "Appearance"))
                 }
                 
+                // MARK: Data
+                
                 Section {
-                    exportData
+                    dataManagement
                     if modeOfUse == .expanded {
                         algorithms
                     }
@@ -71,7 +91,10 @@ struct SettingsView: View {
                     sectionHeader(title: String(localized: "Data"))
                 }
                 
+                // MARK: About
+                
                 Section {
+                    whatsNew
                     contactUs
                     roadmap
                     moreInfo
@@ -80,6 +103,8 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: String(localized: "About"))
                 }
+                
+                // MARK: Affiliations
                 
                 Section {
                     logos
@@ -95,9 +120,12 @@ struct SettingsView: View {
             .sheet(item: $viewModel.activeSheet) { sheet in
                 sheetContent(for: sheet)
             }
+            .alert(item: $viewModel.activeAlert) { alert in
+                alertContent(for: alert)
+            }
             .onAppear {
                 viewModel.onViewAppear()
-                viewModel.setModeOfUse(modeOfUse)
+                viewModel.configure(modeOfUse, DeviceMode.current(from: DefaultsStore.shared))
             }
             .onChange(of: viewModel.isExpandedModeOfUseOn) { _, newValue in
                 modeOfUse = (newValue == true ? .expanded : .essentials)
@@ -111,11 +139,15 @@ struct SettingsView: View {
     private func navigationDestination(for destination: SettingsNavigationDestination) -> some View {
         switch destination {
         case .algorithms:
-            AlgorithmsView()
+            AlgorithmsView(viewModel: viewModel)
         case .theme:
             ThemeSettingsView()
-        case .export:
-            ExportView(viewModel: viewModel)
+        case .dataManagement:
+            DataManagementView(viewModel: viewModel)
+        case .appleWatch:
+            AppleWatchView(viewModel: viewModel)
+        case .deviceMode:
+            DeviceModeSettingsView(viewModel: viewModel)
         }
     }
     
@@ -144,10 +176,21 @@ struct SettingsView: View {
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
-        case .missedReflectionsListView:
-            MissedReflectionsListView(viewModel: viewModel)
+        case .whatsNew:
+            WhatsNewView()
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
+        }
+    }
+    
+    // MARK: Alert Content
+    
+    private func alertContent(for alert: SettingsAlert) -> Alert {
+        switch alert {
+        case .resetDatabaseConfirmation:
+            return resetDatabaseConfirmationAlert
+        case .restartApp:
+            return restartAppAlert
         }
     }
     
@@ -202,13 +245,29 @@ struct SettingsView: View {
         .tint(Color.brandPrimary)
     }
     
+    // MARK: Device Mode
+    
+    private var deviceModeSetting: some View {
+        NavigationLink(value: SettingsNavigationDestination.deviceMode) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "iphone.motion",
+                    title: String(localized: "Device Mode"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
+    }
+    
     // MARK: Algorithms
     
     private var algorithms: some View {
         NavigationLink(value: SettingsNavigationDestination.algorithms) {
             RoundedListCell(
                 label: IconLabel(
-                    icon: "curlybraces",
+                    icon: "slider.horizontal.below.square.filled.and.square",
                     title: String(localized: "Algorithms"),
                     labelColor: Color("BrandPrimary"),
                     background: true
@@ -218,14 +277,34 @@ struct SettingsView: View {
         }
     }
     
-    // MARK: Export Data
+    // MARK: Whats New
     
-    private var exportData: some View {
-        NavigationLink(value: SettingsNavigationDestination.export) {
+    private var whatsNew: some View {
+        Button {
+            viewModel.presentSheet(.whatsNew)
+        } label: {
             RoundedListCell(
                 label: IconLabel(
-                    icon: "tray.and.arrow.up.fill",
-                    title: String(localized: "Export Data"),
+                    icon: "party.popper.fill",
+                    title: String(localized: "What's New?"),
+                    description: String(localized: "View the new features"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+    
+    // MARK: Data Management
+    
+    private var dataManagement: some View {
+        NavigationLink(value: SettingsNavigationDestination.dataManagement) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "externaldrive",
+                    title: String(localized: "Manage Data"),
+                    description: String(localized: "Export or delete your data"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 ),
@@ -373,11 +452,9 @@ struct SettingsView: View {
                             Button {
                                 openURL(institute.url)
                             } label: {
-                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    institute.logo
-                                        .resizable()
-                                        .scaledToFill()
-                                }
+                                institute.logo
+                                    .resizable()
+                                    .scaledToFill()
                             }
                         }
                     }
@@ -392,20 +469,57 @@ struct SettingsView: View {
         .background(Color(.secondarySystemGroupedBackground))
     }
     
+    // MARK: Apple Watch
+    
+    private var appleWatch: some View {
+        NavigationLink(value: SettingsNavigationDestination.appleWatch) {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "applewatch",
+                    title: String(localized: "Apple Watch"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "chevron.right"
+            )
+        }
+    }
+    
     // MARK: App Version
     
     private var appVersion: some View {
-        Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
-            .font(.footnote)
-            .foregroundStyle(Color.secondary)
-            .onTapGesture(count: 1) {
-                viewModel.presentSheet(.systemReportView)
-            }
-            .onTapGesture(count: 2) {
-                viewModel.presentSheet(.missedReflectionsListView)
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
+        Button {
+            viewModel.presentSheet(.systemReportView)
+        } label: {
+            Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
+                .font(.footnote)
+                .foregroundStyle(Color.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal)
+    }
+    
+    // MARK: Reset Database Confirmation Alert
+    
+    private var resetDatabaseConfirmationAlert: Alert {
+        Alert(
+            title: Text("Reset Data"),
+            message: Text("All data stored on your device and in iCloud will be deleted, including Reflections and Reminders. This action cannot be reversed. Are you sure you want to proceed?"),
+            primaryButton: .destructive(Text("Delete")) {
+                viewModel.resetDatabase()
+            },
+            secondaryButton: .cancel()
+        )
+    }
+    
+    // MARK: Restart App Alert
+    
+    private var restartAppAlert: Alert {
+        Alert(
+            title: Text("Restart Required"),
+            message: Text("Please restart the app to see the changes take effect."),
+            dismissButton: .default(Text("OK"))
+        )
     }
 }
 
@@ -413,4 +527,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .tint(.brandPrimary)
 }

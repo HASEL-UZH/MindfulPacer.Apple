@@ -19,27 +19,35 @@ class HomeViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase
+    private let checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase
     private let createReflectionUseCase: CreateReflectionUseCase
-    private let fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase
+    private let deleteReflectionUseCase: DeleteReflectionUseCase
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
+    private let fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase
     private let fetchReflectionsUseCase: FetchReflectionsUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     private let filterReflectionsUseCase: FilterReflectionsUseCase
-    private let markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
     
     // MARK: - Published Properties
     
-    var activeSheet: HomeViewSheet?
-    var activeToast: HomeViewToast?
+    var activeSheet: HomeSheet?
+    var activeAlert: HomeAlert?
+    var activeToast: HomeToast?
+    
     var reviewFilter: ReflectionFilter = ReflectionFilter()
     var reviewSorting: ReflectionSorting = .dateDescending
     var reflections: [Reflection] = []
+    var missedReflections: [Reflection] = []
     var filteredReflections: [Reflection] = []
+    var healthPermissionState: HealthPermissionsState = .ok
+    
+    var deviceMode: DeviceMode = .iPhoneOnly
+    
+    var isFetchingMissedReflections = false
     
     var recentReflections: [Reflection] {
         Array(reflections.prefix(3))
@@ -50,7 +58,17 @@ class HomeViewModel {
         Array(reminders.prefix(3))
     }
     
-    var missedReflections: [MissedReflection] = []
+    var missedPageSize: Int = 10
+    var missedVisibleCount: Int = 10
+    
+    var displayedMissedReflections: [Reflection] {
+        Array(missedReflections.prefix(min(missedVisibleCount, missedReflections.count)))
+    }
+    
+    var canLoadMoreMissed: Bool {
+        missedVisibleCount < missedReflections.count
+    }
+    
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     var heartRateData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
     
@@ -67,7 +85,23 @@ class HomeViewModel {
     }
     
     var missedReflectionsWidgetTitle: String {
-        "\(missedReflections.count) Missed \(missedReflections.count > 1 ? "Reflections" : "Reflection")"
+        missedReflections.count > 1 ? "\(missedReflections.count) Missed Reflections" : "1 Missed Reflection"
+    }
+    
+    var watchConnectionStatus: WatchConnectionStatus = .initializing
+    var watchConnectionSpeed: WatchConnectionSpeed = .noResponse
+    
+    var isWatchPaired: Bool {
+        return watchConnectionStatus != .noWatchPaired
+    }
+    
+    var isWatchAppInstalled: Bool {
+        switch watchConnectionStatus {
+        case .noWatchPaired, .appNotInstalled:
+            return false
+        default:
+            return true
+        }
     }
     
     // MARK: - Private Properties
@@ -79,56 +113,118 @@ class HomeViewModel {
     
     init(
         modelContext: ModelContext,
-        checkMissedReflectionsUseCase: CheckMissedReflectionsUseCase,
+        checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase,
         createReflectionUseCase: CreateReflectionUseCase,
-        fetchActionedMissedReflectionsUseCase: FetchActionedMissedReflectionsUseCase,
+        deleteReflectionUseCase: DeleteReflectionUseCase,
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
         fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
+        fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase,
         fetchReflectionsUseCase: FetchReflectionsUseCase,
         fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
-        filterReflectionsUseCase: FilterReflectionsUseCase,
-        markMissedReflectionAsActionedUseCase: MarkMissedReflectionAsActionedUseCase
+        filterReflectionsUseCase: FilterReflectionsUseCase
     ) {
         self.modelContext = modelContext
-        self.checkMissedReflectionsUseCase = checkMissedReflectionsUseCase
+        self.checkHealthPermissionsUseCase = checkHealthPermissionsUseCase
         self.createReflectionUseCase = createReflectionUseCase
-        self.fetchActionedMissedReflectionsUseCase = fetchActionedMissedReflectionsUseCase
+        self.deleteReflectionUseCase = deleteReflectionUseCase
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
         self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
         self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
+        self.fetchMissedReflectionsUseCase = fetchMissedReflectionsUseCase
         self.fetchReflectionsUseCase = fetchReflectionsUseCase
         self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
         self.filterReflectionsUseCase = filterReflectionsUseCase
-        self.markMissedReflectionAsActionedUseCase = markMissedReflectionAsActionedUseCase
+        
+        subscribeToWatchEvents()
+        subscribeToWatchStatus()
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
         setupBindings()
+        resetMissedPagination()
+        fetchReminders()
+        fetchReflections()
+        fetchCurrentSteps()
+        fetchCurrentHeartRate()
+        fetchHealthData()
+        fetchMissedReflections()
+        checkHealthPermissions()
     }
     
     func onViewAppear() {
+        fetchReminders()
+        fetchReflections()
         fetchCurrentSteps()
         fetchCurrentHeartRate()
-        fetchReflections()
-        fetchReminders()
-        checkMissedReflections()
         fetchHealthData()
+        checkHealthPermissions()
+    }
+    
+    func onRefresh() {
+        checkHealthPermissions()
+        fetchReminders()
+        fetchReflections()
+        fetchCurrentSteps()
+        fetchCurrentHeartRate()
+        fetchHealthData()
+        fetchMissedReflections()
     }
     
     func onSheetDismissed() {
         fetchReflections()
         fetchReminders()
-        checkMissedReflections()
+    }
+    
+    func configure(_ deviceMode: DeviceMode) {
+        self.deviceMode = deviceMode
     }
     
     // MARK: - User Actions
+    
+    func rejectMissedReflection(reflection: Reflection) {
+        switch deviceMode {
+        case .iPhoneOnly:
+            let _ = createReflectionUseCase.execute(
+                date: reflection.date,
+                activity: reflection.activity,
+                subactivity: reflection.subactivity,
+                mood: nil,
+                didTriggerCrash: false,
+                wellBeing: nil,
+                fatigue: nil,
+                shortnessOfBreath: nil,
+                sleepDisorder: nil,
+                cognitiveImpairment: nil,
+                physicalPain: nil,
+                depressionOrAnxiety: nil,
+                additionalInformation: ""
+                , measurementType: nil,
+                reminderType: nil,
+                threshold: nil,
+                interval: nil,
+                triggerSamples: [],
+                isRejected: true
+            )
+        case .iPhoneAndWatch:
+            deleteReflectionUseCase.execute(reflection: reflection)
+        }
+        
+        missedReflections.removeAll { $0.id == reflection.id }
+        clampMissedPaginationAfterMutation()
+    }
+    
+    func acceptMissedReflection(reflection: Reflection) {
+        missedReflections.removeAll { $0.id == reflection.id }
+        clampMissedPaginationAfterMutation()
+        presentSheet(.editReflectionView(reflection))
+    }
     
     func toggleFilterActivity(_ activity: Activity) {
         updateFilter {
@@ -166,55 +262,68 @@ class HomeViewModel {
         }
     }
     
-    func acceptMissedReflection(_ missedReflection: MissedReflection) {
-        missedReflection.accept()
-    
-        withAnimation {
-            missedReflections.removeAll { $0.id == missedReflection.id }
-        }
-        
-        _ = createReflectionUseCase.execute(
-            date: missedReflection.date,
-            activity: nil,
-            subactivity: nil,
-            mood: nil,
-            didTriggerCrash: false,
-            wellBeing: nil,
-            fatigue: nil,
-            shortnessOfBreath: nil,
-            sleepDisorder: nil,
-            cognitiveImpairment: nil,
-            physicalPain: nil,
-            depressionOrAnxiety: nil,
-            additionalInformation: "",
-            measurementType: missedReflection.measurementType,
-            reminderType: missedReflection.reminderType,
-            threshold: missedReflection.threshold,
-            interval: missedReflection.interval
-        )
-       
-        presentToast(.successfullyCreatedReflection)
-    }
-    
-    func rejectMissedReflection(_ missedReflection: MissedReflection) {
-        missedReflection.reject()
-        
-        withAnimation {
-            missedReflections.removeAll { $0.id == missedReflection.id }
-        }
-    }
-    
     // MARK: - Presentation
     
-    func presentSheet(_ sheet: HomeViewSheet) {
+    func presentSheet(_ sheet: HomeSheet) {
         activeSheet = sheet
     }
     
-    func presentToast(_ toast: HomeViewToast) {
+    func presentAlert(_ alert: HomeAlert) {
+        activeAlert = alert
+    }
+    
+    func presentToast(_ toast: HomeToast) {
         activeToast = toast
     }
     
+    func resetMissedPagination() {
+        missedVisibleCount = min(missedPageSize, missedReflections.count)
+    }
+    
+    @MainActor
+    func loadMoreMissed() {
+        guard canLoadMoreMissed else { return }
+        missedVisibleCount = min(missedVisibleCount + missedPageSize, missedReflections.count)
+    }
+    
+    func clampMissedPaginationAfterMutation() {
+        missedVisibleCount = min(missedVisibleCount, missedReflections.count)
+        if missedVisibleCount == 0 && !missedReflections.isEmpty {
+            resetMissedPagination()
+        }
+    }
+    
     // MARK: - Private Methods
+    
+    private func subscribeToWatchEvents() {
+        WatchEventCoordinator.shared.openReflectionSubject
+            .sink { [weak self] event in
+                guard let self = self else { return }
+                
+                guard let reflections = self.fetchReflectionsUseCase.execute() else {
+                    print("ERROR: iPhone could not find reflection with ID \(event.reflectionID)")
+                    return
+                }
+                
+                guard let reflection = reflections.filter({ $0.id == event.reflectionID }).first else { return }
+                
+                if let activityID = event.activityID {
+                    if let allActivities = self.fetchDefaultActivitiesUseCase.execute(),
+                       let matchingActivity = allActivities.first(where: { $0.id == activityID }) {
+                        
+                        reflection.activity = matchingActivity
+                        
+                        if let subactivityID = event.subactivityID,
+                           let matchingSubactivity = matchingActivity.subactivities?.first(where: { $0.id == subactivityID }) {
+                            reflection.subactivity = matchingSubactivity
+                        }
+                    }
+                }
+                
+                self.presentSheet(.editReflectionView(reflection))
+            }
+            .store(in: &cancellables)
+    }
     
     private func setupBindings() {
         filterAndSortingPublisher
@@ -285,31 +394,64 @@ class HomeViewModel {
     }
     
     private func fetchReflections() {
-        reflections = fetchReflectionsUseCase.execute() ?? []
+        reminders = fetchRemindersUseCase.execute() ?? []
+        let allReflections = fetchReflectionsUseCase.execute() ?? []
+        reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
         applyFilterAndSorting(reviewFilter, reviewSorting)
+    }
+    
+    private func fetchMissedReflections() {
+        isFetchingMissedReflections = true
+        let allReflections = fetchReflectionsUseCase.execute() ?? []
+        
+        switch deviceMode {
+        case .iPhoneOnly:
+            fetchMissedReflectionsUseCase.execute(
+                reminders: reminders,
+                existingReflections: allReflections
+            ) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let fetchedMissedReflections):
+                    self.missedReflections = Array(fetchedMissedReflections.prefix(100))
+                    self.missedReflections = self.missedReflections.filter { $0.triggerSamples.count > 1 }
+                    self.resetMissedPagination()
+                case .failure(let failure):
+                    print("DEBUGY:", failure.localizedDescription)
+                }
+                self.isFetchingMissedReflections = false
+                self.applyFilterAndSorting(self.reviewFilter, self.reviewSorting)
+            }
+        case .iPhoneAndWatch:
+            missedReflections = allReflections.filter { $0.isMissedReflection }
+            resetMissedPagination()
+            isFetchingMissedReflections = false
+            applyFilterAndSorting(reviewFilter, reviewSorting)
+        }
     }
     
     private func fetchReminders() {
         reminders = fetchRemindersUseCase.execute() ?? []
     }
     
-    private func checkMissedReflections() {
-        let reminders = fetchRemindersUseCase.execute() ?? []
-        
-        checkMissedReflectionsUseCase.execute(
-            reminders: reminders,
-            isDeveloperMode: false
-        ) { [weak self] result in
-            guard let self = self else { return }
-            
+    private func checkHealthPermissions() {
+        checkHealthPermissionsUseCase.execute { [weak self] state in
             Task { @MainActor in
-                switch result {
-                case .success(let missedReflections):
-                    self.missedReflections = missedReflections
-                case .failure(let failure):
-                    print("DEBUG:", failure)
-                }
+                self?.healthPermissionState = state
+                print("DEBUGY: Health", state)
             }
         }
+    }
+    
+    private func subscribeToWatchStatus() {
+        ConnectivityService.shared.$connectionStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in self?.watchConnectionStatus = status }
+            .store(in: &cancellables)
+        
+        ConnectivityService.shared.$connectionSpeed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] speed in self?.watchConnectionSpeed = speed }
+            .store(in: &cancellables)
     }
 }

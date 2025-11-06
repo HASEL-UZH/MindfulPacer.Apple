@@ -5,7 +5,6 @@
 //  Created by Grigor Dochev on 05.07.2024.
 //
 
-import Combine
 import Foundation
 import SwiftData
 import SwiftUI
@@ -54,6 +53,54 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - DeviceMode
+
+enum DeviceMode: String, CaseIterable, Identifiable {
+    case iPhoneOnly
+    case iPhoneAndWatch
+    
+    var id: Self { self }
+    
+    var localized: String {
+        switch self {
+        case .iPhoneOnly: String(localized: "iPhone Only")
+        case .iPhoneAndWatch: String(localized: "iPhone + Apple Watch")
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .iPhoneOnly:
+            "iphone"
+        case .iPhoneAndWatch:
+            "ipod.and.applewatch"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .iPhoneOnly:
+            String(localized: "Use MindfulPacer with just yourcha iPhone. You can log reflections and activities manually without a paired Apple Watch.")
+        case .iPhoneAndWatch:
+            String(localized: "Pair MindfulPacer with your Apple Watch to automatically collect health data, reminders, and activity tracking alongside your reflections.")
+        }
+    }
+    
+    static var appStorageKey: String {
+        "deviceMode"
+    }
+}
+
+extension DeviceMode {
+    static func current(from defaults: UserDefaults = DefaultsStore.shared) -> DeviceMode {
+        if let raw = defaults.string(forKey: DeviceMode.appStorageKey),
+           let mode = DeviceMode(rawValue: raw) {
+            return mode
+        }
+        return .iPhoneAndWatch
+    }
+}
+
 // MARK: - RootViewModel
 
 @Observable
@@ -64,30 +111,23 @@ class RootViewModel {
     private let modelContext: ModelContext
     private let addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
-    private let initializeConnectivityUseCase: InitializeConnectivityUseCase
     
-    // MARK: - Published Properties
+    // MARK: - State
     
     var activeSheet: RootSheet?
     var selectedTab: Tab = .home
     var selectedTheme: Theme = .system
-
-    // MARK: - Private Properties
-    
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
     init(
         modelContext: ModelContext,
         addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase,
-        checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase,
-        initializeConnectivityUseCase: InitializeConnectivityUseCase
+        checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     ) {
         self.modelContext = modelContext
         self.addDefaultActivitiesUseCase = addDefaultActivitiesUseCase
         self.checkUserHasSeenOnboardingUseCase = checkUserHasSeenOnboardingUseCase
-        self.initializeConnectivityUseCase = initializeConnectivityUseCase
     }
     
     // MARK: - View Events
@@ -96,7 +136,6 @@ class RootViewModel {
     func onViewFirstAppear() {
         Task {
             await addDefaultActivitiesUseCase.execute()
-            initializeConnectivityUseCase.execute()
         }
         
         checkIfUserHasSeenOnboarding()
@@ -114,7 +153,7 @@ class RootViewModel {
         selectedTab = .analytics
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private
     
     private func checkIfUserHasSeenOnboarding() {
         let hasSeenOnboarding = checkUserHasSeenOnboardingUseCase.execute()

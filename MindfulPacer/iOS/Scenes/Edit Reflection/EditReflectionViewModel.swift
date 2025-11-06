@@ -9,6 +9,13 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - ReminderContext
+
+enum ReminderContext: String {
+    case reminder
+    case chart
+}
+
 // MARK: - EditReflectionViewModel
 
 @MainActor
@@ -30,15 +37,16 @@ class EditReflectionViewModel {
     var navigationPath: [EditReflectionNavigationDestination] = []
     var activeSheet: EditReflectionSheet?
     var activeAlert: EditReflectionAlert?
+    var selectedReminderContext: ReminderContext = .reminder
     
     var activities: [Activity] = []
     
     var navigationTitle: String {
         switch mode {
         case .create:
-            return "Create Reflection"
+            return String(localized: "Create Reflection")
         case .edit:
-            return "Edit Reflection"
+            return String(localized: "Edit Reflection")
         }
     }
     
@@ -223,7 +231,9 @@ class EditReflectionViewModel {
             measurementType: nil,
             reminderType: nil,
             threshold: nil,
-            interval: nil
+            interval: nil,
+            triggerSamples: [],
+            isRejected: false
         )
         
         print("DEBUGY:", wellBeing)
@@ -260,19 +270,6 @@ class EditReflectionViewModel {
         isReflectionDeleted = true
         guard let reflection else { return }
         deleteReflectionUseCase.execute(reflection: reflection)
-    }
-    
-    func reminderTriggerSummary(for reflection: Reflection) -> String {
-        guard let reminderMeasurementType = reflection.measurementType,
-              let reminderInterval = reflection.interval,
-              let reminderThreshold = reflection.threshold else { return "No summary" }
-        
-        switch reminderMeasurementType {
-        case .heartRate:
-            return "Above \(reminderThreshold) bpm for \(reminderInterval.rawValue.lowercased())"
-        case .steps:
-            return "Above \(reminderThreshold) steps within the window of \(reminderInterval.rawValue.lowercased())"
-        }
     }
     
     // MARK: - Presentation

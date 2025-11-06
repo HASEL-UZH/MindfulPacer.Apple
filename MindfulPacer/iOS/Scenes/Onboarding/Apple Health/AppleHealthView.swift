@@ -13,30 +13,51 @@ extension OnboardingView {
     struct AppleHealthView: View {
         
         // MARK: Properties
-
+        
         @Bindable var viewModel: OnboardingViewModel
-
+        
         // MARK: Body
-
+        
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
                 title: String(localized: "Connect to Apple Health")
             ) {
-                VStack(spacing: 16) {
-                    Image("Apple Health Icon Official")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 128, height: 128)
-
-                    Group {
-                        Text("MindfulPacer can visualize your biometric data (as measured by your Apple Watch) and visualize it together with your diary entries in the Analysis page.")
-                        Text("Please allow MindfulPacer to access your Apple Health data. Select the biometric data that you want to share (e.g. heart rate and/or steps).")
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            image: "Apple Health",
+                            title: String(localized: "Apple Health Integration"),
+                            labelColor: Color("BrandPrimary"),
+                            background: true
+                        )
+                ) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        CroppedIPhoneImage(
+                            Image(.appleHealthPermission),
+                            heightRatio: 0.8,
+                            fill: true
+                        )
+                        .padding()
+                        
+                        Text(
+                            """
+                            MindfulPacer can visualize your biometric data (as measured by your Apple Watch) and visualize it together with your diary entries in the Analysis page.
+                            
+                            Please allow MindfulPacer to access your Apple Health data. Select the biometric data that you want to share (e.g. heart rate and/or steps).
+                            """
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                    InfoBox(text: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."))
+                } footer: {
+                    IconLabel(
+                        icon: "info.circle.fill",
+                        title: String(localized: "You can always change this permission later, by navigating to Settings > Privacy & Security > Health > MindfulPacer."),
+                        labelColor: .secondary
+                    )
+                    .font(.footnote)
                 }
+                .iconLabelGroupBoxStyle(.divider)
             }
         }
     }
@@ -46,6 +67,6 @@ extension OnboardingView {
 
 #Preview {
     let viewModel: OnboardingViewModel = ScenesContainer.shared.onboardingViewModel()
-
+    
     OnboardingView.AppleHealthView(viewModel: viewModel)
 }

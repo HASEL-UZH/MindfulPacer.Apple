@@ -21,6 +21,13 @@ struct ReflectionFilter: Equatable {
     var fromDate: Date = Calendar.current.date(byAdding: .weekOfMonth, value: -2, to: Date()) ?? Date()
     var toDate: Date = Date()
     
+    var dateRange: Range<Date> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: fromDate)
+        let endExclusive = cal.startOfNextDay(for: toDate)
+        return start..<endExclusive
+    }
+    
     var activeFilterCount: Int {
         var count = 0
         count += selectedActivities.count
@@ -40,6 +47,13 @@ enum ReflectionSorting {
         case .dateAscending: return { $0.date < $1.date }
         case .dateDescending: return { $0.date > $1.date }
         }
+    }
+}
+
+extension Calendar {
+    func startOfNextDay(for date: Date) -> Date {
+        let start = startOfDay(for: date)
+        return self.date(byAdding: .day, value: 1, to: start)!
     }
 }
 

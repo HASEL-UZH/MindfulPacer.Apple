@@ -25,29 +25,51 @@ extension OnboardingView {
                 title: String(localized: "Mode of Use"),
                 showSkipButton: false
             ) {
-                VStack(spacing: 16) {
-                    InfoBox(text: String(localized: "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings."))
-                    
-                    ForEach(ModeOfUse.allCases) { mode in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: viewModel.selectedModeOfUse == mode
-                        ) {
-                            viewModel.selectedModeOfUse = mode
-                        } label: {
-                            IconLabel(
-                                image: mode.icon,
-                                title: mode.localized,
-                                description: mode.description,
-                                titleColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
-                                iconColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
-                                descriptionTextColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary").opacity(0.7) : Color.secondary,
-                                background: true
-                            )
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                IconLabelGroupBox(
+                    label:
+                        IconLabel(
+                            icon: "power",
+                            title: "MindfulPacer Modes",
+                            labelColor: Color("BrandPrimary"),
+                            background: true
+                        ),
+                    description:
+                        Text(String(localized: "Please select which mode you want to use MindfulPacer with. You can switch between the mode anytime in the settings."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                ) {
+                    VStack(spacing: 16) {
+                        ForEach(ModeOfUse.allCases) { mode in
+                            SelectableButton(
+                                shape: .roundedRectangle(cornerRadius: 16),
+                                backgroundColor: Color(.tertiarySystemGroupedBackground),
+                                isSelected: viewModel.selectedModeOfUse == mode
+                            ) {
+                                viewModel.selectedModeOfUse = mode
+                            } label: {
+                                IconLabel(
+                                    image: mode.icon,
+                                    title: mode.localized,
+                                    description: mode.description,
+                                    titleColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
+                                    iconColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary") : Color.primary,
+                                    descriptionTextColor: viewModel.selectedModeOfUse == mode ? Color("BrandPrimary").opacity(0.7) : Color.secondary,
+                                    background: true
+                                )
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
                     }
+                } footer:  {
+                    IconLabel(
+                        icon: "info.circle.fill",
+                        title: "You can always change this later on in the app settings.",
+                        labelColor: .secondary
+                    )
+                    .font(.footnote)
                 }
+                .iconLabelGroupBoxStyle(.divider)
             }
             .onChange(of: viewModel.selectedModeOfUse) { _, newValue in
                 if let newValue {

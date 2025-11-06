@@ -2,12 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.MindfulPacer.Apple.iOS.hello</string>
+		<string>com.MindfulPacer.Apple.iOS.checkMissedReflections</string>
+	</array>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We need to send you notifications for important updates.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>remote-notification</string>
+		<string>processing</string>
 	</array>
 </dict>
 </plist>

@@ -8,6 +8,37 @@
 import Combine
 import Foundation
 
+// MARK: - AppleWatchComplicationType
+
+enum AppleWatchComplicationType: String, CaseIterable {
+    case rectangular
+    case circular
+    case corner
+    case inline
+    
+    var icon: String {
+        switch self {
+        case .circular: "circle.fill"
+        case .rectangular: "rectangle.fill"
+        case .corner: "righttriangle.split.diagonal.fill"
+        case .inline: "line.3.horizontal"
+        }
+    }
+    
+    var image: String {
+        switch self {
+        case .circular:
+            "Circular Complication"
+        case .rectangular:
+            "Rectangular Complication"
+        case .corner:
+            "Corner Complication"
+        case .inline:
+            "Inline Complication"
+        }
+    }
+}
+
 // MARK: - KeyFeatureItem
 
 struct KeyFeatureItem {
@@ -53,6 +84,8 @@ class OnboardingViewModel {
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
     var selectedModeOfUse: ModeOfUse?
+    var selectedDeviceMode: DeviceMode?
+    var selectedAppleWatchComplicationTyoe: AppleWatchComplicationType = .rectangular
     
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
@@ -60,6 +93,8 @@ class OnboardingViewModel {
         }
 
         switch lastDestination {
+        case .deviceMode:
+            return String(localized: "Continue")
         case .appleWatchConnection:
             return String(localized: "Continue")
         case .notifications:
@@ -78,15 +113,15 @@ class OnboardingViewModel {
     }
 
     var isActionButtonDisabled: Bool {
-        guard let lastDestination = navigationPath.last else {
-            return false
-        }
+        guard let lastDestination = navigationPath.last else { return false }
 
         switch lastDestination {
         case .disclaimer:
             return !didAcceptTerms
         case .modeOfUse:
             return selectedModeOfUse.isNil
+        case .deviceMode:
+            return selectedDeviceMode.isNil
         default:
             return false
         }
@@ -216,41 +251,48 @@ class OnboardingViewModel {
     func onViewFirstAppear() {}
 
     // MARK: - User Actions
-
+    
     func actionButtonTapped() {
-        /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
-            navigationPath.append(OnboardingNavigationDestination.appleWatchConnection)
+            navigationPath.append(.deviceMode)
             return
         }
-
+        
         switch currentDestination {
+        case .deviceMode:
+            if selectedDeviceMode == .iPhoneAndWatch {
+                navigationPath.append(.appleWatchConnection)
+            } else {
+                navigationPath.append(.notifications)
+            }
         case .appleWatchConnection:
-            navigationPath.append(OnboardingNavigationDestination.notifications)
+            navigationPath.append(.notifications)
         case .notifications:
             requestNotificationPermission()
         case .appleHealth:
             requestHealthAuthorization()
         case .mainFeatures:
-            navigationPath.append(OnboardingNavigationDestination.activityPromotingFeatures)
+            navigationPath.append(.activityPromotingFeatures)
         case .activityPromotingFeatures:
-            navigationPath.append(OnboardingNavigationDestination.modeOfUse)
+            navigationPath.append(.modeOfUse)
         case .modeOfUse:
-            navigationPath.append(OnboardingNavigationDestination.disclaimer)
+            navigationPath.append(.disclaimer)
         case .disclaimer:
             toggleUserHasSeenOnboardingUseCase.execute()
+            WatchOnboardingBridge.shared.notifyCompletedNow()
             shouldDismiss = true
         }
     }
-
+    
     func skipButtonTapped() {
-        /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
-            navigateTo(destination: .appleWatchConnection)
+            navigateTo(destination: .deviceMode)
             return
         }
-
+        
         switch currentDestination {
+        case .deviceMode:
+            navigateTo(destination: .notifications)
         case .appleWatchConnection:
             navigateTo(destination: .notifications)
         case .notifications:
@@ -265,7 +307,7 @@ class OnboardingViewModel {
             break
         }
     }
-
+    
     // MARK: - Presentation
 
     func navigateTo(destination: OnboardingNavigationDestination) {

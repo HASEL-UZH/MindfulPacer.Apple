@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "filename" : "export1E332A00-7830-44E4-89B9-E85C5031AC6D.png",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "exportFB04B3FA-1CA2-4FF9-84E2-0ADFBBCE0ECB.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

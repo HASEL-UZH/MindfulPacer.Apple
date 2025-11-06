@@ -17,6 +17,7 @@ enum OnboardingNavigationDestination: Hashable {
     case activityPromotingFeatures
     case modeOfUse
     case disclaimer
+    case deviceMode
 }
 
 // MARK: - OnboardingView
@@ -71,6 +72,8 @@ struct OnboardingView: View {
             ActivityPromotingFeaturesView(viewModel: viewModel)
         case .disclaimer:
             DisclaimerView(viewModel: viewModel)
+        case .deviceMode:
+            DeviceModeView(viewModel: viewModel)
         }
     }
 
@@ -125,6 +128,7 @@ struct OnboardingView: View {
 
 extension OnboardingView {
     struct OnboardingPage<Content: View>: View {
+        
         // MARK: Properties
 
         @Bindable var viewModel: OnboardingViewModel

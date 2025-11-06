@@ -29,8 +29,9 @@ extension OnboardingView {
                         .font(.largeTitle.bold())
                         .foregroundStyle(LinearGradient(colors: [Color("BrandPrimary")], startPoint: .topLeading, endPoint: .bottomTrailing))
                 }
-
-                VStack(spacing: 16) {
+                .padding(.top, 64)
+                
+                VStack(spacing: 32) {
                     ForEach(viewModel.keyFeatures, id: \.title) { feature in
                         keyFeatureItem(
                             icon: feature.icon,
@@ -40,6 +41,8 @@ extension OnboardingView {
                     }
                 }
                 .padding(.horizontal)
+                
+                Spacer()
             }
             .frame(maxHeight: .infinity, alignment: .center)
             .safeAreaPadding(.bottom, viewModel.actionButtonHeight)
@@ -49,25 +52,23 @@ extension OnboardingView {
 
         @ViewBuilder
         private func keyFeatureItem(icon: String, title: String, description: String) -> some View {
-            Card {
-                HStack(spacing: 16) {
-                    Image(systemName: icon)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 32, height: 32)
-                        .foregroundStyle(Color("BrandPrimary"))
-                        .symbolRenderingMode(.hierarchical)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(title)
-                            .fontWeight(.semibold)
-
-                        Text(description)
-                            .font(.subheadline)
-                    }
+            HStack(spacing: 24) {
+                Image(systemName: icon)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 32, height: 32)
+                    .foregroundStyle(.brandPrimary)
+                    .symbolRenderingMode(.hierarchical)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title).fontWeight(.semibold)
+                    Text(description).font(.subheadline)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
         }
     }
 }

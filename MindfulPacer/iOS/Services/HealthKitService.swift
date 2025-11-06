@@ -16,19 +16,24 @@ enum Period: String, CaseIterable {
     case day = "D"
     case week = "W"
     
-    var startDate: Date {
+    static func activeCases(for date: Date) -> [Period] {
+        if Calendar.current.isDateInToday(date) {
+            return Period.allCases
+        } else {
+            return [.day, .week]
+        }
+    }
+    
+    func startDate(endingAt endDate: Date) -> Date {
         switch self {
         case .oneHour:
-            return Calendar.current
-                .date(byAdding: .hour, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -1, to: endDate)!
         case .twoHours:
-            return Calendar.current
-                .date(byAdding: .hour, value: -2, to: Date())!
+            return Calendar.current.date(byAdding: .hour, value: -2, to: endDate)!
         case .day:
-            return Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .day, value: 0, to: endDate)!
         case .week:
-            return Calendar.current
-                .date(byAdding: .weekOfYear, value: -1, to: Date())!
+            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: endDate)!
         }
     }
     
@@ -66,36 +71,64 @@ enum Period: String, CaseIterable {
         case .week: .day
         }
     }
+    
+    func startDate(relativeTo endDate: Date = Date()) -> Date {
+        switch self {
+        case .oneHour:
+            return Calendar.current.date(byAdding: .hour, value: -1, to: endDate)!
+        case .twoHours:
+            return Calendar.current.date(byAdding: .hour, value: -2, to: endDate)!
+        case .day:
+            return Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
+        case .week:
+            return Calendar.current.date(byAdding: .weekOfYear, value: -1, to: endDate)!
+        }
+    }
+    
+    func window(relativeTo endDate: Date = Date()) -> (start: Date, end: Date) {
+        (startDate(relativeTo: endDate), endDate)
+    }
+}
+
+// MARK: - HealthPermissionsState
+
+enum HealthPermissionsState {
+    case ok
+    case needsRequest
+    case unavailable
 }
 
 // MARK: - HealthKitServiceProtocol
 
 protocol HealthKitServiceProtocol {
     func requestAuthorization(
-        completion: @escaping @Sendable (
-            Bool,
-            HealthKitError?
-        ) -> Void
+        completion: @escaping @Sendable (Bool, HealthKitError?) -> Void
     )
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
-        completion: @escaping @Sendable (
-            Result<[HKQuantitySample], HealthKitError>
-        ) -> Void
+        endDate: Date,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
     func fetchCurrentMeasurement(
         for measurementType: MeasurementType,
-        completion: @escaping @Sendable (
-            Result<(value: Double, timestamp: Date), HealthKitError>
-        ) -> Void
+        completion: @escaping @Sendable (Result<(value: Double, timestamp: Date), HealthKitError>) -> Void
     )
     func fetchStepDataLast24Hours(
         completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
     )
-    func fetchHeartRateDataLast24Hours(
-        completion: @Sendable @escaping ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
+    func fetchStepDataCurrentDay(
+        completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
     )
+    func fetchHeartRateDataLast24Hours(
+        completion: @escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void
+    )
+    func fetchCumulativeStepData(
+        for period: Period,
+        endDate: Date,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
+    )
+    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void)
 }
 
 // MARK: - HealthKitService
@@ -157,6 +190,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
         guard let quantityType = HKQuantityType.quantityType(
@@ -166,9 +200,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
+        let (start, end) = period.window(relativeTo: endDate)
         let predicate = HKQuery.predicateForSamples(
-            withStart: period.startDate,
-            end: Date(),
+            withStart: start,
+            end: end,
             options: .strictEndDate
         )
         
@@ -177,9 +212,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 using: quantityType,
                 predicate: predicate,
                 period: period,
+                endDate: endDate,
                 completion: completion
             )
-        } else if measurementType == .heartRate {
+        } else {
             fetchHeartRateData(
                 using: quantityType,
                 predicate: predicate,
@@ -194,21 +230,20 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         using quantityType: HKQuantityType,
         predicate: NSPredicate,
         period: Period,
+        endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
-        // Define the interval dynamically based on the period
         let interval: DateComponents
         switch period {
         case .oneHour, .twoHours:
-            interval = DateComponents(minute: 15) // 15-minute buckets for 1 hour and 2 hours
+            interval = DateComponents(minute: 15)
         case .day:
-            interval = DateComponents(hour: 1) // 1-hour buckets for 1 day
+            interval = DateComponents(hour: 1)
         case .week:
-            interval = DateComponents(day: 1) // 1-day buckets for 1 week
+            interval = DateComponents(day: 1)
         }
         
-        // Define the anchor date (start of the day)
-        let anchorDate = Calendar.current.startOfDay(for: Date())
+        let anchorDate = Calendar.current.startOfDay(for: endDate)
         
         let query = HKStatisticsCollectionQuery(
             quantityType: quantityType,
@@ -234,12 +269,9 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
             
             var samples: [HKQuantitySample] = []
+            let (start, end) = period.window(relativeTo: endDate)
             
-            // Process statistics into appropriate buckets
-            statisticsCollection.enumerateStatistics(
-                from: period.startDate,
-                to: Date()
-            ) { statistics, _ in
+            statisticsCollection.enumerateStatistics(from: start, to: end) { statistics, _ in
                 if let sum = statistics.sumQuantity() {
                     let sample = HKQuantitySample(
                         type: quantityType,
@@ -305,8 +337,79 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         healthStore?.execute(query)
     }
     
+    // MARK: - Fetch Cumulative Steps Data
+    
+    func fetchCumulativeStepData(
+        for period: Period,
+        endDate: Date,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
+    ) {
+        guard let quantityType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
+            return
+        }
+        
+        let startDate: Date = {
+            if period == .day {
+                return Calendar.current.startOfDay(for: endDate)
+            } else {
+                return period.startDate(relativeTo: endDate)
+            }
+        }()
+        
+        // Use the provided endDate instead of Date()
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        
+        let interval = DateComponents(minute: 15)
+        let anchorDate = Calendar.current.startOfDay(for: endDate)
+        
+        let query = HKStatisticsCollectionQuery(
+            quantityType: quantityType,
+            quantitySamplePredicate: predicate,
+            options: [.cumulativeSum],
+            anchorDate: anchorDate,
+            intervalComponents: interval
+        )
+        
+        query.initialResultsHandler = { _, statisticsCollection, error in
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(HealthKitError(type: .unknownError, underlyingError: error))) }
+                return
+            }
+            guard let statisticsCollection = statisticsCollection else {
+                DispatchQueue.main.async { completion(.failure(HealthKitError(type: .failedToFetchSamples))) }
+                return
+            }
+            
+            var runningTotalSamples: [HKQuantitySample] = []
+            var currentRunningTotal: Double = 0.0
+            
+            statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                if let sum = statistics.sumQuantity() {
+                    let stepsInBucket = sum.doubleValue(for: .count())
+                    currentRunningTotal += stepsInBucket
+                    
+                    let runningTotalQuantity = HKQuantity(unit: .count(), doubleValue: currentRunningTotal)
+                    let runningTotalSample = HKQuantitySample(
+                        type: quantityType,
+                        quantity: runningTotalQuantity,
+                        start: statistics.startDate,
+                        end: statistics.endDate
+                    )
+                    runningTotalSamples.append(runningTotalSample)
+                }
+            }
+            
+            DispatchQueue.main.async {
+                completion(.success(runningTotalSamples))
+            }
+        }
+        
+        healthStore?.execute(query)
+    }
+    
     // MARK: - Fetch Current Measurement Value
-
+    
     func fetchCurrentMeasurement(
         for measurementType: MeasurementType,
         completion: @escaping @Sendable (
@@ -362,7 +465,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 
                 let totalSteps = sum.doubleValue(for: HKUnit.count())
                 
-                // Define the HKSampleQuery to get the timestamp
                 let sortDescriptor = NSSortDescriptor(
                     key: HKSampleSortIdentifierStartDate,
                     ascending: false
@@ -422,7 +524,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 key: HKSampleSortIdentifierStartDate,
                 ascending: false
             )
-
+            
             let query = HKSampleQuery(
                 sampleType: quantityType,
                 predicate: predicate,
@@ -469,12 +571,83 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     }
     
     // MARK: - Check Missed Reflections
-
+    
     func checkMissedReflections(
         reminders: [Reminder],
+        existingReflections: [Reflection],
         isDeveloperMode: Bool = false,
-        completion: @escaping @Sendable (Result<[MissedReflection], HealthKitError>) -> Void
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
     ) {
+        let calendar = Calendar.current
+        
+        struct DayKey: Hashable, Sendable {
+            let dayStart: Date
+            let measurementType: Reminder.MeasurementType
+        }
+        
+        struct MinuteKey: Hashable, Sendable {
+            let minuteBucket: Int64
+            let measurementType: Reminder.MeasurementType
+        }
+        
+        @Sendable
+        func minuteBucket(for date: Date) -> Int64 {
+            Int64(date.timeIntervalSince1970 / 60.0)
+        }
+        
+        let handledReflections = existingReflections.filter { $0.isRejected || $0.activity != nil }
+        
+        let handledTimesByType: [Reminder.MeasurementType: [Date]] = {
+            var tmp: [Reminder.MeasurementType: [Date]] = [:]
+            for r in handledReflections {
+                if let mt = r.measurementType {
+                    tmp[mt, default: []].append(r.date)
+                }
+            }
+            for (k, v) in tmp {
+                tmp[k] = v.sorted()
+            }
+            return tmp
+        }()
+        
+        @Sendable
+        func hasHandledNear(
+            _ date: Date,
+            measurementType: Reminder.MeasurementType,
+            interval: Reminder.Interval,
+            context: IntervalContext
+        ) -> Bool {
+            let buffer = interval.buffer(for: context)
+            guard buffer > 0, let times = handledTimesByType[measurementType], !times.isEmpty else {
+                return false
+            }
+            for t in times {
+                if abs(t.timeIntervalSince(date)) <= buffer {
+                    return true
+                }
+            }
+            return false
+        }
+        
+        let existingDayKeys: Set<DayKey> = Set(
+            handledReflections.compactMap { r in
+                guard let mt = r.measurementType else { return nil }
+                return DayKey(dayStart: calendar.startOfDay(for: r.date), measurementType: mt)
+            }
+        )
+        
+        let existingMinuteKeys: Set<MinuteKey> = Set(
+            handledReflections.compactMap { r in
+                guard let mt = r.measurementType else { return nil }
+                return MinuteKey(minuteBucket: minuteBucket(for: r.date), measurementType: mt)
+            }
+        )
+        
+        let rejectedWithoutType = existingReflections.filter { $0.isRejected && $0.measurementType == nil }
+        let rejectedAnyTypeDayKeys: Set<Date> = Set(rejectedWithoutType.map { calendar.startOfDay(for: $0.date) })
+        let rejectedAnyTypeMinuteBuckets: Set<Int64> = Set(rejectedWithoutType.map { minuteBucket(for: $0.date) })
+        let rejectedExactTimestamps: Set<Int64> = Set(rejectedWithoutType.map { Int64($0.date.timeIntervalSince1970) })
+        
         self.fetchHeartRateDataLast24Hours { heartRateSamples in
             let fetchStepsAndProcess: (@escaping @Sendable ([(startDate: Date, endDate: Date, stepCount: Double)]) -> Void) -> Void = { stepCompletion in
                 let hasDayPeriodStepsReminder = reminders.contains { $0.measurementType == .steps && $0.interval == .oneDay }
@@ -486,88 +659,229 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
             
             fetchStepsAndProcess { stepSamples in
-                var triggeredReflections: [MissedReflection] = []
-                var lastTriggerTimes: [String: Date?] = [:]
-                for reminder in reminders {
-                    lastTriggerTimes[reminder.id.uuidString] = nil
-                }
+                var potentialNewReflections: [Reflection] = []
+                var lastTriggerTimes: [String: Date] = [:]
                 
                 for reminder in reminders {
                     let context: IntervalContext = reminder.measurementType == .steps ? .steps : .heartRate
                     
                     if reminder.measurementType == .steps {
+                        let dataSource = stepSamples
+                        
                         if reminder.interval == .oneDay {
-                            let totalSteps = stepSamples.reduce(0.0) { $0 + $1.stepCount }
+                            let totalSteps = dataSource.reduce(0.0) { $0 + $1.stepCount }
                             if totalSteps > Double(reminder.threshold) {
-                                let windowEnd = stepSamples.max(by: { $0.endDate < $1.endDate })?.endDate ?? Date()
-                                triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
-                            }
-                        } else {
-                            for currentIndex in 0..<stepSamples.count {
-                                let currentSample = stepSamples[currentIndex]
-                                let windowEnd = currentSample.endDate
-                                let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
-                                var totalSteps: Double = 0
+                                let windowEnd = dataSource.max(by: { $0.endDate < $1.endDate })?.endDate ?? Date()
                                 
-                                for previousIndex in stride(from: currentIndex, through: 0, by: -1) {
-                                    let sample = stepSamples[previousIndex]
-                                    let sampleStart = sample.startDate
-                                    let sampleEnd = sample.endDate
-                                    if sampleEnd <= windowEnd && sampleStart >= windowStart {
-                                        totalSteps += sample.stepCount
-                                    }
-                                    if sampleStart < windowStart {
-                                        break
-                                    }
+                                if hasHandledNear(windowEnd, measurementType: .steps, interval: reminder.interval, context: context) {
+                                    continue
                                 }
                                 
-                                if totalSteps > Double(reminder.threshold) {
-                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
-                                    let delay = reminder.interval.buffer(for: context) // Context-aware
-                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
-                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
-                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                let dayStart = calendar.startOfDay(for: windowEnd)
+                                let key = DayKey(dayStart: dayStart, measurementType: reminder.measurementType)
+                                let eventExists =
+                                existingDayKeys.contains(key) ||
+                                rejectedAnyTypeDayKeys.contains(dayStart)
+                                
+                                if !eventExists {
+                                    let triggerSamples: [MeasurementSample] = dataSource.map {
+                                        MeasurementSample(type: .steps, value: $0.stepCount, date: $0.endDate)
+                                    }
+                                    potentialNewReflections.append(
+                                        Reflection(
+                                            id: UUID(),
+                                            date: windowEnd,
+                                            activity: nil,
+                                            subactivity: nil,
+                                            mood: nil,
+                                            didTriggerCrash: false,
+                                            wellBeing: nil,
+                                            fatigue: nil,
+                                            shortnessOfBreath: nil,
+                                            sleepDisorder: nil,
+                                            cognitiveImpairment: nil,
+                                            physicalPain: nil,
+                                            depressionOrAnxiety: nil,
+                                            additionalInformation: "",
+                                            measurementType: reminder.measurementType,
+                                            reminderType: reminder.reminderType,
+                                            threshold: reminder.threshold,
+                                            interval: reminder.interval,
+                                            triggerSamples: triggerSamples
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            for currentIndex in 0..<dataSource.count {
+                                let currentSample = dataSource[currentIndex]
+                                let windowEnd = currentSample.endDate
+                                let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
+                                
+                                var totalStepsInWindow: Double = 0
+                                for i in stride(from: currentIndex, through: 0, by: -1) {
+                                    let sample = dataSource[i]
+                                    if sample.startDate < windowStart { break }
+                                    totalStepsInWindow += sample.stepCount
+                                }
+                                
+                                if totalStepsInWindow > Double(reminder.threshold) {
+                                    if hasHandledNear(windowEnd, measurementType: .steps, interval: reminder.interval, context: context) {
+                                        continue
+                                    }
+                                    
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
+                                    let buffer = reminder.interval.buffer(for: context)
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
+                                        let bucket = minuteBucket(for: windowEnd)
+                                        let eventExists =
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
+                                        if !eventExists {
+                                            var triggerSamples: [MeasurementSample] = []
+                                            for i in stride(from: currentIndex, through: 0, by: -1) {
+                                                let s = dataSource[i]
+                                                if s.startDate < windowStart { break }
+                                                triggerSamples.append(MeasurementSample(type: .steps, value: s.stepCount, date: s.endDate))
+                                            }
+                                            triggerSamples.reverse()
+                                            
+                                            potentialNewReflections.append(
+                                                Reflection(
+                                                    id: UUID(),
+                                                    date: windowEnd,
+                                                    activity: nil,
+                                                    subactivity: nil,
+                                                    mood: nil,
+                                                    didTriggerCrash: false,
+                                                    wellBeing: nil,
+                                                    fatigue: nil,
+                                                    shortnessOfBreath: nil,
+                                                    sleepDisorder: nil,
+                                                    cognitiveImpairment: nil,
+                                                    physicalPain: nil,
+                                                    depressionOrAnxiety: nil,
+                                                    additionalInformation: "",
+                                                    measurementType: reminder.measurementType,
+                                                    reminderType: reminder.reminderType,
+                                                    threshold: reminder.threshold,
+                                                    interval: reminder.interval,
+                                                    triggerSamples: triggerSamples
+                                                )
+                                            )
+                                            lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                        }
                                     }
                                 }
                             }
                         }
                     } else if reminder.measurementType == .heartRate {
+                        let dataSource = heartRateSamples
+                        
                         if reminder.interval == .immediately {
-                            for sample in heartRateSamples {
-                                if sample.stepCount > Double(reminder.threshold) {
+                            for sample in dataSource {
+                                let bpm = sample.stepCount
+                                if bpm > Double(reminder.threshold) {
                                     let windowEnd = sample.startDate
-                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
-                                    let delay = reminder.interval.buffer(for: context) // Context-aware
                                     
-                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
-                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
-                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                    if hasHandledNear(windowEnd, measurementType: .heartRate, interval: reminder.interval, context: context) {
+                                        continue
+                                    }
+                                    
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
+                                    let buffer = reminder.interval.buffer(for: context)
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
+                                        let bucket = minuteBucket(for: windowEnd)
+                                        let eventExists =
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
+                                        if !eventExists {
+                                            let triggerSamples = [
+                                                MeasurementSample(type: .heartRate, value: bpm, date: sample.startDate)
+                                            ]
+                                            potentialNewReflections.append(
+                                                Reflection(
+                                                    id: UUID(),
+                                                    date: windowEnd,
+                                                    activity: nil,
+                                                    subactivity: nil,
+                                                    mood: nil,
+                                                    didTriggerCrash: false,
+                                                    wellBeing: nil,
+                                                    fatigue: nil,
+                                                    shortnessOfBreath: nil,
+                                                    sleepDisorder: nil,
+                                                    cognitiveImpairment: nil,
+                                                    physicalPain: nil,
+                                                    depressionOrAnxiety: nil,
+                                                    additionalInformation: "",
+                                                    measurementType: reminder.measurementType,
+                                                    reminderType: reminder.reminderType,
+                                                    threshold: reminder.threshold,
+                                                    interval: reminder.interval,
+                                                    triggerSamples: triggerSamples
+                                                )
+                                            )
+                                            lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                        }
                                     }
                                 }
                             }
                         } else {
-                            for currentIndex in 0..<heartRateSamples.count {
-                                let currentSample = heartRateSamples[currentIndex]
+                            for currentIndex in 0..<dataSource.count {
+                                let currentSample = dataSource[currentIndex]
                                 let windowEnd = currentSample.startDate
                                 let windowStart = windowEnd.addingTimeInterval(-reminder.interval.timeInterval)
                                 
-                                var windowSamples: [(startDate: Date, endDate: Date, stepCount: Double)] = []
-                                for previousIndex in stride(from: currentIndex, through: 0, by: -1) {
-                                    let sample = heartRateSamples[previousIndex]
-                                    let sampleTime = sample.startDate
-                                    if sampleTime < windowStart {
-                                        break
+                                let windowSamples = dataSource.filter { $0.startDate >= windowStart && $0.startDate <= windowEnd }
+                                if !windowSamples.isEmpty && windowSamples.allSatisfy({ $0.stepCount > Double(reminder.threshold) }) {
+                                    
+                                    if hasHandledNear(windowEnd, measurementType: .heartRate, interval: reminder.interval, context: context) {
+                                        continue
                                     }
-                                    windowSamples.append(sample)
-                                }
-                                
-                                let exceedsThreshold = windowSamples.allSatisfy { $0.stepCount > Double(reminder.threshold) }
-                                if exceedsThreshold {
-                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString] ?? nil
-                                    let delay = reminder.interval.buffer(for: context) // Context-aware
-                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= delay {
-                                        triggeredReflections.append(MissedReflection(reminder, date: windowEnd))
-                                        lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                    
+                                    let lastTrigger = lastTriggerTimes[reminder.id.uuidString]
+                                    let buffer = reminder.interval.buffer(for: context)
+                                    if lastTrigger == nil || windowEnd.timeIntervalSince(lastTrigger!) >= buffer {
+                                        let bucket = minuteBucket(for: windowEnd)
+                                        let eventExists =
+                                        existingMinuteKeys.contains(MinuteKey(minuteBucket: bucket, measurementType: reminder.measurementType)) ||
+                                        rejectedAnyTypeMinuteBuckets.contains(bucket) ||
+                                        rejectedExactTimestamps.contains(Int64(windowEnd.timeIntervalSince1970))
+                                        
+                                        if !eventExists {
+                                            let triggerSamples: [MeasurementSample] = windowSamples.map {
+                                                MeasurementSample(type: .heartRate, value: $0.stepCount, date: $0.startDate)
+                                            }
+                                            potentialNewReflections.append(
+                                                Reflection(
+                                                    id: UUID(),
+                                                    date: windowEnd,
+                                                    activity: nil,
+                                                    subactivity: nil,
+                                                    mood: nil,
+                                                    didTriggerCrash: false,
+                                                    wellBeing: nil,
+                                                    fatigue: nil,
+                                                    shortnessOfBreath: nil,
+                                                    sleepDisorder: nil,
+                                                    cognitiveImpairment: nil,
+                                                    physicalPain: nil,
+                                                    depressionOrAnxiety: nil,
+                                                    additionalInformation: "",
+                                                    measurementType: reminder.measurementType,
+                                                    reminderType: reminder.reminderType,
+                                                    threshold: reminder.threshold,
+                                                    interval: reminder.interval,
+                                                    triggerSamples: triggerSamples
+                                                )
+                                            )
+                                            lastTriggerTimes[reminder.id.uuidString] = windowEnd
+                                        }
                                     }
                                 }
                             }
@@ -575,117 +889,31 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                     }
                 }
                 
-                // Step 3: Additional Filtering Before Post-Processing
                 struct ReflectionKey: Hashable {
-                    let measurementType: MeasurementType
+                    let measurementType: Reminder.MeasurementType
                     let date: Date
                 }
-                
-                var filteredReflections: [MissedReflection] = []
-                let groupedByTypeAndTime = Dictionary(grouping: triggeredReflections) { reflection in
-                    ReflectionKey(measurementType: reflection.measurementType, date: reflection.date)
+                var filteredReflections: [Reflection] = []
+                let groupedByTypeAndTime = Dictionary(grouping: potentialNewReflections) { reflection in
+                    ReflectionKey(measurementType: reflection.measurementType!, date: reflection.date)
                 }
-                
-                for (key, reflections) in groupedByTypeAndTime {
-                    let strongReflections = reflections.filter { $0.reminderType == .strong }
-                    let nonStrongReflections = reflections.filter { $0.reminderType != .strong }
-                    
-                    if strongReflections.count > 1 {
-                        let largestIntervalReflection = strongReflections.max { r1, r2 in
-                            let context1 = r1.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
-                            let context2 = r2.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
-                            return r1.interval.timeInterval < r2.interval.timeInterval
-                        }
-                        if let largest = largestIntervalReflection {
-                            filteredReflections.append(largest)
-                        }
-                        filteredReflections.append(contentsOf: nonStrongReflections)
-                    } else {
-                        filteredReflections.append(contentsOf: reflections)
+                for (_, reflections) in groupedByTypeAndTime {
+                    if let strongReflection = reflections.first(where: { $0.reminderType == .strong }) {
+                        filteredReflections.append(strongReflection)
+                    } else if let mediumReflection = reflections.first(where: { $0.reminderType == .medium }) {
+                        filteredReflections.append(mediumReflection)
+                    } else if let lightReflection = reflections.first(where: { $0.reminderType == .light }) {
+                        filteredReflections.append(lightReflection)
                     }
-                }
-                
-                // HR-specific filter
-                var finalFilteredReflections: [MissedReflection] = []
-                let hrReflections = filteredReflections.filter { $0.measurementType == .heartRate }
-                let nonHrReflections = filteredReflections.filter { $0.measurementType != .heartRate }
-                let groupedHrByTime = Dictionary(grouping: hrReflections) { $0.date }
-                
-                for (timestamp, reflections) in groupedHrByTime {
-                    if reflections.count > 1 {
-                        let reflectionWithCounts = reflections.map { reflection -> (MissedReflection, Int) in
-                            let context = reflection.measurementType == .steps ? IntervalContext.steps : IntervalContext.heartRate
-                            let windowStart = reflection.interval == .immediately ? reflection.date : reflection.date.addingTimeInterval(-reflection.interval.timeInterval)
-                            let windowEnd = reflection.date
-                            let dataPointsInWindow = heartRateSamples.filter { sample in
-                                sample.startDate >= windowStart && sample.startDate <= windowEnd
-                            }.count
-                            return (reflection, dataPointsInWindow)
-                        }
-                        let reflectionWithMostPoints = reflectionWithCounts.max { $0.1 < $1.1 }?.0
-                        if let bestReflection = reflectionWithMostPoints {
-                            finalFilteredReflections.append(bestReflection)
-                        }
-                    } else {
-                        finalFilteredReflections.append(contentsOf: reflections)
-                    }
-                }
-                finalFilteredReflections.append(contentsOf: nonHrReflections)
-                
-                // Step 4: Post-Processing and Filtering
-                let finalReflections: [MissedReflection]
-                if isDeveloperMode {
-                    finalReflections = finalFilteredReflections.sorted { $0.date < $1.date }
-                } else {
-                    let stepsReflections = finalFilteredReflections.filter { $0.measurementType == .steps }
-                    let heartRateReflections = finalFilteredReflections.filter { $0.measurementType == .heartRate }
-                    
-                    var filteredSteps = stepsReflections.sorted { $0.date < $1.date }
-                    let strongSteps = filteredSteps.filter { $0.reminderType == .strong }
-                    let nonStrongSteps = filteredSteps.filter { $0.reminderType != .strong }
-                    var filteredNonStrongSteps: [MissedReflection] = []
-                    var lastTriggerTimeSteps: Date?
-                    
-                    for reflection in nonStrongSteps {
-                        let context = IntervalContext.steps
-                        let buffer = reflection.interval.buffer(for: context) // Context-aware
-                        if lastTriggerTimeSteps == nil || reflection.date.timeIntervalSince(lastTriggerTimeSteps!) >= buffer {
-                            filteredNonStrongSteps.append(reflection)
-                            lastTriggerTimeSteps = reflection.date
-                        }
-                    }
-                    filteredSteps = (strongSteps + filteredNonStrongSteps).sorted { $0.date < $1.date }
-                    
-                    var filteredHeartRate = heartRateReflections.sorted { $0.date < $1.date }
-                    let strongHeartRate = filteredHeartRate.filter { $0.reminderType == .strong }
-                    let nonStrongHeartRate = filteredHeartRate.filter { $0.reminderType != .strong }
-                    var filteredNonStrongHeartRate: [MissedReflection] = []
-                    var lastTriggerTimeHeartRate: Date?
-                    
-                    for reflection in nonStrongHeartRate {
-                        let context = IntervalContext.heartRate
-                        let buffer = reflection.interval.buffer(for: context) // Context-aware
-                        if lastTriggerTimeHeartRate == nil || reflection.date.timeIntervalSince(lastTriggerTimeHeartRate!) >= buffer {
-                            filteredNonStrongHeartRate.append(reflection)
-                            lastTriggerTimeHeartRate = reflection.date
-                        }
-                    }
-                    filteredHeartRate = (strongHeartRate + filteredNonStrongHeartRate).sorted { $0.date < $1.date }
-                    
-                    let finalSteps = filteredSteps.suffix(5)
-                    let finalHeartRate = filteredHeartRate.suffix(5)
-                    
-                    let combinedReflections = (finalSteps + finalHeartRate).sorted { $0.date < $1.date }
-                    finalReflections = combinedReflections.filter { !$0.isActioned }
                 }
                 
                 DispatchQueue.main.async {
-                    completion(.success(finalReflections))
+                    completion(.success(filteredReflections.sorted { $0.date > $1.date }))
                 }
             }
         }
     }
-
+    
     /// Fetches step data from the start of the current day (midnight) to now using `HKStatisticsCollectionQuery`.
     ///
     /// - Aggregates `.stepCount` samples into 1-minute intervals from midnight of the current day to the current time.
@@ -743,7 +971,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             statsCollection.enumerateStatistics(from: startOfDay, to: now) { statistics, stop in
                 if let sum = statistics.sumQuantity() {
                     let stepCount = sum.doubleValue(for: HKUnit.count())
-                    if stepCount > 0 { // Only include intervals with non-zero steps
+                    if stepCount > 0 {
                         results.append((statistics.startDate, statistics.endDate, stepCount))
                     }
                 }
@@ -756,7 +984,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         
         healthStore.execute(query)
     }
-
+    
     /// Fetches all step data from the last 24 hours using `HKStatisticsCollectionQuery`.
     ///
     /// - Aggregates `.stepCount` samples into 1-minute intervals within the 24-hour window preceding the current time.
@@ -784,7 +1012,6 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
-        // Use 1-minute intervals for aggregation
         let interval = DateComponents(minute: 1)
         let anchorDate = last24Hours
         
@@ -830,7 +1057,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         
         healthStore.execute(query)
     }
-
+    
     /// Fetches all heart rate data from the last 24 hours using `HKSampleQuery`.
     ///
     /// - Retrieves all `.heartRate` samples within the 24-hour window preceding the current time.
@@ -891,5 +1118,54 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         }
         
         healthStore.execute(query)
+    }
+    
+    // MARK: - Check Permission Status
+    
+    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void) {
+        guard HKHealthStore.isHealthDataAvailable(), let healthStore = healthStore else {
+            completion(.unavailable)
+            return
+        }
+        
+        let workoutType = HKObjectType.workoutType()
+        let shareStatus = healthStore.authorizationStatus(for: workoutType)
+        
+        switch shareStatus {
+        case .notDetermined:
+            completion(.needsRequest)
+            return
+        case .sharingDenied:
+            completion(.needsRequest)
+            return
+        case .sharingAuthorized:
+            break
+        @unknown default:
+            completion(.unavailable)
+            return
+        }
+        
+        guard
+            let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
+            let stepType = HKObjectType.quantityType(forIdentifier: .stepCount)
+        else {
+            completion(.unavailable)
+            return
+        }
+        
+        healthStore.getRequestStatusForAuthorization(toShare: [workoutType], read: [heartRateType, stepType]) { status, _ in
+            DispatchQueue.main.async {
+                switch status {
+                case .shouldRequest:
+                    completion(.needsRequest)
+                case .unnecessary:
+                    completion(.ok)
+                case .unknown:
+                    completion(.unavailable)
+                @unknown default:
+                    completion(.unavailable)
+                }
+            }
+        }
     }
 }

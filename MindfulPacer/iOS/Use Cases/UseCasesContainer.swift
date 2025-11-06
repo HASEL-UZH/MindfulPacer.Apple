@@ -27,6 +27,11 @@ extension UseCasesContainer {
     // MARK: - Health
 
     @MainActor
+    var checkHealthPermissionsUseCase: Factory<DefaultCheckHealthPermissionsUseCase> {
+        self { DefaultCheckHealthPermissionsUseCase(healthKitService: HealthKitService.shared) }
+    }
+    
+    @MainActor
     var fetchCurrentHeartRateUseCase: Factory<DefaultFetchCurrentHeartRateUseCase> {
         self { DefaultFetchCurrentHeartRateUseCase(healthKitService: HealthKitService.shared) }
     }
@@ -82,17 +87,12 @@ extension UseCasesContainer {
 
     @MainActor
     var createReflectionUseCase: Factory<CreateReflectionUseCase> {
-        self { DefaulCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
 
     @MainActor
     var deleteReflectionUseCase: Factory<DeleteReflectionUseCase> {
         self { DefaultDeleteReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-
-    @MainActor
-    var fetchActionedMissedReflectionsUseCase: Factory<FetchActionedMissedReflectionsUseCase> {
-        self { DefaultFetchActionedMissedReflectionsUseCase() }
     }
     
     @MainActor
@@ -114,32 +114,31 @@ extension UseCasesContainer {
     var filterReflectionsUseCase: Factory<DefaultFilterReflectionsUseCase> {
         self { DefaultFilterReflectionsUseCase() }
     }
-
-    @MainActor
-    var markMissedReflectionAsActionedUseCase: Factory<DefaultMarkMissedReflectionAsActionedUseCase> {
-        self { DefaultMarkMissedReflectionAsActionedUseCase() }
-    }
     
     @MainActor
     var saveReflectionUseCase: Factory<DefaultSaveReflectionUseCase> {
         self { DefaultSaveReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-
-    // MARK: - Reminder
-
+    
     @MainActor
-    var checkMissedReflectionsUseCase: Factory<CheckMissedReflectionsUseCase> {
-        self { DefaultCheckMissedReflectionsUseCase(healthKitService: HealthKitService.shared) }
+    var fetchMissedReflectionsUseCase: Factory<DefaultFetchMissedReflectionsUseCase> {
+        self {
+            DefaultFetchMissedReflectionsUseCase(
+                healthKitService: HealthKitService.shared
+            )
+        }
     }
+    
+    // MARK: - Reminder
     
     @MainActor
     var createReminderUseCase: Factory<CreateReminderUseCase> {
-        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
-
+    
     @MainActor
     var deleteReminderUseCase: Factory<DeleteReminderUseCase> {
-        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     @MainActor
@@ -149,7 +148,7 @@ extension UseCasesContainer {
 
     @MainActor
     var saveReminderUseCase: Factory<DefaultSaveReminderUseCase> {
-        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext) }
+        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     // MARK: - Settings
@@ -170,13 +169,13 @@ extension UseCasesContainer {
     var initializeNotificationsUseCase: Factory<DefaultInitializeNotificationsUseCase> {
         self { DefaultInitializeNotificationsUseCase(notificationService: NotificationService.shared) }
     }
+    
+    @MainActor
+    var resetDatabaseUseCase: Factory<DefaultResetDatabaseUseCase> {
+        self { DefaultResetDatabaseUseCase(modelContext: ModelContainer.prod.mainContext) }
+    }
 
     // MARK: - Watch Communication
-
-    @MainActor
-    var initializeConnectivityUseCase: Factory<DefaultInitializeConnectivityUseCase> {
-        self { DefaultInitializeConnectivityUseCase(connectivityService: ConnectivityService.shared) }
-    }
 
     @MainActor
     var triggerWatchNotificationUseCase: Factory<DefaultTriggerWatchNotificationUseCase> {
