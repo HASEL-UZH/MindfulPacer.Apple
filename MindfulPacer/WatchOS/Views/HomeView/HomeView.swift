@@ -65,27 +65,19 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     VStack(spacing: 8) {
                         Label {
-                            Text(rule.measurementType.localized)
-                                .font(.headline.weight(.bold))
+                            Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
+                                .multilineTextAlignment(.center)
+                                .font(.footnote.weight(.bold))
+                                .layoutPriority(1)
                         } icon: {
                             Image(systemName: rule.measurementType.icon)
                                 .foregroundStyle(rule.measurementType.color)
                         }
                         .foregroundColor(.white)
                         
-                        Label {
-                            Text("\(rule.reminderType.rawValue) Reminder")
-                                .font(.headline.weight(.bold))
-                        } icon: {
-                            Image(systemName: "circle.fill")
-                                .foregroundStyle(rule.reminderType.color)
-                        }
-                        .foregroundColor(.white)
-
-                        Text(rule.alertMessage)
-                            .multilineTextAlignment(.center)
-                            .font(.body)
-                            .layoutPriority(1)
+                        Text("(\(rule.reminderType.rawValue) Reminder)")
+                            .font(.headline)
+                            .foregroundColor(.white)
                     }
                     
                     VStack {
