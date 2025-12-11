@@ -29,7 +29,7 @@ extension OnboardingView {
                     label:
                         IconLabel(
                             icon: "iphone.motion",
-                            title: "Device Selection",
+                            title: String(localized: "Device Selection"),
                             labelColor: Color("BrandPrimary"),
                             background: true
                         ),
@@ -64,7 +64,7 @@ extension OnboardingView {
                 } footer:  {
                     IconLabel(
                         icon: "info.circle.fill",
-                        title: "You can always change this later on in the app settings.",
+                        title: String(localized: "You can always change this later on in the app settings."),
                         labelColor: .secondary
                     )
                     .font(.footnote)

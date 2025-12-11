@@ -6,8 +6,13 @@
 //
 import Foundation
 
+import Foundation
+
 protocol CheckHealthPermissionsUseCase {
-    func execute(completion: @escaping @Sendable (HealthPermissionsState) -> Void)
+    func execute(
+        deviceMode: DeviceMode,
+        completion: @escaping @Sendable (HealthPermissionsState) -> Void
+    )
 }
 
 // MARK: - Use Case Implementation
@@ -19,7 +24,13 @@ final class DefaultCheckHealthPermissionsUseCase: CheckHealthPermissionsUseCase 
         self.healthKitService = healthKitService
     }
     
-    func execute(completion: @escaping @Sendable (HealthPermissionsState) -> Void) {
-        healthKitService.checkPermissionsStatus(completion: completion)
+    func execute(
+        deviceMode: DeviceMode,
+        completion: @escaping @Sendable (HealthPermissionsState) -> Void
+    ) {
+        healthKitService.checkPermissionsStatus(
+            for: deviceMode,
+            completion: completion
+        )
     }
 }

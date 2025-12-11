@@ -10,21 +10,22 @@ import SwiftData
 
 @MainActor
 protocol ResetDatabaseUseCase {
-    func execute() async throws
+    func execute() async
 }
 
-// MARK: - Use Case Implementation
+// MARK: - Implementation
 
 @MainActor
 final class DefaultResetDatabaseUseCase: ResetDatabaseUseCase {
     private let context: ModelContext
-    init(modelContext: ModelContext) { self.context = modelContext }
 
-    func execute() async throws {
-        try context.delete(model: Reflection.self)
-        try context.delete(model: Subactivity.self)
-        try context.delete(model: Activity.self)
-        try context.delete(model: Reminder.self)
-        try context.save()
+    init(modelContext: ModelContext) {
+        self.context = modelContext
+    }
+
+    func execute() async {
+        let container = context.container
+
+        container.deleteAllData()
     }
 }

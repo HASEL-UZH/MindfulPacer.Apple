@@ -28,7 +28,7 @@ struct HeartRateChartView: View {
                 )
             } else {
                 Chart {
-                    ForEach(viewModel.chartThresholds, id: \.threshold) { threshold in
+                    ForEach(Array(viewModel.chartThresholds.enumerated()), id: \.offset) { _, threshold in
                         RuleMark(y: .value("Goal", threshold.threshold))
                             .foregroundStyle(threshold.reminderType.color)
                             .lineStyle(.init(lineWidth: 1, dash: [5]))

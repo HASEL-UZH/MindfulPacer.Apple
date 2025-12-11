@@ -27,7 +27,7 @@ extension OnboardingView {
                     label:
                         IconLabel(
                             icon: "square.slash",
-                            title: "Instructions to Disable Features",
+                            title: String(localized: "Instructions to Disable Features"),
                             labelColor: Color("BrandPrimary"),
                             background: true
                         ),

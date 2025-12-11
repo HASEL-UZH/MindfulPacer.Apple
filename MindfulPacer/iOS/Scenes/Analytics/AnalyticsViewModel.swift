@@ -248,8 +248,9 @@ class AnalyticsViewModel {
         fetchStepsChartData()
         updateReflectionsInPeriod()
     }
-    
+
     func onViewAppear() {
+        fetchReminders()
         refreshChart()
     }
     
@@ -298,6 +299,7 @@ class AnalyticsViewModel {
     
     private func fetchReminders() {
         reminders = fetchRemindersUseCase.execute() ?? []
+        updateChartThresholds()
     }
     
     private func fetchHeartRateChartData() {
@@ -306,6 +308,7 @@ class AnalyticsViewModel {
             case .success(let success):
                 Task { @MainActor in
                     self.heartRateChartData = success
+                    self.updateChartThresholds()
                 }
             case .failure:
                 print("Could not fetch heart data")
@@ -314,20 +317,32 @@ class AnalyticsViewModel {
     }
     
     private func fetchStepsChartData() {
+        // Base (non-bucketed) data
         fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
             switch result {
             case .success(let success):
-                Task { @MainActor in self.stepsChartData = success }
+                Task { @MainActor in
+                    self.stepsChartData = success
+                    if self.selectedPeriod != .week {
+                        // For non-week periods, chartData uses stepsChartData
+                        self.updateChartThresholds()
+                    }
+                }
             case .failure:
                 print("Could not fetch cumulative steps data")
             }
         }
         
+        // Bucketed weekly data
         if selectedPeriod == .week {
             fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
                 switch result {
                 case .success(let success):
-                    Task { @MainActor in self.weeklyStepsChartData = success }
+                    Task { @MainActor in
+                        self.weeklyStepsChartData = success
+                        // For week, chartData uses weeklyStepsChartData
+                        self.updateChartThresholds()
+                    }
                 case .failure:
                     print("Could not fetch bucketed weekly steps data")
                 }
@@ -349,10 +364,6 @@ class AnalyticsViewModel {
         }
         
         updateReflectionsInPeriod()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-            self.updateChartThresholds() // FIXME: Not updating when you do Home -> Create Review Reminder -> Analytics, the newly added threshold doesn't show
-        }
     }
     
     private func fetchCumulativeStepsChartData() {
@@ -374,9 +385,9 @@ class AnalyticsViewModel {
     
     private func updateChartThresholds() {
         let maxValue = chartData.map { $0.value }.max() ?? 0
-        
+
         let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
-        
+
         chartThresholds = reminders
             .filter { $0.measurementType == selectedMeasurementType }
             .map { reminder in

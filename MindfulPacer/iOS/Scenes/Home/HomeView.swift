@@ -71,7 +71,7 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    healthPermissionsWidget
+//                    healthPermissionsWidget
                     missedReflectionsWidget
                     ReflectionsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets

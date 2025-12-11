@@ -100,7 +100,7 @@ class OnboardingViewModel {
         case .notifications:
             return didCompleteNotificationsRequest ? String(localized: "Continue") : String(localized: "Allow Notifications")
         case .appleHealth:
-            return didCompleteHealthAuthorization ? String(localized: "Continue") : String(localized: "Allow Health Access")
+            return String(localized: "Continue")
         case .mainFeatures:
             return String(localized: "Continue")
         case .modeOfUse:
@@ -124,6 +124,28 @@ class OnboardingViewModel {
             return selectedDeviceMode.isNil
         default:
             return false
+        }
+    }
+    
+    var imageNameForPermissions: String {
+        switch selectedDeviceMode {
+        case .iPhoneOnly:
+            return "Correct Permissions - iPhone Only"
+        case .iPhoneAndWatch:
+            return "Correct Permissions - iPhone and Watch"
+        case nil:
+            return ""
+        }
+    }
+    
+    var descriptionForPermissions: String {
+        switch selectedDeviceMode {
+        case .iPhoneOnly:
+            "Please make sure read permissions are granted for Heart Rate and Steps."
+        case .iPhoneAndWatch:
+            "Pleese make sure write permissions are granted for Workouts."
+        case nil:
+            ""
         }
     }
 
@@ -297,8 +319,6 @@ class OnboardingViewModel {
             navigateTo(destination: .notifications)
         case .notifications:
             navigateTo(destination: .appleHealth)
-        case .appleHealth:
-            navigateTo(destination: .mainFeatures)
         case .mainFeatures:
             navigateTo(destination: .activityPromotingFeatures)
         case .activityPromotingFeatures:

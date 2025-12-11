@@ -29,7 +29,7 @@ extension OnboardingView {
                     label:
                         IconLabel(
                             icon: "power",
-                            title: "MindfulPacer Modes",
+                            title: String(localized: "MindfulPacer Modes"),
                             labelColor: Color("BrandPrimary"),
                             background: true
                         ),
@@ -64,7 +64,7 @@ extension OnboardingView {
                 } footer:  {
                     IconLabel(
                         icon: "info.circle.fill",
-                        title: "You can always change this later on in the app settings.",
+                        title: String(localized: "You can always change this later on in the app settings."),
                         labelColor: .secondary
                     )
                     .font(.footnote)

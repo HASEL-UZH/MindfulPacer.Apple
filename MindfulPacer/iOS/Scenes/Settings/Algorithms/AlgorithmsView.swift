@@ -24,7 +24,7 @@ struct AlgorithmsView: View {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "timer",
-                        title: "Reminder Buffers",
+                        title: String(localized: "Reminder Buffers"),
                         labelColor: .brandPrimary,
                         background: true
                     ),
@@ -64,8 +64,12 @@ struct AlgorithmsView: View {
                     Button {
                         viewModel.resetBuffersToDefaults()
                     } label: {
-                        IconLabel(icon: "arrow.clockwise", title: "Reset to Defaults", labelColor: .red)
-                            .font(.subheadline.weight(.semibold))
+                        IconLabel(
+                            icon: "arrow.clockwise",
+                            title: String(localized: "Reset to Defaults"),
+                            labelColor: .red
+                        )
+                        .font(.subheadline.weight(.semibold))
                     }
                 }
                 .iconLabelGroupBoxStyle(.divider)

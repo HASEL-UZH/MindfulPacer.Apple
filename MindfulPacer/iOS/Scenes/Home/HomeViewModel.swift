@@ -191,7 +191,7 @@ class HomeViewModel {
     func rejectMissedReflection(reflection: Reflection) {
         switch deviceMode {
         case .iPhoneOnly:
-            let _ = createReflectionUseCase.execute(
+            _ = createReflectionUseCase.execute(
                 date: reflection.date,
                 activity: reflection.activity,
                 subactivity: reflection.subactivity,
@@ -204,14 +204,15 @@ class HomeViewModel {
                 cognitiveImpairment: nil,
                 physicalPain: nil,
                 depressionOrAnxiety: nil,
-                additionalInformation: ""
-                , measurementType: nil,
-                reminderType: nil,
-                threshold: nil,
-                interval: nil,
-                triggerSamples: [],
+                additionalInformation: "",
+                measurementType: reflection.measurementType,
+                reminderType: reflection.reminderType,
+                threshold: reflection.threshold,
+                interval: reflection.interval,
+                triggerSamples: reflection.triggerSamples,
                 isRejected: true
             )
+            
         case .iPhoneAndWatch:
             deleteReflectionUseCase.execute(reflection: reflection)
         }
@@ -435,7 +436,7 @@ class HomeViewModel {
     }
     
     private func checkHealthPermissions() {
-        checkHealthPermissionsUseCase.execute { [weak self] state in
+        checkHealthPermissionsUseCase.execute(deviceMode: deviceMode) { [weak self] state in
             Task { @MainActor in
                 self?.healthPermissionState = state
                 print("DEBUGY: Health", state)

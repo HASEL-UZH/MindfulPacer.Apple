@@ -2,6 +2,8 @@
 //  MissedReflectionsMonitorService.swift
 //  iOS
 //
+//  Created by Grigor Dochev on 19.10.2025.
+//
 
 import Foundation
 import BackgroundTasks
@@ -21,13 +23,17 @@ enum BGDebug {
     static let log = Logger(subsystem: "com.MindfulPacer", category: "BackgroundTasks")
     
     enum Keys {
-        static let lastSchedule = "BGDebug.lastSchedule"
-        static let lastRunStart = "BGDebug.lastRunStart"
-        static let lastRunEnd   = "BGDebug.lastRunEnd"
-        static let lastResult   = "BGDebug.lastResult"
-        static let lastError    = "BGDebug.lastError"
-        static let runsCount    = "BGDebug.runsCount"
-        static let lastFound    = "BGDebug.lastFoundCount"
+        static let lastSchedule       = "BGDebug.lastSchedule"
+        static let lastRunStart       = "BGDebug.lastRunStart"
+        static let lastRunEnd         = "BGDebug.lastRunEnd"
+        static let lastResult         = "BGDebug.lastResult"
+        static let lastError          = "BGDebug.lastError"
+        static let runsCount          = "BGDebug.runsCount"
+        static let lastFound          = "BGDebug.lastFoundCount"
+
+        // Notification throttle state
+        static let lastNotifyDateISO  = "BGDebug.lastNotifyDateISO"
+        static let lastNotifyCount    = "BGDebug.lastNotifyCount"
     }
     
     @MainActor @discardableResult
@@ -60,12 +66,14 @@ actor MissedReflectionsMonitorService {
     static let shared = MissedReflectionsMonitorService()
     nonisolated static let identifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
 
+    // 2-hour throttle for notifications
+    private let throttleInterval: TimeInterval = 2 * 60 * 60
+
     // MARK: Mode check
     private func isiPhoneOnly() -> Bool {
         DeviceMode.current(from: DefaultsStore.shared) == .iPhoneOnly
     }
 
-    // Call this when the user toggles DeviceMode in settings.
     func onDeviceModeChanged(_ newMode: DeviceMode) {
         if newMode == .iPhoneOnly {
             schedule(in: 5 * 60) // (re)schedule soon
@@ -74,6 +82,49 @@ actor MissedReflectionsMonitorService {
             Task { @MainActor in
                 BGDebug.log.info("BG ▶︎ cancelled pending app refresh (mode=Watch).")
             }
+        }
+    }
+
+    // MARK: - Notification throttling
+
+    /// Returns true if we're allowed to show a notification for this `count`
+    /// based on: (a) >= 2h since last notification AND (b) count changed.
+    private func shouldNotify(for count: Int) -> Bool {
+        let d = DefaultsStore.shared
+
+        // (b) Count must have changed since last notification
+        let lastCount = d.object(forKey: BGDebug.Keys.lastNotifyCount) as? Int
+        if let lastCount, lastCount == count {
+            Task { @MainActor in
+                BGDebug.log.info("BG 🔕 skip notify: same missed count (\(count, privacy: .public))")
+            }
+            return false
+        }
+
+        // (a) Respect the 2h throttle
+        if let lastDateISO = d.string(forKey: BGDebug.Keys.lastNotifyDateISO),
+           let lastDate = ISO8601DateFormatter().date(from: lastDateISO) {
+            let dt = Date().timeIntervalSince(lastDate)
+            if dt < throttleInterval {
+                Task { @MainActor in
+                    BGDebug.log.info("BG 🔕 skip notify: last notification \(Int(dt))s ago (< \(Int(self.throttleInterval))s)")
+                }
+                return false
+            }
+        }
+
+        return true
+    }
+
+    /// Store latest notification metadata after we actually fire it.
+    private func recordNotificationState(count: Int) {
+        let d = DefaultsStore.shared
+        let iso = ISO8601DateFormatter().string(from: Date())
+        d.set(iso, forKey: BGDebug.Keys.lastNotifyDateISO)
+        d.set(count, forKey: BGDebug.Keys.lastNotifyCount)
+
+        Task { @MainActor in
+            BGDebug.log.info("BG 💾 updated notify state: count=\(count, privacy: .public), date=\(iso, privacy: .public)")
         }
     }
 
@@ -119,7 +170,15 @@ actor MissedReflectionsMonitorService {
                 BGDebug.log.info("BG ✔︎ missed reflections count=\(count, privacy: .public)")
             }
 
-            if count > 0 { await postMissedReflectionsNotification(count: count) }
+            // Throttle before sending notification
+            if count > 0, shouldNotify(for: count) {
+                await postMissedReflectionsNotification(count: count)
+                recordNotificationState(count: count)
+            } else {
+                await MainActor.run {
+                    BGDebug.log.info("BG 🔕 no notification (count=\(count, privacy: .public))")
+                }
+            }
 
             await MainActor.run {
                 BGDebug.touch(BGDebug.Keys.lastRunEnd)

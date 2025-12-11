@@ -128,7 +128,10 @@ protocol HealthKitServiceProtocol {
         endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
-    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void)
+    func checkPermissionsStatus(
+        for deviceMode: DeviceMode,
+        completion: @escaping @Sendable (HealthPermissionsState) -> Void
+    )
 }
 
 // MARK: - HealthKitService
@@ -1122,50 +1125,113 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     
     // MARK: - Check Permission Status
     
-    func checkPermissionsStatus(completion: @escaping @Sendable (HealthPermissionsState) -> Void) {
-        guard HKHealthStore.isHealthDataAvailable(), let healthStore = healthStore else {
+    func checkPermissionsStatus(
+        for deviceMode: DeviceMode,
+        completion: @escaping @Sendable (HealthPermissionsState) -> Void
+    ) {
+        guard HKHealthStore.isHealthDataAvailable(), let healthStore else {
             completion(.unavailable)
             return
         }
         
-        let workoutType = HKObjectType.workoutType()
-        let shareStatus = healthStore.authorizationStatus(for: workoutType)
-        
-        switch shareStatus {
-        case .notDetermined:
-            completion(.needsRequest)
-            return
-        case .sharingDenied:
-            completion(.needsRequest)
-            return
-        case .sharingAuthorized:
-            break
-        @unknown default:
-            completion(.unavailable)
-            return
-        }
-        
-        guard
-            let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
-            let stepType = HKObjectType.quantityType(forIdentifier: .stepCount)
-        else {
-            completion(.unavailable)
-            return
-        }
-        
-        healthStore.getRequestStatusForAuthorization(toShare: [workoutType], read: [heartRateType, stepType]) { status, _ in
-            DispatchQueue.main.async {
-                switch status {
-                case .shouldRequest:
-                    completion(.needsRequest)
-                case .unnecessary:
-                    completion(.ok)
-                case .unknown:
-                    completion(.unavailable)
-                @unknown default:
-                    completion(.unavailable)
+        switch deviceMode {
+        case .iPhoneOnly:
+            guard
+                let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate),
+                let stepType      = HKObjectType.quantityType(forIdentifier: .stepCount)
+            else {
+                completion(.unavailable)
+                return
+            }
+            
+            let startDate = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
+            let predicate = HKQuery.predicateForSamples(withStart: startDate,
+                                                        end: Date(),
+                                                        options: [])
+            
+            let group = DispatchGroup()
+            
+            let stateQueue = DispatchQueue(label: "HealthKitService.PermissionState")
+            var _hasHeartRateData = false
+            var _hasStepData      = false
+            var _hadError         = false
+            
+            func setHasHeartRateData(_ newValue: Bool) {
+                stateQueue.sync { _hasHeartRateData = newValue }
+            }
+            func setHasStepData(_ newValue: Bool) {
+                stateQueue.sync { _hasStepData = newValue }
+            }
+            func setHadError(_ newValue: Bool) {
+                stateQueue.sync { _hadError = newValue }
+            }
+            func readState() -> (hasHeartRateData: Bool, hasStepData: Bool, hadError: Bool) {
+                stateQueue.sync { (_hasHeartRateData, _hasStepData, _hadError) }
+            }
+            
+            // Heart rate
+            group.enter()
+            let hrQuery = HKSampleQuery(sampleType: heartRateType,
+                                        predicate: predicate,
+                                        limit: 1,
+                                        sortDescriptors: nil) { _, samples, error in
+                defer { group.leave() }
+                
+                if let error = error {
+                  
+                    print("DEBUGY: HR query error:", error)
+                    setHadError(true)
+                    return
                 }
+                
+                setHasHeartRateData(!(samples?.isEmpty ?? true))
+            }
+            healthStore.execute(hrQuery)
+            
+            // Steps
+            group.enter()
+            let stepQuery = HKSampleQuery(sampleType: stepType,
+                                          predicate: predicate,
+                                          limit: 1,
+                                          sortDescriptors: nil) { _, samples, error in
+                defer { group.leave() }
+                
+                if let error = error {
+                    print("DEBUGY: Steps query error:", error)
+                    setHadError(true)
+                    return
+                }
+                
+                setHasStepData(!(samples?.isEmpty ?? true))
+            }
+            healthStore.execute(stepQuery)
+            
+            group.notify(queue: .main) {
+                let state = readState()
+                if state.hadError {
+                    completion(.unavailable)
+                    return
+                }
+                
+                let allGood = state.hasHeartRateData && state.hasStepData
+                completion(allGood ? .ok : .needsRequest)
+            }
+            
+        case .iPhoneAndWatch:
+            let workoutType   = HKObjectType.workoutType()
+            let workoutStatus = healthStore.authorizationStatus(for: workoutType)
+            
+            print("DEBUGY: iPhone+Watch workout status =", workoutStatus.rawValue)
+            
+            switch workoutStatus {
+            case .sharingAuthorized:
+                completion(.ok)
+            case .sharingDenied, .notDetermined:
+                completion(.needsRequest)
+            @unknown default:
+                completion(.unavailable)
             }
         }
     }
+    
 }
