@@ -9,11 +9,13 @@ import Foundation
 import SwiftData
 
 protocol DeleteReflectionUseCase {
+    @MainActor
     func execute(reflection: Reflection)
 }
 
 // MARK: - Use Case Implementation
 
+@MainActor
 class DefaultDeleteReflectionUseCase: DeleteReflectionUseCase {
     private let modelContext: ModelContext
 
@@ -24,5 +26,7 @@ class DefaultDeleteReflectionUseCase: DeleteReflectionUseCase {
     func execute(reflection: Reflection) {
         modelContext.delete(reflection)
         try? modelContext.save()
+        
+        BackgroundReflectionsStore.shared.remove(id: reflection.id)
     }
 }

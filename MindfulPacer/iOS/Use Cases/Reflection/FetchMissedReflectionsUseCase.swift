@@ -20,6 +20,12 @@ protocol FetchMissedReflectionsUseCase {
         existingReflections: [Reflection],
         completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
     )
+    
+    func execute(
+        reminderConfigs: [BackgroundReminderConfig],
+        existingReflectionSnapshots: [BackgroundReflectionSnapshot],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    )
 }
 
 // MARK: - Use Case Implementation
@@ -64,6 +70,29 @@ final class DefaultFetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase 
         healthKitService.checkMissedReflections(
             reminders: transientReminders,
             existingReflections: existingReflections,
+            isDeveloperMode: false,
+            completion: completion
+        )
+    }
+    
+    func execute(
+        reminderConfigs: [BackgroundReminderConfig],
+        existingReflectionSnapshots: [BackgroundReflectionSnapshot],
+        completion: @escaping @MainActor (Result<[Reflection], HealthKitError>) -> Void
+    ) {
+        let transientReminders: [Reminder] = reminderConfigs.map { cfg in
+            Reminder(
+                id: cfg.id,
+                measurementType: cfg.measurementType,
+                reminderType: cfg.reminderType,
+                threshold: cfg.threshold,
+                interval: cfg.interval
+            )
+        }
+        
+        healthKitService.checkMissedReflections(
+            reminders: transientReminders,
+            existingReflectionSnapshots: existingReflectionSnapshots,
             isDeveloperMode: false,
             completion: completion
         )

@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 
 protocol SaveReflectionUseCase {
+    @MainActor
     func execute(
         existingReflection: Reflection,
         newDate: Date,
@@ -29,6 +30,7 @@ protocol SaveReflectionUseCase {
 
 // MARK: - Use Case Implementation
 
+@MainActor
 class DefaultSaveReflectionUseCase: SaveReflectionUseCase {
     private let modelContext: ModelContext
     
@@ -68,6 +70,9 @@ class DefaultSaveReflectionUseCase: SaveReflectionUseCase {
         
         do {
             try modelContext.save()
+            
+            BackgroundReflectionsStore.shared.upsert(.init(from: existingReflection))
+
             return .success(existingReflection)
         } catch {
             return .failure(error)

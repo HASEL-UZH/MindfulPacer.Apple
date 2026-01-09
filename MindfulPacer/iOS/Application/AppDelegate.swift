@@ -32,7 +32,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         WatchOnboardingBridge.shared.pushStatus(completed: completed)
         
         if DeviceMode.current() == .iPhoneOnly {
-            Task { await MissedReflectionsMonitorService.shared.schedule(in: 5 * 60) }
+            Task { await MissedReflectionsMonitorService.shared.scheduleNextRun(in: 60) }
         } else {
             BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: MissedReflectionsMonitorService.identifier)
         }

@@ -33,6 +33,7 @@ enum SettingsNavigationDestination: Hashable {
     case dataManagement
     case appleWatch
     case deviceMode
+    case backgroundDiagnostics
 }
 
 enum SettingsAlert: Identifiable {
@@ -86,6 +87,18 @@ struct SettingsView: View {
                     dataManagement
                     if modeOfUse == .expanded {
                         algorithms
+                    }
+                    
+                    NavigationLink(value: SettingsNavigationDestination.backgroundDiagnostics) {
+                        RoundedListCell(
+                            label: IconLabel(
+                                icon: "wrench.and.screwdriver.fill",
+                                title: String(localized: "Background Diagnostics"),
+                                labelColor: Color("BrandPrimary"),
+                                background: true
+                            ),
+                            accessoryIndicatorIcon: "chevron.right"
+                        )
                     }
                 } header: {
                     sectionHeader(title: String(localized: "Data"))
@@ -148,6 +161,8 @@ struct SettingsView: View {
             AppleWatchView(viewModel: viewModel)
         case .deviceMode:
             DeviceModeSettingsView(viewModel: viewModel)
+        case .backgroundDiagnostics:
+            BackgroundDiagnosticsView()
         }
     }
     

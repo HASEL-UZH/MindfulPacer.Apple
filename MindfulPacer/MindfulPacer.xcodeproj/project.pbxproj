@@ -103,6 +103,7 @@
 		0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */; };
 		0D6AEB4F2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB4E2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift */; };
 		0D6AEB512C9DA7B000D8D22F /* FetchStepsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6AEB502C9DA7B000D8D22F /* FetchStepsUseCase.swift */; };
+		0D7051012EEADB7800CB80D3 /* BackgroundDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7051002EEADB7700CB80D3 /* BackgroundDiagnosticsView.swift */; };
 		0D7BA38A2CDD60700086A47F /* ModeOfUseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */; };
 		0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B52C6EA3D20023EE2D /* InfoBox.swift */; };
@@ -186,6 +187,8 @@
 		0DDD33702C7B5D8E00A0B091 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */; };
 		0DDD33712C7B5D8E00A0B091 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */; };
 		0DE097C22D95752000BE3D6A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */; };
+		0DE1F5412F0FD1E8006AD317 /* BackgroundReflectionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE1F5402F0FD1E8006AD317 /* BackgroundReflectionsStore.swift */; };
+		0DE1F5422F0FD219006AD317 /* BackgroundReflectionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE1F5402F0FD1E8006AD317 /* BackgroundReflectionsStore.swift */; };
 		0DE3B1102E5B32C00070C4A2 /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */; };
 		0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */; };
 		0DE3B1142E5B32F80070C4A2 /* BufferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */; };
@@ -351,6 +354,7 @@
 		0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		0D6AEB4E2C9DA2D800D8D22F /* FetchHeartRateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchHeartRateUseCase.swift; sourceTree = "<group>"; };
 		0D6AEB502C9DA7B000D8D22F /* FetchStepsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchStepsUseCase.swift; sourceTree = "<group>"; };
+		0D7051002EEADB7700CB80D3 /* BackgroundDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundDiagnosticsView.swift; sourceTree = "<group>"; };
 		0D72DCA52E97DF5D0056DB80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeOfUseView.swift; sourceTree = "<group>"; };
 		0D8203B32C6E9D680023EE2D /* IconLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabel.swift; sourceTree = "<group>"; };
@@ -427,6 +431,7 @@
 		0DDD336C2C7B5D8E00A0B091 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0DDD336D2C7B5D8E00A0B091 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0DE097C12D95752000BE3D6A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		0DE1F5402F0FD1E8006AD317 /* BackgroundReflectionsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundReflectionsStore.swift; sourceTree = "<group>"; };
 		0DE3B10F2E5B32C00070C4A2 /* StorageKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
 		0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManager.swift; sourceTree = "<group>"; };
 		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -554,6 +559,7 @@
 				0D5947862CBE740C0019BA24 /* Theme */,
 				0D3006C72C943444008F11C7 /* SettingsView.swift */,
 				0D3006C92C943463008F11C7 /* SettingsViewModel.swift */,
+				0D7051002EEADB7700CB80D3 /* BackgroundDiagnosticsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -979,6 +985,7 @@
 				0D9351532D12F9DD0028AA61 /* DataContainer.swift */,
 				0D93514F2D12F98D0028AA61 /* RoadmapRepository.swift */,
 				0DB377FF2E8A5F2200398391 /* BackgroundRemindersStore.swift */,
+				0DE1F5402F0FD1E8006AD317 /* BackgroundReflectionsStore.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1562,6 +1569,7 @@
 				0D4E118A2C864B450023E0A0 /* DeleteReminderUseCase.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0D9D8A822C83A3DE00DFFF00 /* DeleteReflectionUseCase.swift in Sources */,
+				0DE1F5412F0FD1E8006AD317 /* BackgroundReflectionsStore.swift in Sources */,
 				0D4AF7352C9A12B50067D24E /* MailView.swift in Sources */,
 				0D0FE4A42C7772C1002E001B /* IconLabelGroupBox.swift in Sources */,
 				0DE3B1152E5B32F80070C4A2 /* BufferManager.swift in Sources */,
@@ -1647,6 +1655,7 @@
 				0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */,
 				0D67F4412C92155F000F6114 /* HealthKitError.swift in Sources */,
 				0D4D6A952D90AD1C00B70CE5 /* FetchHeartRateDataLast24HoursUseCase.swift in Sources */,
+				0D7051012EEADB7800CB80D3 /* BackgroundDiagnosticsView.swift in Sources */,
 				0DFCA1D22C623FB40000C87C /* EditReflectionViewModel.swift in Sources */,
 				0D500FEE2C749C5300395AEB /* ProcessInfo+Extensions.swift in Sources */,
 				0D909E292C9043CF00377589 /* OnboardingViewModel.swift in Sources */,
@@ -1728,6 +1737,7 @@
 				0DF5EDBC2E4F450B005DB9DE /* CreateReflectionUseCase.swift in Sources */,
 				0DBA373B2C32087300209681 /* WatchOSApp.swift in Sources */,
 				0DFB6E702E9D0FE600606316 /* BackgroundRemindersStore.swift in Sources */,
+				0DE1F5422F0FD219006AD317 /* BackgroundReflectionsStore.swift in Sources */,
 				0D9E5F5D2C64BE56005BA46C /* Reflection.swift in Sources */,
 				0DDD33692C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0DF5EDB82E4F40F2005DB9DE /* FetchDefaultActivitiesUseCase.swift in Sources */,
@@ -1929,7 +1939,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2103,7 +2113,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2334,7 +2344,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2376,7 +2386,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

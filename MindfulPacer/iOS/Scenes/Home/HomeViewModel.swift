@@ -306,7 +306,7 @@ class HomeViewModel {
                     return
                 }
                 
-                guard let reflection = reflections.filter({ $0.id == event.reflectionID }).first else { return }
+                guard let reflection = reflections.first(where: { $0.id == event.reflectionID }) else { return }
                 
                 if let activityID = event.activityID {
                     if let allActivities = self.fetchDefaultActivitiesUseCase.execute(),
@@ -317,7 +317,17 @@ class HomeViewModel {
                         if let subactivityID = event.subactivityID,
                            let matchingSubactivity = matchingActivity.subactivities?.first(where: { $0.id == subactivityID }) {
                             reflection.subactivity = matchingSubactivity
+                        } else {
+                            reflection.subactivity = nil
                         }
+                        
+                        do {
+                            try self.modelContext.save()
+                        } catch {
+                            print("DEBUGY: Failed to save reflection after watch event: \(error.localizedDescription)")
+                        }
+                        
+                        BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
                     }
                 }
                 
@@ -397,6 +407,9 @@ class HomeViewModel {
     private func fetchReflections() {
         reminders = fetchRemindersUseCase.execute() ?? []
         let allReflections = fetchReflectionsUseCase.execute() ?? []
+        
+        syncBackgroundReflectionSnapshots(allReflections: allReflections)
+        
         reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
         applyFilterAndSorting(reviewFilter, reviewSorting)
     }
@@ -414,8 +427,7 @@ class HomeViewModel {
                 guard let self else { return }
                 switch result {
                 case .success(let fetchedMissedReflections):
-                    self.missedReflections = Array(fetchedMissedReflections.prefix(100))
-                    self.missedReflections = self.missedReflections.filter { $0.triggerSamples.count > 1 }
+                    self.missedReflections = MissedReflectionsDisplayPolicy.apply(fetchedMissedReflections)
                     self.resetMissedPagination()
                 case .failure(let failure):
                     print("DEBUGY:", failure.localizedDescription)
@@ -454,5 +466,10 @@ class HomeViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] speed in self?.watchConnectionSpeed = speed }
             .store(in: &cancellables)
+    }
+    
+    private func syncBackgroundReflectionSnapshots(allReflections: [Reflection]) {
+        let snapshots = allReflections.map(BackgroundReflectionSnapshot.init(from:))
+        BackgroundReflectionsStore.shared.replace(with: snapshots)
     }
 }
