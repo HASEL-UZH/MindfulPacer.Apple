@@ -502,8 +502,8 @@ class HomeViewModel {
     }
     
     private func startActivitiesPolling(
-        retryEvery seconds: UInt64 = 3,
-        maxDuration: TimeInterval = 180
+        retryEvery seconds: UInt64 = 15,
+        maxDuration: TimeInterval = 60
     ) {
         guard activitiesPollTask == nil else { return }
 
