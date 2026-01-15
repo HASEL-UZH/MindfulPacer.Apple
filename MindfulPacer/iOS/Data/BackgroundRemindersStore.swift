@@ -11,6 +11,17 @@ enum AppGroups {
     static let suite = "group.com.MindfulPacer"
 }
 
+enum AppGroupDefaults {
+    static var shared: UserDefaults {
+        if let d = UserDefaults(suiteName: AppGroups.suite) {
+            return d
+        }
+
+        assertionFailure("Missing App Group suite: \(AppGroups.suite). Check entitlements for this target.")
+        return .standard
+    }
+}
+
 struct BackgroundReminderConfig: Codable, Sendable, Equatable, Hashable {
     let id: UUID
     let measurementType: Reminder.MeasurementType
@@ -47,7 +58,7 @@ struct BackgroundReminderConfig: Codable, Sendable, Equatable, Hashable {
 final class BackgroundRemindersStore {
     static let shared = BackgroundRemindersStore()
 
-    private let defaults: UserDefaults = UserDefaults(suiteName: AppGroups.suite) ?? .standard
+    private let defaults: UserDefaults = AppGroupDefaults.shared
     private let key = "BackgroundReminderConfigs.v1"
 
     private init() {}

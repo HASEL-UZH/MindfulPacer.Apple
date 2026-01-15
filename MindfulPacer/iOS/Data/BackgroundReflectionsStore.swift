@@ -35,7 +35,7 @@ struct BackgroundReflectionSnapshot: Codable, Sendable, Equatable, Hashable {
 final class BackgroundReflectionsStore {
     static let shared = BackgroundReflectionsStore()
 
-    private let defaults: UserDefaults = UserDefaults(suiteName: AppGroups.suite) ?? .standard
+    private let defaults: UserDefaults = AppGroupDefaults.shared
     private let key = "BackgroundReflectionSnapshots.v1"
 
     private init() {}

@@ -11,6 +11,25 @@ import UserNotifications
 import SwiftUI
 import os
 
+enum DefaultsStore {
+    static var shared: UserDefaults { AppGroupDefaults.shared }
+}
+
+// MARK: - ISO8601 helpers (no shared formatter instances)
+
+enum ISO8601 {
+    static func string(from date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
+    }
+
+    static func date(from string: String) -> Date? {
+        ISO8601DateFormatter().date(from: string)
+    }
+}
+
+// MARK: - Display policy (must match UI + BG)
+
+@MainActor
 enum MissedReflectionsDisplayPolicy {
     static func apply(_ refs: [Reflection]) -> [Reflection] {
         Array(refs.filter { $0.triggerSamples.count > 1 }.prefix(100))
@@ -23,15 +42,9 @@ enum MissedReflectionsDisplayPolicy {
 
 // MARK: - BGDebug
 
-enum DefaultsStore {
-    static var shared: UserDefaults {
-        UserDefaults(suiteName: "group.com.MindfulPacer") ?? .standard
-    }
-}
-
 enum BGDebug {
     static let log = Logger(subsystem: "com.MindfulPacer", category: "BackgroundTasks")
-    
+
     enum Keys {
         static let lastSchedule       = "BGDebug.lastSchedule"
         static let lastRunStart       = "BGDebug.lastRunStart"
@@ -41,24 +54,23 @@ enum BGDebug {
         static let runsCount          = "BGDebug.runsCount"
         static let lastFound          = "BGDebug.lastFoundCount"
         static let lastRunCount       = "BGDebug.lastRunCount"
-        
+
         // Notification throttle state
         static let lastNotifyDateISO  = "BGDebug.lastNotifyDateISO"
         static let lastNotifyCount    = "BGDebug.lastNotifyCount"
-        
-        // High-level decision state (for “why/when did we show?”)
+
+        // High-level decision state
         static let lastNotifyDecision = "BGDebug.lastNotifyDecision"
         static let lastNotifyReason   = "BGDebug.lastNotifyReason"
-        
+
         // History of runs
         static let history            = "BGDebug.history"
     }
-    
-    /// One entry in the background-task history.
+
     struct HistoryEntry: Codable, Identifiable {
         let id: UUID
         let createdAt: Date
-        
+
         let lastSchedule: String?
         let lastRunStart: String?
         let lastRunEnd: String?
@@ -66,59 +78,54 @@ enum BGDebug {
         let lastError: String?
         let runsCount: Int
         let lastFound: Int
-        
+
         let lastNotifyDateISO: String?
         let lastNotifyCount: Int?
         let lastNotifyDecision: String?
         let lastNotifyReason: String?
     }
-    
+
     private static let historyMaxEntries = 100
-    
+
     @MainActor @discardableResult
     static func set(_ key: String, value: Any?) -> Any? {
         DefaultsStore.shared.set(value, forKey: key)
         return value
     }
-    
+
     @MainActor
     static func touch(_ key: String) {
-        set(key, value: ISO8601DateFormatter().string(from: Date()))
+        set(key, value: ISO8601.string(from: Date()))
     }
-    
+
     @MainActor
     static func increment(_ key: String) {
         let n = DefaultsStore.shared.integer(forKey: key)
         DefaultsStore.shared.set(n + 1, forKey: key)
     }
 
-    /// Store a human-readable decision + reason about notifications/background behavior.
     @MainActor
     static func setDecision(_ decision: String, reason: String? = nil) {
         set(Keys.lastNotifyDecision, value: decision)
         set(Keys.lastNotifyReason, value: reason)
-        
+
         if let reason {
             log.info("BG 🧠 decision=\(decision, privacy: .public), reason=\(reason, privacy: .public)")
         } else {
             log.info("BG 🧠 decision=\(decision, privacy: .public)")
         }
     }
-    
-    /// Load the full stored history (oldest → newest).
+
     nonisolated static func loadHistory() -> [HistoryEntry] {
         let d = DefaultsStore.shared
-        guard let data = d.data(forKey: Keys.history) else {
-            return []
-        }
+        guard let data = d.data(forKey: Keys.history) else { return [] }
         return (try? JSONDecoder().decode([HistoryEntry].self, from: data)) ?? []
     }
-    
-    /// Append a snapshot of the current BGDebug state as a new history entry.
+
     @MainActor
     static func appendHistorySnapshot() {
         let d = DefaultsStore.shared
-        
+
         let entry = HistoryEntry(
             id: UUID(),
             createdAt: Date(),
@@ -134,22 +141,21 @@ enum BGDebug {
             lastNotifyDecision: d.string(forKey: Keys.lastNotifyDecision),
             lastNotifyReason: d.string(forKey: Keys.lastNotifyReason)
         )
-        
+
         var history = loadHistory()
         history.append(entry)
-        
-        // Keep only the last N entries
+
         if history.count > historyMaxEntries {
             history = Array(history.suffix(historyMaxEntries))
         }
-        
+
         if let data = try? JSONEncoder().encode(history) {
             d.set(data, forKey: Keys.history)
         }
-        
+
         log.info("BG 🧾 appended history entry (total=\(history.count, privacy: .public))")
     }
-    
+
     @MainActor
     static func dumpState(prefix: String = "BGDebug") {
         let d = DefaultsStore.shared
@@ -162,6 +168,7 @@ enum BGDebug {
         lastError=\(d.string(forKey: Keys.lastError) ?? "nil", privacy: .public), \
         runsCount=\(d.integer(forKey: Keys.runsCount), privacy: .public), \
         lastFound=\(d.integer(forKey: Keys.lastFound), privacy: .public), \
+        lastRunCount=\((d.object(forKey: Keys.lastRunCount) as? Int).map(String.init) ?? "nil", privacy: .public), \
         lastNotifyDecision=\(d.string(forKey: Keys.lastNotifyDecision) ?? "nil", privacy: .public), \
         lastNotifyReason=\(d.string(forKey: Keys.lastNotifyReason) ?? "nil", privacy: .public)
         """)
@@ -174,7 +181,7 @@ actor MissedReflectionsMonitorService {
     static let shared = MissedReflectionsMonitorService()
     nonisolated static let identifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
 
-    // ✅ Desired cadence
+    // Desired cadence + notify throttle
     private let desiredRunInterval: TimeInterval = 2 * 60 * 60
     private let notificationThrottleInterval: TimeInterval = 2 * 60 * 60
 
@@ -205,7 +212,7 @@ actor MissedReflectionsMonitorService {
             return
         }
 
-        // ✅ cancel existing to avoid piling up
+        // Cancel existing request to avoid piling up.
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.identifier)
 
         let req = BGAppRefreshTaskRequest(identifier: Self.identifier)
@@ -231,9 +238,10 @@ actor MissedReflectionsMonitorService {
         let d = DefaultsStore.shared
         guard
             let lastEndISO = d.string(forKey: BGDebug.Keys.lastRunEnd),
-            let lastEnd = ISO8601DateFormatter().date(from: lastEndISO)
+            let lastEnd = ISO8601.date(from: lastEndISO)
         else {
-            return (true, desiredRunInterval, nil)
+            // No baseline: run now; after completion we’ll schedule desiredRunInterval.
+            return (true, desiredRunInterval, "no_lastRunEnd_baseline")
         }
 
         let dt = Date().timeIntervalSince(lastEnd)
@@ -256,7 +264,7 @@ actor MissedReflectionsMonitorService {
         // Throttle notifications (extra safety)
         let d = DefaultsStore.shared
         if let lastISO = d.string(forKey: BGDebug.Keys.lastNotifyDateISO),
-           let lastDate = ISO8601DateFormatter().date(from: lastISO) {
+           let lastDate = ISO8601.date(from: lastISO) {
             let dt = Date().timeIntervalSince(lastDate)
             if dt < notificationThrottleInterval {
                 return (false, "notify_throttled_dt=\(Int(dt))s")
@@ -264,6 +272,7 @@ actor MissedReflectionsMonitorService {
         }
 
         if previousCount == nil {
+            // First ever baseline — you can choose to suppress this if you want.
             return (true, "no_previous_count_baseline")
         }
 
@@ -272,7 +281,7 @@ actor MissedReflectionsMonitorService {
 
     private func recordNotificationState(count: Int) {
         let d = DefaultsStore.shared
-        let iso = ISO8601DateFormatter().string(from: Date())
+        let iso = ISO8601.string(from: Date())
         d.set(iso, forKey: BGDebug.Keys.lastNotifyDateISO)
         d.set(count, forKey: BGDebug.Keys.lastNotifyCount)
 
@@ -297,7 +306,7 @@ actor MissedReflectionsMonitorService {
             return
         }
 
-        // ✅ self-throttle gate
+        // self-throttle gate
         let gate = shouldRunNow()
         if !gate.ok {
             await MainActor.run {
@@ -318,11 +327,13 @@ actor MissedReflectionsMonitorService {
         }
 
         do {
-            // ✅ load reminders + reflection snapshots from App Group defaults
+            // Load reminders + reflection snapshots from App Group defaults
             let cachedReminders = await MainActor.run { BackgroundRemindersStore.shared.load() }
             let existingSnapshots = await MainActor.run { BackgroundReflectionsStore.shared.load() }
 
-            let count = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Int, Error>) in
+            // ✅ IMPORTANT: do NOT return [Reflection] from MainActor to this actor (Reflection is not Sendable).
+            // Compute the final count on MainActor and only return Int across the boundary.
+            let normalizedCount: Int = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Int, Error>) in
                 Task { @MainActor in
                     let useCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
                     useCase.execute(
@@ -330,8 +341,11 @@ actor MissedReflectionsMonitorService {
                         existingReflectionSnapshots: existingSnapshots
                     ) { result in
                         switch result {
-                        case .success(let refs): cont.resume(returning: refs.count)
-                        case .failure(let e):    cont.resume(throwing: e)
+                        case .success(let refs):
+                            let count = MissedReflectionsDisplayPolicy.countForUIAndBG(refs)
+                            cont.resume(returning: count)
+                        case .failure(let e):
+                            cont.resume(throwing: e)
                         }
                     }
                 }
@@ -343,27 +357,27 @@ actor MissedReflectionsMonitorService {
 
             await MainActor.run {
                 BGDebug.increment(BGDebug.Keys.runsCount)
-                BGDebug.set(BGDebug.Keys.lastFound, value: count)
-                BGDebug.set(BGDebug.Keys.lastRunCount, value: count)
-                BGDebug.log.info("BG ✔︎ missed reflections count=\(count, privacy: .public) (prev=\(prev ?? -1, privacy: .public))")
+                BGDebug.set(BGDebug.Keys.lastFound, value: normalizedCount)
+                BGDebug.set(BGDebug.Keys.lastRunCount, value: normalizedCount)
+                BGDebug.log.info("BG ✔︎ missed reflections count=\(normalizedCount, privacy: .public) (prev=\(prev ?? -1, privacy: .public))")
             }
 
-            let notifyDecision = shouldNotify(count: count, previousCount: prev)
-            if notifyDecision.0 {
-                await postMissedReflectionsNotification(count: count)
-                recordNotificationState(count: count)
+            let decision = shouldNotify(count: normalizedCount, previousCount: prev)
+            if decision.0 {
+                await postMissedReflectionsNotification(count: normalizedCount)
+                recordNotificationState(count: normalizedCount)
                 await MainActor.run {
-                    BGDebug.setDecision("notification_sent", reason: notifyDecision.1)
+                    BGDebug.setDecision("notification_sent", reason: decision.1)
                 }
             } else {
                 await MainActor.run {
-                    BGDebug.setDecision("no_notification", reason: notifyDecision.1)
+                    BGDebug.setDecision("no_notification", reason: decision.1)
                 }
             }
 
             await MainActor.run {
                 BGDebug.touch(BGDebug.Keys.lastRunEnd)
-                BGDebug.set(BGDebug.Keys.lastResult, value: "success(\(count))")
+                BGDebug.set(BGDebug.Keys.lastResult, value: "success(\(normalizedCount))")
                 BGDebug.dumpState(prefix: "BG COMPLETE")
                 BGDebug.appendHistorySnapshot()
             }
@@ -379,7 +393,7 @@ actor MissedReflectionsMonitorService {
             }
         }
 
-        // ✅ reschedule at the very end (2h)
+        // reschedule at the very end (2h)
         scheduleNextRun(in: desiredRunInterval)
     }
 
@@ -389,7 +403,7 @@ actor MissedReflectionsMonitorService {
         content.body  = "You have \(count) new missed reflection(s) waiting for you."
         content.sound = .default
         #if DEBUG
-        content.subtitle = "(\(ISO8601DateFormatter().string(from: Date())))"
+        content.subtitle = "(\(ISO8601.string(from: Date())))"
         #endif
 
         do {
@@ -397,7 +411,7 @@ actor MissedReflectionsMonitorService {
                 UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             )
             await MainActor.run {
-                BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public)")
+                BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public))")
             }
         } catch {
             await MainActor.run {
