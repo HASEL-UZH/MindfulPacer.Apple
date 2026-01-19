@@ -97,12 +97,12 @@ struct PendingNotification: Codable, Identifiable {
     let sentDate: Date
 }
 
-enum RuleType: Sendable {
+enum RuleType: Sendable, Equatable {
     case heartRate(threshold: Double)
     case steps(threshold: Double)
 }
 
-public struct AlertRule: Identifiable, Sendable {
+public struct AlertRule: Identifiable, Sendable, Equatable {
     public let id: UUID
     var alertID: UUID?
     let measurementType: Reminder.MeasurementType
@@ -122,7 +122,16 @@ public struct AlertRule: Identifiable, Sendable {
 
 @MainActor
 final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, @unchecked Sendable {
+    
+    private struct RuleRuntimeState: Sendable, Equatable {
+        var triggerDate: Date? = nil
+        var dipDate: Date? = nil
+        var lastNotificationDate: Date? = nil
+        var notificationSent: Bool = false
+    }
 
+    private var runtimeByRuleID: [UUID: RuleRuntimeState] = [:]
+    
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
     @Published var statusMessage: StatusMessage = .notMonitoring
@@ -190,19 +199,17 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         guard let useCase = fetchRemindersUseCase else { return false }
         let reminders = useCase.execute() ?? []
 
-        var oldByID: [UUID: AlertRule] = [:]
-        for r in activeRules { oldByID[r.id] = r }
-
         var next: [AlertRule] = []
         next.reserveCapacity(reminders.count)
 
         for rem in reminders {
             let newRuleType: RuleType = (rem.measurementType == .heartRate)
-            ? .heartRate(threshold: Double(rem.threshold))
-            : .steps(threshold: Double(rem.threshold))
+                ? .heartRate(threshold: Double(rem.threshold))
+                : .steps(threshold: Double(rem.threshold))
 
-            var newRule = AlertRule(
+            let newRule = AlertRule(
                 id: rem.id,
+                alertID: nil,
                 measurementType: rem.measurementType,
                 reminderType: rem.reminderType,
                 ruleType: newRuleType,
@@ -211,20 +218,26 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 interval: rem.interval
             )
 
-            if let old = oldByID[rem.id],
-               rulesConfigEqual(lhs: old, rhs: newRule) {
-                newRule.triggerDate = old.triggerDate
-                newRule.dipDate = old.dipDate
-                newRule.lastNotificationDate = old.lastNotificationDate
-                newRule.notificationSent = old.notificationSent
-            }
             next.append(newRule)
+
+            // Ensure runtime entry exists (don’t publish anything)
+            if runtimeByRuleID[rem.id] == nil {
+                runtimeByRuleID[rem.id] = RuleRuntimeState()
+            }
         }
 
-        activeRules = next
+        // Drop runtime for removed rules
+        let validIDs = Set(next.map(\.id))
+        runtimeByRuleID = runtimeByRuleID.filter { validIDs.contains($0.key) }
+
+        // Only publish if config truly changed
+        if next != activeRules {
+            activeRules = next
+        }
+
         return !next.isEmpty
     }
-
+    
     private func rulesConfigEqual(lhs: AlertRule, rhs: AlertRule) -> Bool {
         guard lhs.id == rhs.id,
               lhs.measurementType == rhs.measurementType,
@@ -430,40 +443,46 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let now = Date()
         let dipGrace: TimeInterval = 30.0
 
-        for i in 0..<activeRules.count {
-            var rule = activeRules[i]
+        for rule in activeRules {
             guard rule.measurementType == .heartRate else { continue }
             guard case .heartRate(let threshold) = rule.ruleType else { continue }
 
-            if currentHeartRate > threshold {
-                if rule.triggerDate == nil { rule.triggerDate = now }
-                if rule.dipDate != nil { rule.dipDate = nil }
+            var state = runtimeByRuleID[rule.id] ?? RuleRuntimeState()
+            let original = state
 
-                if let started = rule.triggerDate {
+            if currentHeartRate > threshold {
+                if state.triggerDate == nil { state.triggerDate = now }
+                if state.dipDate != nil { state.dipDate = nil }
+
+                if let started = state.triggerDate {
                     let elapsed = now.timeIntervalSince(started)
                     if elapsed >= rule.duration {
                         let buffer = BufferManager.shared.buffer(for: rule.interval, context: .heartRate)
-                        if let last = rule.lastNotificationDate, now.timeIntervalSince(last) < buffer {
-                            // Suppress inside buffer
+                        if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer {
+                            // suppressed
                         } else {
                             let dataWindowStart = started.addingTimeInterval(-(rule.duration * 0.20))
                             let eventData = recentHeartRateSamples.filter { $0.date >= dataWindowStart }
                             sendNotification(for: rule, withData: eventData)
-                            rule.lastNotificationDate = now
-                            rule.triggerDate = nil
+
+                            state.lastNotificationDate = now
+                            state.triggerDate = nil
                         }
                     }
                 }
             } else {
-                if rule.triggerDate != nil {
-                    if rule.dipDate == nil { rule.dipDate = now }
-                    if let dipStart = rule.dipDate, now.timeIntervalSince(dipStart) > dipGrace {
-                        rule.triggerDate = nil
-                        rule.dipDate = nil
+                if state.triggerDate != nil {
+                    if state.dipDate == nil { state.dipDate = now }
+                    if let dipStart = state.dipDate, now.timeIntervalSince(dipStart) > dipGrace {
+                        state.triggerDate = nil
+                        state.dipDate = nil
                     }
                 }
             }
-            activeRules[i] = rule
+
+            if state != original {
+                runtimeByRuleID[rule.id] = state
+            }
         }
     }
 
@@ -490,37 +509,32 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 guard error == nil, let sum = result?.sumQuantity() else { return }
                 let total = sum.doubleValue(for: .count())
 
-                // Keep UI mutations on main, but build series off-main
                 if total > threshold {
-                    Task {
-                        // Find the current index on MainActor
-                        let idx = await MainActor.run { self.activeRules.firstIndex(where: { $0.id == rule.id }) }
-                        guard let idx else { return }
+                    Task { @MainActor in
+                        guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
+                        let r = self.activeRules[idx]
 
-                        // Respect buffer
-                        let (interval, last) = await MainActor.run {
-                            (self.activeRules[idx].interval, self.activeRules[idx].lastNotificationDate)
-                        }
-                        let buffer = await MainActor.run {
-                            BufferManager.shared.buffer(for: interval, context: .steps)
-                        }
-                        if let last, now.timeIntervalSince(last) < buffer { return }
+                        var state = self.runtimeByRuleID[r.id] ?? RuleRuntimeState()
 
-                        // Build per-minute series for the chart window
-                        let series = await self.buildStepSeries(for: await MainActor.run { self.activeRules[idx] }, windowEnd: now)
+                        let buffer = BufferManager.shared.buffer(for: r.interval, context: .steps)
+                        if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer { return }
 
-                        // Send notification + update state on MainActor
-                        await MainActor.run {
-                            self.sendNotification(for: self.activeRules[idx], stepsSeries: series)
-                            self.activeRules[idx].notificationSent = true
-                            self.activeRules[idx].lastNotificationDate = now
-                        }
+                        let series = await self.buildStepSeries(for: r, windowEnd: now)
+
+                        self.sendNotification(for: r, stepsSeries: series)
+
+                        state.notificationSent = true
+                        state.lastNotificationDate = now
+                        self.runtimeByRuleID[r.id] = state
                     }
                 } else {
                     Task { @MainActor in
-                        if let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }),
-                           self.activeRules[idx].notificationSent {
-                            self.activeRules[idx].notificationSent = false
+                        guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
+                        let r = self.activeRules[idx]
+                        var state = self.runtimeByRuleID[r.id] ?? RuleRuntimeState()
+                        if state.notificationSent {
+                            state.notificationSent = false
+                            self.runtimeByRuleID[r.id] = state
                         }
                     }
                 }

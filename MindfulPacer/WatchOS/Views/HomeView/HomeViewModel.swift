@@ -49,18 +49,6 @@ class HomeViewModel {
     var showMissedReflectionsInfo: Bool = false
     
     var alertState: AlertState = .none
-//    var alertState: AlertState = .showing(
-//        rule: AlertRule(
-//            id: UUID(),
-//            measurementType: .heartRate,
-//            reminderType: .strong,
-//            ruleType: .heartRate(threshold: 110),
-//            duration: TimeInterval(60 * 1),
-//            alertMessage: "Heart Rate above 110 bpm for 1 min",
-//            interval: .fiveMinutes
-//        ),
-//        alertID: UUID()
-//    )
 
     var heartRateSamples: [(value: Double, date: Date)] = []
     var hourlyStepData: [(date: Date, steps: Double)] = []
@@ -306,9 +294,15 @@ class HomeViewModel {
                    self?.triggerInAppAlert(for: rule)
                }
                .store(in: &cancellables)
+        
         Services.shared.monitorService.$recentHeartRateSamples
-            .sink { [weak self] samples in self?.heartRateSamples = samples }
+            .sink { [weak self] samples in
+                guard let self else { return }
+                guard self.selectedTab == .heartRateChart else { return }
+                self.heartRateSamples = samples
+            }
             .store(in: &cancellables)
+        
         Services.shared.monitorService.$activeRules
             .sink { [weak self] newRules in self?.activeRules = newRules }
             .store(in: &cancellables)
@@ -331,7 +325,9 @@ class HomeViewModel {
         
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
-                await self?.fetchChartData()
+                if await self?.selectedTab == .stepsChart {
+                    await self?.fetchChartData()
+                }
                 await self?.fetchTodaysSteps()
                 await self?.updateBattery()
                 await self?.fetchMissedReflections()
@@ -369,6 +365,17 @@ class HomeViewModel {
             Services.shared.monitorService.resumeMonitoring()
         } else {
             Services.shared.monitorService.pauseMonitoring()
+        }
+    }
+    
+    func didSelectTab(_ tab: HomePage) {
+        switch tab {
+        case .heartRateChart:
+            break
+        case .stepsChart:
+            Task { await fetchChartData() }
+        default:
+            break
         }
     }
     
