@@ -117,17 +117,6 @@ final class WatchOnboardingBridge {
             session.transferUserInfo(payload)
         }
     }
-
-    func notifyCompletedNow() {
-        guard WCSession.isSupported() else { return }
-        if session.activationState == .activated {
-            session.sendMessage(
-                [MessageKeys.command: MessageCommand.onboardingCompleted.rawValue],
-                replyHandler: nil, errorHandler: nil
-            )
-        }
-        pushStatus(completed: true)
-    }
 }
 
 // MARK: - ConnectivityServiceProtocol
@@ -347,14 +336,6 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
         switch command {
         case .ping:
             replyHandler(["ack": "pong"])
-
-        case .requestOnboardingStatus:
-            let completed = OnboardingStatus.isCompleted()
-            replyHandler([
-                MessageKeys.command: MessageCommand.onboardingStatus.rawValue,
-                OnboardingWire.keyOnboardingCompleted: completed
-            ])
-
         default:
             replyHandler([:])
         }

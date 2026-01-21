@@ -58,6 +58,7 @@ class HomeViewModel {
     var lightAlertCount: Int = 0
     var isManuallyPaused: Bool = false
     var missedReflectionsCount: Int = 0
+    var showActivitiesUnavailableAlert: Bool = false
     
     private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let fetchRemindersUseCase: FetchRemindersUseCase
@@ -71,9 +72,6 @@ class HomeViewModel {
         let symbol: String
     }
 
-    private var activitiesPollTask: Task<Void, Never>?
-    
-    // Convenience flags
     var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
     var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
 
@@ -311,18 +309,6 @@ class HomeViewModel {
                   .sink { [weak self] isPaused in self?.isManuallyPaused = isPaused }
                   .store(in: &cancellables)
         
-        OnboardingGate.shared.$isOnboardingCompleted
-            .removeDuplicates()
-            .sink { [weak self] completed in
-                guard let self = self else { return }
-                if completed {
-                    self.startActivitiesPolling()
-                } else {
-                    self.stopActivitiesPolling()
-                }
-            }
-            .store(in: &cancellables)
-        
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
                 if await self?.selectedTab == .stepsChart {
@@ -414,23 +400,33 @@ class HomeViewModel {
         fetchMissedReflections()
     }
     
-    func handleStrongAlertAction(shouldAddDetails: Bool, alertID: UUID) {
+    func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
-        
+
         if shouldAddDetails {
+            loadDefaultActivities()
+
+            if defaultActivities.isEmpty {
+                showActivitiesUnavailableAlert = true
+                alertState = .none
+                return
+            }
+
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
                 id: alertID,
                 reminderID: rule.id
             )
-        } else {
-            Services.shared.systemDelegate.createAndSendReflection(
-                reminderID: rule.id,
-                alertID: alertID,
-                activity: nil,
-                subactivity: nil
-            )
+            alertState = .none
+            return
         }
-        self.alertState = .none
+
+        Services.shared.systemDelegate.createAndSendReflection(
+            reminderID: rule.id,
+            alertID: alertID,
+            activity: nil,
+            subactivity: nil
+        )
+        alertState = .none
     }
     
     func dismissAlertOverlay() {
@@ -506,48 +502,6 @@ class HomeViewModel {
         let lo = minValue - pad
         let hi = maxValue + pad
         return lo...hi
-    }
-    
-    private func startActivitiesPolling(
-        retryEvery seconds: UInt64 = 15,
-        maxDuration: TimeInterval = 60
-    ) {
-        guard activitiesPollTask == nil else { return }
-
-        activitiesPollTask = Task { [weak self] in
-            guard let self = self else { return }
-            let start = Date()
-
-            self.loadDefaultActivities()
-            if !self.defaultActivities.isEmpty {
-                self.stopActivitiesPolling()
-                Services.shared.monitorService.refreshState()
-                return
-            }
-
-            while Date().timeIntervalSince(start) < maxDuration {
-                if Task.isCancelled { return }
-                try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
-                self.loadDefaultActivities()
-                if !self.defaultActivities.isEmpty {
-                    self.stopActivitiesPolling()
-                    Services.shared.monitorService.refreshState()
-                    Task {
-                        await self.fetchTodaysSteps()
-                        await self.fetchChartData()
-                    }
-                    return
-                }
-            }
-
-            // Give up after timeout (harmless; user can reopen, which will retry)
-            self.stopActivitiesPolling()
-        }
-    }
-
-    private func stopActivitiesPolling() {
-        activitiesPollTask?.cancel()
-        activitiesPollTask = nil
     }
 }
 

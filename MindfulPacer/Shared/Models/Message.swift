@@ -25,10 +25,6 @@ enum MessageCommand: String {
     case requestCreateReflection
     case openReflectionForEditing
     case ping
-    
-    case requestOnboardingStatus
-    case onboardingStatus
-    case onboardingCompleted
 }
 
 // MARK: - MessageKeys

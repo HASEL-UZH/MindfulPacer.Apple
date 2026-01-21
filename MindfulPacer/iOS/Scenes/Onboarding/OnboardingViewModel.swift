@@ -83,7 +83,7 @@ class OnboardingViewModel {
 
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
-    var selectedModeOfUse: ModeOfUse?
+    var selectedModeOfUse: ModeOfUse? = .expanded
     var selectedDeviceMode: DeviceMode?
     var selectedAppleWatchComplicationTyoe: AppleWatchComplicationType = .rectangular
     
@@ -276,7 +276,7 @@ class OnboardingViewModel {
     
     func actionButtonTapped() {
         guard let currentDestination = navigationPath.last else {
-            navigationPath.append(.deviceMode)
+            navigationPath.append(.mainFeatures)
             return
         }
         
@@ -294,17 +294,17 @@ class OnboardingViewModel {
         case .appleHealth:
             requestHealthAuthorization()
         case .mainFeatures:
-            navigationPath.append(.activityPromotingFeatures)
+            navigationPath.append(.deviceMode)
         case .activityPromotingFeatures:
             navigationPath.append(.modeOfUse)
         case .modeOfUse:
             navigationPath.append(.disclaimer)
         case .disclaimer:
             toggleUserHasSeenOnboardingUseCase.execute()
-            WatchOnboardingBridge.shared.notifyCompletedNow()
             shouldDismiss = true
         }
     }
+    //activityPromotingFeatures
     
     func skipButtonTapped() {
         guard let currentDestination = navigationPath.last else {
@@ -359,7 +359,7 @@ class OnboardingViewModel {
             } else if success {
                 Task { @MainActor in
                     self.didCompleteHealthAuthorization = true
-                    self.navigateTo(destination: .mainFeatures)
+                    self.navigateTo(destination: .activityPromotingFeatures)
                 }
             }
             

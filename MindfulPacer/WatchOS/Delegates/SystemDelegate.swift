@@ -250,19 +250,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
                 }
             case .ping:
                 replyHandler(["ack": "pong"])
-            case .onboardingCompleted:
-                Task { @MainActor in
-                    OnboardingGate.shared.setCompleted(true)
-                }
-                replyHandler([:])
-                
-            case .onboardingStatus:
-                if let ok = message[OnboardingWire.keyOnboardingCompleted] as? Bool {
-                    Task { @MainActor in
-                        OnboardingGate.shared.setCompleted(ok)
-                    }
-                }
-                replyHandler([:])
             default:
                 break
             }
@@ -285,26 +272,6 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
             print("Error sending reflection request to phone: \(error.localizedDescription)")
             
-        }
-    }
-    
-    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-        if let type = applicationContext[OnboardingWire.keyType] as? String,
-           type == OnboardingWire.typeOnboarding,
-           let ok = applicationContext[OnboardingWire.keyOnboardingCompleted] as? Bool {
-            Task { @MainActor in
-                OnboardingGate.shared.setCompleted(ok)
-            }
-        }
-    }
-    
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-        if let type = userInfo[OnboardingWire.keyType] as? String,
-           type == OnboardingWire.typeOnboarding,
-           let ok = userInfo[OnboardingWire.keyOnboardingCompleted] as? Bool {
-            Task { @MainActor in
-                OnboardingGate.shared.setCompleted(ok)
-            }
         }
     }
 }

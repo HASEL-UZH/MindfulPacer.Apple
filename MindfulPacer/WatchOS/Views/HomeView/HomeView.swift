@@ -31,25 +31,30 @@ struct HomeView: View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage.tag(HomePage.main)
 
-//            Group {
-//                if viewModel.selectedTab == .heartRateChart {
-//                    HeartRateChartView(viewModel: viewModel)
-//                } else {
-//                    ChartPlaceholderView(title: "Heart Rate", systemImage: "heart.fill")
-//                }
-//            }
-//            .tag(HomePage.heartRateChart)
-//
-//            Group {
-//                if viewModel.selectedTab == .stepsChart {
-//                    StepsChartView(viewModel: viewModel)
-//                } else {
-//                    ChartPlaceholderView(title: "Steps", systemImage: "figure.walk")
-//                }
-//            }
-//            .tag(HomePage.stepsChart)
+            Group {
+                if viewModel.selectedTab == .heartRateChart {
+                    HeartRateChartView(viewModel: viewModel)
+                } else {
+                    ChartPlaceholderView(title: "Heart Rate", systemImage: "heart.fill")
+                }
+            }
+            .tag(HomePage.heartRateChart)
+
+            Group {
+                if viewModel.selectedTab == .stepsChart {
+                    StepsChartView(viewModel: viewModel)
+                } else {
+                    ChartPlaceholderView(title: "Steps", systemImage: "figure.walk")
+                }
+            }
+            .tag(HomePage.stepsChart)
         }
         .tabViewStyle(.carousel)
+        .alert("Activities not available", isPresented: $viewModel.showActivitiesUnavailableAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Activities aren’t loaded yet. Please restart the app and try again later.")
+        }
         .onAppear {
             viewModel.onAppear()
         }
@@ -101,14 +106,14 @@ struct HomeView: View {
                     
                     VStack {
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: true, alertID: alertID)
+                            viewModel.handleAlertAction(shouldAddDetails: true, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details")
                                 .fontWeight(.semibold)
                         }
                         
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: false, alertID: alertID)
+                            viewModel.handleAlertAction(shouldAddDetails: false, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details Later")
                         }
