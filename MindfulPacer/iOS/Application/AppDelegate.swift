@@ -28,8 +28,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = notificationDelegate
-        let completed = OnboardingStatus.isCompleted()
-        WatchOnboardingBridge.shared.pushStatus(completed: completed)
         
         if DeviceMode.current() == .iPhoneOnly {
             Task { await MissedReflectionsMonitorService.shared.scheduleNextRun(in: 60) }
@@ -38,9 +36,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }
         
         return true
-    }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        WatchOnboardingBridge.shared.pushStatus(completed: OnboardingStatus.isCompleted())
     }
 }

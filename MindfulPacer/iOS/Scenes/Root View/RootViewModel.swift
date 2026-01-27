@@ -12,8 +12,8 @@ import SwiftUI
 // MARK: - ModeOfUse
 
 enum ModeOfUse: String, CaseIterable, Identifiable {
-    case essentials
     case expanded
+    case essentials
     
     var id: Self { self }
     
@@ -56,15 +56,15 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
 // MARK: - DeviceMode
 
 enum DeviceMode: String, CaseIterable, Identifiable {
-    case iPhoneOnly
     case iPhoneAndWatch
+    case iPhoneOnly
     
     var id: Self { self }
     
     var localized: String {
         switch self {
-        case .iPhoneOnly: String(localized: "iPhone Only")
         case .iPhoneAndWatch: String(localized: "iPhone + Apple Watch")
+        case .iPhoneOnly: String(localized: "iPhone Only")
         }
     }
     

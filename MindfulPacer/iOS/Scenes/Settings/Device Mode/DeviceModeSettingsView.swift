@@ -49,9 +49,7 @@ extension SettingsView {
                                 isSelected: viewModel.deviceMode == mode
                             ) {
                                 if isSelectable {
-                                    viewModel.deviceMode = mode
                                     deviceModeBinding.wrappedValue = mode
-                                    // Start/stop BG task immediately
                                     Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(mode) }
                                     viewModel.presentAlert(.restartApp)
                                 }

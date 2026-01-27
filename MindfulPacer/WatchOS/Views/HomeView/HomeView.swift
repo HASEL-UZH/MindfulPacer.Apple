@@ -30,12 +30,36 @@ struct HomeView: View {
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             mainStatusPage.tag(HomePage.main)
-            HeartRateChartView(viewModel: viewModel).tag(HomePage.heartRateChart)
-            StepsChartView(viewModel: viewModel).tag(HomePage.stepsChart)
+
+            Group {
+                if viewModel.selectedTab == .heartRateChart {
+                    HeartRateChartView(viewModel: viewModel)
+                } else {
+                    ChartPlaceholderView(title: "Heart Rate", systemImage: "heart.fill")
+                }
+            }
+            .tag(HomePage.heartRateChart)
+
+            Group {
+                if viewModel.selectedTab == .stepsChart {
+                    StepsChartView(viewModel: viewModel)
+                } else {
+                    ChartPlaceholderView(title: "Steps", systemImage: "figure.walk")
+                }
+            }
+            .tag(HomePage.stepsChart)
         }
         .tabViewStyle(.carousel)
+        .alert("Warning", isPresented: $viewModel.showActivitiesUnavailableAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("There was an issue loading activities to self-report. Please restart the app and try again.")
+        }
         .onAppear {
             viewModel.onAppear()
+        }
+        .onChange(of: viewModel.selectedTab) { _, newTab in
+            viewModel.didSelectTab(newTab)
         }
         .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
             SelectActivityView(
@@ -82,14 +106,14 @@ struct HomeView: View {
                     
                     VStack {
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: true, alertID: alertID)
+                            viewModel.handleAlertAction(shouldAddDetails: true, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details")
                                 .fontWeight(.semibold)
                         }
                         
                         Button {
-                            viewModel.handleStrongAlertAction(shouldAddDetails: false, alertID: alertID)
+                            viewModel.handleAlertAction(shouldAddDetails: false, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details Later")
                         }
@@ -323,6 +347,23 @@ struct BatteryBarView: View {
                     .stroke(tint.opacity(0.1), lineWidth: 1.5)
             }
         }
+    }
+}
+
+private struct ChartPlaceholderView: View {
+    let title: String
+    let systemImage: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Label(title, systemImage: systemImage)
+                .font(.headline)
+            Text("Open to view")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .padding()
     }
 }
 
