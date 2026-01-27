@@ -50,10 +50,10 @@ struct HomeView: View {
             .tag(HomePage.stepsChart)
         }
         .tabViewStyle(.carousel)
-        .alert("Activities not available", isPresented: $viewModel.showActivitiesUnavailableAlert) {
+        .alert("Warning", isPresented: $viewModel.showActivitiesUnavailableAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Activities aren’t loaded yet. Please restart the app and try again later.")
+            Text("There was an issue loading activities to self-report. Please restart the app and try again.")
         }
         .onAppear {
             viewModel.onAppear()

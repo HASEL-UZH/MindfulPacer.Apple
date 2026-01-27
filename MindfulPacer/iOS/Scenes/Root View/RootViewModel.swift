@@ -56,8 +56,8 @@ enum ModeOfUse: String, CaseIterable, Identifiable {
 // MARK: - DeviceMode
 
 enum DeviceMode: String, CaseIterable, Identifiable {
-    case iPhoneOnly
     case iPhoneAndWatch
+    case iPhoneOnly
     
     var id: Self { self }
     

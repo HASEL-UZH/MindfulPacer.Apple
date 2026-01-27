@@ -72,15 +72,15 @@ struct ActivityPromotingFeature {
 class OnboardingViewModel {
     
     // MARK: - Dependencies
-
+    
     private let initializeNotificationsUseCase: InitializeNotificationsUseCase
     private let requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase
     private let toggleUserHasSeenOnboardingUseCase: ToggleUserHasSeenOnboardingUseCase
-
+    
     // MARK: - Published Properties
-
+    
     var navigationPath: [OnboardingNavigationDestination] = []
-
+    
     var shouldDismiss: Bool = false
     var actionButtonHeight: CGFloat = 0.0
     var selectedModeOfUse: ModeOfUse? = .expanded
@@ -91,7 +91,7 @@ class OnboardingViewModel {
         guard let lastDestination = navigationPath.last else {
             return String(localized: "Continue")
         }
-
+        
         switch lastDestination {
         case .deviceMode:
             return String(localized: "Continue")
@@ -111,10 +111,10 @@ class OnboardingViewModel {
             return String(localized: "Finish")
         }
     }
-
+    
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else { return false }
-
+        
         switch lastDestination {
         case .disclaimer:
             return !didAcceptTerms
@@ -148,19 +148,19 @@ class OnboardingViewModel {
             ""
         }
     }
-
+    
     var showAcceptTermsButton: Bool {
         guard let lastDestination = navigationPath.last else {
             return false
         }
-
+        
         return lastDestination == .disclaimer
     }
     var didAcceptTerms: Bool = false
-
+    
     var didCompleteNotificationsRequest: Bool = false
     var didCompleteHealthAuthorization: Bool = false
-
+    
     let keyFeatures: [KeyFeatureItem] = [
         KeyFeatureItem(
             icon: "figure.run",
@@ -183,7 +183,7 @@ class OnboardingViewModel {
             description: String(localized: "Learn how your activities impact your energy by visualizing the diary and biometric data on a timeline.")
         )
     ]
-
+    
     let mainFeatures: [MainFeatureItem] = [
         MainFeatureItem(
             icon: "flame",
@@ -255,9 +255,9 @@ class OnboardingViewModel {
                 """)
         )
     ]
-
+    
     // MARK: - Initialization
-
+    
     init(
         initializeNotificationsUseCase: InitializeNotificationsUseCase,
         requestHealthAuthorisationUseCase: RequestHealthAuthorisationUseCase,
@@ -267,11 +267,15 @@ class OnboardingViewModel {
         self.requestHealthAuthorisationUseCase = requestHealthAuthorisationUseCase
         self.toggleUserHasSeenOnboardingUseCase = toggleUserHasSeenOnboardingUseCase
     }
-
+    
     // MARK: - View Lifecycle
-
-    func onViewFirstAppear() {}
-
+    
+    func onViewFirstAppear() {
+        seedDefaultsIfNeeded()
+        selectedModeOfUse = readModeOfUse()
+        selectedDeviceMode = readDeviceMode()
+    }
+    
     // MARK: - User Actions
     
     func actionButtonTapped() {
@@ -282,6 +286,9 @@ class OnboardingViewModel {
         
         switch currentDestination {
         case .deviceMode:
+            if let mode = selectedDeviceMode {
+                DefaultsStore.shared.set(mode.rawValue, forKey: DeviceMode.appStorageKey)
+            }
             if selectedDeviceMode == .iPhoneAndWatch {
                 navigationPath.append(.appleWatchConnection)
             } else {
@@ -298,6 +305,9 @@ class OnboardingViewModel {
         case .activityPromotingFeatures:
             navigationPath.append(.modeOfUse)
         case .modeOfUse:
+            if let mode = selectedModeOfUse {
+                DefaultsStore.shared.set(mode.rawValue, forKey: ModeOfUse.appStorageKey)
+            }
             navigationPath.append(.disclaimer)
         case .disclaimer:
             toggleUserHasSeenOnboardingUseCase.execute()
@@ -329,11 +339,11 @@ class OnboardingViewModel {
     }
     
     // MARK: - Presentation
-
+    
     func navigateTo(destination: OnboardingNavigationDestination) {
         navigationPath.append(destination)
     }
-
+    
     // MARK: - Private Methods
     
     private func requestNotificationPermission() {
@@ -351,7 +361,7 @@ class OnboardingViewModel {
             }
         }
     }
-
+    
     private func requestHealthAuthorization() {
         requestHealthAuthorisationUseCase.execute { success, error in
             if let error = error {
@@ -367,5 +377,27 @@ class OnboardingViewModel {
                 self.didCompleteHealthAuthorization = true
             }
         }
+    }
+    
+    private func seedDefaultsIfNeeded() {
+        let defaults = DefaultsStore.shared
+        
+        if defaults.string(forKey: ModeOfUse.appStorageKey) == nil {
+            defaults.set(ModeOfUse.expanded.rawValue, forKey: ModeOfUse.appStorageKey)
+        }
+        
+        if defaults.string(forKey: DeviceMode.appStorageKey) == nil {
+            defaults.set(DeviceMode.iPhoneAndWatch.rawValue, forKey: DeviceMode.appStorageKey)
+        }
+    }
+    
+    private func readModeOfUse() -> ModeOfUse {
+        let raw = DefaultsStore.shared.string(forKey: ModeOfUse.appStorageKey)
+        return ModeOfUse(rawValue: raw ?? "") ?? .expanded
+    }
+    
+    private func readDeviceMode() -> DeviceMode {
+        let raw = DefaultsStore.shared.string(forKey: DeviceMode.appStorageKey)
+        return DeviceMode(rawValue: raw ?? "") ?? .iPhoneAndWatch
     }
 }

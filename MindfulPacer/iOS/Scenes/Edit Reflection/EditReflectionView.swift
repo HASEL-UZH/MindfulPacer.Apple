@@ -43,8 +43,14 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(ModeOfUse.appStorageKey) private var modeOfUse: ModeOfUse = .essentials
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
+    
+    @AppStorage(ModeOfUse.appStorageKey, store: DefaultsStore.shared)
+    private var modeOfUseRaw: String = ModeOfUse.essentials.rawValue
+    
+    private var modeOfUse: ModeOfUse {
+        ModeOfUse(rawValue: modeOfUseRaw) ?? .essentials
+    }
     
     var reflection: Reflection?
     var onReflectionCreation: (() -> Void)?

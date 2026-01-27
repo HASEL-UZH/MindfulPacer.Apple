@@ -10,14 +10,11 @@ import SwiftUI
 // MARK: - AlgorithmsView
 
 struct AlgorithmsView: View {
-    
-    // MARK: Properties
-    
+
     @Bindable var viewModel: SettingsViewModel
     @State private var selectedMeasurementType: Reminder.MeasurementType = .heartRate
-    
-    // MARK: Body
-    
+    @State private var resetToken: Int = 0
+
     var body: some View {
         RoundedList {
             VStack(spacing: 16) {
@@ -32,27 +29,29 @@ struct AlgorithmsView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 ) {
+
                     Picker(selection: $selectedMeasurementType) {
-                        Text("Heart Rate")
-                            .tag(Reminder.MeasurementType.heartRate)
-                        Text("Steps")
-                            .tag(Reminder.MeasurementType.steps)
+                        Text("Heart Rate").tag(Reminder.MeasurementType.heartRate)
+                        Text("Steps").tag(Reminder.MeasurementType.steps)
                     } label: {
                         Text(selectedMeasurementType.localized)
                     }
                     .pickerStyle(.segmented)
-                    
+
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: 16) {
                             ForEach(
-                                selectedMeasurementType == .heartRate ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals,
+                                selectedMeasurementType == .heartRate
+                                ? Reminder.Interval.heartRateIntervals
+                                : Reminder.Interval.stepsIntervals,
                                 id: \.self
                             ) { interval in
                                 Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    BufferSliderView(
+                                    BufferTextFieldView(
                                         interval: interval,
                                         type: selectedMeasurementType,
-                                        viewModel: viewModel
+                                        viewModel: viewModel,
+                                        resetToken: resetToken
                                     )
                                 }
                             }
@@ -60,9 +59,12 @@ struct AlgorithmsView: View {
                         .scrollTargetLayout()
                     }
                     .scrollTargetBehavior(.viewAligned)
+
                 } footer: {
                     Button {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         viewModel.resetBuffersToDefaults()
+                        resetToken &+= 1
                     } label: {
                         IconLabel(
                             icon: "arrow.clockwise",
@@ -79,80 +81,136 @@ struct AlgorithmsView: View {
     }
 }
 
-// MARK: - BufferSliderView
+// MARK: - BufferTextFieldView
 
-private struct BufferSliderView: View {
+private struct BufferTextFieldView: View {
     let interval: Reminder.Interval
     let type: Reminder.MeasurementType
     @Bindable var viewModel: SettingsViewModel
-    
-    let defaultBuffer: Double
-    let bufferRange: ClosedRange<Double>
-    
-    init(interval: Reminder.Interval, type: Reminder.MeasurementType, viewModel: SettingsViewModel) {
-        self.interval = interval
-        self.type = type
-        self._viewModel = Bindable(viewModel)
-        
-        let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
-        let buffer = BufferManager.shared.buffer(for: interval, context: context)
-        self.defaultBuffer = buffer
-        
-        if interval == .oneDay {
-            self.bufferRange = 0...(2 * 3600)
-        } else {
-            self.bufferRange = 0...(buffer * 3)
-        }
-    }
-    
-    private var bufferStep: Double {
-        return 1.0
-    }
-    
-    private func formattedBuffer(_ seconds: Double) -> String {
-        let totalSeconds = Int(seconds)
-        let hours = totalSeconds / 3600
-        let minutes = (totalSeconds % 3600) / 60
-        let remainingSeconds = totalSeconds % 60
+    let resetToken: Int
 
-        if hours > 0 {
-            return "Buffer: \(hours)h \(minutes)m"
-        } else if minutes > 0 {
-            return "Buffer: \(minutes)m \(remainingSeconds)s"
+    @State private var textMinutes: String = ""
+    @State private var isOutOfRange: Bool = false
+    @FocusState private var isFocused: Bool
+
+    private var context: IntervalContext { type == .heartRate ? .heartRate : .steps }
+
+    private var key: String {
+        StorageKeys.bufferKey(for: interval, type: type)
+    }
+
+    private var defaultSeconds: TimeInterval {
+        BufferManager.shared.defaultBuffer(for: interval, context: context)
+    }
+
+    private var allowedRange: ClosedRange<TimeInterval> {
+        BufferManager.shared.allowedRange(for: interval, context: context)
+    }
+
+    private var currentSeconds: TimeInterval {
+        viewModel.bufferValues[key] ?? BufferManager.shared.buffer(for: interval, context: context)
+    }
+
+    private func parseMinutesToSeconds(_ text: String) -> TimeInterval? {
+        let normalized = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+        guard let minutes = Double(normalized), minutes >= 0 else { return nil }
+        return minutes * 60.0
+    }
+
+    private func secondsToMinutesString(_ seconds: TimeInterval) -> String {
+        let minutes = seconds / 60.0
+        if minutes.rounded() == minutes {
+            return String(Int(minutes))
         } else {
-            return "Buffer: \(totalSeconds)s"
+            return String(format: "%.1f", minutes)
         }
     }
-    
+
+    private func formattedTime(_ seconds: TimeInterval) -> String {
+        let total = Int(seconds.rounded())
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let secs = total % 60
+
+        if hours > 0 { return "\(hours) h \(minutes) min" }
+        if minutes > 0 { return secs > 0 ? "\(minutes) min \(secs) s" : "\(minutes) min" }
+        return "\(total) s"
+    }
+
+    private func validateCurrentText() {
+        guard let candidate = parseMinutesToSeconds(textMinutes) else {
+            isOutOfRange = true
+            return
+        }
+        isOutOfRange = !allowedRange.contains(candidate)
+    }
+
+    private func commitIfValid() {
+        guard let seconds = parseMinutesToSeconds(textMinutes),
+              allowedRange.contains(seconds) else {
+            isOutOfRange = true
+            return
+        }
+
+        viewModel.saveBuffer(for: interval, type: type, newBufferInSeconds: seconds)
+        viewModel.bufferValues[key] = seconds
+        isOutOfRange = false
+    }
+
+    private func refreshFromModel() {
+        textMinutes = secondsToMinutesString(currentSeconds)
+        validateCurrentText()
+    }
+
     var body: some View {
-        let key = StorageKeys.bufferKey(for: interval, type: type)
-        
-        let bufferBinding = Binding<Double>(
-            get: { viewModel.bufferValues[key] ?? self.defaultBuffer },
-            set: { newValue in viewModel.bufferValues[key] = newValue }
-        )
-        
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             IconLabel(
                 icon: interval.icon,
                 title: interval.localized,
-                description: formattedBuffer(bufferBinding.wrappedValue)
+                description: "Default: \(formattedTime(defaultSeconds))"
             )
             .font(.subheadline.weight(.semibold))
-            
-            Slider(
-                value: bufferBinding,
-                in: self.bufferRange,
-                step: bufferStep
-            ) {
-            } onEditingChanged: { isEditing in
-                if !isEditing {
-                    viewModel.saveBuffer(for: interval, type: type, newBufferInSeconds: bufferBinding.wrappedValue)
+
+            HStack(spacing: 8) {
+                TextField("Minutes", text: $textMinutes)
+                    .keyboardType(.decimalPad)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isFocused)
+                    .onChange(of: textMinutes) { _, _ in
+                        validateCurrentText()
+                    }
+
+                Text("min")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 8) {
+                Text("Allowed: \(formattedTime(allowedRange.lowerBound)) – \(formattedTime(allowedRange.upperBound))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if isOutOfRange {
+                    Text("Out of range")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.red)
                 }
             }
-            .tint(.brandPrimary)
         }
         .frame(minWidth: 256)
+        .onAppear {
+            refreshFromModel()
+        }
+        .onChange(of: resetToken) { _, _ in
+            refreshFromModel()
+        }
+        .onChange(of: isFocused) { _, focused in
+            if !focused { commitIfValid() }
+        }
+        .onDisappear {
+            commitIfValid()
+        }
     }
 }
 

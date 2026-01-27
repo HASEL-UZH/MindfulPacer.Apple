@@ -402,31 +402,35 @@ class HomeViewModel {
     
     func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
-
+        
+        defer { alertState = .none }
+        
         if shouldAddDetails {
             loadDefaultActivities()
-
+            
             if defaultActivities.isEmpty {
-                showActivitiesUnavailableAlert = true
-                alertState = .none
+                Services.shared.systemDelegate.createAndSendReflection(
+                    reminderID: rule.id,
+                    alertID: alertID,
+                    activity: nil,
+                    subactivity: nil
+                )
                 return
             }
-
+            
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
                 id: alertID,
                 reminderID: rule.id
             )
-            alertState = .none
             return
         }
-
+        
         Services.shared.systemDelegate.createAndSendReflection(
             reminderID: rule.id,
             alertID: alertID,
             activity: nil,
             subactivity: nil
         )
-        alertState = .none
     }
     
     func dismissAlertOverlay() {
