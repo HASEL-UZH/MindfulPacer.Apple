@@ -39,6 +39,9 @@ struct WhatsNewView: View {
             .font(.largeTitle.bold())
             .multilineTextAlignment(.center)
             .padding(.top, 64)
+            
+            Text("We're excited to launch the first version of MindfulPacer for iPhone and Apple Watch")
+                .padding(.horizontal)
 
             VStack(spacing: 32) {
                 ForEach(viewModel.whatsNewFeatures) { feature in

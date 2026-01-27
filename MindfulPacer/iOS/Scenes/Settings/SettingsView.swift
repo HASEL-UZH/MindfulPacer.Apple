@@ -39,31 +39,33 @@ enum SettingsNavigationDestination: Hashable {
 enum SettingsAlert: Identifiable {
     case resetDatabaseConfirmation
     case restartApp
-    
-    var id: Int {
-        hashValue
-    }
+
+    var id: Int { hashValue }
 }
 
 // MARK: - SettingsView
 
 struct SettingsView: View {
-    
-    // MARK: Properties
-    
+
     @Environment(\.openURL) private var openURL
-    @AppStorage(ModeOfUse.appStorageKey) var modeOfUse: ModeOfUse = .essentials
+
+    @AppStorage(ModeOfUse.appStorageKey, store: DefaultsStore.shared)
+    private var modeOfUseRaw: String = ModeOfUse.essentials.rawValue
+
+    private var modeOfUseBinding: Binding<ModeOfUse> {
+        Binding(
+            get: { ModeOfUse(rawValue: modeOfUseRaw) ?? .essentials },
+            set: { modeOfUseRaw = $0.rawValue }
+        )
+    }
+
     @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
     @State private var viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()
-    
-    // MARK: Body
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             RoundedList {
-                
-                // MARK: General
-                
+
                 Section {
                     mindfulPacerExpanded
                     deviceModeSetting
@@ -72,40 +74,22 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: String(localized: "General"))
                 }
-                
-                // MARK: Appearance
-                
+
                 Section {
                     themeSettings
                 } header: {
                     sectionHeader(title: String(localized: "Appearance"))
                 }
-                
-                // MARK: Data
-                
+
                 Section {
                     dataManagement
-                    if modeOfUse == .expanded {
+                    if modeOfUseBinding.wrappedValue == .expanded {
                         algorithms
-                    }
-                    
-                    NavigationLink(value: SettingsNavigationDestination.backgroundDiagnostics) {
-                        RoundedListCell(
-                            label: IconLabel(
-                                icon: "wrench.and.screwdriver.fill",
-                                title: String(localized: "Background Diagnostics"),
-                                labelColor: Color("BrandPrimary"),
-                                background: true
-                            ),
-                            accessoryIndicatorIcon: "chevron.right"
-                        )
                     }
                 } header: {
                     sectionHeader(title: String(localized: "Data"))
                 }
-                
-                // MARK: About
-                
+
                 Section {
                     whatsNew
                     contactUs
@@ -116,13 +100,11 @@ struct SettingsView: View {
                 } header: {
                     sectionHeader(title: String(localized: "About"))
                 }
-                
-                // MARK: Affiliations
-                
+
                 Section {
                     logos
                 }
-             
+
                 appVersion
                     .padding(.bottom)
             }
@@ -138,14 +120,18 @@ struct SettingsView: View {
             }
             .onAppear {
                 viewModel.onViewAppear()
-                viewModel.configure(modeOfUse, DeviceMode.current(from: DefaultsStore.shared))
+                viewModel.configure(modeOfUseBinding.wrappedValue, DeviceMode.current(from: DefaultsStore.shared))
+                viewModel.isExpandedModeOfUseOn = (modeOfUseBinding.wrappedValue == .expanded)
             }
             .onChange(of: viewModel.isExpandedModeOfUseOn) { _, newValue in
-                modeOfUse = (newValue == true ? .expanded : .essentials)
+                modeOfUseBinding.wrappedValue = (newValue ? .expanded : .essentials)
+            }
+            .onChange(of: modeOfUseRaw) { _, _ in
+                viewModel.isExpandedModeOfUseOn = (modeOfUseBinding.wrappedValue == .expanded)
             }
         }
     }
-    
+
     // MARK: Navigation Destination
 
     @ViewBuilder
@@ -165,7 +151,7 @@ struct SettingsView: View {
             BackgroundDiagnosticsView()
         }
     }
-    
+
     // MARK: Sheets
 
     @ViewBuilder
@@ -197,9 +183,9 @@ struct SettingsView: View {
                 .presentationCornerRadius(16)
         }
     }
-    
+
     // MARK: Alert Content
-    
+
     private func alertContent(for alert: SettingsAlert) -> Alert {
         switch alert {
         case .resetDatabaseConfirmation:
@@ -208,18 +194,18 @@ struct SettingsView: View {
             return restartAppAlert
         }
     }
-    
+
     // MARK: Section Header
-    
+
     @ViewBuilder
     private func sectionHeader(title: String) -> some View {
         Text(title)
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)
     }
-    
+
     // MARK: Theme
-    
+
     private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
             RoundedListCell(
@@ -235,9 +221,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: MindulPacer Expanded
-    
+
     private var mindfulPacerExpanded: some View {
         DisclosureGroup {
             Text(String(localized: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors"))
@@ -259,9 +245,9 @@ struct SettingsView: View {
         .background(Color(.secondarySystemGroupedBackground))
         .tint(Color.brandPrimary)
     }
-    
+
     // MARK: Device Mode
-    
+
     private var deviceModeSetting: some View {
         NavigationLink(value: SettingsNavigationDestination.deviceMode) {
             RoundedListCell(
@@ -275,9 +261,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Algorithms
-    
+
     private var algorithms: some View {
         NavigationLink(value: SettingsNavigationDestination.algorithms) {
             RoundedListCell(
@@ -291,9 +277,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Whats New
-    
+
     private var whatsNew: some View {
         Button {
             viewModel.presentSheet(.whatsNew)
@@ -310,9 +296,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Data Management
-    
+
     private var dataManagement: some View {
         NavigationLink(value: SettingsNavigationDestination.dataManagement) {
             RoundedListCell(
@@ -327,9 +313,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Contact Us
-    
+
     private var contactUs: some View {
         Button {
             viewModel.presentSheet(
@@ -351,9 +337,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: - More Info
-    
+
     private var moreInfo: some View {
         Button {
             openURL(viewModel.landingPageURL)
@@ -369,9 +355,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: - Privacy Policy
-    
+
     private var privacyPolicy: some View {
         Button {
             openURL(viewModel.privacyPolicyURL)
@@ -387,9 +373,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: View Onboarding
-    
+
     private var viewOnboarding: some View {
         Button {
             viewModel.presentSheet(.onboardingView)
@@ -406,9 +392,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Roadmap
-    
+
     private var roadmap: some View {
         Button {
             viewModel.presentSheet(.roadmap)
@@ -425,17 +411,17 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: Disclaimer
-    
+
     private var disclaimer: some View {
         RoundedListCell(
             label: IconLabel(
                 icon: "exclamationmark.triangle",
                 title: String(localized: "Disclaimer"),
-                description:  String(localized: """
+                description: String(localized: """
                     MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.
-                    
+
                     MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
                     """),
                 labelColor: .yellow,
@@ -443,9 +429,9 @@ struct SettingsView: View {
             )
         )
     }
-    
+
     // MARK: Logos
-    
+
     private var logos: some View {
         VStack(spacing: 16) {
             HStack {
@@ -456,10 +442,10 @@ struct SettingsView: View {
                     background: true
                 )
                 .font(.subheadline.weight(.semibold))
-                
+
                 Spacer()
             }
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     Group {
@@ -483,9 +469,9 @@ struct SettingsView: View {
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
     }
-    
+
     // MARK: Apple Watch
-    
+
     private var appleWatch: some View {
         NavigationLink(value: SettingsNavigationDestination.appleWatch) {
             RoundedListCell(
@@ -499,9 +485,9 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     // MARK: App Version
-    
+
     private var appVersion: some View {
         Button {
             viewModel.presentSheet(.systemReportView)
@@ -513,9 +499,9 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal)
     }
-    
+
     // MARK: Reset Database Confirmation Alert
-    
+
     private var resetDatabaseConfirmationAlert: Alert {
         Alert(
             title: Text("Reset Data"),
@@ -526,9 +512,9 @@ struct SettingsView: View {
             secondaryButton: .cancel()
         )
     }
-    
+
     // MARK: Restart App Alert
-    
+
     private var restartAppAlert: Alert {
         Alert(
             title: Text("Restart Required"),

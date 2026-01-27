@@ -15,10 +15,8 @@ extension SettingsView {
         // MARK: Properties
         
         @Environment(\.openURL) private var openURL
-        @Environment(\.scenePhase) private var scenePhase
-        
         @Bindable var viewModel: SettingsViewModel
-        
+
         // MARK: Body
         
         var body: some View {
@@ -65,22 +63,8 @@ extension SettingsView {
                     .frame(maxWidth: .infinity)
                 }
                 .navigationTitle("Apple Watch")
-                .task(id: viewModel.isWatchAppInstalled) {
-                    guard viewModel.isWatchAppInstalled else { return }
+                .onAppear {
                     ConnectivityService.shared.startPinging()
-                }
-                
-                .onChange(of: scenePhase) { _, newPhase in
-                    switch newPhase {
-                    case .active:
-                        if viewModel.isWatchAppInstalled {
-                            ConnectivityService.shared.startPinging()
-                        }
-                    case .inactive, .background:
-                        ConnectivityService.shared.stopPinging()
-                    @unknown default:
-                        ConnectivityService.shared.stopPinging()
-                    }
                 }
                 .onDisappear {
                     ConnectivityService.shared.stopPinging()
@@ -104,16 +88,12 @@ extension SettingsView {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()
                 }
-                
-                .onAppear {
-                    ConnectivityService.shared.stopPinging()
-                }
             }
         }
     }
 }
 
-// MARK: - Preview
+// MARK: - Previewo
 
 #Preview {
     let viewModel: SettingsViewModel = ScenesContainer.shared.settingsViewModel()

@@ -403,7 +403,6 @@ class SettingsViewModel {
             let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
             for interval in intervals {
                 let key = StorageKeys.bufferKey(for: interval, type: type)
-                // Remove the custom value from UserDefaults.
                 sharedUserDefaults?.removeObject(forKey: key)
             }
         }
@@ -513,20 +512,22 @@ class SettingsViewModel {
     private func loadAllBuffers() {
         var loadedValues: [String: TimeInterval] = [:]
         let measurementTypes: [Reminder.MeasurementType] = [.heartRate, .steps]
-        
+
         for type in measurementTypes {
             let intervals = (type == .heartRate) ? Reminder.Interval.heartRateIntervals : Reminder.Interval.stepsIntervals
+            let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
+
             for interval in intervals {
                 let key = StorageKeys.bufferKey(for: interval, type: type)
-                
-                if let savedValue = sharedUserDefaults?.object(forKey: key) as? TimeInterval {
-                    loadedValues[key] = savedValue
+
+                if let defaults = sharedUserDefaults, defaults.object(forKey: key) != nil {
+                    loadedValues[key] = defaults.double(forKey: key)
                 } else {
-                    let context: IntervalContext = (type == .heartRate) ? .heartRate : .steps
                     loadedValues[key] = BufferManager.shared.buffer(for: interval, context: context)
                 }
             }
         }
+
         self.bufferValues = loadedValues
     }
     
