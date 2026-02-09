@@ -26,12 +26,10 @@ extension SettingsView {
                         IconLabelGroupBox(
                             label: IconLabel(
                                 icon: "antenna.radiowaves.left.and.right",
-                                title: "Connection",
                                 title: String(localized: "Connection"),
                                 labelColor: Color("BrandPrimary"),
                                 background: true
                             ),
-                            description: Text("Live status of the connection to your Apple Watch.")
                             description: Text(String(localized: "Live status of the connection to your Apple Watch."))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -42,7 +40,6 @@ extension SettingsView {
                                     Spacer()
                                     IconLabel(
                                         icon: viewModel.watchConnectionStatus.symbolName,
-                                        title: viewModel.watchConnectionStatus.rawValue,
                                         title: viewModel.watchConnectionStatus.description,
                                         labelColor: viewModel.watchConnectionStatus.color
                                     )
@@ -54,7 +51,6 @@ extension SettingsView {
                                     Spacer()
                                     IconLabel(
                                         icon: viewModel.watchConnectionSpeed.symbolName,
-                                        title: viewModel.watchConnectionSpeed.rawValue,
                                         title: viewModel.watchConnectionSpeed.description,
                                         labelColor: viewModel.watchConnectionSpeed.color
                                     )

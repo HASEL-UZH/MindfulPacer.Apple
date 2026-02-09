@@ -54,7 +54,6 @@ struct DataManagementView: View {
         IconLabelGroupBox(
             label: IconLabel(
                 icon: "tray.and.arrow.up.fill",
-                title: "Export Data",
                 title: String(localized: "Export Data"),
                 labelColor: .brandPrimary,
                 background: true
@@ -118,9 +117,8 @@ struct DataManagementView: View {
             Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
                 IconLabel(
                     icon: "exclamationmark.triangle",
-                    title: "Note",
-                    description: String("You can delete all data in this app and start from fresh."),
                     title: String(localized: "Note"),
+                    description: String(localized: "You can delete all data in this app and start from fresh."),
                     iconColor: .yellow
                 )
             }
@@ -128,7 +126,6 @@ struct DataManagementView: View {
             Button {
                 viewModel.presentAlert(.resetDatabaseConfirmation)
             } label: {
-                IconLabel(title: "Erase all Data", labelColor: .red)
                 IconLabel(title: String(localized: "Erase all Data"), labelColor: .red)
                     .font(.subheadline.weight(.semibold))
             }

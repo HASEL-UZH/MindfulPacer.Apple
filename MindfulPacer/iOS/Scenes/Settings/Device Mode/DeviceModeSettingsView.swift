@@ -30,7 +30,6 @@ extension SettingsView {
                     label:
                         IconLabel(
                             icon: "iphone.motion",
-                            title: "Device Selection",
                             title: String(localized: "Device Selection"),
                             labelColor: Color("BrandPrimary"),
                             background: true
