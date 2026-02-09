@@ -44,6 +44,25 @@ enum StatusMessage: String {
     case syncing = "Syncing..."
     case paused = "Monitoring Paused"
 
+    var localized: String {
+        switch self {
+        case .monitoring:
+            String(localized: "Monitoring Active")
+        case .notMonitoring:
+            String(localized: "Not Monitoring")
+        case .noReminders:
+            String(localized: "No Reminders Set")
+        case .permissionDenied:
+            String(localized: "Permission Denied")
+        case .error:
+            String(localized: "An Error Occurred")
+        case .syncing:
+            String(localized: "Syncing...")
+        case .paused:
+            String(localized: "Monitoring Paused")
+        }
+    }
+    
     var symbolName: String {
         switch self {
         case .monitoring: return "checkmark"
@@ -71,19 +90,19 @@ enum StatusMessage: String {
     var description: String {
         switch self {
         case .monitoring:
-            return "The app is actively monitoring your health data based on your reminders."
+            return String(localized: "The app is actively monitoring your health data based on your reminders.")
         case .notMonitoring:
-            return "Monitoring is currently inactive. This may be because no reminders are set or there was an issue."
+            return String(localized: "Monitoring is currently inactive. This may be because no reminders are set or there was an issue.")
         case .noReminders:
-            return "Please add a reminder on your iPhone to begin monitoring."
+            return String(localized: "Please add a reminder on your iPhone to begin monitoring.")
         case .permissionDenied:
-            return "Access to HealthKit was denied. Please grant permission in the Health app on your iPhone."
+            return String(localized: "Access to HealthKit was denied. Please grant permission in the Health app on your iPhone.")
         case .error:
-            return "An unexpected error occurred. Please try restarting the app."
+            return String(localized: "An unexpected error occurred. Please try restarting the app.")
         case .syncing:
-            return "Syncing your latest reminders from iCloud..."
+            return String(localized: "Syncing your latest reminders from iCloud...")
         case .paused:
-            return "Monitoring is temporarily paused. Tap the play button to resume."
+            return String(localized: "Monitoring is temporarily paused. Tap the play button to resume.")
         }
     }
 }

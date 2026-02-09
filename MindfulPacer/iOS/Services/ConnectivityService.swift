@@ -19,6 +19,21 @@ enum WatchConnectionStatus: String {
     case disconnected = "Disconnected"
     case connected = "Active & Steady"
     
+    var description: String {
+        switch self {
+        case .initializing:
+            String(localized: "Initializing")
+        case .noWatchPaired:
+            String(localized: "No Watch Paired")
+        case .appNotInstalled:
+            String(localized: "App Not Installed")
+        case .disconnected:
+            String(localized: "Disconnected")
+        case .connected:
+            String(localized: "Active & Steady")
+        }
+    }
+    
     var symbolName: String {
         switch self {
         case .initializing:
@@ -54,6 +69,21 @@ enum WatchConnectionSpeed: String {
     case fast = "Fast"
     case normal = "Normal"
     case slow = "Slow"
+    
+    var description: String {
+        switch self {
+        case .checking:
+            String(localized: "Checking")
+        case .noResponse:
+            String(localized: "No Response")
+        case .fast:
+            String(localized: "Fast")
+        case .normal:
+            String(localized: "Normal")
+        case .slow:
+            String(localized: "Slow")
+        }
+    }
     
     var symbolName: String {
         switch self {

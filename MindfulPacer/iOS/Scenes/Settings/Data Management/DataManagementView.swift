@@ -55,6 +55,7 @@ struct DataManagementView: View {
             label: IconLabel(
                 icon: "tray.and.arrow.up.fill",
                 title: "Export Data",
+                title: String(localized: "Export Data"),
                 labelColor: .brandPrimary,
                 background: true
             )
@@ -119,6 +120,7 @@ struct DataManagementView: View {
                     icon: "exclamationmark.triangle",
                     title: "Note",
                     description: String("You can delete all data in this app and start from fresh."),
+                    title: String(localized: "Note"),
                     iconColor: .yellow
                 )
             }
@@ -127,6 +129,7 @@ struct DataManagementView: View {
                 viewModel.presentAlert(.resetDatabaseConfirmation)
             } label: {
                 IconLabel(title: "Erase all Data", labelColor: .red)
+                IconLabel(title: String(localized: "Erase all Data"), labelColor: .red)
                     .font(.subheadline.weight(.semibold))
             }
         }

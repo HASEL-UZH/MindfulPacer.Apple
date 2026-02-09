@@ -142,8 +142,10 @@ class OnboardingViewModel {
         switch selectedDeviceMode {
         case .iPhoneOnly:
             "Please make sure read permissions are granted for Heart Rate and Steps."
+            String(localized: "Please make sure read permissions are granted for Heart Rate and Steps.")
         case .iPhoneAndWatch:
             "Pleese make sure write permissions are granted for Workouts."
+            String(localized: "Pleese make sure write permissions are granted for Workouts.")
         case nil:
             ""
         }

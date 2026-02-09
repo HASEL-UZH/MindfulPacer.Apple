@@ -16,6 +16,7 @@ struct IntervalInfoSheet: View {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
                     label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
+                    label: IconLabel(icon: "figure.walk", title: String(localized: "Steps"), labelColor: .teal)
                 ) {
                     Text(
                         """
@@ -28,6 +29,7 @@ struct IntervalInfoSheet: View {
                 
                 IconLabelGroupBox(
                     label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
+                    label: IconLabel(icon: "heart", title: String(localized: "Heart Rate"), labelColor: .pink)
                 ) {
                     Text(
                         """

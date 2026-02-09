@@ -197,7 +197,7 @@ struct CreateReminderView: View {
                     label:
                         IconLabel(
                             icon: "exclamationmark.applewatch",
-                            title: "Reminder",
+                            title: String(localized: "Reminder"),
                             labelColor: .brandPrimary,
                             background: true
                         )

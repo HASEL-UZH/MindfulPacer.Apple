@@ -141,8 +141,8 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
     
     var description: String {
         switch self {
-        case .reflection: "Reflections"
-        case .reminder: "Reminders"
+        case .reflection: String(localized: "Reflections")
+        case .reminder: String(localized: "Reminders")
         }
     }
     
