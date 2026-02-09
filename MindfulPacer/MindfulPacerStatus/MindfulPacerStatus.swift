@@ -11,8 +11,21 @@ import SwiftUI
 struct Provider: TimelineProvider {
     private var monitoringState: ComplicationState {
         let defaults = UserDefaults(suiteName: "group.com.MindfulPacer")
-        let rawValue = defaults?.integer(forKey: "monitoringState") ?? ComplicationState.inactive.rawValue
-        return ComplicationState(rawValue: rawValue) ?? .inactive
+
+        let raw = defaults?.integer(forKey: ComplicationKeys.state) ?? ComplicationState.inactive.rawValue
+        let state = ComplicationState(rawValue: raw) ?? .inactive
+
+        /// If app was force-killed, heartbeat stops. Expire "active" to "paused".
+        if state == .active {
+            let last = defaults?.double(forKey: ComplicationKeys.lastUpdated) ?? 0
+            let age = Date().timeIntervalSince1970 - last
+
+            if age > 180 { // 3 minutes, do not set too too low or it'll mislabel during brief OS stalls
+                return .paused
+            }
+        }
+
+        return state
     }
     
     func placeholder(in context: Context) -> SimpleEntry {
@@ -26,7 +39,8 @@ struct Provider: TimelineProvider {
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
         let entry = SimpleEntry(date: Date(), state: monitoringState)
-        let timeline = Timeline(entries: [entry], policy: .never)
+        let next = Date().addingTimeInterval(60)
+        let timeline = Timeline(entries: [entry], policy: .after(next))
         completion(timeline)
     }
 }

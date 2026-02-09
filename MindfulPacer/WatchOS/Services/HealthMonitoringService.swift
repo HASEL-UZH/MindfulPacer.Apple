@@ -157,7 +157,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
     @Published var isManuallyPaused: Bool = false
-
+    @Published var isMonitoringEnabled: Bool = true
+    
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
 
     private let healthStore = HKHealthStore()
@@ -168,8 +169,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private var fetchRemindersUseCase: FetchRemindersUseCase?
     private var cancellables = Set<AnyCancellable>()
-
     private var stepsTimer: DispatchSourceTimer?
+    private var complicationHeartbeat: DispatchSourceTimer?
 
     override init() {
         super.init()
@@ -192,28 +193,28 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
             .store(in: &cancellables)
     }
-
+    
     func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
         self.fetchRemindersUseCase = fetchRemindersUseCase
     }
-
+    
     // MARK: - State refresh
-
+    
     func refreshState() {
         let hadRules = !activeRules.isEmpty
         let hasRules = rebuildRulesPreservingState()
-
+        
         if isManuallyPaused {
             statusMessage = .paused
         } else if isSessionActive {
-            statusMessage = .monitoring
+            statusMessage = hasRules ? .monitoring : .monitoring
         } else {
-            statusMessage = hasRules ? .notMonitoring : .noReminders
+            statusMessage = isMonitoringEnabled ? .notMonitoring : .notMonitoring
         }
-
+        
         _startOrStopMonitoring(hasRules: hasRules, previouslyHadRules: hadRules)
     }
-
+    
     private func rebuildRulesPreservingState() -> Bool {
         guard let useCase = fetchRemindersUseCase else { return false }
         let reminders = useCase.execute() ?? []
@@ -276,16 +277,24 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - Start/Stop monitoring
 
     private func _startOrStopMonitoring(hasRules: Bool, previouslyHadRules: Bool) {
-        guard !isManuallyPaused else { return }
-        let sessionIsRunning = (workoutSession?.state == .running)
-
-        if hasRules && !sessionIsRunning {
-            startWorkoutSession()
-        } else if !hasRules && sessionIsRunning {
-            endWorkoutSession()
-        } else if hasRules && previouslyHadRules {
-            // No-op: rules still exist; we preserved timers so don't restart anything.
+        if isManuallyPaused {
+            /// paused means user explicitly stopped live collection
+            return
         }
+
+        guard isMonitoringEnabled else {
+            /// This is your “shutdown” equivalent: user turned monitoring off
+            if workoutSession != nil { endWorkoutSession() }
+            return
+        }
+
+        /// Monitoring enabled => ensure workout session is running (even if no reminders)
+        let sessionIsRunning = (workoutSession?.state == .running)
+        if !sessionIsRunning {
+            startWorkoutSession()
+        }
+
+        /// Rules presence only affects rule evaluation + status text, not the workout session
     }
 
     private func startWorkoutSession() {
@@ -315,10 +324,11 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 session.startActivity(with: Date())
                 try await builder.beginCollection(at: Date())
                 isSessionActive = true
+                startComplicationHeartbeat()
                 statusMessage = .monitoring
                 startStepsTimer()
 
-                sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+                writeComplicationState(.active)
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
             } catch {
                 statusMessage = .error
@@ -337,7 +347,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = false
         statusMessage = .notMonitoring
 
-        sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
+        stopComplicationHeartbeat()
+        writeComplicationState(.inactive)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
 
@@ -638,7 +649,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = true
         statusMessage = .paused
 
-        sharedUserDefaults?.set(ComplicationState.paused.rawValue, forKey: "monitoringState")
+        stopComplicationHeartbeat()
+        writeComplicationState(.paused)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
 
@@ -648,7 +660,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = false
         statusMessage = .monitoring
 
-        sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+        writeComplicationState(.active)
+        startComplicationHeartbeat()
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
     
@@ -717,5 +730,32 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let buckets = await fetchStepBuckets(from: start, to: windowEnd, bucket: DateComponents(minute: 1))
         // Map to MeasurementSample (raw bucket values)
         return buckets.map { MeasurementSample(type: .steps, value: $0.steps, date: $0.date) }
+    }
+    
+    private func writeComplicationState(_ state: ComplicationState) {
+        let defaults = UserDefaults(suiteName: AppGroupPaths.groupID)
+        defaults?.set(state.rawValue, forKey: ComplicationKeys.state)
+        defaults?.set(Date().timeIntervalSince1970, forKey: ComplicationKeys.lastUpdated)
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
+    
+    private func startComplicationHeartbeat() {
+        complicationHeartbeat?.cancel()
+
+        let t = DispatchSource.makeTimerSource(queue: .main)
+        t.schedule(deadline: .now(), repeating: 60) // every 60 s
+        t.setEventHandler { [weak self] in
+            guard let self else { return }
+            guard self.isSessionActive, !self.isManuallyPaused else { return }
+            self.writeComplicationState(.active)
+        }
+
+        complicationHeartbeat = t
+        t.resume()
+    }
+
+    private func stopComplicationHeartbeat() {
+        complicationHeartbeat?.cancel()
+        complicationHeartbeat = nil
     }
 }

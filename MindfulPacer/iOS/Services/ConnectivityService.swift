@@ -110,6 +110,7 @@ enum WatchConnectionSpeed: String {
         }
     }
 }
+
 // MARK: - WatchEventCoordinator
 
 @MainActor
@@ -167,13 +168,17 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
     private func updateConnectionStateEnums() {
         if !isPaired {
             connectionStatus = .noWatchPaired
-        } else if !isWatchAppInstalled {
-            connectionStatus = .appNotInstalled
-        } else if !isReachable {
-            connectionStatus = .disconnected
-        } else {
-            connectionStatus = .connected
+            connectionSpeed = .noResponse
+            return
         }
+        
+        if !isWatchAppInstalled {
+            connectionStatus = .appNotInstalled
+            connectionSpeed = .noResponse
+            return
+        }
+        
+        connectionStatus = .connected
         
         if !isReachable {
             connectionSpeed = .noResponse
