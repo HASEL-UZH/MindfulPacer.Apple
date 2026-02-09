@@ -11,11 +11,10 @@ struct ThresholdInfoSheet: View {
     var body: some View {
         InfoSheet(
             title: String(localized: "Threshold Information"),
-            info: String(localized: "Set a threshold that triggers a reminder when reached for a specified interval.")
+            info: String(localized: "Set a threshold that triggers a reminder when reached for a specified interval. Please consult with your healthcare professional if you are unsure which threshold to set.")
         ) {
             VStack(spacing: 16) {
                 IconLabelGroupBox(
-                    label: IconLabel(icon: "figure.walk", title: "Steps", labelColor: .teal)
                     label: IconLabel(icon: "figure.walk", title: String(localized: "Steps"), labelColor: .teal)
                 ) {
                     Text(
@@ -29,7 +28,6 @@ struct ThresholdInfoSheet: View {
                 }
                 
                 IconLabelGroupBox(
-                    label: IconLabel(icon: "heart", title: "Heart Rate", labelColor: .pink)
                     label: IconLabel(icon: "heart", title: String(localized: "Heart Rate"), labelColor: .pink)
                 ) {
                     Text(
