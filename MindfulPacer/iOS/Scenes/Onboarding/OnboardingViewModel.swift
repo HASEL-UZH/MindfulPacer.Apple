@@ -143,7 +143,7 @@ class OnboardingViewModel {
         case .iPhoneOnly:
             String(localized: "Please make sure read permissions are granted for Heart Rate and Steps.")
         case .iPhoneAndWatch:
-            String(localized: "Pleese make sure write permissions are granted for Workouts.")
+            String(localized: "Please make sure write permissions are granted for Workouts.")
         case nil:
             ""
         }
