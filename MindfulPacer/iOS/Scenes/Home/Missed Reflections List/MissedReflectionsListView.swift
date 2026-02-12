@@ -76,8 +76,10 @@ extension HomeView {
                             )
                         ) {
                             VStack(alignment: .leading, spacing: 16) {
-                                TriggerDataChartView(reflection: reflection)
-                                    .frame(height: 150)
+                                if reflection.interval != .oneDay {
+                                    TriggerDataChartView(reflection: reflection)
+                                        .frame(height: 150)
+                                }
                                 Text(String(localized: "Triggered on \(reflection.date.formatted(.dateTime.month().day().hour().minute()))"))
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)

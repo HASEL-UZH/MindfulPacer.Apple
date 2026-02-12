@@ -802,11 +802,11 @@ struct TriggerDataChartView: View {
     private var xAxisFormatStyle: Date.FormatStyle {
         guard let interval = reflection.interval else { return .dateTime.hour().minute().second() }
         switch interval {
-        case .immediately, .oneMinute:         return .dateTime.hour().minute().second()
+        case .immediately, .oneMinute, .twoMinutes: return .dateTime.hour().minute().second()
         case .fiveMinutes, .tenMinutes,
              .fifteenMinutes, .thirtyMinutes,
-             .oneHour, .twoHours:              return .dateTime.hour().minute()
-        case .fourHours, .oneDay:              return .dateTime.hour()
+             .oneHour, .twoHours: return .dateTime.hour().minute()
+        case .fourHours, .oneDay: return .dateTime.hour()
         }
     }
 

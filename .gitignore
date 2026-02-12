@@ -9,3 +9,6 @@ build/
 *.perspectivev3
 MindfulPacer/.DS_Store
 MindfulPacer/.DS_Store
+
+**/xcuserdata/
+**/*.xcuserstate

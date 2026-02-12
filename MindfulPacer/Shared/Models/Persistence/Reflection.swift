@@ -74,9 +74,9 @@ extension SchemaV1 {
             
             switch reminderMeasurementType {
             case .heartRate:
-                return "Above \(reminderThreshold) bpm for \(reminderInterval.rawValue.lowercased())"
+                return String(localized: "Above \(reminderThreshold) bpm for \(reminderInterval.rawValue.lowercased())")
             case .steps:
-                return "Above \(reminderThreshold) steps within the window of \(reminderInterval.rawValue.lowercased())"
+                return String(localized: "Above \(reminderThreshold) steps within the window of \(reminderInterval.rawValue.lowercased())")
             }
         }
         
