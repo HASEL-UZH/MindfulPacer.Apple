@@ -49,6 +49,7 @@ enum WatchConnectionStatus: String {
         }
     }
     
+    
     var color: Color {
         switch self {
         case .initializing:
@@ -100,6 +101,7 @@ enum WatchConnectionSpeed: String {
         }
     }
     
+    
     var color: Color {
         switch self {
         case .fast: return .green
@@ -110,7 +112,6 @@ enum WatchConnectionSpeed: String {
         }
     }
 }
-
 // MARK: - WatchEventCoordinator
 
 @MainActor
@@ -133,7 +134,10 @@ protocol ConnectivityServiceProtocol: Sendable {
 
 final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, ObservableObject, @unchecked Sendable {
     
+final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, ObservableObject, @unchecked Sendable {
+    
     static let shared = ConnectivityService()
+    
     
     @Published private var isPaired: Bool = false
     @Published private var isWatchAppInstalled: Bool = false
@@ -143,9 +147,12 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
     @Published private(set) var connectionStatus: WatchConnectionStatus = .initializing
     @Published private(set) var connectionSpeed: WatchConnectionSpeed = .noResponse
     
+    
     private let session = WCSession.default
     private var pingTimer: Timer?
+    private var pingTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
+    
     
     private override init() {
         super.init()
@@ -155,6 +162,7 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
         }
         subscribeToStateChanges()
     }
+    
     
     private func subscribeToStateChanges() {
         Publishers.CombineLatest4($isPaired, $isWatchAppInstalled, $isReachable, $lastLatency)
