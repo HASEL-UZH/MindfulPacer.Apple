@@ -18,7 +18,7 @@ enum WatchConnectionStatus: String {
     case appNotInstalled = "App Not Installed"
     case disconnected = "Disconnected"
     case connected = "Active & Steady"
-    
+
     var description: String {
         switch self {
         case .initializing:
@@ -33,7 +33,7 @@ enum WatchConnectionStatus: String {
             String(localized: "Active & Steady")
         }
     }
-    
+
     var symbolName: String {
         switch self {
         case .initializing:
@@ -48,8 +48,7 @@ enum WatchConnectionStatus: String {
             return "checkmark.applewatch"
         }
     }
-    
-    
+
     var color: Color {
         switch self {
         case .initializing:
@@ -70,7 +69,7 @@ enum WatchConnectionSpeed: String {
     case fast = "Fast"
     case normal = "Normal"
     case slow = "Slow"
-    
+
     var description: String {
         switch self {
         case .checking:
@@ -85,7 +84,7 @@ enum WatchConnectionSpeed: String {
             String(localized: "Slow")
         }
     }
-    
+
     var symbolName: String {
         switch self {
         case .checking:
@@ -100,8 +99,7 @@ enum WatchConnectionSpeed: String {
             return "tortoise.fill"
         }
     }
-    
-    
+
     var color: Color {
         switch self {
         case .fast: return .green
@@ -112,6 +110,7 @@ enum WatchConnectionSpeed: String {
         }
     }
 }
+
 // MARK: - WatchEventCoordinator
 
 @MainActor
@@ -133,12 +132,9 @@ protocol ConnectivityServiceProtocol: Sendable {
 // MARK: - ConnectivityService
 
 final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, ObservableObject, @unchecked Sendable {
-    
-final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessionDelegate, ObservableObject, @unchecked Sendable {
-    
+
     static let shared = ConnectivityService()
-    
-    
+
     @Published private var isPaired: Bool = false
     @Published private var isWatchAppInstalled: Bool = false
     @Published private var isReachable: Bool = false
@@ -146,14 +142,11 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
 
     @Published private(set) var connectionStatus: WatchConnectionStatus = .initializing
     @Published private(set) var connectionSpeed: WatchConnectionSpeed = .noResponse
-    
-    
+
     private let session = WCSession.default
     private var pingTimer: Timer?
-    private var pingTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
-    
-    
+
     private override init() {
         super.init()
         if WCSession.isSupported() {
@@ -162,8 +155,7 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
         }
         subscribeToStateChanges()
     }
-    
-    
+
     private func subscribeToStateChanges() {
         Publishers.CombineLatest4($isPaired, $isWatchAppInstalled, $isReachable, $lastLatency)
             .receive(on: DispatchQueue.main)
@@ -172,22 +164,22 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             }
             .store(in: &cancellables)
     }
-    
+
     private func updateConnectionStateEnums() {
         if !isPaired {
             connectionStatus = .noWatchPaired
             connectionSpeed = .noResponse
             return
         }
-        
+
         if !isWatchAppInstalled {
             connectionStatus = .appNotInstalled
             connectionSpeed = .noResponse
             return
         }
-        
+
         connectionStatus = .connected
-        
+
         if !isReachable {
             connectionSpeed = .noResponse
         } else if let latency = lastLatency {
@@ -201,7 +193,7 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             connectionSpeed = .checking
         }
     }
-    
+
     func startPinging() {
         guard pingTimer == nil else { return }
         sendPing()
@@ -209,7 +201,7 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             self?.sendPing()
         }
     }
-    
+
     func stopPinging() {
         pingTimer?.invalidate()
         pingTimer = nil
@@ -217,55 +209,60 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
             self.lastLatency = nil
         }
     }
-    
+
     private func sendPing() {
         guard session.isReachable else { return }
         let startTime = Date()
-        session.sendMessage(["command": MessageCommand.ping.rawValue], replyHandler: { reply in
+        session.sendMessage([MessageKeys.command: MessageCommand.ping.rawValue], replyHandler: { [weak self] _ in
+            guard let self else { return }
             let latency = Date().timeIntervalSince(startTime)
             Task { @MainActor in
                 self.lastLatency = latency
             }
-        }, errorHandler: { error in
+        }, errorHandler: { [weak self] _ in
+            guard let self else { return }
             Task { @MainActor in
                 self.lastLatency = nil
             }
         })
     }
-    
+
     // MARK: - WCSessionDelegate Methods
-    
+
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        let isPaired = session.isPaired
-        let isWatchAppInstalled = session.isWatchAppInstalled
-        let isReachable = session.isReachable
+        let paired = session.isPaired
+        let installed = session.isWatchAppInstalled
+        let reachable = session.isReachable
         Task { @MainActor in
-            self.isPaired = isPaired
-            self.isWatchAppInstalled = isWatchAppInstalled
-            self.isReachable = isReachable
+            self.isPaired = paired
+            self.isWatchAppInstalled = installed
+            self.isReachable = reachable
         }
     }
-    
+
     func sessionWatchStateDidChange(_ session: WCSession) {
-        let isPaired = session.isPaired
-        let isWatchAppInstalled = session.isWatchAppInstalled
+        let paired = session.isPaired
+        let installed = session.isWatchAppInstalled
         Task { @MainActor in
-            self.isPaired = isPaired
-            self.isWatchAppInstalled = isWatchAppInstalled
+            self.isPaired = paired
+            self.isWatchAppInstalled = installed
         }
     }
-    
+
     func sessionReachabilityDidChange(_ session: WCSession) {
-        let isReachable = session.isReachable
+        let reachable = session.isReachable
         Task { @MainActor in
-            self.isReachable = isReachable
+            self.isReachable = reachable
         }
     }
-    
+
     func sessionDidBecomeInactive(_ session: WCSession) {}
-    func sessionDidDeactivate(_ session: WCSession) { session.activate() }
-    
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String : Any]) -> Void) {
+
+    func sessionDidDeactivate(_ session: WCSession) {
+        session.activate()
+    }
+
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         guard let commandString = message[MessageKeys.command] as? String,
               let command = MessageCommand(rawValue: commandString) else {
             replyHandler([:])
@@ -275,18 +272,17 @@ final class ConnectivityService: NSObject, ConnectivityServiceProtocol, WCSessio
         switch command {
         case .ping:
             replyHandler(["ack": "pong"])
-
         default:
             replyHandler([:])
         }
     }
-    
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         guard let commandString = message[MessageKeys.command] as? String,
               let command = MessageCommand(rawValue: commandString) else {
             return
         }
-        
+
         switch command {
         case .openReflectionForEditing:
             guard let idString = message["reflection_id"] as? String,
