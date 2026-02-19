@@ -254,6 +254,7 @@ final class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     private let defaultTimeIntervals: [Reminder.Interval: TimeInterval] = [
         .immediately: 0,
         .oneMinute: 60,
+        .twoMinutes: 2 * 60,
         .fiveMinutes: 5 * 60,
         .tenMinutes: 10 * 60,
         .fifteenMinutes: 15 * 60,

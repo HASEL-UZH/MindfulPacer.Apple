@@ -560,7 +560,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     Task { @MainActor in
                         guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
                         let r = self.activeRules[idx]
-
                         var state = self.runtimeByRuleID[r.id] ?? RuleRuntimeState()
 
                         if r.interval == .oneDay {
@@ -576,7 +575,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                         }
 
                         let series = await self.buildStepSeries(for: r, windowEnd: now)
-
                         self.sendNotification(for: r, stepsSeries: series)
 
                         state.notificationSent = true
