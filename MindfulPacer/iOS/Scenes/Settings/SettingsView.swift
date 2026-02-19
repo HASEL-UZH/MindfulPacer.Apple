@@ -69,7 +69,7 @@ struct SettingsView: View {
                 Section {
                     mindfulPacerExpanded
                     deviceModeSetting
-                    appleWatch
+//                    appleWatch
                     viewOnboarding
                 } header: {
                     sectionHeader(title: String(localized: "General"))
