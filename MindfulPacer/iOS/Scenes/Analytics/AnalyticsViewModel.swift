@@ -215,6 +215,20 @@ class AnalyticsViewModel {
         return ""
     }
     
+    var chartHeaderDescription: String {
+        let measurement = selectedMeasurementType.localized
+        
+        let dayPart: String = {
+            if Calendar.current.isDateInToday(selectedDateForPeriod) {
+                return String(localized: "Today")
+            } else {
+                return selectedDateForPeriod.formatted(.dateTime.day().month())
+            }
+        }()
+        
+        return String(localized: "\(measurement) • \(dayPart)")
+    }
+    
     var granularity: ChartGranularity {
         switch selectedPeriod {
         case .oneHour: .hour
@@ -340,7 +354,6 @@ class AnalyticsViewModel {
                 case .success(let success):
                     Task { @MainActor in
                         self.weeklyStepsChartData = success
-                        // For week, chartData uses weeklyStepsChartData
                         self.updateChartThresholds()
                     }
                 case .failure:
@@ -384,16 +397,40 @@ class AnalyticsViewModel {
     }
     
     private func updateChartThresholds() {
-        let maxValue = chartData.map { $0.value }.max() ?? 0
+        guard selectedMeasurementType == .steps else {
+            let maxValue = chartData.map { $0.value }.max() ?? 0
+            let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
 
-        let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
+            chartThresholds = reminders
+                .filter { $0.measurementType == selectedMeasurementType }
+                .map { ($0.reminderType, $0.threshold) }
+                .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+
+            return
+        }
+
+        if selectedPeriod == .week {
+            chartThresholds = []
+            return
+        }
+
+        let allowedIntervals: Set<Reminder.Interval> = {
+            switch selectedPeriod {
+            case .oneHour:
+                return [.thirtyMinutes, .oneHour]
+            case .twoHours:
+                return [.thirtyMinutes, .oneHour, .twoHours]
+            case .day:
+                return [.thirtyMinutes, .oneHour, .twoHours, .fourHours, .oneDay]
+            case .week:
+                return [.oneDay]
+            }
+        }()
 
         chartThresholds = reminders
-            .filter { $0.measurementType == selectedMeasurementType }
-            .map { reminder in
-                (reminder.reminderType, reminder.threshold)
-            }
-            .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+            .filter { $0.measurementType == .steps }
+            .filter { allowedIntervals.contains($0.interval) }
+            .map { ($0.reminderType, $0.threshold) }
     }
 }
 

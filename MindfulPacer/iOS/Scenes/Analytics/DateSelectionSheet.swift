@@ -26,7 +26,7 @@ extension AnalyticsView {
                         label:
                             IconLabel(
                                 icon: "calendar",
-                                title: "Date Selection",
+                                title: String(localized: "Date Selection"),
                                 labelColor: .brandPrimary,
                                 background: true
                             ),
@@ -51,7 +51,7 @@ extension AnalyticsView {
                             } label: {
                                 IconLabel(
                                     icon: "calendar",
-                                    title: "Today",
+                                    title: String(localized: "Today"),
                                     labelColor: .brandPrimary
                                 )
                                 .font(.subheadline.weight(.semibold))
