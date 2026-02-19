@@ -22,7 +22,8 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     func configure() {
         guard self.fetchRemindersUseCase == nil else { return }
         
-        print("DEBUGY: Configuring SystemDelegate with use cases.")
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
         let modelContext = ModelContainer.prod.mainContext
         self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
         self.createReflectionUseCase = DefaultCreateReflectionUseCase(modelContext: modelContext)
@@ -87,6 +88,14 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             return
         }
         
+        if let fetchRemindersUseCase,
+           let reminders = fetchRemindersUseCase.execute(),
+           let reminder = reminders.first(where: { $0.id == reminderID }),
+           reminder.measurementType == .steps,
+           reminder.interval == .oneDay {
+            StepDayMuteStore.muteForToday()
+        }
+        
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
@@ -123,9 +132,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
         }
         
         let triggerSamples = self.retrieveTriggerData(for: alertID) ?? []
-        
-        print("DEBUGY: triggerSamples", triggerSamples)
-        
+                
         guard let createReflectionUseCase else { return }
         let result = createReflectionUseCase.execute(
             date: Date(),

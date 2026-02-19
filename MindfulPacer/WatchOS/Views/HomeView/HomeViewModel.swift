@@ -73,7 +73,7 @@ class HomeViewModel {
     }
 
     var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
-    var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
+    var hasStepsData: Bool { !hourlyStepData.isEmpty }
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
         // Highest priority: permission
@@ -403,6 +403,7 @@ class HomeViewModel {
     func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
         
+        muteDayStepsIfNeeded(for: rule)
         defer { alertState = .none }
         
         if shouldAddDetails {
@@ -434,11 +435,10 @@ class HomeViewModel {
     }
     
     func dismissAlertOverlay() {
-        self.alertState = .none
-    }
-    
-    func rejectStrongAlert() {
-        self.alertState = .none
+        if case .showing(let rule, _) = alertState {
+            muteDayStepsIfNeeded(for: rule)
+        }
+        alertState = .none
     }
     
     private func checkForDailyReset() {
@@ -506,6 +506,11 @@ class HomeViewModel {
         let lo = minValue - pad
         let hi = maxValue + pad
         return lo...hi
+    }
+    
+    private func muteDayStepsIfNeeded(for rule: AlertRule) {
+        guard rule.measurementType == .steps, rule.interval == .oneDay else { return }
+        StepDayMuteStore.muteForToday()
     }
 }
 

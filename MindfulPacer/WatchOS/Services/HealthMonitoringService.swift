@@ -526,15 +526,32 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         guard !stepRules.isEmpty else { return }
 
         let now = Date()
+        let calendar = Calendar.current
+
+        let dayStepsMutedToday = StepDayMuteStore.isMutedToday(now: now, calendar: calendar)
 
         for rule in stepRules {
             guard case .steps(let threshold) = rule.ruleType else { continue }
 
+            if rule.interval == .oneDay, dayStepsMutedToday {
+                continue
+            }
+
             let endDate = now
-            let startDate = endDate.addingTimeInterval(-rule.duration)
+            let startDate: Date
+            if rule.interval == .oneDay {
+                startDate = calendar.startOfDay(for: now)
+            } else {
+                startDate = endDate.addingTimeInterval(-rule.duration)
+            }
+
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
 
-            let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { [weak self] _, result, error in
+            let query = HKStatisticsQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { [weak self] _, result, error in
                 guard let self else { return }
                 guard error == nil, let sum = result?.sumQuantity() else { return }
                 let total = sum.doubleValue(for: .count())
@@ -546,8 +563,17 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
                         var state = self.runtimeByRuleID[r.id] ?? RuleRuntimeState()
 
-                        let buffer = BufferManager.shared.buffer(for: r.interval, context: .steps)
-                        if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer { return }
+                        if r.interval == .oneDay {
+                            if let last = state.lastNotificationDate, calendar.isDate(last, inSameDayAs: now) {
+                                return
+                            }
+                            if StepDayMuteStore.isMutedToday(now: now, calendar: calendar) {
+                                return
+                            }
+                        } else {
+                            let buffer = BufferManager.shared.buffer(for: r.interval, context: .steps)
+                            if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer { return }
+                        }
 
                         let series = await self.buildStepSeries(for: r, windowEnd: now)
 
@@ -569,6 +595,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     }
                 }
             }
+
             healthStore.execute(query)
         }
     }
