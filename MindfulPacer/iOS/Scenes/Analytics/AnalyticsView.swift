@@ -88,13 +88,10 @@ struct AnalyticsView: View {
                 IconLabel(
                     icon: viewModel.selectedMeasurementType.icon,
                     title: viewModel.selectedMeasurementType.localized,
+                    description: viewModel.navigationSubtitle,
                     labelColor: viewModel.selectedMeasurementType.color,
                     background: true
-                ),
-            description:
-                Text(viewModel.chartHeaderDescription)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                )
         ) {
             VStack(spacing: 16) {
                 Picker(selection: $viewModel.selectedPeriod) {
