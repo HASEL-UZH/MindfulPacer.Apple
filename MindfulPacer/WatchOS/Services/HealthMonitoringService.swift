@@ -407,7 +407,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         let now = Date()
         let startDate = Calendar.current.startOfDay(for: now)
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
+        // Use empty options [] to include step samples that may span across midnight
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: [])
         let descriptor = HKStatisticsQueryDescriptor(
             predicate: .quantitySample(type: stepType, predicate: predicate),
             options: .cumulativeSum
@@ -535,13 +536,23 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
             let endDate = now
             let startDate: Date
-            if rule.interval == .oneDay {
+            
+            // For 1-day intervals, we MUST use calendar day (midnight to now), not rolling 24 hours
+            // Check both the interval enum AND duration to be defensive against any data inconsistencies
+            let isOneDayInterval = (rule.interval == .oneDay) || (rule.duration == 86400)
+            
+            if isOneDayInterval {
                 startDate = calendar.startOfDay(for: now)
             } else {
                 startDate = endDate.addingTimeInterval(-rule.duration)
             }
 
-            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
+            // For 1-day intervals, we need to capture all steps from midnight onwards.
+            // Using empty options [] ensures we include samples that may span across midnight
+            // (e.g., a sample from 11:58 PM yesterday to 12:02 AM today).
+            // For other intervals, .strictStartDate is appropriate.
+            let options: HKQueryOptions = isOneDayInterval ? [] : .strictStartDate
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: options)
 
             let query = HKStatisticsQuery(
                 quantityType: stepType,
@@ -743,8 +754,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private func buildStepSeries(for rule: AlertRule, windowEnd: Date) async -> [MeasurementSample] {
         let windowStart = windowEnd.addingTimeInterval(-rule.duration)
 
-        // For .oneDay rules, still send per-bucket raw samples
-        let start = (rule.interval == .oneDay)
+        // For 1-day intervals, MUST use calendar day (midnight to now), not rolling 24 hours
+        // Check both the interval enum AND duration to be defensive
+        let isOneDayInterval = (rule.interval == .oneDay) || (rule.duration == 86400)
+        let start = isOneDayInterval
             ? Calendar.current.startOfDay(for: windowEnd)
             : windowStart
 
