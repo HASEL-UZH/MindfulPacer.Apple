@@ -47,6 +47,7 @@ class HomeViewModel {
     var showBatteryInfo: Bool = false
     var showStatusInfo: Bool = false
     var showMissedReflectionsInfo: Bool = false
+    var showPauseConfirmation: Bool = false
     
     var alertState: AlertState = .none
 
@@ -73,10 +74,9 @@ class HomeViewModel {
     }
 
     var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
-    var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
+    var hasStepsData: Bool { !hourlyStepData.isEmpty }
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
-        // Highest priority: permission
         if statusMessage == .permissionDenied {
             return ChartEmptyState(
                 title: "Health Permission Needed",
@@ -85,33 +85,23 @@ class HomeViewModel {
             )
         }
 
-        // Paused by user
-        if isManuallyPaused {
-            return ChartEmptyState(
-                title: "Monitoring Paused",
-                subtitle: "Resume monitoring to continue collecting \(metric == .heartRate ? "heart rate" : "step") data.",
-                symbol: "pause.circle.fill"
-            )
-        }
-
-        // Not monitoring (session off)
-        if !isMonitoring && metric == .heartRate {
-            return ChartEmptyState(
-                title: "Monitoring is Off",
-                subtitle: "Start monitoring to see your last hour of heart rate.",
-                symbol: "play.circle.fill"
-            )
-        }
-
-        // No recent samples despite being OK otherwise
         switch metric {
         case .heartRate:
             return ChartEmptyState(
-                title: "No Recent Heart Rate",
-                subtitle: "We didn’t receive heart rate in the last hour. Keep your watch snug and try moving a bit.",
+                title: "Not enough heart rate samples yet",
+                subtitle: "Keep the app running for a moment. We’ll show the last hour as soon as we have enough data.",
                 symbol: "waveform.path.ecg"
             )
+
         case .steps:
+            if isManuallyPaused {
+                return ChartEmptyState(
+                    title: "Monitoring Paused",
+                    subtitle: "Resume monitoring to continue collecting step data.",
+                    symbol: "pause.circle.fill"
+                )
+            }
+
             return ChartEmptyState(
                 title: "No Recent Steps",
                 subtitle: "No step data recorded for the last hour.",
@@ -119,7 +109,6 @@ class HomeViewModel {
             )
         }
     }
-
     
     var avgHeartRate: Int {
         guard !heartRateSamples.isEmpty else { return 0 }
@@ -128,7 +117,7 @@ class HomeViewModel {
     }
     
     var heartRateThresholdRules: [AlertRule] {
-        let allowed: [Reminder.Interval] = [.fifteenMinutes, .oneMinute, .fiveMinutes]
+        let allowed: [Reminder.Interval] = [.fifteenMinutes, .oneMinute, .fiveMinutes, .twoMinutes]
         return activeRules.filter { rule in
             allowed.contains(rule.interval) &&
             (rule.measurementType == .heartRate)
@@ -208,7 +197,7 @@ class HomeViewModel {
         let thrMax = stepsDisplayedThresholds.max()
 
         var overallMin = min(dataMin, thrMin ?? dataMin)
-        var overallMax = max(dataMax, thrMax ?? dataMax)
+        let overallMax = max(dataMax, thrMax ?? dataMax)
 
         overallMin = max(0, overallMin)
 
@@ -350,8 +339,13 @@ class HomeViewModel {
         if isManuallyPaused {
             Services.shared.monitorService.resumeMonitoring()
         } else {
-            Services.shared.monitorService.pauseMonitoring()
+            showPauseConfirmation = true
         }
+    }
+    
+    func confirmPauseMonitoring() {
+        guard isMonitoring, !isManuallyPaused else { return }
+        Services.shared.monitorService.pauseMonitoring()
     }
     
     func didSelectTab(_ tab: HomePage) {
@@ -403,6 +397,7 @@ class HomeViewModel {
     func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
         
+        muteDayStepsIfNeeded(for: rule)
         defer { alertState = .none }
         
         if shouldAddDetails {
@@ -434,11 +429,10 @@ class HomeViewModel {
     }
     
     func dismissAlertOverlay() {
-        self.alertState = .none
-    }
-    
-    func rejectStrongAlert() {
-        self.alertState = .none
+        if case .showing(let rule, _) = alertState {
+            muteDayStepsIfNeeded(for: rule)
+        }
+        alertState = .none
     }
     
     private func checkForDailyReset() {
@@ -506,6 +500,11 @@ class HomeViewModel {
         let lo = minValue - pad
         let hi = maxValue + pad
         return lo...hi
+    }
+    
+    private func muteDayStepsIfNeeded(for rule: AlertRule) {
+        guard rule.measurementType == .steps, rule.interval == .oneDay else { return }
+        StepDayMuteStore.muteForToday()
     }
 }
 

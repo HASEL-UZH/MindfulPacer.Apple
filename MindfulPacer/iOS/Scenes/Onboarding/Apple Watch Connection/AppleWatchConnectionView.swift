@@ -25,9 +25,12 @@ extension OnboardingView {
     struct AppleWatchConnectionView: View {
         
         // MARK: Properties
+        
         @Bindable var viewModel: OnboardingViewModel
+        @State private var showReturnToAppInfoSheet: Bool = false
         
         // MARK: Body
+        
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
@@ -181,14 +184,29 @@ extension OnboardingView {
                             Text(
                                 """
                                 1. Open the **Watch** app on your iPhone.
-                                2. Scroll down and tap on **MindfulPacer**.
-                                3. Under **Return to App**, make sure the toggle is **ON**.
+                                2. Tap **General**.
+                                3. Tap **Return to Clock**.
+                                4. Scroll down and select **MindfulPacer**.
+                                5. Under **WHEN IN SESSION**, turn **Return to App** **On**.
                                 """
                             )
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    } footer: {
+                        Button {
+                            showReturnToAppInfoSheet.toggle()
+                        } label: {
+                           Label("More Info", systemImage: "info.circle.fill")
+                                .font(.subheadline.weight(.semibold))
+                        }
                     }
                     .iconLabelGroupBoxStyle(.divider)
+                    .sheet(isPresented: $showReturnToAppInfoSheet) {
+                        ReturnToAppInfoSheet()
+                            .presentationCornerRadius(16)
+                            .presentationDragIndicator(.visible)
+                    }
                 }
             }
         }

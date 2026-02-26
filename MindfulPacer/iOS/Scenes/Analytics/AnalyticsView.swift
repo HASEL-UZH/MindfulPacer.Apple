@@ -92,7 +92,7 @@ struct AnalyticsView: View {
                     background: true
                 ),
             description:
-                Text(viewModel.chartDescriptionText)
+                Text(viewModel.chartHeaderDescription)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         ) {

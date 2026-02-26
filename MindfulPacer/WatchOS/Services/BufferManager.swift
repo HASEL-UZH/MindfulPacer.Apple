@@ -36,6 +36,7 @@ final class BufferManager: @unchecked Sendable {
         case .heartRate:
             switch interval {
             case .oneMinute:      return 15 * 60
+            case .twoMinutes:     return 15 * 60
             case .fiveMinutes:    return 15 * 60
             case .tenMinutes:     return 15 * 60
             case .fifteenMinutes: return 15 * 60

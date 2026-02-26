@@ -580,7 +580,6 @@ struct TriggerDataChartView: View {
     let reflection: Reflection
     @State private var selectedDate: Date?
 
-    // Cache all heavy derived data once per reflection.id (+ date if needed)
     @State private var cachedSamples: [MeasurementSample] = []
     @State private var series: [MeasurementSample] = []
     @State private var downsampled: [MeasurementSample] = []
@@ -602,7 +601,7 @@ struct TriggerDataChartView: View {
                     .frame(height: 150)
             } else {
                 Chart {
-                    if let start = windowStart, let end = windowEnd {
+                    if let start = windowStart, let end = windowEnd, let interval = reflection.interval, interval != .oneDay {
                         RectangleMark(
                             xStart: .value("Start", start),
                             xEnd: .value("End", end)
@@ -616,7 +615,7 @@ struct TriggerDataChartView: View {
                             y: .value(yLabel, s.value)
                         )
                         .foregroundStyle(chartColor)
-                        .interpolationMethod(.catmullRom) // change to .linear for even faster
+                        .interpolationMethod(.catmullRom)
                     }
 
                     if let threshold = reflection.threshold {
@@ -656,11 +655,8 @@ struct TriggerDataChartView: View {
                 .chartXSelection(value: $selectedDate)
             }
         }
-        // Rebuild caches when the reflection changes
         .onAppear(perform: buildCachesIfNeeded)
         .onChange(of: reflection.id) { _, _ in buildCaches() }
-        // If your trigger data can change while the view is alive, also watch triggerData:
-        // .onChange(of: reflection.triggerData) { _, _ in buildCaches() }
     }
 
     // MARK: - Build caches once
@@ -672,14 +668,11 @@ struct TriggerDataChartView: View {
 
     @MainActor
     private func buildCaches() {
-        // 1) Decode once
-        let samples = decodeSamples(from: reflection.triggerData) // cheap Data→Array
+        let samples = decodeSamples(from: reflection.triggerData)
         cachedSamples = samples
 
-        // 2) Sort once
         let sorted = samples.sorted { $0.date < $1.date }
 
-        // 3) Compute series once
         let isSteps = samples.first?.type == .steps
         let interval = reflection.interval
         let isOneDay = (interval == .oneDay)
@@ -693,28 +686,24 @@ struct TriggerDataChartView: View {
                 s = rollingSumSeries(sorted, window: windowSeconds)
             }
         } else {
-            s = sorted // heart rate raw
+            s = sorted
         }
         series = s
 
-        // 4) Downsample once
         downsampled = downsample(s, to: maxDataPoints)
 
-        // 5) Precompute axes once
         xAxisValues = makeXAxisValues(for: s)
         (windowStart, windowEnd) = makeTriggerWindow(for: s, interval: interval)
 
-        // 6) Y domain once
         yDomain = makeYDomain(for: s, threshold: reflection.threshold)
 
-        // 7) Static bits
         chartColor = (samples.first?.type == .heartRate) ? .pink : .teal
         yLabel = (samples.first?.type == .steps)
             ? (isOneDay ? "Steps (running total)" : "Steps (rolling sum)")
             : "BPM"
     }
 
-    // MARK: - Helpers (pure functions)
+    // MARK: - Helpers
 
     private func decodeSamples(from data: Data?) -> [MeasurementSample] {
         guard let data else { return [] }
@@ -765,7 +754,6 @@ struct TriggerDataChartView: View {
             let start = Int(Double(i) * bucketSize)
             let end   = min(Int(Double(i + 1) * bucketSize), data.count)
             if start < end {
-                // pick peak in bucket
                 if let pick = data[start..<end].max(by: { $0.value < $1.value }) {
                     out.append(pick)
                 }
@@ -811,9 +799,7 @@ struct TriggerDataChartView: View {
     }
 
     private func nearestSample(to date: Date) -> MeasurementSample? {
-        // Use the already-built series; no recompute.
         guard !series.isEmpty else { return nil }
-        // Binary search would be faster; linear is fine after downsampling.
         return series.min { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }
     }
 
