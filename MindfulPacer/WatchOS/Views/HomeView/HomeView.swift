@@ -55,14 +55,6 @@ struct HomeView: View {
         } message: {
             Text("There was an issue loading activities to self-report. Please restart the app and try again.")
         }
-        .alert(String(localized: "Pause Monitoring?"), isPresented: $viewModel.showPauseConfirmation) {
-            Button(String(localized: "Pause"), role: .destructive) {
-                viewModel.confirmPauseMonitoring()
-            }
-            Button(String(localized: "Cancel"), role: .cancel) { }
-        } message: {
-            Text(String(localized: "While monitoring is paused, you won’t receive reminders. You can resume anytime."))
-        }
         .onAppear {
             viewModel.onAppear()
         }
