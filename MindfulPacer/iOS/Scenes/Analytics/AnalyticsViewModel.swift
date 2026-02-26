@@ -409,11 +409,6 @@ class AnalyticsViewModel {
             return
         }
 
-        if selectedPeriod == .week {
-            chartThresholds = []
-            return
-        }
-
         let allowedIntervals: Set<Reminder.Interval> = {
             switch selectedPeriod {
             case .oneHour:
