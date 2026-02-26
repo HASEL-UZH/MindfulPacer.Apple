@@ -47,7 +47,6 @@ class HomeViewModel {
     var showBatteryInfo: Bool = false
     var showStatusInfo: Bool = false
     var showMissedReflectionsInfo: Bool = false
-    var showPauseConfirmation: Bool = false
     
     var alertState: AlertState = .none
 
@@ -339,13 +338,8 @@ class HomeViewModel {
         if isManuallyPaused {
             Services.shared.monitorService.resumeMonitoring()
         } else {
-            showPauseConfirmation = true
+            Services.shared.monitorService.pauseMonitoring()
         }
-    }
-    
-    func confirmPauseMonitoring() {
-        guard isMonitoring, !isManuallyPaused else { return }
-        Services.shared.monitorService.pauseMonitoring()
     }
     
     func didSelectTab(_ tab: HomePage) {
