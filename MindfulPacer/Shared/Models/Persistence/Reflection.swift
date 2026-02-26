@@ -449,6 +449,7 @@ struct DefaultActivityData {
         let visitingDoctorOrTherapist = Subactivity(name: String(localized: "Visiting Doctor or Therapist"), icon: "cross", activity: selfcare)
         let exercising = Subactivity(name: String(localized: "Exercising"), icon: "figure.strengthtraining.traditional", activity: selfcare)
         let relaxation = Subactivity(name: String(localized: "Relaxation"), icon: "beach.umbrella", activity: selfcare)
+        let toilet = Subactivity(name: String(localized: "Toilet"), icon: "toilet", activity: selfcare)
 
         // MARK: Cognitive Subactivities
         
@@ -528,7 +529,8 @@ struct DefaultActivityData {
             meditation,
             visitingDoctorOrTherapist,
             exercising,
-            relaxation
+            relaxation,
+            toilet
         ]
         
         cognitive.subactivities = [

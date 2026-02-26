@@ -4633,6 +4633,16 @@
         }
       }
     },
+    "Toilet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toilette"
+          }
+        }
+      }
+    },
     "Total for Day" : {
       "localizations" : {
         "de" : {
