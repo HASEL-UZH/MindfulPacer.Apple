@@ -215,9 +215,7 @@ class AnalyticsViewModel {
         return ""
     }
     
-    var chartHeaderDescription: String {
-        let measurement = selectedMeasurementType.localized
-        
+    var navigationSubtitle: String {
         let dayPart: String = {
             if Calendar.current.isDateInToday(selectedDateForPeriod) {
                 return String(localized: "Today")
@@ -226,7 +224,7 @@ class AnalyticsViewModel {
             }
         }()
         
-        return String(localized: "\(measurement) • \(dayPart)")
+        return String(localized: "\(dayPart)")
     }
     
     var granularity: ChartGranularity {
