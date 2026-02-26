@@ -11,28 +11,6 @@ import SwiftUI
 import CoreData
 import WidgetKit
 
-enum AppGroupPaths {
-    static let groupID = "group.com.MindfulPacer"
-
-    @discardableResult
-    static func prepareApplicationSupport() -> URL? {
-        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) else {
-            print("AppGroup container not found")
-            return nil
-        }
-        let appSupport = container
-            .appendingPathComponent("Library", isDirectory: true)
-            .appendingPathComponent("Application Support", isDirectory: true)
-        do {
-            try FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
-            return appSupport
-        } catch {
-            print("Failed to create Application Support in group: \(error)")
-            return nil
-        }
-    }
-}
-
 // MARK: - StatusMessage
 
 enum StatusMessage: String {
@@ -240,17 +218,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
             next.append(newRule)
 
-            // Ensure runtime entry exists (don’t publish anything)
             if runtimeByRuleID[rem.id] == nil {
                 runtimeByRuleID[rem.id] = RuleRuntimeState()
             }
         }
 
-        // Drop runtime for removed rules
         let validIDs = Set(next.map(\.id))
         runtimeByRuleID = runtimeByRuleID.filter { validIDs.contains($0.key) }
 
-        // Only publish if config truly changed
         if next != activeRules {
             activeRules = next
         }
@@ -278,12 +253,11 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private func _startOrStopMonitoring(hasRules: Bool, previouslyHadRules: Bool) {
         if isManuallyPaused {
-            /// paused means user explicitly stopped live collection
             return
         }
 
         guard isMonitoringEnabled else {
-            /// This is your “shutdown” equivalent: user turned monitoring off
+            /// User turned monitoring off
             if workoutSession != nil { endWorkoutSession() }
             return
         }
@@ -382,7 +356,29 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
         }
     }
-    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}
+    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        Task { @MainActor in
+            // Only update complication if the state change wasn't triggered by user (manual pause/resume)
+            // This handles system-triggered pauses (wrist down, app backgrounded, etc.)
+            switch toState {
+            case .running:
+                if !self.isManuallyPaused {
+                    self.writeComplicationState(.active)
+                    self.startComplicationHeartbeat()
+                }
+            case .paused:
+                if !self.isManuallyPaused {
+                    self.writeComplicationState(.paused)
+                    self.stopComplicationHeartbeat()
+                }
+            case .stopped, .ended:
+                self.writeComplicationState(.inactive)
+                self.stopComplicationHeartbeat()
+            default:
+                break
+            }
+        }
+    }
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
 
@@ -782,5 +778,23 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private func stopComplicationHeartbeat() {
         complicationHeartbeat?.cancel()
         complicationHeartbeat = nil
+    }
+    
+    // MARK: - App Launch State Verification
+    
+    /// Verifies that the complication state matches actual monitoring state on app launch.
+    /// This fixes stale state issues when the app was force-closed.
+    func verifyComplicationStateOnLaunch() {
+        let defaults = UserDefaults(suiteName: AppGroupPaths.groupID)
+        let savedStateRaw = defaults?.integer(forKey: ComplicationKeys.state) ?? ComplicationState.inactive.rawValue
+        let savedState = ComplicationState(rawValue: savedStateRaw) ?? .inactive
+        
+        if savedState == .active {
+            if workoutSession == nil || workoutSession?.state != .running {
+                writeComplicationState(.inactive)
+            } else if !isManuallyPaused {
+                startComplicationHeartbeat()
+            }
+        }
     }
 }

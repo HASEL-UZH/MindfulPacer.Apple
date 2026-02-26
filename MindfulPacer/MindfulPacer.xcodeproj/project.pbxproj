@@ -35,6 +35,9 @@
 		0D3006D72C99803D008F11C7 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D52C99803D008F11C7 /* Array+Extensions.swift */; };
 		0D3006D92C99823C008F11C7 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D82C99823C008F11C7 /* Date+Extensions.swift */; };
 		0D3006DA2C99823C008F11C7 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D82C99823C008F11C7 /* Date+Extensions.swift */; };
+		0D33672F2F5054350080D042 /* AppGroupPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D33672E2F5054350080D042 /* AppGroupPaths.swift */; };
+		0D3367302F5054350080D042 /* AppGroupPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D33672E2F5054350080D042 /* AppGroupPaths.swift */; };
+		0D3367322F5054620080D042 /* ReturnToAppInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3367312F5054620080D042 /* ReturnToAppInfoSheet.swift */; };
 		0D34C45E2C83683200928C53 /* SaveReflectionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */; };
 		0D34C4612C837F4400928C53 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4602C837F4400928C53 /* StepsWidget.swift */; };
 		0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */; };
@@ -203,6 +206,8 @@
 		0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF87012E5DF49C00BB9C70 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */; };
+		0DF157792F50527300F65598 /* StepDayMuteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF157782F50527300F65598 /* StepDayMuteStore.swift */; };
+		0DF1577A2F50527300F65598 /* StepDayMuteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF157782F50527300F65598 /* StepDayMuteStore.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3CE2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */; };
 		0DF2C3D12D6218BC0036D50E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0DF2C3D02D6218BC0036D50E /* Kingfisher */; };
@@ -292,6 +297,8 @@
 		0D3006C92C943463008F11C7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		0D3006D52C99803D008F11C7 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		0D3006D82C99823C008F11C7 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		0D33672E2F5054350080D042 /* AppGroupPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupPaths.swift; sourceTree = "<group>"; };
+		0D3367312F5054620080D042 /* ReturnToAppInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnToAppInfoSheet.swift; sourceTree = "<group>"; };
 		0D34C45D2C83683200928C53 /* SaveReflectionUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveReflectionUseCase.swift; sourceTree = "<group>"; };
 		0D34C4602C837F4400928C53 /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		0D34C4622C837F7D00928C53 /* HeartRateWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateWidget.swift; sourceTree = "<group>"; };
@@ -439,6 +446,7 @@
 		0DEE75BC2E64D6B300C79711 /* WhatsNewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewViewModel.swift; sourceTree = "<group>"; };
 		0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationState.swift; sourceTree = "<group>"; };
 		0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		0DF157782F50527300F65598 /* StepDayMuteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepDayMuteStore.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF5EDA52E4DF597005DB9DE /* ReminderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCell.swift; sourceTree = "<group>"; };
@@ -783,6 +791,7 @@
 		0D67F4232C90DF0F000F6114 /* Apple Watch Connection */ = {
 			isa = PBXGroup;
 			children = (
+				0D3367312F5054620080D042 /* ReturnToAppInfoSheet.swift */,
 				0D67F4242C90DF19000F6114 /* AppleWatchConnectionView.swift */,
 			);
 			path = "Apple Watch Connection";
@@ -1085,6 +1094,7 @@
 		0DBA37392C32087300209681 /* WatchOS */ = {
 			isa = PBXGroup;
 			children = (
+				0DF157782F50527300F65598 /* StepDayMuteStore.swift */,
 				0DBA373A2C32087300209681 /* WatchOSApp.swift */,
 				0DA6CB1C2C38374D00FE1E61 /* WatchOS.entitlements */,
 				0D5F32762E828A5D00E4EC35 /* WatchOS.prod.entitlements */,
@@ -1095,6 +1105,7 @@
 				0D352C852E48AC760039055F /* Delegates */,
 				0D352C862E48AC920039055F /* Services */,
 				0D798B332F3934A900F7912C /* ComplicationKeys.swift */,
+				0D33672E2F5054350080D042 /* AppGroupPaths.swift */,
 			);
 			path = WatchOS;
 			sourceTree = "<group>";
@@ -1549,7 +1560,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DF157792F50527300F65598 /* StepDayMuteStore.swift in Sources */,
 				0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */,
+				0D33672F2F5054350080D042 /* AppGroupPaths.swift in Sources */,
 				0D798B352F3934A900F7912C /* ComplicationKeys.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1612,6 +1625,7 @@
 				0DC136A22D4E63DE00001D08 /* ActivityView.swift in Sources */,
 				0D8C66342C2DA96000853EDE /* iOSApp.swift in Sources */,
 				0D1016F22C57B229008AF31D /* HealthKitService.swift in Sources */,
+				0D3367322F5054620080D042 /* ReturnToAppInfoSheet.swift in Sources */,
 				0D4EBE402C727E9F00C1865D /* ThresholdView.swift in Sources */,
 				0DB378002E8A5F2200398391 /* BackgroundRemindersStore.swift in Sources */,
 				0D3006CA2C943463008F11C7 /* SettingsViewModel.swift in Sources */,
@@ -1739,6 +1753,7 @@
 				0DDD33692C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0DF5EDB82E4F40F2005DB9DE /* FetchDefaultActivitiesUseCase.swift in Sources */,
 				0D352C6C2E474E0F0039055F /* RootView.swift in Sources */,
+				0DF1577A2F50527300F65598 /* StepDayMuteStore.swift in Sources */,
 				0DDD336B2C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
 				0DF5EDBA2E4F4330005DB9DE /* SelectActivityView.swift in Sources */,
 				0D5EA1A42C4D806600527AB0 /* SchemaV1.swift in Sources */,
@@ -1746,6 +1761,7 @@
 				0DF5EDB52E4F2F79005DB9DE /* AppInfoService.swift in Sources */,
 				0DE3B1142E5B32F80070C4A2 /* BufferManager.swift in Sources */,
 				0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */,
+				0D3367302F5054350080D042 /* AppGroupPaths.swift in Sources */,
 				0D93514A2D12F9230028AA61 /* RoadmapItem.swift in Sources */,
 				0DD858912C71465A00061F63 /* SessionError.swift in Sources */,
 				0D352C6A2E474DE40039055F /* HealthMonitoringService.swift in Sources */,
