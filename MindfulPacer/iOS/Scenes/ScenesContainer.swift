@@ -22,7 +22,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 modelContext: ModelContainer.prod.mainContext,
                 fetchHeartRateUseCase: UseCasesContainer.shared.fetchHeartRateUseCase(),
                 fetchReflectionsInPeriodUseCase: UseCasesContainer.shared.fetchReflectionsInPeriodUseCase(),
-                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
                 fetchStepsUseCase: UseCasesContainer.shared.fetchStepsUseCase()
             )
         }
@@ -36,15 +35,10 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             HomeViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 checkHealthPermissionsUseCase: UseCasesContainer.shared.checkHealthPermissionsUseCase(),
-                createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
-                deleteReflectionUseCase: UseCasesContainer.shared.deleteReflectionUseCase(),
                 fetchCurrentHeartRateUseCase: UseCasesContainer.shared.fetchCurrentHeartRateUseCase(),
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
-                fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
                 fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
                 fetchMissedReflectionsUseCase: UseCasesContainer.shared.fetchMissedReflectionsUseCase(),
-                fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
-                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
                 fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase(),
                 filterReflectionsUseCase: UseCasesContainer.shared.filterReflectionsUseCase()
             )
@@ -94,11 +88,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var editReflectionViewModel: Factory<EditReflectionViewModel> {
         self {
             EditReflectionViewModel(
-                modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext,
-                createReflectionUseCase: UseCasesContainer.shared.createReflectionUseCase(),
-                deleteReflectionUseCase: UseCasesContainer.shared.deleteReflectionUseCase(),
-                fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase(),
-                saveReflectionUseCase: UseCasesContainer.shared.saveReflectionUseCase()
+                modelContext: ProcessInfo.processInfo.isRunningInPreviewOrTest ? ModelContainer.preview.mainContext : ModelContainer.prod.mainContext
             )
         }
     }
@@ -106,7 +96,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     @MainActor
     var reviewsFilterViewModel: Factory<ReflectionsFilterViewModel> {
         self {
-            ReflectionsFilterViewModel(fetchDefaultActivitiesUseCase: UseCasesContainer.shared.fetchDefaultActivitiesUseCase())
+            ReflectionsFilterViewModel()
         }
     }
     
@@ -129,9 +119,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         self {
             CreateReminderViewModel(
                 modelContext: ModelContainer.prod.mainContext,
-                createReminderUseCase: UseCasesContainer.shared.createReminderUseCase(),
-                deleteReminderUseCase: UseCasesContainer.shared.deleteReminderUseCase(),
-                saveReminderUseCase: UseCasesContainer.shared.saveReminderUseCase(),
+                watchUpdateService: WatchUpdateService.shared,
                 triggerWatchNotificationUseCase: UseCasesContainer.shared.triggerWatchNotificationUseCase()
             )
         }
@@ -143,8 +131,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
     var settingsViewModel: Factory<SettingsViewModel> {
         self {
             SettingsViewModel(
-                fetchReflectionsUseCase: UseCasesContainer.shared.fetchReflectionsUseCase(),
-                fetchRemindersUseCase: UseCasesContainer.shared.fetchRemindersUseCase(),
+                modelContext: ModelContainer.prod.mainContext,
                 resetDatabaseUseCase: UseCasesContainer.shared.resetDatabaseUseCase()
             )
         }

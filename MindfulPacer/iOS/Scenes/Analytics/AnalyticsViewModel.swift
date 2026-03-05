@@ -38,7 +38,6 @@ class AnalyticsViewModel {
     private let modelContext: ModelContext
     private let fetchHeartRateUseCase: FetchHeartRateUseCase
     private let fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepsUseCase: FetchStepsUseCase
     
     // MARK: - Published Properties
@@ -242,28 +241,29 @@ class AnalyticsViewModel {
         modelContext: ModelContext,
         fetchHeartRateUseCase: FetchHeartRateUseCase,
         fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepsUseCase: FetchStepsUseCase
     ) {
         self.modelContext = modelContext
         self.fetchHeartRateUseCase = fetchHeartRateUseCase
         self.fetchReflectionsInPeriodUseCase = fetchReflectionsInPeriodUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepsUseCase = fetchStepsUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchReminders()
         fetchHeartRateChartData()
         fetchStepsChartData()
         updateReflectionsInPeriod()
     }
 
     func onViewAppear() {
-        fetchReminders()
         refreshChart()
+    }
+    
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
+        updateChartThresholds()
     }
     
     // MARK: - User Actions
@@ -308,11 +308,6 @@ class AnalyticsViewModel {
     }
     
     // MARK: - Private Methods
-    
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
-        updateChartThresholds()
-    }
     
     private func fetchHeartRateChartData() {
         fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in

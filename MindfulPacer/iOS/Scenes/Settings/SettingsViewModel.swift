@@ -8,6 +8,7 @@
 import Foundation
 import MessageUI
 import SwiftUI
+import SwiftData
 import UniformTypeIdentifiers
 import Combine
 
@@ -198,8 +199,7 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
-    private let fetchReflectionsUseCase: FetchReflectionsUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let modelContext: ModelContext
     private let resetDatabaseUseCase: ResetDatabaseUseCase
     
     // MARK: - Published Properties
@@ -359,12 +359,10 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
-        fetchReflectionsUseCase: FetchReflectionsUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
+        modelContext: ModelContext,
         resetDatabaseUseCase: ResetDatabaseUseCase
     ) {
-        self.fetchReflectionsUseCase = fetchReflectionsUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
+        self.modelContext = modelContext
         self.resetDatabaseUseCase = resetDatabaseUseCase
         
         loadAllBuffers()
@@ -375,7 +373,10 @@ class SettingsViewModel {
     
     func onViewAppear() {
         fetchReflections()
-        fetchReminders()
+    }
+    
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
     }
     
     // MARK: - Presentation
@@ -502,11 +503,15 @@ class SettingsViewModel {
     }
     
     private func fetchReflections() {
-        reflections = fetchReflectionsUseCase.execute() ?? []
-    }
-    
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            reflections = try modelContext.fetch(descriptor)
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            reflections = []
+        }
     }
     
     private func loadAllBuffers() {

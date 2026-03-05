@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct IOSApp: App {
@@ -13,6 +14,7 @@ struct IOSApp: App {
             RootView()
                 .tint(Color("BrandPrimary"))
         }
+        .modelContainer(ModelContainer.prod)
         .backgroundTask(.appRefresh(MissedReflectionsMonitorService.identifier)) {
             await MissedReflectionsMonitorService.shared.handleTask()
         }

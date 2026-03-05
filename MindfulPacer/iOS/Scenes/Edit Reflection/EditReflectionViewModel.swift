@@ -26,10 +26,6 @@ class EditReflectionViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let createReflectionUseCase: CreateReflectionUseCase
-    private let deleteReflectionUseCase: DeleteReflectionUseCase
-    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-    private let saveReflectionUseCase: SaveReflectionUseCase
     
     // MARK: - Published Properties (State)
     
@@ -38,8 +34,6 @@ class EditReflectionViewModel {
     var activeSheet: EditReflectionSheet?
     var activeAlert: EditReflectionAlert?
     var selectedReminderContext: ReminderContext = .reminder
-    
-    var activities: [Activity] = []
     
     var navigationTitle: String {
         switch mode {
@@ -173,24 +167,13 @@ class EditReflectionViewModel {
     
     // MARK: - Initialization
     
-    init(
-        modelContext: ModelContext,
-        createReflectionUseCase: CreateReflectionUseCase,
-        deleteReflectionUseCase: DeleteReflectionUseCase,
-        fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
-        saveReflectionUseCase: SaveReflectionUseCase
-    ) {
+    init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        self.createReflectionUseCase = createReflectionUseCase
-        self.deleteReflectionUseCase = deleteReflectionUseCase
-        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
-        self.saveReflectionUseCase = saveReflectionUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchDefaultActivities()
     }
     
     func configureMode(with reflection: Reflection?) {
@@ -214,19 +197,19 @@ class EditReflectionViewModel {
     }
     
     func createReflection() {
-        let result = createReflectionUseCase.execute(
+        let reflection = Reflection(
             date: date,
             activity: selectedActivity,
             subactivity: selectedSubactivity,
             mood: selectedMood,
             didTriggerCrash: didTriggerCrash,
-            wellBeing: wellBeing,
-            fatigue: fatigue,
-            shortnessOfBreath: shortnessOfBreath,
-            sleepDisorder: sleepDisorder,
-            cognitiveImpairment: cognitiveImpairment,
-            physicalPain: physicalPain,
-            depressionOrAnxiety: depressionOrAnxiety,
+            wellBeing: wellBeing.value,
+            fatigue: fatigue.value,
+            shortnessOfBreath: shortnessOfBreath.value,
+            sleepDisorder: sleepDisorder.value,
+            cognitiveImpairment: cognitiveImpairment.value,
+            physicalPain: physicalPain.value,
+            depressionOrAnxiety: depressionOrAnxiety.value,
             additionalInformation: additionalInformation,
             measurementType: nil,
             reminderType: nil,
@@ -236,32 +219,37 @@ class EditReflectionViewModel {
             isRejected: false
         )
         
-        print("DEBUGY:", wellBeing)
+        modelContext.insert(reflection)
         
-        if case .failure = result {
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+        } catch {
             presentAlert(.unableToSaveReflection)
         }
     }
     
     func saveReflection(_ reflection: Reflection?) {
-        let result = saveReflectionUseCase.execute(
-            existingReflection: reflection.unsafelyUnwrapped,
-            newDate: date,
-            newActivity: selectedActivity,
-            newSubactivity: selectedSubactivity,
-            newMood: selectedMood,
-            newDidTriggerCrash: didTriggerCrash,
-            newWellBeing: wellBeing,
-            newFatigue: fatigue,
-            newShortnessOfBreath: shortnessOfBreath,
-            newSleepDisorder: sleepDisorder,
-            newCognitiveImpairment: cognitiveImpairment,
-            newPhysicalPain: physicalPain,
-            newDepressionOrAnxiety: depressionOrAnxiety,
-            newAdditionalInformation: additionalInformation
-        )
+        guard let reflection else { return }
         
-        if case .failure = result {
+        reflection.date = date
+        reflection.activity = selectedActivity
+        reflection.subactivity = selectedSubactivity
+        reflection.mood = selectedMood
+        reflection.didTriggerCrash = didTriggerCrash
+        reflection.wellBeing = wellBeing.value
+        reflection.fatigue = fatigue.value
+        reflection.shortnessOfBreath = shortnessOfBreath.value
+        reflection.sleepDisorder = sleepDisorder.value
+        reflection.cognitiveImpairment = cognitiveImpairment.value
+        reflection.physicalPain = physicalPain.value
+        reflection.depressionOrAnxiety = depressionOrAnxiety.value
+        reflection.additionalInformation = additionalInformation
+        
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+        } catch {
             presentAlert(.unableToSaveReflection)
         }
     }
@@ -269,7 +257,11 @@ class EditReflectionViewModel {
     func deleteReflection(_ reflection: Reflection?) {
         isReflectionDeleted = true
         guard let reflection else { return }
-        deleteReflectionUseCase.execute(reflection: reflection)
+        
+        modelContext.delete(reflection)
+        try? modelContext.save()
+        
+        BackgroundReflectionsStore.shared.remove(id: reflection.id)
     }
     
     // MARK: - Presentation
@@ -295,12 +287,6 @@ class EditReflectionViewModel {
     }
     
     // MARK: - Private Methods
-    
-    private func fetchDefaultActivities() {
-        if let fetchedActivities = fetchDefaultActivitiesUseCase.execute() {
-            activities = fetchedActivities
-        }
-    }
     
     private func loadReflection(_ reflection: Reflection) {
         date = reflection.date

@@ -145,7 +145,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     var isAppInForeground: Bool = true
 
-    private var fetchRemindersUseCase: FetchRemindersUseCase?
+    private var reminders: [Reminder] = []
     private var cancellables = Set<AnyCancellable>()
     private var stepsTimer: DispatchSourceTimer?
     private var complicationHeartbeat: DispatchSourceTimer?
@@ -172,8 +172,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             .store(in: &cancellables)
     }
     
-    func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
-        self.fetchRemindersUseCase = fetchRemindersUseCase
+    func configure(reminders: [Reminder]) {
+        self.reminders = reminders
     }
     
     // MARK: - State refresh
@@ -194,9 +194,6 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func rebuildRulesPreservingState() -> Bool {
-        guard let useCase = fetchRemindersUseCase else { return false }
-        let reminders = useCase.execute() ?? []
-
         var next: [AlertRule] = []
         next.reserveCapacity(reminders.count)
 
