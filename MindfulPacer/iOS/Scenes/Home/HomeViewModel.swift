@@ -25,7 +25,6 @@ class HomeViewModel {
     private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase
     private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
-    private let filterReflectionsUseCase: FilterReflectionsUseCase
     
     // MARK: - Published Properties
     
@@ -115,8 +114,7 @@ class HomeViewModel {
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
         fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase,
-        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
-        filterReflectionsUseCase: FilterReflectionsUseCase
+        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     ) {
         self.modelContext = modelContext
         self.checkHealthPermissionsUseCase = checkHealthPermissionsUseCase
@@ -125,7 +123,6 @@ class HomeViewModel {
         self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchMissedReflectionsUseCase = fetchMissedReflectionsUseCase
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
-        self.filterReflectionsUseCase = filterReflectionsUseCase
         
         subscribeToWatchEvents()
         subscribeToWatchStatus()
@@ -312,8 +309,10 @@ class HomeViewModel {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 
+                // Capture the ID value before using it in the predicate
                 let reflectionID = event.reflectionID
                 
+                // Fetch reflection directly from SwiftData
                 do {
                     let descriptor = FetchDescriptor<Reflection>(
                         predicate: #Predicate { $0.id == reflectionID }
@@ -364,11 +363,7 @@ class HomeViewModel {
     }
     
     private func applyFilterAndSorting(_ filter: ReflectionFilter, _ sorting: ReflectionSorting) {
-        filteredReflections = filterReflectionsUseCase.execute(
-            reflections: reflections,
-            filters: filter,
-            sorting: sorting
-        )
+        filteredReflections = reflections.filtered(by: filter, sorting: sorting)
     }
     
     private func updateFilter(_ updateBlock: () -> Void) {

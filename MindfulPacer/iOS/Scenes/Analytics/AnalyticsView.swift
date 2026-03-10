@@ -31,6 +31,7 @@ struct AnalyticsView: View {
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
     
     @Query private var allReminders: [Reminder]
+    @Query(sort: \Reflection.date, order: .reverse) private var allReflections: [Reflection]
     
     private var reminders: [Reminder] {
         let groupedReminders = Dictionary(grouping: allReminders) { $0.measurementType }
@@ -95,6 +96,9 @@ struct AnalyticsView: View {
                 }
                 .onChange(of: reminders) { _, newValue in
                     viewModel.updateReminders(newValue)
+                }
+                .onChange(of: allReflections) { _, _ in
+                    viewModel.updateReflectionsInPeriod()
                 }
         }
     }

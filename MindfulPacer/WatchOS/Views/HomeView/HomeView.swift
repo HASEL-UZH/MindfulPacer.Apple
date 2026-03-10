@@ -64,8 +64,7 @@ struct HomeView: View {
         .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
             SelectActivityView(
                 reminderID: selectionInfo.reminderID,
-                alertID: selectionInfo.id,
-                activities: viewModel.defaultActivities
+                alertID: selectionInfo.id
             )
             .environment(\.dismissSheet) {
                 Task { @MainActor in

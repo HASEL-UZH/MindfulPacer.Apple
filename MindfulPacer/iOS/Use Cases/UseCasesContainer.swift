@@ -84,17 +84,7 @@ extension UseCasesContainer {
     var addDefaultActivitiesUseCase: Factory<DefaultAddDefaultActivitiesUseCase> {
         self { DefaultAddDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext) }
     }
-    
-    @MainActor
-    var fetchReflectionsInPeriodUseCase: Factory<DefaultFetchReflectionsInPeriodUseCase> {
-        self { DefaultFetchReflectionsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
 
-    @MainActor
-    var filterReflectionsUseCase: Factory<DefaultFilterReflectionsUseCase> {
-        self { DefaultFilterReflectionsUseCase() }
-    }
-    
     @MainActor
     var fetchMissedReflectionsUseCase: Factory<DefaultFetchMissedReflectionsUseCase> {
         self {

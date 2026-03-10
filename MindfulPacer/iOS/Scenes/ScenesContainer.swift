@@ -21,7 +21,6 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
             AnalyticsViewModel(
                 modelContext: ModelContainer.prod.mainContext,
                 fetchHeartRateUseCase: UseCasesContainer.shared.fetchHeartRateUseCase(),
-                fetchReflectionsInPeriodUseCase: UseCasesContainer.shared.fetchReflectionsInPeriodUseCase(),
                 fetchStepsUseCase: UseCasesContainer.shared.fetchStepsUseCase()
             )
         }
@@ -39,8 +38,7 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
                 fetchCurrentStepsUseCase: UseCasesContainer.shared.fetchCurrentStepsUseCase(),
                 fetchHeartRateDataLast24HoursUseCase: UseCasesContainer.shared.fetchHeartRateDataLast24HoursUseCase(),
                 fetchMissedReflectionsUseCase: UseCasesContainer.shared.fetchMissedReflectionsUseCase(),
-                fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase(),
-                filterReflectionsUseCase: UseCasesContainer.shared.filterReflectionsUseCase()
+                fetchStepDataLast24HoursUseCase: UseCasesContainer.shared.fetchStepDataLast24HoursUseCase()
             )
         }
     }

@@ -50,13 +50,6 @@ enum ReflectionSorting {
     }
 }
 
-extension Calendar {
-    func startOfNextDay(for date: Date) -> Date {
-        let start = startOfDay(for: date)
-        return self.date(byAdding: .day, value: 1, to: start)!
-    }
-}
-
 // MARK: - ReflectionsFilterViewModel
 
 @MainActor

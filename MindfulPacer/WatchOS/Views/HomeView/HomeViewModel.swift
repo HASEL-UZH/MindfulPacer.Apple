@@ -39,7 +39,6 @@ class HomeViewModel {
     var isShowingAppInfoSheet = false
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
-    var defaultActivities: [Activity] = []
     var selectedTab: HomePage = .main
     var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
     
@@ -248,10 +247,6 @@ class HomeViewModel {
         self.hourlyStepData = stepData.reversed()
     }
     
-    func updateActivities(_ newActivities: [Activity]) {
-        defaultActivities = newActivities
-    }
-    
     static var mock: HomeViewModel {
         HomeViewModel(isForPreview: true)
     }
@@ -415,16 +410,6 @@ class HomeViewModel {
         defer { alertState = .none }
         
         if shouldAddDetails {
-            if defaultActivities.isEmpty {
-                Services.shared.systemDelegate.createAndSendReflection(
-                    reminderID: rule.id,
-                    alertID: alertID,
-                    activity: nil,
-                    subactivity: nil
-                )
-                return
-            }
-            
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
                 id: alertID,
                 reminderID: rule.id
@@ -498,10 +483,10 @@ class HomeViewModel {
     private func fetchMissedReflections() {
         do {
             let descriptor = FetchDescriptor<Reflection>(
-                predicate: #Predicate { $0.isMissedReflection },
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
-            let missedReflections = try modelContext.fetch(descriptor)
+            let allReflections = try modelContext.fetch(descriptor)
+            let missedReflections = allReflections.filter { $0.isMissedReflection }
             missedReflectionsCount = missedReflections.count
         } catch {
             print("DEBUG: Could not fetch missed reflections: \(error.localizedDescription)")
