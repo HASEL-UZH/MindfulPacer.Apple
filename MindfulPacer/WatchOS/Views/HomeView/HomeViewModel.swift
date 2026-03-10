@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreData
 import WatchKit
 import SwiftUI
 import SwiftData
@@ -283,7 +284,14 @@ class HomeViewModel {
                   .receive(on: DispatchQueue.main)
                   .sink { [weak self] isPaused in self?.isManuallyPaused = isPaused }
                   .store(in: &cancellables)
-        
+
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.fetchMissedReflections()
+            }
+            .store(in: &cancellables)
+
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
                 if await self?.selectedTab == .stepsChart {
