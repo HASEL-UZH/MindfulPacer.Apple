@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - ActivityView
 
@@ -15,6 +16,8 @@ extension EditReflectionView {
         // MARK: Properties
 
         @Bindable var viewModel: EditReflectionViewModel
+        
+        @Query(sort: \Activity.name) private var activities: [Activity]
 
         // MARK: Body
 
@@ -24,7 +27,7 @@ extension EditReflectionView {
                     columns: Array(repeating: GridItem(spacing: 16), count: 2),
                     spacing: 16
                 ) {
-                    ForEach(viewModel.activities) { activity in
+                    ForEach(activities) { activity in
                         SelectableButton(
                             shape: .roundedRectangle(cornerRadius: 16),
                             isSelected: viewModel.selectedActivity == activity

@@ -50,13 +50,6 @@ enum ReflectionSorting {
     }
 }
 
-extension Calendar {
-    func startOfNextDay(for date: Date) -> Date {
-        let start = startOfDay(for: date)
-        return self.date(byAdding: .day, value: 1, to: start)!
-    }
-}
-
 // MARK: - ReflectionsFilterViewModel
 
 @MainActor
@@ -65,7 +58,7 @@ class ReflectionsFilterViewModel {
     
     // MARK: - Dependencies
     
-    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
+    // No dependencies needed - activities passed from view
     
     // MARK: - Published Properties
     
@@ -127,14 +120,16 @@ class ReflectionsFilterViewModel {
     
     // MARK: - Initialization
     
-    init(fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase) {
-        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
+    init() {
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchDefaultReflectionActivities()
+    }
+    
+    func updateActivities(_ newActivities: [Activity]) {
+        activities = newActivities
     }
     
     func setPublisher(_ publisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?) {
@@ -183,10 +178,6 @@ class ReflectionsFilterViewModel {
     }
     
     // MARK: - Private Methods
-    
-    private func fetchDefaultReflectionActivities() {
-        self.activities = fetchDefaultActivitiesUseCase.execute() ?? []
-    }
     
     private func bindToPublisher() {
         filterAndSortingPublisher?

@@ -19,6 +19,15 @@ struct ChartDataItem: Identifiable, Equatable {
     let value: Double
 }
 
+// MARK: - ReflectionBucket
+
+struct ReflectionBucket: Identifiable {
+    let id: UUID = UUID()
+    let startDate: Date
+    let endDate: Date
+    let reflections: [Reflection]
+}
+
 // MARK: - ChartGranularity
 
 enum ChartGranularity {
@@ -37,8 +46,6 @@ class AnalyticsViewModel {
     
     private let modelContext: ModelContext
     private let fetchHeartRateUseCase: FetchHeartRateUseCase
-    private let fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepsUseCase: FetchStepsUseCase
     
     // MARK: - Published Properties
@@ -241,29 +248,28 @@ class AnalyticsViewModel {
     init(
         modelContext: ModelContext,
         fetchHeartRateUseCase: FetchHeartRateUseCase,
-        fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepsUseCase: FetchStepsUseCase
     ) {
         self.modelContext = modelContext
         self.fetchHeartRateUseCase = fetchHeartRateUseCase
-        self.fetchReflectionsInPeriodUseCase = fetchReflectionsInPeriodUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepsUseCase = fetchStepsUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchReminders()
         fetchHeartRateChartData()
         fetchStepsChartData()
         updateReflectionsInPeriod()
     }
 
     func onViewAppear() {
-        fetchReminders()
         refreshChart()
+    }
+    
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
+        updateChartThresholds()
     }
     
     // MARK: - User Actions
@@ -308,11 +314,6 @@ class AnalyticsViewModel {
     }
     
     // MARK: - Private Methods
-    
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
-        updateChartThresholds()
-    }
     
     private func fetchHeartRateChartData() {
         fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
@@ -390,8 +391,69 @@ class AnalyticsViewModel {
         }
     }
     
-    private func updateReflectionsInPeriod() {
-        reflectionsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod, endDate: selectedDateForPeriod)
+    func updateReflectionsInPeriod() {
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\Reflection.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            
+            let start = selectedPeriod.startDate(relativeTo: selectedDateForPeriod)
+            let filteredReflections = allReflections.filter { reflection in
+                reflection.date >= start && reflection.date <= selectedDateForPeriod
+            }
+            
+            let groupingInterval: TimeInterval
+            switch selectedPeriod {
+            case .oneHour, .twoHours:
+                groupingInterval = 5 * 60
+            case .day:
+                groupingInterval = 15 * 60
+            case .week:
+                groupingInterval = 4 * 3600
+            }
+            
+            let sortedReflections = filteredReflections
+                .sorted { $0.date < $1.date }
+                .filter { !$0.isMissedReflection && !$0.isRejected }
+            
+            var buckets: [ReflectionBucket] = []
+            
+            if let firstReflection = sortedReflections.first {
+                var currentBucket: [Reflection] = [firstReflection]
+                var bucketStartDate = firstReflection.date
+                
+                for reflection in sortedReflections.dropFirst() {
+                    if reflection.date.timeIntervalSince(bucketStartDate) <= groupingInterval {
+                        currentBucket.append(reflection)
+                    } else {
+                        let bucketEndDate = currentBucket.last!.date
+                        buckets.append(ReflectionBucket(
+                            startDate: bucketStartDate,
+                            endDate: bucketEndDate,
+                            reflections: currentBucket
+                        ))
+                        
+                        bucketStartDate = reflection.date
+                        currentBucket = [reflection]
+                    }
+                }
+                
+                if !currentBucket.isEmpty {
+                    let bucketEndDate = currentBucket.last!.date
+                    buckets.append(ReflectionBucket(
+                        startDate: bucketStartDate,
+                        endDate: bucketEndDate,
+                        reflections: currentBucket
+                    ))
+                }
+            }
+            
+            reflectionsInPeriod = buckets
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            reflectionsInPeriod = []
+        }
     }
     
     private func updateChartThresholds() {

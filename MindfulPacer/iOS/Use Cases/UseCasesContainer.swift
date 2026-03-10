@@ -86,69 +86,12 @@ extension UseCasesContainer {
     }
 
     @MainActor
-    var createReflectionUseCase: Factory<CreateReflectionUseCase> {
-        self { DefaultCreateReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-
-    @MainActor
-    var deleteReflectionUseCase: Factory<DeleteReflectionUseCase> {
-        self { DefaultDeleteReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-    
-    @MainActor
-    var fetchDefaultActivitiesUseCase: Factory<DefaultFetchDefaultActivitiesUseCase> {
-        self { DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-
-    @MainActor
-    var fetchReflectionsUseCase: Factory<DefaultFetchReflectionsUseCase> {
-        self { DefaultFetchReflectionsUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-    
-    @MainActor
-    var fetchReflectionsInPeriodUseCase: Factory<DefaultFetchReflectionsInPeriodUseCase> {
-        self { DefaultFetchReflectionsInPeriodUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-
-    @MainActor
-    var filterReflectionsUseCase: Factory<DefaultFilterReflectionsUseCase> {
-        self { DefaultFilterReflectionsUseCase() }
-    }
-    
-    @MainActor
-    var saveReflectionUseCase: Factory<DefaultSaveReflectionUseCase> {
-        self { DefaultSaveReflectionUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-    
-    @MainActor
     var fetchMissedReflectionsUseCase: Factory<DefaultFetchMissedReflectionsUseCase> {
         self {
             DefaultFetchMissedReflectionsUseCase(
                 healthKitService: HealthKitService.shared
             )
         }
-    }
-    
-    // MARK: - Reminder
-    
-    @MainActor
-    var createReminderUseCase: Factory<CreateReminderUseCase> {
-        self { DefaultCreateReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
-    }
-    
-    @MainActor
-    var deleteReminderUseCase: Factory<DeleteReminderUseCase> {
-        self { DefaultDeleteReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
-    }
-
-    @MainActor
-    var fetchRemindersUseCase: Factory<DefaultFetchRemindersUseCase> {
-        self { DefaultFetchRemindersUseCase(modelContext: ModelContainer.prod.mainContext) }
-    }
-
-    @MainActor
-    var saveReminderUseCase: Factory<DefaultSaveReminderUseCase> {
-        self { DefaultSaveReminderUseCase(modelContext: ModelContainer.prod.mainContext, watchUpdateService: WatchUpdateService.shared) }
     }
 
     // MARK: - Settings

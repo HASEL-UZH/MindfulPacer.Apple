@@ -4,8 +4,8 @@ import SwiftData
 struct SelectActivityView: View {
     let reminderID: UUID
     let alertID: UUID
-    let activities: [Activity]
-    
+
+    @Query(sort: \Activity.name) private var activities: [Activity]
     @Environment(\.dismissSheet) private var dismissSheet
 
     var body: some View {
@@ -39,7 +39,7 @@ struct SelectSubactivityView: View {
     let reminderID: UUID
     let alertID: UUID
     let activity: Activity
-    
+
     @Environment(\.dismissSheet) private var dismissSheet
 
     var body: some View {
@@ -65,8 +65,7 @@ struct SelectSubactivityView: View {
 #Preview("Activity List") {
     SelectActivityView(
         reminderID: UUID(),
-        alertID: UUID(),
-        activities: DefaultActivityData.allActivities
+        alertID: UUID()
     )
 }
 

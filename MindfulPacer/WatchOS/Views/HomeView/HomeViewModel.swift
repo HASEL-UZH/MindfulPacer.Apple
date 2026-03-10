@@ -39,7 +39,6 @@ class HomeViewModel {
     var isShowingAppInfoSheet = false
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
-    var defaultActivities: [Activity] = []
     var selectedTab: HomePage = .main
     var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
     
@@ -60,9 +59,7 @@ class HomeViewModel {
     var missedReflectionsCount: Int = 0
     var showActivitiesUnavailableAlert: Bool = false
     
-    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
-    private let fetchReflectionsUseCase: FetchReflectionsUseCase
+    private let modelContext: ModelContext
     
     enum ChartMetric { case heartRate, steps }
 
@@ -211,20 +208,16 @@ class HomeViewModel {
     
     init() {
         let modelContext = ModelContainer.prod.mainContext
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
-        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: modelContext)
+        self.modelContext = modelContext
         
         loadPersistentCounts()
         checkForDailyReset()
         setupSubscriptions()
-        loadDefaultActivities()
     }
     
     private init(isForPreview: Bool) {
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.preview.mainContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.preview.mainContext)
-        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: ModelContainer.preview.mainContext)
+        let previewContext = ModelContainer.preview.mainContext
+        self.modelContext = previewContext
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
@@ -252,12 +245,6 @@ class HomeViewModel {
             stepData.append((date: date, steps: steps))
         }
         self.hourlyStepData = stepData.reversed()
-    }
-    
-    private func loadDefaultActivities() {
-        if let activities = fetchDefaultActivitiesUseCase.execute() {
-            self.defaultActivities = activities
-        }
     }
     
     static var mock: HomeViewModel {
@@ -311,7 +298,9 @@ class HomeViewModel {
     
     func onAppear() {
         Services.shared.systemDelegate.configure()
-        Services.shared.monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
+        
+        let reminders = fetchReminders()
+        Services.shared.monitorService.configure(reminders: reminders)
         
         Task {
             let isAuthorized = try await Services.shared.monitorService.requestAuthorization()
@@ -328,6 +317,32 @@ class HomeViewModel {
         device.isBatteryMonitoringEnabled = true
         updateBattery()
         fetchMissedReflections()
+    }
+    
+    private func fetchReminders() -> [Reminder] {
+        do {
+            let descriptor = FetchDescriptor<Reminder>(sortBy: [SortDescriptor(\.threshold, order: .reverse)])
+            let reminders = try modelContext.fetch(descriptor)
+            
+            let groupedReminders = Dictionary(grouping: reminders) { $0.measurementType }
+            
+            let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
+                if lhs == .heartRate {
+                    return true
+                } else if rhs == .heartRate {
+                    return false
+                } else {
+                    return lhs.rawValue < rhs.rawValue
+                }
+            }
+            
+            return sortedKeys.flatMap { key in
+                groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
+            }
+        } catch {
+            print("DEBUG: Could not fetch Reminders: \(error.localizedDescription)")
+            return []
+        }
     }
     
     func requestCreateReflectionOnPhone() {
@@ -395,18 +410,6 @@ class HomeViewModel {
         defer { alertState = .none }
         
         if shouldAddDetails {
-            loadDefaultActivities()
-            
-            if defaultActivities.isEmpty {
-                Services.shared.systemDelegate.createAndSendReflection(
-                    reminderID: rule.id,
-                    alertID: alertID,
-                    activity: nil,
-                    subactivity: nil
-                )
-                return
-            }
-            
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
                 id: alertID,
                 reminderID: rule.id
@@ -478,9 +481,17 @@ class HomeViewModel {
     }
     
     private func fetchMissedReflections() {
-        let allReflections = fetchReflectionsUseCase.execute() ?? []
-        let missedReflections = allReflections.filter { $0.isMissedReflection }
-        missedReflectionsCount = missedReflections.count
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            let missedReflections = allReflections.filter { $0.isMissedReflection }
+            missedReflectionsCount = missedReflections.count
+        } catch {
+            print("DEBUG: Could not fetch missed reflections: \(error.localizedDescription)")
+            missedReflectionsCount = 0
+        }
     }
     
     private func paddedDomain(
