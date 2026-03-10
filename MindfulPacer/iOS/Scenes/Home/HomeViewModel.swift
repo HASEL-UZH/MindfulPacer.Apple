@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreData
 import Foundation
 import SwiftData
 import SwiftUI
@@ -126,10 +127,11 @@ class HomeViewModel {
         
         subscribeToWatchEvents()
         subscribeToWatchStatus()
+        subscribeToRemoteStoreChanges()
     }
-    
+
     // MARK: - View Lifecycle
-    
+
     func onViewFirstAppear(reminders: [Reminder]) {
         setupBindings()
         resetMissedPagination()
@@ -141,9 +143,10 @@ class HomeViewModel {
         fetchMissedReflections(reminders: reminders)
         checkHealthPermissions()
     }
-    
+
     func onViewAppear() {
         fetchReflections()
+        fetchMissedReflections(reminders: reminders)
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchHealthData()
@@ -343,6 +346,8 @@ class HomeViewModel {
                         }
                     }
                     
+                    self.fetchReflections()
+                    self.fetchMissedReflections(reminders: self.reminders)
                     self.presentSheet(.editReflectionView(reflection))
                 } catch {
                     print("ERROR: Failed to fetch reflection: \(error.localizedDescription)")
@@ -491,6 +496,17 @@ class HomeViewModel {
             .store(in: &cancellables)
     }
     
+    private func subscribeToRemoteStoreChanges() {
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.fetchReflections()
+                self.fetchMissedReflections(reminders: self.reminders)
+            }
+            .store(in: &cancellables)
+    }
+
     private func syncBackgroundReflectionSnapshots(allReflections: [Reflection]) {
         let snapshots = allReflections.map(BackgroundReflectionSnapshot.init(from:))
         BackgroundReflectionsStore.shared.replace(with: snapshots)
