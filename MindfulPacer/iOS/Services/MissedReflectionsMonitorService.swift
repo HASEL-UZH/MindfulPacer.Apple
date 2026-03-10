@@ -15,7 +15,7 @@ enum DefaultsStore {
     static var shared: UserDefaults { AppGroupDefaults.shared }
 }
 
-// MARK: - ISO8601 helpers (no shared formatter instances)
+// MARK: - ISO8601 Helpers
 
 enum ISO8601 {
     static func string(from date: Date) -> String {
@@ -27,7 +27,7 @@ enum ISO8601 {
     }
 }
 
-// MARK: - Display policy (must match UI + BG)
+// MARK: - Display Policy
 
 @MainActor
 enum MissedReflectionsDisplayPolicy {
@@ -180,6 +180,7 @@ enum BGDebug {
 actor MissedReflectionsMonitorService {
     static let shared = MissedReflectionsMonitorService()
     nonisolated static let identifier = "com.MindfulPacer.Apple.iOS.checkMissedReflections"
+    nonisolated static let notificationIdentifier = "missed-reflections"
 
     // Desired cadence + notify throttle
     private let desiredRunInterval: TimeInterval = 2 * 60 * 60
@@ -191,7 +192,7 @@ actor MissedReflectionsMonitorService {
 
     func onDeviceModeChanged(_ newMode: DeviceMode) {
         if newMode == .iPhoneOnly {
-            scheduleNextRun(in: 30) // schedule soon after mode switch (still self-throttled)
+            scheduleNextRun(in: 30)
         } else {
             BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.identifier)
             Task { @MainActor in
@@ -199,6 +200,13 @@ actor MissedReflectionsMonitorService {
                 BGDebug.setDecision("no_run", reason: "mode_changed_to_watch")
             }
         }
+    }
+
+    // MARK: - Clear delivered notifications
+
+    nonisolated static func clearDeliveredNotifications() {
+        UNUserNotificationCenter.current()
+            .removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
     }
 
     // MARK: - Scheduling
@@ -212,7 +220,6 @@ actor MissedReflectionsMonitorService {
             return
         }
 
-        // Cancel existing request to avoid piling up.
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.identifier)
 
         let req = BGAppRefreshTaskRequest(identifier: Self.identifier)
@@ -232,7 +239,7 @@ actor MissedReflectionsMonitorService {
         }
     }
 
-    // MARK: - Self throttle (don’t run more often than desiredRunInterval)
+    // MARK: - Self Throttle
 
     private func shouldRunNow() -> (ok: Bool, wait: TimeInterval, reason: String?) {
         let d = DefaultsStore.shared
@@ -240,7 +247,6 @@ actor MissedReflectionsMonitorService {
             let lastEndISO = d.string(forKey: BGDebug.Keys.lastRunEnd),
             let lastEnd = ISO8601.date(from: lastEndISO)
         else {
-            // No baseline: run now; after completion we’ll schedule desiredRunInterval.
             return (true, desiredRunInterval, "no_lastRunEnd_baseline")
         }
 
@@ -252,7 +258,7 @@ actor MissedReflectionsMonitorService {
         return (true, desiredRunInterval, nil)
     }
 
-    // MARK: - Notify gate (count changed vs previous run + notification throttle)
+    // MARK: - Notify Gate
 
     private func shouldNotify(count: Int, previousCount: Int?) -> (Bool, String) {
         guard count > 0 else { return (false, "count_zero") }
@@ -272,8 +278,7 @@ actor MissedReflectionsMonitorService {
         }
 
         if previousCount == nil {
-            // First ever baseline — you can choose to suppress this if you want.
-            return (true, "no_previous_count_baseline")
+            return (false, "first_baseline_suppressed")
         }
 
         return (true, "count_changed_prev=\(previousCount!)_now=\(count)")
@@ -290,10 +295,9 @@ actor MissedReflectionsMonitorService {
         }
     }
 
-    // MARK: - BG entry point
+    // MARK: - BG Entry Point
 
     func handleTask() async {
-        // mode gate
         guard isiPhoneOnly() else {
             await MainActor.run {
                 BGDebug.log.info("BG ⏭ skipped (mode != iPhoneOnly)")
@@ -306,7 +310,6 @@ actor MissedReflectionsMonitorService {
             return
         }
 
-        // self-throttle gate
         let gate = shouldRunNow()
         if !gate.ok {
             await MainActor.run {
@@ -327,12 +330,9 @@ actor MissedReflectionsMonitorService {
         }
 
         do {
-            // Load reminders + reflection snapshots from App Group defaults
             let cachedReminders = await MainActor.run { BackgroundRemindersStore.shared.load() }
             let existingSnapshots = await MainActor.run { BackgroundReflectionsStore.shared.load() }
 
-            // ✅ IMPORTANT: do NOT return [Reflection] from MainActor to this actor (Reflection is not Sendable).
-            // Compute the final count on MainActor and only return Int across the boundary.
             let normalizedCount: Int = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Int, Error>) in
                 Task { @MainActor in
                     let useCase = UseCasesContainer.shared.fetchMissedReflectionsUseCase()
@@ -351,7 +351,6 @@ actor MissedReflectionsMonitorService {
                 }
             }
 
-            // previous count baseline
             let d = DefaultsStore.shared
             let prev = d.object(forKey: BGDebug.Keys.lastRunCount) as? Int
 
@@ -393,7 +392,6 @@ actor MissedReflectionsMonitorService {
             }
         }
 
-        // reschedule at the very end (2h)
         scheduleNextRun(in: desiredRunInterval)
     }
 
@@ -408,7 +406,7 @@ actor MissedReflectionsMonitorService {
 
         do {
             try await UNUserNotificationCenter.current().add(
-                UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+                UNNotificationRequest(identifier: Self.notificationIdentifier, content: content, trigger: nil)
             )
             await MainActor.run {
                 BGDebug.log.info("BG 🔔 posted local notification for count=\(count, privacy: .public))")

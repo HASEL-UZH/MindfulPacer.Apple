@@ -37,4 +37,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         return true
     }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        MissedReflectionsMonitorService.clearDeliveredNotifications()
+    }
 }
