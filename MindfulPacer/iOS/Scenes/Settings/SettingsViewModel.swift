@@ -240,7 +240,6 @@ class SettingsViewModel {
         didSet {
             guard oldValue != deviceMode else { return }
             DefaultsStore.shared.set(deviceMode.rawValue, forKey: DeviceMode.appStorageKey)
-            Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(deviceMode) }
         }
     }
     var selectedExportFileFormat: ExportFileFormat = .csv

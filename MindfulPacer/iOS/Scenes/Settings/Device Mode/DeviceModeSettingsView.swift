@@ -50,7 +50,6 @@ extension SettingsView {
                             ) {
                                 if isSelectable {
                                     deviceModeBinding.wrappedValue = mode
-                                    Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(mode) }
                                     viewModel.presentAlert(.restartApp)
                                 }
                             } label: {
@@ -119,7 +118,6 @@ extension SettingsView {
                 if !viewModel.isWatchAppInstalled && deviceModeBinding.wrappedValue == .iPhoneAndWatch {
                     deviceModeBinding.wrappedValue = .iPhoneOnly
                     viewModel.deviceMode = .iPhoneOnly
-                    Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(.iPhoneOnly) }
                 } else {
                     if viewModel.deviceMode != deviceModeBinding.wrappedValue {
                         viewModel.deviceMode = deviceModeBinding.wrappedValue
