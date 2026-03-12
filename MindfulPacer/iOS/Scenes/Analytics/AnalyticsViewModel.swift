@@ -56,7 +56,18 @@ class AnalyticsViewModel {
     var reminders: [Reminder] = []
     
     var selectedDateForPeriod: Date = Date.now
-    
+
+    /// Returns the effective end date for data queries.
+    /// For today, uses the current time. For past dates, uses end of day (23:59:59)
+    var effectiveEndDate: Date {
+        if Calendar.current.isDateInToday(selectedDateForPeriod) {
+            return selectedDateForPeriod
+        } else {
+            let startOfNextDay = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: selectedDateForPeriod))!
+            return startOfNextDay.addingTimeInterval(-1)
+        }
+    }
+
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
     }
@@ -316,7 +327,7 @@ class AnalyticsViewModel {
     // MARK: - Private Methods
     
     private func fetchHeartRateChartData() {
-        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let success):
                 Task { @MainActor in
@@ -331,7 +342,7 @@ class AnalyticsViewModel {
     
     private func fetchStepsChartData() {
         // Base (non-bucketed) data
-        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let success):
                 Task { @MainActor in
@@ -348,7 +359,7 @@ class AnalyticsViewModel {
         
         // Bucketed weekly data
         if selectedPeriod == .week {
-            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: effectiveEndDate) { result in
                 switch result {
                 case .success(let success):
                     Task { @MainActor in
@@ -379,7 +390,7 @@ class AnalyticsViewModel {
     }
     
     private func fetchCumulativeStepsChartData() {
-        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let chartDataItems):
                 Task { @MainActor in
@@ -398,9 +409,10 @@ class AnalyticsViewModel {
             )
             let allReflections = try modelContext.fetch(descriptor)
             
-            let start = selectedPeriod.startDate(relativeTo: selectedDateForPeriod)
+            let endDate = effectiveEndDate
+            let start = selectedPeriod.startDate(relativeTo: endDate)
             let filteredReflections = allReflections.filter { reflection in
-                reflection.date >= start && reflection.date <= selectedDateForPeriod
+                reflection.date >= start && reflection.date <= endDate
             }
             
             let groupingInterval: TimeInterval
