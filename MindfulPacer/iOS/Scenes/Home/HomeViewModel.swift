@@ -54,7 +54,8 @@ class HomeViewModel {
     }
     
     private var activities: [Activity] = []
-    
+    private var backgroundStoreSyncWork: DispatchWorkItem?
+
     var missedPageSize: Int = 10
     var missedVisibleCount: Int = 10
     
@@ -182,9 +183,11 @@ class HomeViewModel {
     // MARK: - User Actions
     
     func rejectMissedReflection(reflection: Reflection) {
+        missedReflections.removeAll { $0.id == reflection.id }
+        clampMissedPaginationAfterMutation()
+
         switch deviceMode {
         case .iPhoneOnly:
-            // Create a rejected reflection
             let rejectedReflection = Reflection(
                 date: reflection.date,
                 activity: reflection.activity,
@@ -206,30 +209,35 @@ class HomeViewModel {
                 triggerSamples: reflection.triggerSamples,
                 isRejected: true
             )
-            
             modelContext.insert(rejectedReflection)
-            
-            do {
-                try modelContext.save()
-                BackgroundReflectionsStore.shared.upsert(.init(from: rejectedReflection))
-            } catch {
-                print("DEBUG: Could not save rejected reflection: \(error.localizedDescription)")
-            }
-            
+
         case .iPhoneAndWatch:
-            // Delete the reflection
             modelContext.delete(reflection)
-            
-            do {
-                try modelContext.save()
-                BackgroundReflectionsStore.shared.remove(id: reflection.id)
-            } catch {
-                print("DEBUG: Could not delete reflection: \(error.localizedDescription)")
-            }
         }
-        
-        missedReflections.removeAll { $0.id == reflection.id }
-        clampMissedPaginationAfterMutation()
+
+        do {
+            try modelContext.save()
+            print("DEBUG: Could not save rejected reflection: \(error.localizedDescription)")
+        }
+
+        backgroundStoreSyncWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            self?.refreshBackgroundReflectionSnapshots()
+        }
+        backgroundStoreSyncWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
+    }
+
+    private func refreshBackgroundReflectionSnapshots() {
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            syncBackgroundReflectionSnapshots(allReflections: allReflections)
+        } catch {
+            print("DEBUG: Could not sync background reflection snapshots: \(error.localizedDescription)")
+        }
     }
     
     func acceptMissedReflection(reflection: Reflection) {
@@ -312,10 +320,8 @@ class HomeViewModel {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 
-                // Capture the ID value before using it in the predicate
                 let reflectionID = event.reflectionID
                 
-                // Fetch reflection directly from SwiftData
                 do {
                     let descriptor = FetchDescriptor<Reflection>(
                         predicate: #Predicate { $0.id == reflectionID }
@@ -438,8 +444,9 @@ class HomeViewModel {
     }
     
     private func fetchMissedReflections(reminders: [Reminder]) {
+        guard !isFetchingMissedReflections else { return }
         isFetchingMissedReflections = true
-        
+
         do {
             let descriptor = FetchDescriptor<Reflection>(
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
@@ -498,6 +505,7 @@ class HomeViewModel {
     
     private func subscribeToRemoteStoreChanges() {
         NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
