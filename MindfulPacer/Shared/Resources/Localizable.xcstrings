@@ -1218,6 +1218,9 @@
         }
       }
     },
+    "Count: %lld" : {
+
+    },
     "Craft Work" : {
       "localizations" : {
         "de" : {
@@ -1392,6 +1395,9 @@
           }
         }
       }
+    },
+    "Delete Missed" : {
+
     },
     "Delete Reflection" : {
       "localizations" : {
@@ -2140,6 +2146,9 @@
       }
     },
     "Initializing" : {
+
+    },
+    "Inserts mock missed reflections with realistic trigger data (HR & steps, mixed severity)." : {
 
     },
     "Insights" : {
@@ -3753,6 +3762,9 @@
           }
         }
       }
+    },
+    "Seed" : {
+
     },
     "Select Activity" : {
       "comment" : "The title of the view that lets the user select an activity.",

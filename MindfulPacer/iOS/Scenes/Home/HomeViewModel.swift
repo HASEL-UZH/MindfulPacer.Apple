@@ -217,6 +217,7 @@ class HomeViewModel {
 
         do {
             try modelContext.save()
+        } catch {
             print("DEBUG: Could not save rejected reflection: \(error.localizedDescription)")
         }
 
