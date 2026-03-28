@@ -9,7 +9,7 @@
 //
 //  The project declares en (source), de, fr, it as known regions.
 //  Currently only German (de) translations are present, so the test
-//  validates the de locale specifically. Extend `expectedLanguages` when
+//  validates de, fr and it locales. Extend `expectedLanguages` when
 //  fr / it translations are added.
 //
 
@@ -119,7 +119,7 @@ private func missingKeys(in file: XCStringsFile, for language: String) -> [Strin
 
 /// Languages that must have complete translations. Extend this array as
 /// new languages are added (e.g. "fr", "it").
-private let expectedLanguages = ["de"]
+private let expectedLanguages = ["de", "fr", "it"]
 
 struct LocalizationCompletenessTests {
 
@@ -184,16 +184,20 @@ struct LocalizationCompletenessTests {
     }
 
     /// Proper nouns, brand names, and terms that are intentionally identical
-    /// across all languages. Extend this set when a new key is legitimately
-    /// the same in every locale.
+    /// to the English key in at least one locale. Extend this set when a new
+    /// key is legitimately the same in any supported language.
     private static let identicalAcrossLanguages: Set<String> = [
         "1 Minute", "10 Minutes", "15 Minutes",
-        "App Info", "Apple Health Integration", "Apple Watch", "Apple Watch Support",
-        "Community", "Gaming", "Label",
-        "Long Covid Kids Schweiz", "Meditation", "Meetings", "Mild",
-        "MindfulPacer", "MindfulPacer Version %@",
-        "Networking", "Normal", "Onboarding", "Outreach",
-        "Roadmap", "Start", "Status Info", "Yoga",
+        "2 Minutes", "5 Minutes", "30 Minutes",
+        "Absent", "App Info", "Apple Health Integration",
+        "Apple Watch", "Apple Watch Support", "Articles",
+        "Community", "Date", "Fatigue", "Gaming", "Home",
+        "Label", "Long Covid Kids Schweiz",
+        "Meditation", "Meetings", "Mild", "MindfulPacer",
+        "MindfulPacer ", "MindfulPacer Version %@", "Minutes",
+        "Networking", "Normal", "Note", "Onboarding", "Outreach",
+        "Relaxation", "Roadmap", "Start", "Status Info",
+        "Stretching", "Yoga",
         "iPhone + Apple Watch",
     ]
 

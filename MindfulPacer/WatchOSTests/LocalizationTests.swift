@@ -110,7 +110,7 @@ private func missingKeys(in file: XCStringsFile, for language: String) -> [Strin
 
 // MARK: - Tests
 
-private let expectedLanguages = ["de"]
+private let expectedLanguages = ["de", "fr", "it"]
 
 @Suite("WatchOS Localization")
 struct WatchOSLocalizationTests {
@@ -173,15 +173,19 @@ struct WatchOSLocalizationTests {
     }
 
     /// Proper nouns, brand names, and terms that are intentionally identical
-    /// across all languages.
+    /// to the English key in at least one locale.
     private static let identicalAcrossLanguages: Set<String> = [
         "1 Minute", "10 Minutes", "15 Minutes",
-        "App Info", "Apple Health Integration", "Apple Watch", "Apple Watch Support",
-        "Community", "Gaming", "Label",
-        "Long Covid Kids Schweiz", "Meditation", "Meetings", "Mild",
-        "MindfulPacer", "MindfulPacer Version %@",
-        "Networking", "Normal", "Onboarding", "Outreach",
-        "Roadmap", "Start", "Status Info", "Yoga",
+        "2 Minutes", "5 Minutes", "30 Minutes",
+        "Absent", "App Info", "Apple Health Integration",
+        "Apple Watch", "Apple Watch Support", "Articles",
+        "Community", "Date", "Fatigue", "Gaming", "Home",
+        "Label", "Long Covid Kids Schweiz",
+        "Meditation", "Meetings", "Mild", "MindfulPacer",
+        "MindfulPacer ", "MindfulPacer Version %@", "Minutes",
+        "Networking", "Normal", "Note", "Onboarding", "Outreach",
+        "Relaxation", "Roadmap", "Start", "Status Info",
+        "Stretching", "Yoga",
         "iPhone + Apple Watch",
     ]
 

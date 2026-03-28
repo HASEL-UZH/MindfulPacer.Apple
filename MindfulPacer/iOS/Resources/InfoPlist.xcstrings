@@ -16,6 +16,18 @@
             "state" : "new",
             "value" : "MindfulPacer"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
         }
       }
     },
@@ -32,6 +44,18 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "iOS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "iOS"
           }
         }
@@ -52,6 +76,18 @@
             "state" : "new",
             "value" : "Need access to health data for heart rate and step count."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux données de santé pour la fréquence cardiaque et le nombre de pas nécessaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
+          }
         }
       }
     },
@@ -69,6 +105,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Need access to health data for heart rate and step count."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux données de santé pour la fréquence cardiaque et le nombre de pas nécessaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
           }
         }
       }

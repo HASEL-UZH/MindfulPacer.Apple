@@ -16,6 +16,18 @@
             "state" : "new",
             "value" : "MindfulPacerStatus"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatus"
+          }
         }
       }
     },
@@ -32,6 +44,18 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "MindfulPacerStatusExtension"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatusExtension"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "MindfulPacerStatusExtension"
           }
         }
