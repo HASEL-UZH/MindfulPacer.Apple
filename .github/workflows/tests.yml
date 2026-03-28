@@ -1,0 +1,178 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, dev, "features/**"]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-watchos:
+    name: WatchOS Unit Tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app/Contents/Developer
+
+      - name: Resolve packages
+        run: |
+          xcodebuild -project MindfulPacer/MindfulPacer.xcodeproj \
+            -scheme "WatchOS Dev" \
+            -resolvePackageDependencies
+
+      - name: Run tests with coverage
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project MindfulPacer/MindfulPacer.xcodeproj \
+            -scheme "WatchOS Dev" \
+            -destination "platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)" \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults-WatchOS.xcresult \
+            | xcpretty --color
+
+      - name: Report coverage
+        if: always()
+        run: |
+          echo "## WatchOS Code Coverage Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          COVERAGE=$(xcrun xccov view --report --json TestResults-WatchOS.xcresult \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for t in data.get('targets', []):
+              if t['name'] == 'WatchOS.app':
+                  pct = t['lineCoverage'] * 100
+                  covered = t.get('coveredLines', 0)
+                  total = t.get('executableLines', 0)
+                  print(f'{pct:.1f}')
+                  with open('$GITHUB_STEP_SUMMARY', 'a') as f:
+                      f.write(f'**WatchOS target: {pct:.1f}%** ({covered}/{total} lines)\n\n')
+                      f.write('| File | Coverage |\n|---|---|\n')
+                      for file in sorted(t.get('files', []), key=lambda x: -x['lineCoverage']):
+                          el = file.get('executableLines', 0)
+                          if el > 0:
+                              fc = file['lineCoverage'] * 100
+                              f.write(f'| {file[\"name\"]} | {fc:.1f}% |\n')
+                  break
+          ")
+
+          echo "WatchOS target coverage: ${COVERAGE}%"
+
+      - name: Check minimum coverage
+        run: |
+          COVERAGE=$(xcrun xccov view --report --json TestResults-WatchOS.xcresult \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for t in data.get('targets', []):
+              if t['name'] == 'WatchOS.app':
+                  print(f\"{t['lineCoverage'] * 100:.1f}\")
+                  break
+          ")
+
+          MINIMUM=25
+          echo "Coverage: ${COVERAGE}% (minimum: ${MINIMUM}%)"
+
+          if python3 -c "exit(0 if float('${COVERAGE}') >= ${MINIMUM} else 1)"; then
+            echo "✅ Coverage meets minimum threshold"
+          else
+            echo "❌ Coverage ${COVERAGE}% is below minimum ${MINIMUM}%"
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-WatchOS
+          path: TestResults-WatchOS.xcresult
+
+  test-ios:
+    name: iOS Unit Tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app/Contents/Developer
+
+      - name: Resolve packages
+        run: |
+          xcodebuild -project MindfulPacer/MindfulPacer.xcodeproj \
+            -scheme "iOS Dev" \
+            -resolvePackageDependencies
+
+      - name: Run tests with coverage
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project MindfulPacer/MindfulPacer.xcodeproj \
+            -scheme "iOS Dev" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults-iOS.xcresult \
+            | xcpretty --color
+
+      - name: Report coverage
+        if: always()
+        run: |
+          echo "## iOS Code Coverage Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          COVERAGE=$(xcrun xccov view --report --json TestResults-iOS.xcresult \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for t in data.get('targets', []):
+              if t['name'] == 'iOS.app':
+                  pct = t['lineCoverage'] * 100
+                  covered = t.get('coveredLines', 0)
+                  total = t.get('executableLines', 0)
+                  print(f'{pct:.1f}')
+                  with open('$GITHUB_STEP_SUMMARY', 'a') as f:
+                      f.write(f'**iOS target: {pct:.1f}%** ({covered}/{total} lines)\n\n')
+                      f.write('| File | Coverage |\n|---|---|\n')
+                      for file in sorted(t.get('files', []), key=lambda x: -x['lineCoverage']):
+                          el = file.get('executableLines', 0)
+                          if el > 0:
+                              fc = file['lineCoverage'] * 100
+                              f.write(f'| {file[\"name\"]} | {fc:.1f}% |\n')
+                  break
+          ")
+
+          echo "iOS target coverage: ${COVERAGE}%"
+
+      - name: Check minimum coverage
+        run: |
+          COVERAGE=$(xcrun xccov view --report --json TestResults-iOS.xcresult \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for t in data.get('targets', []):
+              if t['name'] == 'iOS.app':
+                  print(f\"{t['lineCoverage'] * 100:.1f}\")
+                  break
+          ")
+
+          MINIMUM=25
+          echo "Coverage: ${COVERAGE}% (minimum: ${MINIMUM}%)"
+
+          if python3 -c "exit(0 if float('${COVERAGE}') >= ${MINIMUM} else 1)"; then
+            echo "✅ Coverage meets minimum threshold"
+          else
+            echo "❌ Coverage ${COVERAGE}% is below minimum ${MINIMUM}%"
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-iOS
+          path: TestResults-iOS.xcresult
