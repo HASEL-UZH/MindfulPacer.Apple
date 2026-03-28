@@ -44,12 +44,21 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
+            BlueprintIdentifier = "0DBA37372C32087300209681"
+            BuildableName = "WatchOS.app"
+            BlueprintName = "WatchOS"
+            ReferencedContainer = "container:MindfulPacer.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
             BlueprintIdentifier = "0D8C662F2C2DA96000853EDE"
             BuildableName = "iOS.app"
             BlueprintName = "iOS"
             ReferencedContainer = "container:MindfulPacer.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

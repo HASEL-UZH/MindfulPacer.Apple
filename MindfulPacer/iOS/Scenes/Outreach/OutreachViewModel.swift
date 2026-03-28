@@ -75,4 +75,7 @@ class OutreachViewModel {
             self.isFetchingArticles = false
         }
     }
+    
+    
+    
 }

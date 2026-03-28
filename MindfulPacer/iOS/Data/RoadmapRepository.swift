@@ -9,13 +9,13 @@ import Foundation
 
 // MARK: - RoadmapRepository
 
-protocol RoadmapRepository {
+protocol RoadmapRepository: Sendable {
     func fetchRoadmap() async throws -> [RoadmapItem]
 }
 
 // MARK: - DefaultRoadmapRepository
 
-class DefaultRoadmapRepository: RoadmapRepository {
+final class DefaultRoadmapRepository: RoadmapRepository {
     private let roadmapAPI: RoadmapAPIServiceProtocol
 
     init(roadmapAPI: RoadmapAPIServiceProtocol) {

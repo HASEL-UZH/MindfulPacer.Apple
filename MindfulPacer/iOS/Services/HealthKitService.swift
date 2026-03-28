@@ -816,13 +816,13 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             var _hasStepData      = false
             var _hadError         = false
             
-            func setHasHeartRateData(_ newValue: Bool) {
+            @Sendable func setHasHeartRateData(_ newValue: Bool) {
                 stateQueue.sync { _hasHeartRateData = newValue }
             }
-            func setHasStepData(_ newValue: Bool) {
+            @Sendable func setHasStepData(_ newValue: Bool) {
                 stateQueue.sync { _hasStepData = newValue }
             }
-            func setHadError(_ newValue: Bool) {
+            @Sendable func setHadError(_ newValue: Bool) {
                 stateQueue.sync { _hadError = newValue }
             }
             func readState() -> (hasHeartRateData: Bool, hasStepData: Bool, hadError: Bool) {
