@@ -11,14 +11,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-watchos:
-    name: WatchOS Unit Tests
-    runs-on: macos-15
+  test:
+    name: Unit Tests
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app/Contents/Developer
+
+      - name: Install watchOS simulator runtime
+        run: |
+          xcodebuild -downloadPlatform watchOS
+          xcrun simctl list runtimes
 
       - name: Resolve packages
         run: |
@@ -26,153 +31,95 @@ jobs:
             -scheme "WatchOS Dev" \
             -resolvePackageDependencies
 
+      - name: Find available watchOS simulator
+        run: |
+          WATCH_UDID=$(xcodebuild -project MindfulPacer/MindfulPacer.xcodeproj \
+            -scheme "WatchOS Dev" -showdestinations 2>/dev/null \
+            | grep "watchOS Simulator" | grep -v placeholder \
+            | head -n 1 | grep -oEi 'id:[0-9A-F-]{36}' | head -n 1 | cut -d: -f2)
+          if [ -z "$WATCH_UDID" ]; then
+            echo "::error::No watchOS simulator found"
+            exit 1
+          fi
+          echo "Using simulator: $WATCH_UDID"
+          echo "WATCH_UDID=$WATCH_UDID" >> $GITHUB_ENV
+
       - name: Run tests with coverage
         run: |
           set -o pipefail
           xcodebuild test \
             -project MindfulPacer/MindfulPacer.xcodeproj \
             -scheme "WatchOS Dev" \
-            -destination "platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)" \
+            -destination "id=$WATCH_UDID" \
             -enableCodeCoverage YES \
-            -resultBundlePath TestResults-WatchOS.xcresult \
+            -resultBundlePath TestResults.xcresult \
             | xcpretty --color
 
       - name: Report coverage
-        if: always()
+        if: always() && !cancelled()
         run: |
-          echo "## WatchOS Code Coverage Report" >> "$GITHUB_STEP_SUMMARY"
+          if [ ! -d TestResults.xcresult ]; then
+            echo "No test results found, skipping coverage report"
+            exit 0
+          fi
+          echo "## Code Coverage Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          COVERAGE=$(xcrun xccov view --report --json TestResults-WatchOS.xcresult \
+          xcrun xccov view --report --json TestResults.xcresult \
             | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
-          for t in data.get('targets', []):
-              if t['name'] == 'WatchOS.app':
-                  pct = t['lineCoverage'] * 100
-                  covered = t.get('coveredLines', 0)
-                  total = t.get('executableLines', 0)
-                  print(f'{pct:.1f}')
-                  with open('$GITHUB_STEP_SUMMARY', 'a') as f:
-                      f.write(f'**WatchOS target: {pct:.1f}%** ({covered}/{total} lines)\n\n')
-                      f.write('| File | Coverage |\n|---|---|\n')
-                      for file in sorted(t.get('files', []), key=lambda x: -x['lineCoverage']):
-                          el = file.get('executableLines', 0)
-                          if el > 0:
-                              fc = file['lineCoverage'] * 100
-                              f.write(f'| {file[\"name\"]} | {fc:.1f}% |\n')
-                  break
-          ")
-
-          echo "WatchOS target coverage: ${COVERAGE}%"
+          for target_name in ['WatchOS.app', 'iOS.app']:
+              for t in data.get('targets', []):
+                  if t['name'] == target_name:
+                      pct = t['lineCoverage'] * 100
+                      covered = t.get('coveredLines', 0)
+                      total = t.get('executableLines', 0)
+                      label = target_name.replace('.app', '')
+                      with open('$GITHUB_STEP_SUMMARY', 'a') as f:
+                          f.write(f'**{label} target: {pct:.1f}%** ({covered}/{total} lines)\n\n')
+                          f.write('| File | Coverage |\n|---|---|\n')
+                          for file in sorted(t.get('files', []), key=lambda x: -x['lineCoverage']):
+                              el = file.get('executableLines', 0)
+                              if el > 0:
+                                  fc = file['lineCoverage'] * 100
+                                  f.write(f'| {file[\"name\"]} | {fc:.1f}% |\n')
+                          f.write('\n')
+                      print(f'{label} coverage: {pct:.1f}%')
+                      break
+          "
 
       - name: Check minimum coverage
+        if: always() && !cancelled()
         run: |
-          COVERAGE=$(xcrun xccov view --report --json TestResults-WatchOS.xcresult \
+          if [ ! -d TestResults.xcresult ]; then
+            echo "No test results found, skipping coverage check"
+            exit 0
+          fi
+          xcrun xccov view --report --json TestResults.xcresult \
             | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
-          for t in data.get('targets', []):
-              if t['name'] == 'WatchOS.app':
-                  print(f\"{t['lineCoverage'] * 100:.1f}\")
-                  break
-          ")
-
-          MINIMUM=25
-          echo "Coverage: ${COVERAGE}% (minimum: ${MINIMUM}%)"
-
-          if python3 -c "exit(0 if float('${COVERAGE}') >= ${MINIMUM} else 1)"; then
-            echo "✅ Coverage meets minimum threshold"
-          else
-            echo "❌ Coverage ${COVERAGE}% is below minimum ${MINIMUM}%"
-          fi
+          MINIMUM = 25
+          failed = False
+          for target_name in ['WatchOS.app', 'iOS.app']:
+              for t in data.get('targets', []):
+                  if t['name'] == target_name:
+                      pct = t['lineCoverage'] * 100
+                      label = target_name.replace('.app', '')
+                      if pct >= MINIMUM:
+                          print(f'✅ {label}: {pct:.1f}% (minimum: {MINIMUM}%)')
+                      else:
+                          print(f'❌ {label}: {pct:.1f}% is below minimum {MINIMUM}%')
+                          failed = True
+                      break
+          if failed:
+              sys.exit(1)
+          "
 
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: TestResults-WatchOS
-          path: TestResults-WatchOS.xcresult
-
-  test-ios:
-    name: iOS Unit Tests
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app/Contents/Developer
-
-      - name: Resolve packages
-        run: |
-          xcodebuild -project MindfulPacer/MindfulPacer.xcodeproj \
-            -scheme "iOS Dev" \
-            -resolvePackageDependencies
-
-      - name: Run tests with coverage
-        run: |
-          set -o pipefail
-          xcodebuild test \
-            -project MindfulPacer/MindfulPacer.xcodeproj \
-            -scheme "iOS Dev" \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
-            -enableCodeCoverage YES \
-            -resultBundlePath TestResults-iOS.xcresult \
-            | xcpretty --color
-
-      - name: Report coverage
-        if: always()
-        run: |
-          echo "## iOS Code Coverage Report" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          COVERAGE=$(xcrun xccov view --report --json TestResults-iOS.xcresult \
-            | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          for t in data.get('targets', []):
-              if t['name'] == 'iOS.app':
-                  pct = t['lineCoverage'] * 100
-                  covered = t.get('coveredLines', 0)
-                  total = t.get('executableLines', 0)
-                  print(f'{pct:.1f}')
-                  with open('$GITHUB_STEP_SUMMARY', 'a') as f:
-                      f.write(f'**iOS target: {pct:.1f}%** ({covered}/{total} lines)\n\n')
-                      f.write('| File | Coverage |\n|---|---|\n')
-                      for file in sorted(t.get('files', []), key=lambda x: -x['lineCoverage']):
-                          el = file.get('executableLines', 0)
-                          if el > 0:
-                              fc = file['lineCoverage'] * 100
-                              f.write(f'| {file[\"name\"]} | {fc:.1f}% |\n')
-                  break
-          ")
-
-          echo "iOS target coverage: ${COVERAGE}%"
-
-      - name: Check minimum coverage
-        run: |
-          COVERAGE=$(xcrun xccov view --report --json TestResults-iOS.xcresult \
-            | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          for t in data.get('targets', []):
-              if t['name'] == 'iOS.app':
-                  print(f\"{t['lineCoverage'] * 100:.1f}\")
-                  break
-          ")
-
-          MINIMUM=25
-          echo "Coverage: ${COVERAGE}% (minimum: ${MINIMUM}%)"
-
-          if python3 -c "exit(0 if float('${COVERAGE}') >= ${MINIMUM} else 1)"; then
-            echo "✅ Coverage meets minimum threshold"
-          else
-            echo "❌ Coverage ${COVERAGE}% is below minimum ${MINIMUM}%"
-          fi
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: TestResults-iOS
-          path: TestResults-iOS.xcresult
+          name: TestResults
+          path: TestResults.xcresult
