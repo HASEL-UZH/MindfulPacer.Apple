@@ -28,7 +28,13 @@
             "state" : "translated",
             "value" : "MindfulPacer"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacer"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -58,7 +64,13 @@
             "state" : "translated",
             "value" : "iOS"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "iOS"
+            }
+          }
       }
     },
     "NSHealthShareUsageDescription" : {
@@ -88,7 +100,13 @@
             "state" : "translated",
             "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Se necesita acceso a los datos de salud para la frecuencia cardíaca y el conteo de pasos."
+            }
+          }
       }
     },
     "NSHealthUpdateUsageDescription" : {
@@ -118,7 +136,13 @@
             "state" : "translated",
             "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Se necesita acceso a los datos de salud para la frecuencia cardíaca y el conteo de pasos."
+            }
+          }
       }
     }
   },

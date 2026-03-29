@@ -28,7 +28,13 @@
             "state" : "translated",
             "value" : "MindfulPacer"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacer"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -58,7 +64,13 @@
             "state" : "translated",
             "value" : "WatchOS"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "WatchOS"
+            }
+          }
       }
     },
     "NSHealthShareUsageDescription" : {
@@ -88,7 +100,13 @@
             "state" : "translated",
             "value" : "Questa app legge la tua frequenza cardiaca per rilevare eventi di frequenza cardiaca elevata e legge il conteggio dei passi per avvisarti in base ai tuoi obiettivi di attività."
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Esta app lee tu frecuencia cardíaca para detectar eventos de frecuencia cardíaca elevada y lee tu conteo de pasos para alertarte según tus objetivos de actividad."
+            }
+          }
       }
     },
     "NSHealthUpdateUsageDescription" : {
@@ -118,7 +136,13 @@
             "state" : "translated",
             "value" : "Questa app crea sessioni di allenamento in background per monitorare continuamente la tua frequenza cardiaca."
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Esta app crea sesiones de entrenamiento en segundo plano para monitorear tu frecuencia cardíaca de forma continua."
+            }
+          }
       }
     }
   },

@@ -119,7 +119,7 @@ private func missingKeys(in file: XCStringsFile, for language: String) -> [Strin
 
 /// Languages that must have complete translations. Extend this array as
 /// new languages are added (e.g. "fr", "it").
-private let expectedLanguages = ["de", "fr", "it"]
+private let expectedLanguages = ["de", "fr", "it", "es"]
 
 struct LocalizationCompletenessTests {
 
@@ -187,11 +187,12 @@ struct LocalizationCompletenessTests {
     /// to the English key in at least one locale. Extend this set when a new
     /// key is legitimately the same in any supported language.
     private static let identicalAcrossLanguages: Set<String> = [
+        "%@\n%@",
         "1 Minute", "10 Minutes", "15 Minutes",
         "2 Minutes", "5 Minutes", "30 Minutes",
         "Absent", "App Info", "Apple Health Integration",
         "Apple Watch", "Apple Watch Support", "Articles",
-        "Community", "Date", "Fatigue", "Gaming", "Home",
+        "Community", "Date", "Fatigue", "Gaming", "General", "Home",
         "Label", "Long Covid Kids Schweiz",
         "Meditation", "Meetings", "Mild", "MindfulPacer",
         "MindfulPacer ", "MindfulPacer Version %@", "Minutes",

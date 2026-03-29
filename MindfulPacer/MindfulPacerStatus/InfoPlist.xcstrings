@@ -28,7 +28,13 @@
             "state" : "translated",
             "value" : "MindfulPacerStatus"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacerStatus"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -58,7 +64,13 @@
             "state" : "translated",
             "value" : "MindfulPacerStatusExtension"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacerStatusExtension"
+            }
+          }
       }
     },
     "NSHumanReadableCopyright" : {
@@ -88,7 +100,13 @@
             "state" : "translated",
             "value" : ""
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : ""
+            }
+          }
       }
     }
   },

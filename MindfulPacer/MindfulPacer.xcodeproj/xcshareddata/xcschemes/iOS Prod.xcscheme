@@ -41,6 +41,17 @@
                ReferencedContainer = "container:MindfulPacer.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A4A85D382F79199800762403"
+               BuildableName = "iOSUITests.xctest"
+               BlueprintName = "iOSUITests"
+               ReferencedContainer = "container:MindfulPacer.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

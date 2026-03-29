@@ -20,7 +20,13 @@
             "state" : "translated",
             "value" : "MindfulPacer"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacer"
+            }
+          }
       }
     },
     "Monitoring Status" : {
@@ -42,7 +48,13 @@
             "state" : "translated",
             "value" : "Stato del monitoraggio"
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Estado del monitoreo"
+            }
+          }
       }
     },
     "See if MindfulPacer monitoring is active at a glance." : {
@@ -64,7 +76,13 @@
             "state" : "translated",
             "value" : "Controlla a colpo d'occhio se il monitoraggio MindfulPacer è attivo."
           }
-        }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Comprueba de un vistazo si el monitoreo de MindfulPacer está activo."
+            }
+          }
       }
     }
   },
