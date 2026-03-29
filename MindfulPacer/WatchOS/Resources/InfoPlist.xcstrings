@@ -8,7 +8,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MindfulPacer "
+            "value" : "MindfulPacer"
           }
         },
         "en" : {
@@ -38,7 +38,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WatchOS "
+            "value" : "WatchOS"
           }
         },
         "en" : {
@@ -67,7 +67,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },
@@ -97,7 +97,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },

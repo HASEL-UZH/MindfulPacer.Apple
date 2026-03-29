@@ -128,6 +128,18 @@
             "state" : "translated",
             "value" : "**HINWEIS:** Nur die markierten Datenpunkte wurden für die verpassten Reflexionen verwendet."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**REMARQUE :** Seuls les points mis en évidence sont pris en compte pour la réflexion manquée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**NOTA:** Solo i punti evidenziati vengono considerati per la riflessione mancata."
+          }
         }
       }
     },
@@ -221,6 +233,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ Reminder"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rappel %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Promemoria %@"
           }
         }
       }
@@ -410,6 +434,18 @@
             "state" : "translated",
             "value" : "1. **Leicht**: zeigt eine gelbe Farbe 🟡.\n2. **Mittel**: zeigt eine orange Farbe 🟠.\n3. **Stark**: zeigt eine rote Farbe 🔴."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. **Léger** : affiche une couleur jaune 🟡.\n2. **Moyen** : affiche une couleur orange 🟠.\n3. **Fort** : affiche une couleur rouge 🔴."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. **Leggero**: mostra un colore giallo 🟡.\n2. **Medio**: mostra un colore arancione 🟠.\n3. **Forte**: mostra un colore rosso 🔴."
+          }
         }
       }
     },
@@ -511,6 +547,18 @@
             "state" : "translated",
             "value" : "1. Öffne die **Watch**-App auf deinem iPhone.\n2. Scrolle nach unten und tippe auf **MindfulPacer**.\n3. Unter **Zurück zur App** stelle sicher, dass der Schalter **EIN** ist."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Ouvrez l'app **Watch** sur votre iPhone.\n2. Faites défiler vers le bas et appuyez sur **MindfulPacer**.\n3. Sous **Retour à l'app**, assurez-vous que le bouton est **ACTIVÉ**."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Apri l'app **Watch** sul tuo iPhone.\n2. Scorri verso il basso e tocca **MindfulPacer**.\n3. In **Torna all'app**, assicurati che l'interruttore sia **ATTIVATO**."
+          }
         }
       }
     },
@@ -609,6 +657,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1. Öffne die Watch-App auf deinem iPhone.\n2. Tippe auf „Meine Uhr“.\n3. Tippe auf „Mitteilungen“.\n4. Wähle „Aktivität“.\n5. Deaktiviere „Trainingserinnerungen“."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Ouvrez l'app Watch sur votre iPhone.\n2. Appuyez sur « Ma montre ».\n3. Appuyez sur « Notifications ».\n4. Sélectionnez « Activité ».\n5. Désactivez « Rappels d'entraînement »."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1. Apri l'app Watch sul tuo iPhone.\n2. Tocca \"Il mio orologio\".\n3. Tocca \"Notifiche\".\n4. Seleziona \"Attività\".\n5. Disattiva \"Promemoria allenamento\"."
           }
         }
       }
@@ -1243,6 +1303,18 @@
             "state" : "translated",
             "value" : "Zugriff auf Apple Health erlauben"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l'accès Santé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti accesso a Salute"
+          }
         }
       }
     },
@@ -1563,6 +1635,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple hat viele aktivitätsfördernde Funktionen auf dem iPhone und der Apple Watch. Wenn du diese Funktionen deaktivieren möchtest, folge diesen Schritten:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple propose de nombreuses fonctionnalités favorisant l'activité sur l'iPhone et l'Apple Watch. Si vous souhaitez désactiver ces fonctionnalités, suivez ces étapes :"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple offre molte funzionalità che promuovono l'attività su iPhone e Apple Watch. Se desideri disattivare queste funzionalità, segui questi passaggi:"
           }
         }
       }
@@ -2140,6 +2224,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wähle einen Erinnerungstyp, welcher in der Farbe der Erinnerungsbenachrichtigungen widerspiegelt, die du erhältst. "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un type de rappel, qui se reflétera dans la couleur des notifications de rappel que vous recevrez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli un tipo di promemoria, che si rifletterà nel colore delle notifiche di promemoria che riceverai."
           }
         }
       }
@@ -2762,6 +2858,18 @@
             "state" : "translated",
             "value" : "Daten für Export"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Données à exporter"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dati da esportare"
+          }
         }
       }
     },
@@ -3247,6 +3355,18 @@
             "state" : "translated",
             "value" : "Trainingsbenachrichtigungen deaktivieren"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver les notifications d'exercice"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattivare le notifiche di allenamento"
+          }
         }
       }
     },
@@ -3369,6 +3489,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verlasse dich **NICHT** ausschliesslich auf MindfulPacer, um deine Aktivitäten und Energie zu verwalten."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne vous fiez **PAS** uniquement à MindfulPacer pour gérer vos activités et votre énergie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**NON** affidarti esclusivamente a MindfulPacer per gestire le tue attività e la tua energia."
           }
         }
       }
@@ -3747,6 +3879,18 @@
             "state" : "translated",
             "value" : "Export"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esporta"
+          }
         }
       }
     },
@@ -3849,6 +3993,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dateiformat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format de fichier"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato file"
           }
         }
       }
@@ -4509,6 +4665,18 @@
             "state" : "translated",
             "value" : "Wichtig: eingeschränkte Integration mit der Apple Watch."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important : intégration limitée avec l'Apple Watch."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importante: integrazione limitata con l'Apple Watch."
+          }
         }
       }
     },
@@ -4541,6 +4709,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Informationen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informations"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informazioni"
           }
         }
       }
@@ -5359,6 +5539,18 @@
             "state" : "translated",
             "value" : "MindfulPacer sowie die Apple Watch sind **KEINE** medizinischen Produkte und können ungenaue Daten anzeigen."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer ainsi que l'Apple Watch ne sont **PAS** des applications de qualité médicale et peuvent afficher des données inexactes."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer e l'Apple Watch **NON** sono applicazioni di grado medico e potrebbero visualizzare dati imprecisi."
+          }
         }
       }
     },
@@ -5415,6 +5607,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MindfulPacer kann deine biometrischen Daten (wie sie von deiner Apple Watch gemessen werden) visualisieren und sie zusammen mit deinen Tagebucheinträgen auf der Analyse-Seite darstellen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer peut visualiser vos données biométriques (telles que mesurées par votre Apple Watch) et les afficher avec vos entrées de journal sur la page d'analyse."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer può visualizzare i tuoi dati biometrici (misurati dal tuo Apple Watch) e mostrarli insieme alle tue voci del diario nella pagina di analisi."
           }
         }
       }
@@ -5495,6 +5699,18 @@
             "state" : "translated",
             "value" : "MindfulPacer wird automatisch auf deiner Apple Watch installiert."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer est automatiquement installé sur votre Apple Watch."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer viene installato automaticamente sul tuo Apple Watch."
+          }
         }
       }
     },
@@ -5529,6 +5745,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MindfulPacer verarbeitet nur Rohdaten von deiner Apple Watch und deinen Tagebucheinträgen und gibt **KEINE** automatisierten Empfehlungen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer ne traite que les données brutes de votre Apple Watch et de vos entrées de journal, et ne fait **PAS** de recommandations automatisées."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer elabora solo i dati grezzi dal tuo Apple Watch e dalle tue voci del diario, e **NON** fornisce raccomandazioni automatiche."
           }
         }
       }
@@ -5973,6 +6201,18 @@
             "state" : "translated",
             "value" : "Keine Daten"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune donnée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun dato"
+          }
         }
       }
     },
@@ -6389,6 +6629,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktuell sind noch nicht alle Funktionen der Apple Watch verfügbar. Die biometrischen Daten werden zwar bereits von der Apple Watch geladen, aber du kriegst darauf noch keine automatischen Erinnerungen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les fonctions de l'Apple Watch ne sont pas encore disponibles. Les données biométriques sont déjà récupérées depuis l'Apple Watch, mais vous ne pouvez pas encore recevoir de rappels automatiques de réflexion."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non tutte le funzioni dell'Apple Watch sono ancora disponibili. I dati biometrici vengono già recuperati dall'Apple Watch, ma non puoi ancora ricevere promemoria automatici di riflessione."
           }
         }
       }
@@ -6855,6 +7107,18 @@
             "state" : "translated",
             "value" : "Prozent: %lld%%\n⚠️ Hinweis: Die Verwendung der App im Vordergrundmodus verringert die Akkulaufzeit erheblich."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pourcentage : %lld%%\n⚠️ Remarque : L'utilisation de l'app en mode premier plan réduit considérablement l'autonomie de la batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Percentuale: %lld%%\n⚠️ Nota: L'utilizzo dell'app in primo piano riduce significativamente la durata della batteria."
+          }
         }
       }
     },
@@ -7024,6 +7288,18 @@
             "state" : "translated",
             "value" : "Bitte erlaube MindfulPacer den Zugriff auf deine Apple Gesundheits-Daten. Wähle die biometrischen Daten aus, die du teilen möchtest (z.B. Herzfrequenz und/oder Schritte)."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez autoriser MindfulPacer à accéder à vos données Apple Santé. Sélectionnez les données biométriques que vous souhaitez partager (par ex. fréquence cardiaque et/ou pas)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a MindfulPacer di accedere ai tuoi dati di Apple Salute. Seleziona i dati biometrici che desideri condividere (ad es. frequenza cardiaca e/o passi)."
+          }
         }
       }
     },
@@ -7034,6 +7310,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitte erlaube MindfulPacer, Mitteilungen zu senden, um die Erinnerungen zu erhalten."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez autoriser MindfulPacer à envoyer des notifications pour recevoir les rappels."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a MindfulPacer di inviare notifiche per ricevere i promemoria."
           }
         }
       }
@@ -7047,6 +7335,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitte überprüfe den Monitoringstatus."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez vérifier le statut de surveillance."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlla lo stato del monitoraggio."
           }
         }
       }
@@ -7356,6 +7656,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rohdaten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Données brutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dati grezzi"
           }
         }
       }
@@ -9342,6 +9654,18 @@
             "state" : "translated",
             "value" : "Der Puffer legt die Mindestzeit zwischen wiederholten Benachrichtigungen zu verpassten Reflexionen fest."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le tampon définit le temps minimum entre les déclenchements répétés de réflexions manquées pour le même rappel."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il buffer imposta il tempo minimo tra le notifiche ripetute di riflessioni mancate per lo stesso promemoria."
+          }
         }
       }
     },
@@ -9400,6 +9724,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Die aktuelle Herzfrequenz (in Schlägen pro Minute, BPM), die von der Apple Watch erfasst wird, muss auf oder über dem Schwellenwert bleiben, damit eine Erinnerung ausgelöst wird.\n\nBitte beachte, dass solche Schwellenwerte für das Management deiner Aktivität sehr individuell sind. Wir empfehlen dir, mit verschiedenen (und mehreren) Schwellenwerten zu experimentieren, um herauszufinden, was für dich am besten funktioniert. Ein Anfangspunkt könnte (220 - Alter in Jahren) * 0,5 sein. Eine 40-jährige Person würde zum Beispiel einen Schwellenwert von (220-40)*0,5=90 Schläge pro Minute festlegen.\n\nEin Beispiel: Führe eine kurze Reflexion durch, wenn deine Herzfrequenz länger als 5 Minuten über 90 Schläge pro Minute liegt.\n\nBitte beachte, dass du das Intervall auf der nächsten Seite einstellen kannst."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La fréquence cardiaque actuelle (en battements par minute, BPM), détectée par l'Apple Watch, doit rester au niveau ou au-dessus du seuil pour qu'un rappel soit déclenché.\n\nVeuillez noter que ces seuils pour gérer votre activité sont très individuels. Nous recommandons d'expérimenter avec différents (et plusieurs) seuils pour identifier ce qui fonctionne le mieux pour vous. Un point de départ pourrait être (220 - Âge en années) * 0,5. Par exemple, une personne de 40 ans fixerait un seuil à (220-40)*0,5=90 battements par minute.\n\nPar exemple : Faites une réflexion rapide lorsque vous effectuez 2000 pas ou plus en 30 minutes.\n\nVeuillez noter que vous pouvez définir l'intervalle sur la page suivante."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La frequenza cardiaca attuale (in battiti al minuto, BPM), rilevata dall'Apple Watch, deve rimanere al livello o al di sopra della soglia affinché venga attivato un promemoria.\n\nTieni presente che tali soglie per la gestione della tua attività sono molto individuali. Ti consigliamo di sperimentare con diverse (e molteplici) soglie per identificare ciò che funziona meglio per te. Un punto di partenza potrebbe essere (220 - Età in anni) * 0,5. Ad esempio, una persona di 40 anni imposterebbe una soglia di (220-40)*0,5=90 battiti al minuto.\n\nAd esempio: Fai una rapida riflessione quando completi 2000 o più passi in 30 minuti.\n\nTieni presente che puoi impostare l'intervallo nella pagina successiva."
           }
         }
       }
@@ -9500,6 +9836,18 @@
             "state" : "translated",
             "value" : "Die Erinnerung, welche diese Reflexion ausgelöst hat. "
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rappel qui a déclenché cette réflexion."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il promemoria che ha attivato questa riflessione."
+          }
         }
       }
     },
@@ -9556,6 +9904,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Es gibt keine Reflexionen innerhalb der letzten %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il n'y a aucune réflexion au cours des derniers %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ci sono riflessioni negli ultimi %@."
           }
         }
       }
@@ -9845,6 +10205,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schwellenwert (%lld bpm)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seuil (%lld bpm)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soglia (%lld bpm)"
           }
         }
       }
@@ -10279,6 +10651,18 @@
             "state" : "translated",
             "value" : "Verwende MindfulPacer nur mit deinem iPhone. Du kannst deine Reflexionen und Aktivitäten manuell erstellen, ohne eine Apple Watch zu koppeln."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez MindfulPacer avec votre iPhone uniquement. Vous pouvez enregistrer des réflexions et des activités manuellement sans Apple Watch couplée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa MindfulPacer solo con il tuo iPhone. Puoi registrare riflessioni e attività manualmente senza un Apple Watch abbinato."
+          }
         }
       }
     },
@@ -10445,6 +10829,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rohdaten anzeigen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les données brutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visualizza dati grezzi"
           }
         }
       }
@@ -10983,6 +11379,18 @@
             "state" : "translated",
             "value" : "Bei Zweifeln kontaktiere bitte medizinisches Fachpersonal, einen Personal Trainer oder eine andere qualifizierte Fachkraft."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cas de doute, veuillez contacter un médecin expérimenté, un entraîneur personnel ou un autre professionnel qualifié."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In caso di dubbio, contatta un medico esperto, un personal trainer o un altro professionista qualificato."
+          }
         }
       }
     },
@@ -10993,6 +11401,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Beim Koppeln von MindfulPacer mit deiner Apple Watch kannst du deine biometrischen Daten (einschliesslich Herzfrequenz und Schritte) visualisieren und Erinnerungen auf deiner Uhr erhalten, um zu den von dir festgelegten Zeiten über deine Aktivitäten zu reflektieren."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En couplant MindfulPacer avec votre Apple Watch, vous pouvez visualiser vos données biométriques (y compris la fréquence cardiaque et les pas) et recevoir des rappels sur votre montre pour réfléchir aux moments que vous définissez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbinando MindfulPacer al tuo Apple Watch, puoi visualizzare i tuoi dati biometrici (inclusi frequenza cardiaca e passi) e ricevere promemoria sul tuo orologio per riflettere nei momenti da te definiti."
           }
         }
       }
@@ -11297,6 +11717,18 @@
             "state" : "translated",
             "value" : "Bei weiteren Fragen kannst du dich an die folgende E-Mail-Adresse wenden: support@mindfulpacer.ch"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez nous contacter à l'adresse e-mail suivante si vous avez d'autres questions : support@mindfulpacer.ch"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi contattarci al seguente indirizzo e-mail in caso di ulteriori domande: support@mindfulpacer.ch"
+          }
         }
       }
     },
@@ -11329,6 +11761,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Du hast derzeit keine verpassten Reflexionen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous n'avez aucune réflexion manquée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non hai alcuna riflessione mancata."
           }
         }
       }
