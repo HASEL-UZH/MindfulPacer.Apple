@@ -44,13 +44,13 @@ struct WatchOSApp: App {
     private func registerNotificationCategories() {
         let acceptAddDetailsAction = UNNotificationAction(
             identifier: "ACCEPT_ADD_DETAILS_ACTION",
-            title: "Accept & Add Details",
+            title: String(localized: "Accept & Add Details"),
             options: .foreground
         )
         
         let acceptLaterAction = UNNotificationAction(
             identifier: "ACCEPT_LATER_ACTION",
-            title: "Accept & Add Later",
+            title: String(localized: "Accept & Add Later"),
             options: []
         )
         

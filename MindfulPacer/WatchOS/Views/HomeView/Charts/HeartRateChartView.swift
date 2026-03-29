@@ -86,7 +86,7 @@ struct HeartRateChartView: View {
             } else {
                 let state = viewModel.emptyState(for: .heartRate)
                 ContentUnavailableView(
-                    state.title,
+                    String(localized: state.title),
                     systemImage: state.symbol,
                     description: Text(state.subtitle)
                 )
