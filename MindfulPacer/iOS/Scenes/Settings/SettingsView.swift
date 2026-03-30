@@ -14,7 +14,7 @@ enum SettingsSheet: Identifiable {
     case mailView(recipient: String, subject: String, body: String?)
     case roadmap
     case systemReportView
-    case whatsNew
+    case releaseNotes
 
     var id: Int {
         switch self {
@@ -22,7 +22,7 @@ enum SettingsSheet: Identifiable {
         case .mailView: 1
         case .roadmap: 2
         case .systemReportView: 3
-        case .whatsNew: 4
+        case .releaseNotes: 4
         }
     }
 }
@@ -91,7 +91,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    whatsNew
+                    releaseNotes
                     contactUs
                     roadmap
                     moreInfo
@@ -177,8 +177,8 @@ struct SettingsView: View {
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
-        case .whatsNew:
-            WhatsNewView()
+        case .releaseNotes:
+            ReleaseNotesView()
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(16)
         }
@@ -280,9 +280,9 @@ struct SettingsView: View {
 
     // MARK: Release Notes
 
-    private var whatsNew: some View {
+    private var releaseNotes: some View {
         Button {
-            viewModel.presentSheet(.whatsNew)
+            viewModel.presentSheet(.releaseNotes)
         } label: {
             RoundedListCell(
                 label: IconLabel(

@@ -1,5 +1,5 @@
 //
-//  WhatsNewViewModel.swift
+//  ReleaseNotesViewModel.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 31.08.2025.
@@ -16,10 +16,10 @@ struct ReleaseNote: Identifiable {
     let notes: [String]
 }
 
-// MARK: - WhatsNewViewModel
+// MARK: - ReleaseNotesViewModel
 
 @Observable
-final class WhatsNewViewModel {
+final class ReleaseNotesViewModel {
 
     // MARK: - Storage Keys
 

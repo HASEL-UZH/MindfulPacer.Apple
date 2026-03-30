@@ -190,11 +190,11 @@
 		0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A122E4B6E4D0052959C /* AppDelegate.swift */; };
 		0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE47A152E4B79BB0052959C /* AppleWatchView.swift */; };
 		0DEE75BB2E630F2500C79711 /* DataManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE75BA2E630F2500C79711 /* DataManagementView.swift */; };
-		0DEE75BD2E64D6B300C79711 /* WhatsNewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE75BC2E64D6B300C79711 /* WhatsNewViewModel.swift */; };
+		0DEE75BD2E64D6B300C79711 /* ReleaseNotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE75BC2E64D6B300C79711 /* ReleaseNotesViewModel.swift */; };
 		0DEF86F62E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF86F72E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
 		0DEF86F82E5DEF7F00BB9C70 /* ComplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */; };
-		0DEF87012E5DF49C00BB9C70 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */; };
+		0DEF87012E5DF49C00BB9C70 /* ReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEF87002E5DF49C00BB9C70 /* ReleaseNotesView.swift */; };
 		0DF157792F50527300F65598 /* StepDayMuteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF157782F50527300F65598 /* StepDayMuteStore.swift */; };
 		0DF1577A2F50527300F65598 /* StepDayMuteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF157782F50527300F65598 /* StepDayMuteStore.swift */; };
 		0DF2C3CC2D6112910036D50E /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */; };
@@ -418,9 +418,9 @@
 		0DE47A122E4B6E4D0052959C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0DE47A152E4B79BB0052959C /* AppleWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleWatchView.swift; sourceTree = "<group>"; };
 		0DEE75BA2E630F2500C79711 /* DataManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManagementView.swift; sourceTree = "<group>"; };
-		0DEE75BC2E64D6B300C79711 /* WhatsNewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewViewModel.swift; sourceTree = "<group>"; };
+		0DEE75BC2E64D6B300C79711 /* ReleaseNotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseNotesViewModel.swift; sourceTree = "<group>"; };
 		0DEF86F52E5DEF7F00BB9C70 /* ComplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationState.swift; sourceTree = "<group>"; };
-		0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		0DEF87002E5DF49C00BB9C70 /* ReleaseNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseNotesView.swift; sourceTree = "<group>"; };
 		0DF157782F50527300F65598 /* StepDayMuteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepDayMuteStore.swift; sourceTree = "<group>"; };
 		0DF2C3CB2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0DF2C3CD2D6112910036D50E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -1159,7 +1159,7 @@
 				0D9351552D12FBB90028AA61 /* Roadmap */,
 				0DBA37192C31EF5B00209681 /* Root View */,
 				0D3006C62C943433008F11C7 /* Settings */,
-				0DEF86FF2E5DF49400BB9C70 /* Whats New */,
+				0DEF86FF2E5DF49400BB9C70 /* Release Notes */,
 				0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */,
 			);
 			path = Scenes;
@@ -1320,13 +1320,13 @@
 			path = "Data Management";
 			sourceTree = "<group>";
 		};
-		0DEF86FF2E5DF49400BB9C70 /* Whats New */ = {
+		0DEF86FF2E5DF49400BB9C70 /* Release Notes */ = {
 			isa = PBXGroup;
 			children = (
-				0DEF87002E5DF49C00BB9C70 /* WhatsNewView.swift */,
-				0DEE75BC2E64D6B300C79711 /* WhatsNewViewModel.swift */,
+				0DEF87002E5DF49C00BB9C70 /* ReleaseNotesView.swift */,
+				0DEE75BC2E64D6B300C79711 /* ReleaseNotesViewModel.swift */,
 			);
-			path = "Whats New";
+			path = "Release Notes";
 			sourceTree = "<group>";
 		};
 		0DF5EDA32E4DF4F9005DB9DE /* RootView */ = {
@@ -1533,7 +1533,7 @@
 				0D0507172E58787000C5123A /* IntervalInfoSheet.swift in Sources */,
 				0DC136C02D50BD7700001D08 /* ArticlesListView.swift in Sources */,
 				0D876BCF2CB6D232007EEEDE /* SystemReportView.swift in Sources */,
-				0DEF87012E5DF49C00BB9C70 /* WhatsNewView.swift in Sources */,
+				0DEF87012E5DF49C00BB9C70 /* ReleaseNotesView.swift in Sources */,
 				0DBA371B2C31EF6000209681 /* RootView.swift in Sources */,
 				0DE1F5412F0FD1E8006AD317 /* BackgroundReflectionsStore.swift in Sources */,
 				0D4AF7352C9A12B50067D24E /* MailView.swift in Sources */,
@@ -1599,7 +1599,7 @@
 				0DDD33662C7B5D8E00A0B091 /* OnViewFirstAppearModifier.swift in Sources */,
 				0D6AEB4D2C9C2BD800D8D22F /* EmptyView.swift in Sources */,
 				0DDD33682C7B5D8E00A0B091 /* View+Modifiers.swift in Sources */,
-				0DEE75BD2E64D6B300C79711 /* WhatsNewViewModel.swift in Sources */,
+				0DEE75BD2E64D6B300C79711 /* ReleaseNotesViewModel.swift in Sources */,
 				0DE3B1102E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
 				0D67F4252C90DF19000F6114 /* AppleWatchConnectionView.swift in Sources */,
 				0D34C4672C838BD700928C53 /* ReminderTypeWidget.swift in Sources */,
