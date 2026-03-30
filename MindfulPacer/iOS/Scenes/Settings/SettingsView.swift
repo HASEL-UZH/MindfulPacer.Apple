@@ -278,7 +278,7 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: Whats New
+    // MARK: Release Notes
 
     private var whatsNew: some View {
         Button {
@@ -286,9 +286,9 @@ struct SettingsView: View {
         } label: {
             RoundedListCell(
                 label: IconLabel(
-                    icon: "party.popper.fill",
-                    title: String(localized: "What's New?"),
-                    description: String(localized: "View the new features"),
+                    icon: "doc.text.fill",
+                    title: String(localized: "Release Notes"),
+                    description: String(localized: "See what changed in each version"),
                     labelColor: Color("BrandPrimary"),
                     background: true
                 ),

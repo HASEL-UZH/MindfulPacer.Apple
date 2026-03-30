@@ -12,81 +12,72 @@ import SwiftUI
 struct WhatsNewView: View {
 
     // MARK: Properties
-    
+
     @Environment(\.dismiss) private var dismiss
     @State var viewModel: WhatsNewViewModel = ScenesContainer.shared.whatsNewViewModel()
 
     // MARK: Body
-    
-    var body: some View {
-        VStack(spacing: 32) {
-            Group {
-                Text("What's New in ")
-                + Text("MindfulPacer ")
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Color.brandPrimary,
-                                Color.brandPrimary.opacity(0.6),
-                                Color.brandPrimary.opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                + Text("🎉")
-            }
-            .font(.largeTitle.bold())
-            .multilineTextAlignment(.center)
-            .padding(.top, 64)
-            
-            Text("We're excited to launch the first version of MindfulPacer for iPhone and Apple Watch")
-                .padding(.horizontal)
 
-            VStack(spacing: 32) {
-                ForEach(viewModel.whatsNewFeatures) { feature in
-                    whatsNewFeature(feature)
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    ForEach(viewModel.releaseNotes) { release in
+                        releaseSection(release)
+                    }
+                }
+                .padding()
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle(String(localized: "Release Notes"))
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(String(localized: "Done")) {
+                        viewModel.markWhatsNewSeen()
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
                 }
             }
-            .padding([.horizontal, .top])
-
-            Spacer()
-
-            PrimaryButton(title: String(localized: "Continue")) {
-                viewModel.markWhatsNewSeen()
-                dismiss()
-            }
-            .padding(.horizontal)
         }
-        .background(Color(.systemGroupedBackground))
-        .frame(maxHeight: .infinity, alignment: .center)
     }
 
+    // MARK: - Subviews
+
     @ViewBuilder
-    private func whatsNewFeature(_ feature: NewFeature) -> some View {
-        HStack(spacing: 24) {
-            Image(systemName: feature.icon)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 32, height: 32)
-                .foregroundStyle(feature.color)
-                .symbolRenderingMode(.hierarchical)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(feature.title).fontWeight(.semibold)
-                Text(feature.description).font(.subheadline)
+    private func releaseSection(_ release: ReleaseNote) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Version \(release.version)")
+                .font(.title3.bold())
+                .foregroundStyle(.primary)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(release.notes.enumerated()), id: \.offset) { _, note in
+                    HStack(alignment: .top, spacing: 10) {
+                        Circle()
+                            .fill(Color.brandPrimary)
+                            .frame(width: 6, height: 6)
+                            .padding(.top, 6)
+
+                        Text(note)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .layoutPriority(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemGroupedBackground))
+        }
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    let viewModel: WhatsNewViewModel = ScenesContainer.shared.whatsNewViewModel()
-    WhatsNewView(viewModel: viewModel)
+    WhatsNewView()
 }

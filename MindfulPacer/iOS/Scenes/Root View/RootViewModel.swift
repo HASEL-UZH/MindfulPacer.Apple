@@ -109,7 +109,7 @@ class RootViewModel {
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
-    private let addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase
+    nonisolated(unsafe) private let addDefaultActivitiesUseCase: AddDefaultActivitiesUseCase
     private let checkUserHasSeenOnboardingUseCase: CheckUserHasSeenOnboardingUseCase
     
     // MARK: - State
