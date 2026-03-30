@@ -37,8 +37,8 @@ class RoadmapViewModel {
     
     // MARK: - Dependencies
     
-    private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
-    private let fetchRoadmapUseCase: FetchRoadmapUseCase
+    nonisolated(unsafe) private let checkInternetConnectivityUseCase: CheckInternetConnectivityUseCase
+    nonisolated(unsafe) private let fetchRoadmapUseCase: FetchRoadmapUseCase
     
     // MARK: - Published Properties
     
@@ -66,34 +66,28 @@ class RoadmapViewModel {
     // MARK: - Private Methods
     
     private func fetchRoadmap() {
-        let fetchRoadmapUseCase = self.fetchRoadmapUseCase
-        let checkInternetConnectivityUseCase = self.checkInternetConnectivityUseCase
-        
-        Task { [weak self] in
-            guard let self = self else { return }
-            
-            self.isInternetConnected = await checkInternetConnectivityUseCase.execute()
-            self.isFetchingRoadmap = true
-            
-            guard self.isInternetConnected else {
-                self.fetchErrorMessage = RoadmapFetchError.noInternetConnection.localizedDescription
-                self.isFetchingRoadmap = false
+        Task {
+            isInternetConnected = await checkInternetConnectivityUseCase.execute()
+            isFetchingRoadmap = true
+
+            guard isInternetConnected else {
+                fetchErrorMessage = RoadmapFetchError.noInternetConnection.localizedDescription
+                isFetchingRoadmap = false
                 return
             }
-            
-            self.isFetchingRoadmap = true
-            self.fetchErrorMessage = nil
-            
+
+            fetchErrorMessage = nil
+
             do {
-                let roadmapItems = try await fetchRoadmapUseCase.execute()
-                self.roadmapItems = roadmapItems
+                let items = try await fetchRoadmapUseCase.execute()
+                roadmapItems = items
             } catch let error as RoadmapFetchError {
-                self.fetchErrorMessage = error.localizedDescription
+                fetchErrorMessage = error.localizedDescription
             } catch {
-                self.fetchErrorMessage = RoadmapFetchError.unknownError.localizedDescription
+                fetchErrorMessage = RoadmapFetchError.unknownError.localizedDescription
             }
-            
-            self.isFetchingRoadmap = false
+
+            isFetchingRoadmap = false
         }
     }
 }
