@@ -660,6 +660,7 @@ struct ExampleView: View {
         ExampleView(viewModel: ExampleViewModel())
     }
 }
+```
 
 # Contributions
 
