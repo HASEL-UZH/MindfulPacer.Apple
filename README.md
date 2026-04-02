@@ -31,6 +31,12 @@
 4. [Benefits of This Structure](#benefits-of-this-structure)
 5. [Best Practices for Structuring SwiftUI Views](#best-practices-for-structuring-swiftui-views)
 6. [Contributions](#contributions)
+    - [Roles](#roles)
+    - [Project Management](#project-management)
+    - [Gitflow](#gitflow)
+    - [Commits](#commits)
+    - [Pull Requests](#pull-requests)
+    - [Disclaimer](#disclaimer)
 
 # Architecture
 
