@@ -11,8 +11,26 @@ import SwiftUI
 struct Provider: TimelineProvider {
     private var monitoringState: ComplicationState {
         let defaults = UserDefaults(suiteName: "group.com.MindfulPacer")
-        let rawValue = defaults?.integer(forKey: "monitoringState") ?? ComplicationState.inactive.rawValue
-        return ComplicationState(rawValue: rawValue) ?? .inactive
+
+        let raw = defaults?.integer(forKey: ComplicationKeys.state) ?? ComplicationState.inactive.rawValue
+        let state = ComplicationState(rawValue: raw) ?? .inactive
+
+        /// If app was force-killed, heartbeat stops. Use tiered timeout to detect this:
+        /// - First 2 minutes: Definitely active (allows for normal variance)
+        /// - 2-5 minutes: Show as paused (might be force-closed or system suspended)
+        /// - 5+ minutes: Show as inactive (definitely force-closed)
+        if state == .active {
+            let last = defaults?.double(forKey: ComplicationKeys.lastUpdated) ?? 0
+            let age = Date().timeIntervalSince1970 - last
+
+            if age > 300 {
+                return .inactive  // Definitely dead after 5 minutes
+            } else if age > 120 {
+                return .paused    // Possibly dead after 2 minutes
+            }
+        }
+
+        return state
     }
     
     func placeholder(in context: Context) -> SimpleEntry {
@@ -26,7 +44,8 @@ struct Provider: TimelineProvider {
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
         let entry = SimpleEntry(date: Date(), state: monitoringState)
-        let timeline = Timeline(entries: [entry], policy: .never)
+        let next = Date().addingTimeInterval(60)
+        let timeline = Timeline(entries: [entry], policy: .after(next))
         completion(timeline)
     }
 }

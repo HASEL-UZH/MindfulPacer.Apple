@@ -360,8 +360,10 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
         }()
         
-        // Use the provided endDate instead of Date()
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        // For day period, use empty options to include samples spanning midnight
+        // For other periods, .strictEndDate is appropriate
+        let options: HKQueryOptions = (period == .day) ? [] : .strictEndDate
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: options)
         
         let interval = DateComponents(minute: 15)
         let anchorDate = Calendar.current.startOfDay(for: endDate)
@@ -431,10 +433,11 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let endOfDay = Date()
+        // Use empty options for steps to include samples spanning midnight
         let predicate = HKQuery.predicateForSamples(
             withStart: startOfDay,
             end: endOfDay,
-            options: .strictEndDate
+            options: []
         )
         
         if measurementType == .steps {
@@ -601,10 +604,11 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         let interval = DateComponents(minute: 1)
         let anchorDate = startOfDay
         
+        // Use empty options [] to include step samples that may span across midnight
         let predicate = HKQuery.predicateForSamples(
             withStart: startOfDay,
             end: now,
-            options: .strictStartDate
+            options: []
         )
         
         let query = HKStatisticsCollectionQuery(

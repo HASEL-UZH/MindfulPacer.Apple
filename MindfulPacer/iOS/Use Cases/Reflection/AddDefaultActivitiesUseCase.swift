@@ -51,7 +51,6 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         let icon: String
     }
 
-    // TODO: Need to add the new subactivities here
     // Activities
     private let activityCatalog: [SeedActivity] = [
         .init(key: "movement", name: String(localized: "Movement"), icon: "figure.run"),
@@ -107,6 +106,7 @@ final class DefaultAddDefaultActivitiesUseCase: AddDefaultActivitiesUseCase {
         .init(key: "selfcare.visitingDoctor", parentKey: "selfcare", name: String(localized: "Visiting Doctor or Therapist"), icon: "cross"),
         .init(key: "selfcare.exercising", parentKey: "selfcare", name: String(localized: "Exercising"), icon: "figure.strengthtraining.traditional"),
         .init(key: "selfcare.relaxation", parentKey: "selfcare", name: String(localized: "Relaxation"), icon: "beach.umbrella"),
+        .init(key: "selfcare.toilet", parentKey: "selfcare", name: String(localized: "Toilet"), icon: "toilet"),
 
         // Cognitive
         .init(key: "cognitive.brainstorming", parentKey: "cognitive", name: String(localized: "Thinking or Brainstorming"), icon: "brain.head.profile"),

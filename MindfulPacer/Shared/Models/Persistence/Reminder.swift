@@ -176,6 +176,7 @@ extension Reminder {
         
         case immediately = "Immediately"
         case oneMinute = "1 Minute"
+        case twoMinutes = "2 Minutes"
         case fiveMinutes = "5 Minutes"
         case tenMinutes = "10 Minutes"
         case fifteenMinutes = "15 Minutes"
@@ -192,6 +193,7 @@ extension Reminder {
             switch self {
             case .immediately: String(localized: "Immediately")
             case .oneMinute: String(localized: "1 Minute")
+            case .twoMinutes: String(localized: "2 Minutes")
             case .fiveMinutes: String(localized: "5 Minutes")
             case .tenMinutes: String(localized: "10 Minutes")
             case .fifteenMinutes: String(localized: "15 Minutes")
@@ -207,6 +209,7 @@ extension Reminder {
             switch self {
             case .immediately: "alarm"
             case .oneMinute: "1.circle"
+            case .twoMinutes: "2.circle"
             case .fiveMinutes: "5.circle"
             case .tenMinutes: "10.circle"
             case .fifteenMinutes: "15.circle"
@@ -227,7 +230,7 @@ extension Reminder {
         }
         
         static var heartRateIntervals: [Interval] {
-            [.oneMinute, .fiveMinutes, .fifteenMinutes, .oneHour]
+            [.oneMinute, .twoMinutes, .fiveMinutes, .fifteenMinutes, .oneHour]
         }
         
         static var stepsIntervals: [Interval] {
@@ -251,6 +254,7 @@ final class IntervalSettingsManager: ObservableObject, @unchecked Sendable {
     private let defaultTimeIntervals: [Reminder.Interval: TimeInterval] = [
         .immediately: 0,
         .oneMinute: 60,
+        .twoMinutes: 2 * 60,
         .fiveMinutes: 5 * 60,
         .tenMinutes: 10 * 60,
         .fifteenMinutes: 15 * 60,

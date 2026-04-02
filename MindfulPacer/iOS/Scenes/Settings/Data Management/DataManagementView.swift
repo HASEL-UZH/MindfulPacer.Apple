@@ -23,6 +23,10 @@ struct DataManagementView: View {
             VStack(spacing: 16) {
                 exportData
                 deleteData
+
+                #if DEBUG
+                debugMissedReflections
+                #endif
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -54,7 +58,7 @@ struct DataManagementView: View {
         IconLabelGroupBox(
             label: IconLabel(
                 icon: "tray.and.arrow.up.fill",
-                title: "Export Data",
+                title: String(localized: "Export Data"),
                 labelColor: .brandPrimary,
                 background: true
             )
@@ -104,7 +108,7 @@ struct DataManagementView: View {
     }
     
     // MARK: Delete Data
-    
+
     private var deleteData: some View {
         IconLabelGroupBox(
             label: IconLabel(
@@ -117,8 +121,8 @@ struct DataManagementView: View {
             Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
                 IconLabel(
                     icon: "exclamationmark.triangle",
-                    title: "Note",
-                    description: String("You can delete all data in this app and start from fresh."),
+                    title: String(localized: "Note"),
+                    description: String(localized: "You can delete all data in this app and start from fresh."),
                     iconColor: .yellow
                 )
             }
@@ -126,12 +130,58 @@ struct DataManagementView: View {
             Button {
                 viewModel.presentAlert(.resetDatabaseConfirmation)
             } label: {
-                IconLabel(title: "Erase all Data", labelColor: .red)
+                IconLabel(title: String(localized: "Erase all Data"), labelColor: .red)
                     .font(.subheadline.weight(.semibold))
             }
         }
         .padding(.horizontal)
     }
+
+    // MARK: Debug Missed Reflections
+
+    #if DEBUG
+    private var debugMissedReflections: some View {
+        IconLabelGroupBox(
+            label: IconLabel(
+                icon: "ladybug.fill",
+                title: "Debug: Missed Reflections",
+                labelColor: .purple,
+                background: true
+            )
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                Stepper("Count: \(viewModel.seedMissedReflectionsCount)",
+                        value: $viewModel.seedMissedReflectionsCount,
+                        in: 5...100,
+                        step: 5)
+
+                Text("Inserts mock missed reflections with realistic trigger data (HR & steps, mixed severity).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        } footer: {
+            HStack(spacing: 16) {
+                Button {
+                    viewModel.seedMockMissedReflections()
+                } label: {
+                    Label("Seed", systemImage: "plus.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.purple)
+                }
+
+                Button {
+                    viewModel.deleteAllMissedReflections()
+                } label: {
+                    Label("Delete Missed", systemImage: "trash.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.red)
+                }
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(.horizontal)
+    }
+    #endif
 }
 
 // MARK: - Preview

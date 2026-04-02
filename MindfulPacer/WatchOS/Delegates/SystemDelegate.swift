@@ -14,18 +14,16 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     
     private let alertCacheKey = "com.mindfulpacer.alertDataCache"
     
-    private var fetchRemindersUseCase: FetchRemindersUseCase?
-    private var createReflectionUseCase: CreateReflectionUseCase?
+    private var modelContext: ModelContext?
     private var alertDataCache: [UUID: [MeasurementSample]] = [:]
     
     @MainActor
     func configure() {
-        guard self.fetchRemindersUseCase == nil else { return }
+        guard self.modelContext == nil else { return }
         
-        print("DEBUGY: Configuring SystemDelegate with use cases.")
-        let modelContext = ModelContainer.prod.mainContext
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
-        self.createReflectionUseCase = DefaultCreateReflectionUseCase(modelContext: modelContext)
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        self.modelContext = ModelContainer.prod.mainContext
     }
     
     override init() {
@@ -87,6 +85,13 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             return
         }
         
+        if let modelContext,
+           let reminder = fetchReminder(by: reminderID, from: modelContext),
+           reminder.measurementType == .steps,
+           reminder.interval == .oneDay {
+            StepDayMuteStore.muteForToday()
+        }
+        
         switch response.actionIdentifier {
         case "ACCEPT_ADD_DETAILS_ACTION":
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
@@ -115,26 +120,28 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
     
     @MainActor
     func createAndSendReflection(reminderID: UUID, alertID: UUID, activity: Activity?, subactivity: Subactivity?) {
-        guard let fetchRemindersUseCase else { return }
-        guard let allReminders = fetchRemindersUseCase.execute(),
-              let reminder = allReminders.first(where: { $0.id == reminderID }) else {
+        guard let modelContext else { return }
+        guard let reminder = fetchReminder(by: reminderID, from: modelContext) else {
             print("DEBUGY: Could not find reminder with ID \(reminderID).")
             return
         }
         
         let triggerSamples = self.retrieveTriggerData(for: alertID) ?? []
         
-        print("DEBUGY: triggerSamples", triggerSamples)
-        
-        guard let createReflectionUseCase else { return }
-        let result = createReflectionUseCase.execute(
+        let reflection = Reflection(
             date: Date(),
             activity: activity,
             subactivity: subactivity,
-            mood: nil, didTriggerCrash: false,
-            wellBeing: nil, fatigue: nil, shortnessOfBreath: nil,
-            sleepDisorder: nil, cognitiveImpairment: nil, physicalPain: nil,
-            depressionOrAnxiety: nil, additionalInformation: "",
+            mood: nil,
+            didTriggerCrash: false,
+            wellBeing: nil,
+            fatigue: nil,
+            shortnessOfBreath: nil,
+            sleepDisorder: nil,
+            cognitiveImpairment: nil,
+            physicalPain: nil,
+            depressionOrAnxiety: nil,
+            additionalInformation: "",
             measurementType: reminder.measurementType,
             reminderType: reminder.reminderType,
             threshold: reminder.threshold,
@@ -143,35 +150,42 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             isRejected: false
         )
         
-        if case .success(let newReflection) = result {
+        modelContext.insert(reflection)
+        
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
             sendEditReflectionRequestToPhone(
-                reflectionID: newReflection.id,
+                reflectionID: reflection.id,
                 activityID: activity?.id,
                 subactivityID: subactivity?.id
             )
+        } catch {
+            print("DEBUGY: Failed to save reflection: \(error.localizedDescription)")
         }
     }
     
     @MainActor
     private func createReflectionFromNotification(reminderID: UUID, alertID: UUID) -> Reflection? {
-        guard let fetchRemindersUseCase = self.fetchRemindersUseCase,
-              let createReflectionUseCase = self.createReflectionUseCase else {
-            return nil
-        }
-        
-        guard let allReminders = fetchRemindersUseCase.execute(),
-              let reminder = allReminders.first(where: { $0.id == reminderID }) else {
-            return nil
-        }
+        guard let modelContext else { return nil }
+        guard let reminder = fetchReminder(by: reminderID, from: modelContext) else { return nil }
         
         let triggerSamples = self.retrieveTriggerData(for: alertID) ?? []
         
-        let result = createReflectionUseCase.execute(
+        let reflection = Reflection(
             date: Date(),
-            activity: nil, subactivity: nil, mood: nil, didTriggerCrash: false,
-            wellBeing: nil, fatigue: nil, shortnessOfBreath: nil,
-            sleepDisorder: nil, cognitiveImpairment: nil, physicalPain: nil,
-            depressionOrAnxiety: nil, additionalInformation: "",
+            activity: nil,
+            subactivity: nil,
+            mood: nil,
+            didTriggerCrash: false,
+            wellBeing: nil,
+            fatigue: nil,
+            shortnessOfBreath: nil,
+            sleepDisorder: nil,
+            cognitiveImpairment: nil,
+            physicalPain: nil,
+            depressionOrAnxiety: nil,
+            additionalInformation: "",
             measurementType: reminder.measurementType,
             reminderType: reminder.reminderType,
             threshold: reminder.threshold,
@@ -180,10 +194,21 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             isRejected: false
         )
         
-        if case .success(let reflection) = result {
+        modelContext.insert(reflection)
+        
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
             return reflection
+        } catch {
+            print("DEBUGY: Failed to save reflection: \(error.localizedDescription)")
+            return nil
         }
-        return nil
+    }
+    
+    private func fetchReminder(by id: UUID, from context: ModelContext) -> Reminder? {
+        let descriptor = FetchDescriptor<Reminder>(predicate: #Predicate { $0.id == id })
+        return try? context.fetch(descriptor).first
     }
     
     func sendEditReflectionRequestToPhone(reflectionID: UUID, activityID: UUID?, subactivityID: UUID?) {

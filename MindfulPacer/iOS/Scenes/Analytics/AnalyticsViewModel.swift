@@ -19,6 +19,15 @@ struct ChartDataItem: Identifiable, Equatable {
     let value: Double
 }
 
+// MARK: - ReflectionBucket
+
+struct ReflectionBucket: Identifiable {
+    let id: UUID = UUID()
+    let startDate: Date
+    let endDate: Date
+    let reflections: [Reflection]
+}
+
 // MARK: - ChartGranularity
 
 enum ChartGranularity {
@@ -37,8 +46,6 @@ class AnalyticsViewModel {
     
     private let modelContext: ModelContext
     private let fetchHeartRateUseCase: FetchHeartRateUseCase
-    private let fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepsUseCase: FetchStepsUseCase
     
     // MARK: - Published Properties
@@ -49,7 +56,18 @@ class AnalyticsViewModel {
     var reminders: [Reminder] = []
     
     var selectedDateForPeriod: Date = Date.now
-    
+
+    /// Returns the effective end date for data queries.
+    /// For today, uses the current time. For past dates, uses end of day (23:59:59)
+    var effectiveEndDate: Date {
+        if Calendar.current.isDateInToday(selectedDateForPeriod) {
+            return selectedDateForPeriod
+        } else {
+            let startOfNextDay = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: selectedDateForPeriod))!
+            return startOfNextDay.addingTimeInterval(-1)
+        }
+    }
+
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
     }
@@ -215,6 +233,18 @@ class AnalyticsViewModel {
         return ""
     }
     
+    var navigationSubtitle: String {
+        let dayPart: String = {
+            if Calendar.current.isDateInToday(selectedDateForPeriod) {
+                return String(localized: "Today")
+            } else {
+                return selectedDateForPeriod.formatted(.dateTime.day().month())
+            }
+        }()
+        
+        return String(localized: "\(dayPart)")
+    }
+    
     var granularity: ChartGranularity {
         switch selectedPeriod {
         case .oneHour: .hour
@@ -229,29 +259,28 @@ class AnalyticsViewModel {
     init(
         modelContext: ModelContext,
         fetchHeartRateUseCase: FetchHeartRateUseCase,
-        fetchReflectionsInPeriodUseCase: FetchReflectionsInPeriodUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
         fetchStepsUseCase: FetchStepsUseCase
     ) {
         self.modelContext = modelContext
         self.fetchHeartRateUseCase = fetchHeartRateUseCase
-        self.fetchReflectionsInPeriodUseCase = fetchReflectionsInPeriodUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepsUseCase = fetchStepsUseCase
     }
     
     // MARK: - View Lifecycle
     
     func onViewFirstAppear() {
-        fetchReminders()
         fetchHeartRateChartData()
         fetchStepsChartData()
         updateReflectionsInPeriod()
     }
 
     func onViewAppear() {
-        fetchReminders()
         refreshChart()
+    }
+    
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
+        updateChartThresholds()
     }
     
     // MARK: - User Actions
@@ -297,13 +326,8 @@ class AnalyticsViewModel {
     
     // MARK: - Private Methods
     
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
-        updateChartThresholds()
-    }
-    
     private func fetchHeartRateChartData() {
-        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let success):
                 Task { @MainActor in
@@ -318,7 +342,7 @@ class AnalyticsViewModel {
     
     private func fetchStepsChartData() {
         // Base (non-bucketed) data
-        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let success):
                 Task { @MainActor in
@@ -335,12 +359,11 @@ class AnalyticsViewModel {
         
         // Bucketed weekly data
         if selectedPeriod == .week {
-            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: effectiveEndDate) { result in
                 switch result {
                 case .success(let success):
                     Task { @MainActor in
                         self.weeklyStepsChartData = success
-                        // For week, chartData uses weeklyStepsChartData
                         self.updateChartThresholds()
                     }
                 case .failure:
@@ -367,7 +390,7 @@ class AnalyticsViewModel {
     }
     
     private func fetchCumulativeStepsChartData() {
-        fetchStepsUseCase.execute(for: selectedPeriod, endDate: selectedDateForPeriod) { result in
+        fetchStepsUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
             switch result {
             case .success(let chartDataItems):
                 Task { @MainActor in
@@ -379,21 +402,102 @@ class AnalyticsViewModel {
         }
     }
     
-    private func updateReflectionsInPeriod() {
-        reflectionsInPeriod = fetchReflectionsInPeriodUseCase.execute(period: selectedPeriod, endDate: selectedDateForPeriod)
+    func updateReflectionsInPeriod() {
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\Reflection.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            
+            let endDate = effectiveEndDate
+            let start = selectedPeriod.startDate(relativeTo: endDate)
+            let filteredReflections = allReflections.filter { reflection in
+                reflection.date >= start && reflection.date <= endDate
+            }
+            
+            let groupingInterval: TimeInterval
+            switch selectedPeriod {
+            case .oneHour, .twoHours:
+                groupingInterval = 5 * 60
+            case .day:
+                groupingInterval = 15 * 60
+            case .week:
+                groupingInterval = 4 * 3600
+            }
+            
+            let sortedReflections = filteredReflections
+                .sorted { $0.date < $1.date }
+                .filter { !$0.isMissedReflection && !$0.isRejected }
+            
+            var buckets: [ReflectionBucket] = []
+            
+            if let firstReflection = sortedReflections.first {
+                var currentBucket: [Reflection] = [firstReflection]
+                var bucketStartDate = firstReflection.date
+                
+                for reflection in sortedReflections.dropFirst() {
+                    if reflection.date.timeIntervalSince(bucketStartDate) <= groupingInterval {
+                        currentBucket.append(reflection)
+                    } else {
+                        let bucketEndDate = currentBucket.last!.date
+                        buckets.append(ReflectionBucket(
+                            startDate: bucketStartDate,
+                            endDate: bucketEndDate,
+                            reflections: currentBucket
+                        ))
+                        
+                        bucketStartDate = reflection.date
+                        currentBucket = [reflection]
+                    }
+                }
+                
+                if !currentBucket.isEmpty {
+                    let bucketEndDate = currentBucket.last!.date
+                    buckets.append(ReflectionBucket(
+                        startDate: bucketStartDate,
+                        endDate: bucketEndDate,
+                        reflections: currentBucket
+                    ))
+                }
+            }
+            
+            reflectionsInPeriod = buckets
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            reflectionsInPeriod = []
+        }
     }
     
     private func updateChartThresholds() {
-        let maxValue = chartData.map { $0.value }.max() ?? 0
+        guard selectedMeasurementType == .steps else {
+            let maxValue = chartData.map { $0.value }.max() ?? 0
+            let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
 
-        let multiplier: Double = (selectedPeriod == .week) ? 1.0 : 1.5
+            chartThresholds = reminders
+                .filter { $0.measurementType == selectedMeasurementType }
+                .map { ($0.reminderType, $0.threshold) }
+                .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+
+            return
+        }
+
+        let allowedIntervals: Set<Reminder.Interval> = {
+            switch selectedPeriod {
+            case .oneHour:
+                return [.thirtyMinutes, .oneHour]
+            case .twoHours:
+                return [.thirtyMinutes, .oneHour, .twoHours]
+            case .day:
+                return [.thirtyMinutes, .oneHour, .twoHours, .fourHours, .oneDay]
+            case .week:
+                return [.oneDay]
+            }
+        }()
 
         chartThresholds = reminders
-            .filter { $0.measurementType == selectedMeasurementType }
-            .map { reminder in
-                (reminder.reminderType, reminder.threshold)
-            }
-            .filter { Double($0.threshold) <= maxValue * multiplier || selectedPeriod == .week }
+            .filter { $0.measurementType == .steps }
+            .filter { allowedIntervals.contains($0.interval) }
+            .map { ($0.reminderType, $0.threshold) }
     }
 }
 

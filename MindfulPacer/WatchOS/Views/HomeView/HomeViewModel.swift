@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreData
 import WatchKit
 import SwiftUI
 import SwiftData
@@ -39,7 +40,6 @@ class HomeViewModel {
     var isShowingAppInfoSheet = false
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
-    var defaultActivities: [Activity] = []
     var selectedTab: HomePage = .main
     var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
     
@@ -60,9 +60,7 @@ class HomeViewModel {
     var missedReflectionsCount: Int = 0
     var showActivitiesUnavailableAlert: Bool = false
     
-    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
-    private let fetchReflectionsUseCase: FetchReflectionsUseCase
+    private let modelContext: ModelContext
     
     enum ChartMetric { case heartRate, steps }
 
@@ -73,10 +71,9 @@ class HomeViewModel {
     }
 
     var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
-    var hasStepsData: Bool { !hourlyStepData.isEmpty } // steps can come in even if HR monitoring is off
+    var hasStepsData: Bool { !hourlyStepData.isEmpty }
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
-        // Highest priority: permission
         if statusMessage == .permissionDenied {
             return ChartEmptyState(
                 title: "Health Permission Needed",
@@ -85,33 +82,23 @@ class HomeViewModel {
             )
         }
 
-        // Paused by user
-        if isManuallyPaused {
-            return ChartEmptyState(
-                title: "Monitoring Paused",
-                subtitle: "Resume monitoring to continue collecting \(metric == .heartRate ? "heart rate" : "step") data.",
-                symbol: "pause.circle.fill"
-            )
-        }
-
-        // Not monitoring (session off)
-        if !isMonitoring && metric == .heartRate {
-            return ChartEmptyState(
-                title: "Monitoring is Off",
-                subtitle: "Start monitoring to see your last hour of heart rate.",
-                symbol: "play.circle.fill"
-            )
-        }
-
-        // No recent samples despite being OK otherwise
         switch metric {
         case .heartRate:
             return ChartEmptyState(
-                title: "No Recent Heart Rate",
-                subtitle: "We didn’t receive heart rate in the last hour. Keep your watch snug and try moving a bit.",
+                title: "Not enough heart rate samples yet",
+                subtitle: "Keep the app running for a moment. We’ll show the last hour as soon as we have enough data.",
                 symbol: "waveform.path.ecg"
             )
+
         case .steps:
+            if isManuallyPaused {
+                return ChartEmptyState(
+                    title: "Monitoring Paused",
+                    subtitle: "Resume monitoring to continue collecting step data.",
+                    symbol: "pause.circle.fill"
+                )
+            }
+
             return ChartEmptyState(
                 title: "No Recent Steps",
                 subtitle: "No step data recorded for the last hour.",
@@ -119,7 +106,6 @@ class HomeViewModel {
             )
         }
     }
-
     
     var avgHeartRate: Int {
         guard !heartRateSamples.isEmpty else { return 0 }
@@ -128,7 +114,7 @@ class HomeViewModel {
     }
     
     var heartRateThresholdRules: [AlertRule] {
-        let allowed: [Reminder.Interval] = [.fifteenMinutes, .oneMinute, .fiveMinutes]
+        let allowed: [Reminder.Interval] = [.fifteenMinutes, .oneMinute, .fiveMinutes, .twoMinutes]
         return activeRules.filter { rule in
             allowed.contains(rule.interval) &&
             (rule.measurementType == .heartRate)
@@ -208,7 +194,7 @@ class HomeViewModel {
         let thrMax = stepsDisplayedThresholds.max()
 
         var overallMin = min(dataMin, thrMin ?? dataMin)
-        var overallMax = max(dataMax, thrMax ?? dataMax)
+        let overallMax = max(dataMax, thrMax ?? dataMax)
 
         overallMin = max(0, overallMin)
 
@@ -223,20 +209,16 @@ class HomeViewModel {
     
     init() {
         let modelContext = ModelContainer.prod.mainContext
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: modelContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: modelContext)
-        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: modelContext)
+        self.modelContext = modelContext
         
         loadPersistentCounts()
         checkForDailyReset()
         setupSubscriptions()
-        loadDefaultActivities()
     }
     
     private init(isForPreview: Bool) {
-        self.fetchRemindersUseCase = DefaultFetchRemindersUseCase(modelContext: ModelContainer.preview.mainContext)
-        self.fetchDefaultActivitiesUseCase = DefaultFetchDefaultActivitiesUseCase(modelContext: ModelContainer.preview.mainContext)
-        self.fetchReflectionsUseCase = DefaultFetchReflectionsUseCase(modelContext: ModelContainer.preview.mainContext)
+        let previewContext = ModelContainer.preview.mainContext
+        self.modelContext = previewContext
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
@@ -264,12 +246,6 @@ class HomeViewModel {
             stepData.append((date: date, steps: steps))
         }
         self.hourlyStepData = stepData.reversed()
-    }
-    
-    private func loadDefaultActivities() {
-        if let activities = fetchDefaultActivitiesUseCase.execute() {
-            self.defaultActivities = activities
-        }
     }
     
     static var mock: HomeViewModel {
@@ -308,7 +284,14 @@ class HomeViewModel {
                   .receive(on: DispatchQueue.main)
                   .sink { [weak self] isPaused in self?.isManuallyPaused = isPaused }
                   .store(in: &cancellables)
-        
+
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.fetchMissedReflections()
+            }
+            .store(in: &cancellables)
+
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { [weak self] _ in
             Task {
                 if await self?.selectedTab == .stepsChart {
@@ -323,7 +306,9 @@ class HomeViewModel {
     
     func onAppear() {
         Services.shared.systemDelegate.configure()
-        Services.shared.monitorService.configure(fetchRemindersUseCase: self.fetchRemindersUseCase)
+        
+        let reminders = fetchReminders()
+        Services.shared.monitorService.configure(reminders: reminders)
         
         Task {
             let isAuthorized = try await Services.shared.monitorService.requestAuthorization()
@@ -340,6 +325,32 @@ class HomeViewModel {
         device.isBatteryMonitoringEnabled = true
         updateBattery()
         fetchMissedReflections()
+    }
+    
+    private func fetchReminders() -> [Reminder] {
+        do {
+            let descriptor = FetchDescriptor<Reminder>(sortBy: [SortDescriptor(\.threshold, order: .reverse)])
+            let reminders = try modelContext.fetch(descriptor)
+            
+            let groupedReminders = Dictionary(grouping: reminders) { $0.measurementType }
+            
+            let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
+                if lhs == .heartRate {
+                    return true
+                } else if rhs == .heartRate {
+                    return false
+                } else {
+                    return lhs.rawValue < rhs.rawValue
+                }
+            }
+            
+            return sortedKeys.flatMap { key in
+                groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
+            }
+        } catch {
+            print("DEBUG: Could not fetch Reminders: \(error.localizedDescription)")
+            return []
+        }
     }
     
     func requestCreateReflectionOnPhone() {
@@ -403,21 +414,10 @@ class HomeViewModel {
     func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
         
+        muteDayStepsIfNeeded(for: rule)
         defer { alertState = .none }
         
         if shouldAddDetails {
-            loadDefaultActivities()
-            
-            if defaultActivities.isEmpty {
-                Services.shared.systemDelegate.createAndSendReflection(
-                    reminderID: rule.id,
-                    alertID: alertID,
-                    activity: nil,
-                    subactivity: nil
-                )
-                return
-            }
-            
             Services.shared.navigationManager.pendingActivitySelection = ActivitySelectionInfo(
                 id: alertID,
                 reminderID: rule.id
@@ -434,11 +434,10 @@ class HomeViewModel {
     }
     
     func dismissAlertOverlay() {
-        self.alertState = .none
-    }
-    
-    func rejectStrongAlert() {
-        self.alertState = .none
+        if case .showing(let rule, _) = alertState {
+            muteDayStepsIfNeeded(for: rule)
+        }
+        alertState = .none
     }
     
     private func checkForDailyReset() {
@@ -490,9 +489,17 @@ class HomeViewModel {
     }
     
     private func fetchMissedReflections() {
-        let allReflections = fetchReflectionsUseCase.execute() ?? []
-        let missedReflections = allReflections.filter { $0.isMissedReflection }
-        missedReflectionsCount = missedReflections.count
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            let missedReflections = allReflections.filter { $0.isMissedReflection }
+            missedReflectionsCount = missedReflections.count
+        } catch {
+            print("DEBUG: Could not fetch missed reflections: \(error.localizedDescription)")
+            missedReflectionsCount = 0
+        }
     }
     
     private func paddedDomain(
@@ -506,6 +513,11 @@ class HomeViewModel {
         let lo = minValue - pad
         let hi = maxValue + pad
         return lo...hi
+    }
+    
+    private func muteDayStepsIfNeeded(for rule: AlertRule) {
+        guard rule.measurementType == .steps, rule.interval == .oneDay else { return }
+        StepDayMuteStore.muteForToday()
     }
 }
 

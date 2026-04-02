@@ -64,8 +64,7 @@ struct HomeView: View {
         .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
             SelectActivityView(
                 reminderID: selectionInfo.reminderID,
-                alertID: selectionInfo.id,
-                activities: viewModel.defaultActivities
+                alertID: selectionInfo.id
             )
             .environment(\.dismissSheet) {
                 Task { @MainActor in
@@ -99,7 +98,7 @@ struct HomeView: View {
                         }
                         .foregroundColor(.white)
                         
-                        Text("(\(rule.reminderType.rawValue) Reminder)")
+                        Text("(\(rule.reminderType.localized) Reminder)")
                             .font(.headline)
                             .foregroundColor(.white)
                     }
@@ -216,7 +215,7 @@ struct HomeView: View {
                 }
 
                 Button { viewModel.showStatusInfo.toggle() } label: {
-                    Label(viewModel.statusMessage.rawValue, systemImage: viewModel.statusMessage.symbolName)
+                    Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
                         .foregroundStyle(viewModel.statusMessage.color)
                         .font(.footnote)
                 }
@@ -224,7 +223,7 @@ struct HomeView: View {
                     Button("OK", role: .cancel) {}
                 } message: {
                     Text("""
-                    \(viewModel.statusMessage.rawValue)
+                    \(viewModel.statusMessage.localized)
                     \(viewModel.statusMessage.description)
                     """)
                 }

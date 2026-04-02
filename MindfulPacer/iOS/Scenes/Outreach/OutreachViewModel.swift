@@ -16,7 +16,7 @@ class OutreachViewModel {
     
     // MARK: - Dependencies
     
-    private let fetchBlogArticlesUseCase: FetchBlogArticlesUseCase
+    nonisolated(unsafe) private let fetchBlogArticlesUseCase: FetchBlogArticlesUseCase
     
     // MARK: - Published Properties
     
@@ -56,23 +56,18 @@ class OutreachViewModel {
     // MARK: - Private Methods
     
     private func fetchBlogArticles() {
-        let fetchBlogArticlesUseCase = self.fetchBlogArticlesUseCase
-        
-        Task { [weak self] in
-            guard let self = self else { return }
-            
-            self.isFetchingArticles = true
-            self.fetchErrorMessage = nil
-            
+        isFetchingArticles = true
+        fetchErrorMessage = nil
+
+        Task {
             do {
                 let articles = try await fetchBlogArticlesUseCase.execute(category: nil)
-                self.blogArticles = articles
-                self.recentArticles = Array(self.blogArticles.prefix(2))
+                blogArticles = articles
+                recentArticles = Array(blogArticles.prefix(2))
             } catch {
-                self.fetchErrorMessage = "DEBUG: Failed to fetch articles. Please try again."
+                fetchErrorMessage = "DEBUG: Failed to fetch articles. Please try again."
             }
-            
-            self.isFetchingArticles = false
+            isFetchingArticles = false
         }
     }
 }

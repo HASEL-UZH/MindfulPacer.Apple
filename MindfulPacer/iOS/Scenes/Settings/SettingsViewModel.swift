@@ -8,6 +8,7 @@
 import Foundation
 import MessageUI
 import SwiftUI
+import SwiftData
 import UniformTypeIdentifiers
 import Combine
 
@@ -141,8 +142,8 @@ enum ExportDataModel: String, CaseIterable, Identifiable {
     
     var description: String {
         switch self {
-        case .reflection: "Reflections"
-        case .reminder: "Reminders"
+        case .reflection: String(localized: "Reflections")
+        case .reminder: String(localized: "Reminders")
         }
     }
     
@@ -198,8 +199,7 @@ class SettingsViewModel {
     
     // MARK: - Dependencies
     
-    private let fetchReflectionsUseCase: FetchReflectionsUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
+    private let modelContext: ModelContext
     private let resetDatabaseUseCase: ResetDatabaseUseCase
     
     // MARK: - Published Properties
@@ -240,7 +240,6 @@ class SettingsViewModel {
         didSet {
             guard oldValue != deviceMode else { return }
             DefaultsStore.shared.set(deviceMode.rawValue, forKey: DeviceMode.appStorageKey)
-            Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(deviceMode) }
         }
     }
     var selectedExportFileFormat: ExportFileFormat = .csv
@@ -359,12 +358,10 @@ class SettingsViewModel {
     // MARK: - Initialization
     
     init(
-        fetchReflectionsUseCase: FetchReflectionsUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
+        modelContext: ModelContext,
         resetDatabaseUseCase: ResetDatabaseUseCase
     ) {
-        self.fetchReflectionsUseCase = fetchReflectionsUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
+        self.modelContext = modelContext
         self.resetDatabaseUseCase = resetDatabaseUseCase
         
         loadAllBuffers()
@@ -375,7 +372,10 @@ class SettingsViewModel {
     
     func onViewAppear() {
         fetchReflections()
-        fetchReminders()
+    }
+    
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
     }
     
     // MARK: - Presentation
@@ -502,11 +502,15 @@ class SettingsViewModel {
     }
     
     private func fetchReflections() {
-        reflections = fetchReflectionsUseCase.execute() ?? []
-    }
-    
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            reflections = try modelContext.fetch(descriptor)
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            reflections = []
+        }
     }
     
     private func loadAllBuffers() {
@@ -735,5 +739,97 @@ class SettingsViewModel {
     private func optionalIntToString(_ value: Int?) -> String {
         return value.map { "\($0)" } ?? ""
     }
+
+    // MARK: - Debug Mock Data
+
+    #if DEBUG
+    var seedMissedReflectionsCount: Int = 30
+
+    func seedMockMissedReflections() {
+        let count = seedMissedReflectionsCount
+        let calendar = Calendar.current
+        let now = Date()
+
+        let configs: [(Reminder.MeasurementType, Reminder.ReminderType, Int, Reminder.Interval)] = [
+            (.heartRate, .light,   100, .fiveMinutes),
+            (.heartRate, .medium,  120, .twoMinutes),
+            (.heartRate, .strong,  140, .oneMinute),
+            (.steps,     .light,  5000, .thirtyMinutes),
+            (.steps,     .medium, 8000, .oneHour),
+        ]
+
+        for i in 0..<count {
+            let config = configs[i % configs.count]
+            let hoursAgo = Double(i) * 1.5 + Double.random(in: 0...0.5)
+            let triggerDate = calendar.date(byAdding: .minute, value: -Int(hoursAgo * 60), to: now)!
+
+            // Build realistic trigger samples (need >1 to pass the display policy filter)
+            let sampleCount = Int.random(in: 30...120)
+            let intervalSeconds = config.3.timeInterval
+            let sampleSpacing = intervalSeconds / Double(sampleCount)
+
+            var samples: [MeasurementSample] = []
+            let baseValue = Double(config.2)
+
+            for j in 0..<sampleCount {
+                let sampleDate = triggerDate.addingTimeInterval(-intervalSeconds + Double(j) * sampleSpacing)
+                let noise = Double.random(in: -10...15)
+                let value: Double
+                if config.0 == .heartRate {
+                    value = max(50, baseValue + noise)
+                } else {
+                    value = max(0, Double(Int.random(in: 20...80)))
+                }
+                samples.append(MeasurementSample(type: config.0, value: value, date: sampleDate))
+            }
+
+            let reflection = Reflection(
+                date: triggerDate,
+                activity: nil,        // nil activity + non-nil reminderType = missed
+                subactivity: nil,
+                mood: nil,
+                didTriggerCrash: false,
+                wellBeing: nil,
+                fatigue: nil,
+                shortnessOfBreath: nil,
+                sleepDisorder: nil,
+                cognitiveImpairment: nil,
+                physicalPain: nil,
+                depressionOrAnxiety: nil,
+                additionalInformation: "",
+                measurementType: config.0,
+                reminderType: config.1,
+                threshold: config.2,
+                interval: config.3,
+                triggerSamples: samples,
+                isRejected: false
+            )
+
+            modelContext.insert(reflection)
+        }
+
+        do {
+            try modelContext.save()
+            print("DEBUG: Seeded \(count) mock missed reflections")
+        } catch {
+            print("DEBUG: Failed to seed mock data: \(error.localizedDescription)")
+        }
+    }
+
+    func deleteAllMissedReflections() {
+        do {
+            let descriptor = FetchDescriptor<Reflection>()
+            let all = try modelContext.fetch(descriptor)
+            let missed = all.filter { $0.isMissedReflection && !$0.isRejected }
+            for r in missed {
+                modelContext.delete(r)
+            }
+            try modelContext.save()
+            print("DEBUG: Deleted \(missed.count) missed reflections")
+        } catch {
+            print("DEBUG: Failed to delete missed reflections: \(error.localizedDescription)")
+        }
+    }
+    #endif
 }
 

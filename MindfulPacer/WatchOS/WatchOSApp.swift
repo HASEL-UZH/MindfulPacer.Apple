@@ -27,6 +27,10 @@ struct WatchOSApp: App {
         }
         
         registerNotificationCategories()
+        
+        Task {
+            Services.shared.monitorService.verifyComplicationStateOnLaunch()
+        }
     }
     
     var body: some Scene {

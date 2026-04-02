@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - Presentation Enums
 
@@ -58,6 +59,22 @@ struct HomeView: View {
     @State var viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
     var onWidgetTap: () -> Void
     
+    @Query private var allReminders: [Reminder]
+    
+    private var reminders: [Reminder] {
+        let groupedReminders = Dictionary(grouping: allReminders) { $0.measurementType }
+        let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
+            if lhs == .heartRate { return true }
+            else if rhs == .heartRate { return false }
+            else { return lhs.rawValue < rhs.rawValue }
+        }
+        return sortedKeys.flatMap { key in
+            groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
+        }
+    }
+    
+    @Query(sort: \Activity.name) private var activities: [Activity]
+    
     @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
     private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
     
@@ -86,7 +103,7 @@ struct HomeView: View {
             }
             .navigationDestination(for: HomeNavigationDestination.self, destination: navigationDestination)
             .refreshable {
-                viewModel.onRefresh()
+                viewModel.onRefresh(reminders: reminders)
             }
             .sheet(item: $viewModel.activeSheet, onDismiss: {
                 withAnimation {
@@ -103,7 +120,8 @@ struct HomeView: View {
             }
             .onViewFirstAppear {
                 viewModel.configure(deviceMode)
-                viewModel.onViewFirstAppear()
+                viewModel.updateActivities(activities)
+                viewModel.onViewFirstAppear(reminders: reminders)
             }
             .onAppear {
                 viewModel.configure(deviceMode)
@@ -111,6 +129,13 @@ struct HomeView: View {
             }
             .onChange(of: deviceMode) {
                 viewModel.configure(deviceMode)
+            }
+            .onChange(of: reminders) { _, newValue in
+                print("DEBUG: Reminders changed, count: \(newValue.count)")
+                viewModel.updateReminders(newValue)
+            }
+            .onChange(of: activities) { _, newValue in
+                viewModel.updateActivities(newValue)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -355,5 +380,6 @@ struct HomeView: View {
                 Label("Home", systemImage: "house")
             }
     }
+    .modelContainer(ModelContainer.preview)
     .tint(Color("BrandPrimary"))
 }

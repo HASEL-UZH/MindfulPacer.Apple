@@ -11,28 +11,6 @@ import SwiftUI
 import CoreData
 import WidgetKit
 
-enum AppGroupPaths {
-    static let groupID = "group.com.MindfulPacer"
-
-    @discardableResult
-    static func prepareApplicationSupport() -> URL? {
-        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) else {
-            print("AppGroup container not found")
-            return nil
-        }
-        let appSupport = container
-            .appendingPathComponent("Library", isDirectory: true)
-            .appendingPathComponent("Application Support", isDirectory: true)
-        do {
-            try FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
-            return appSupport
-        } catch {
-            print("Failed to create Application Support in group: \(error)")
-            return nil
-        }
-    }
-}
-
 // MARK: - StatusMessage
 
 enum StatusMessage: String {
@@ -44,6 +22,25 @@ enum StatusMessage: String {
     case syncing = "Syncing..."
     case paused = "Monitoring Paused"
 
+    var localized: String {
+        switch self {
+        case .monitoring:
+            String(localized: "Monitoring Active")
+        case .notMonitoring:
+            String(localized: "Not Monitoring")
+        case .noReminders:
+            String(localized: "No Reminders Set")
+        case .permissionDenied:
+            String(localized: "Permission Denied")
+        case .error:
+            String(localized: "An Error Occurred")
+        case .syncing:
+            String(localized: "Syncing...")
+        case .paused:
+            String(localized: "Monitoring Paused")
+        }
+    }
+    
     var symbolName: String {
         switch self {
         case .monitoring: return "checkmark"
@@ -71,19 +68,19 @@ enum StatusMessage: String {
     var description: String {
         switch self {
         case .monitoring:
-            return "The app is actively monitoring your health data based on your reminders."
+            return String(localized: "The app is actively monitoring your health data based on your reminders.")
         case .notMonitoring:
-            return "Monitoring is currently inactive. This may be because no reminders are set or there was an issue."
+            return String(localized: "Monitoring is currently inactive. This may be because no reminders are set or there was an issue.")
         case .noReminders:
-            return "Please add a reminder on your iPhone to begin monitoring."
+            return String(localized: "Please add a reminder on your iPhone to begin monitoring.")
         case .permissionDenied:
-            return "Access to HealthKit was denied. Please grant permission in the Health app on your iPhone."
+            return String(localized: "Access to HealthKit was denied. Please grant permission in the Health app on your iPhone.")
         case .error:
-            return "An unexpected error occurred. Please try restarting the app."
+            return String(localized: "An unexpected error occurred. Please try restarting the app.")
         case .syncing:
-            return "Syncing your latest reminders from iCloud..."
+            return String(localized: "Syncing your latest reminders from iCloud...")
         case .paused:
-            return "Monitoring is temporarily paused. Tap the play button to resume."
+            return String(localized: "Monitoring is temporarily paused. Tap the play button to resume.")
         }
     }
 }
@@ -138,7 +135,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     @Published private(set) var recentHeartRateSamples: [(value: Double, date: Date)] = []
     @Published private(set) var activeRules: [AlertRule] = []
     @Published var isManuallyPaused: Bool = false
-
+    @Published var isMonitoringEnabled: Bool = true
+    
     let alertTriggeredSubject = PassthroughSubject<AlertRule, Never>()
 
     private let healthStore = HKHealthStore()
@@ -147,10 +145,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     var isAppInForeground: Bool = true
 
-    private var fetchRemindersUseCase: FetchRemindersUseCase?
+    private var reminders: [Reminder] = []
     private var cancellables = Set<AnyCancellable>()
-
     private var stepsTimer: DispatchSourceTimer?
+    private var complicationHeartbeat: DispatchSourceTimer?
 
     override init() {
         super.init()
@@ -173,32 +171,29 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
             .store(in: &cancellables)
     }
-
-    func configure(fetchRemindersUseCase: FetchRemindersUseCase) {
-        self.fetchRemindersUseCase = fetchRemindersUseCase
+    
+    func configure(reminders: [Reminder]) {
+        self.reminders = reminders
     }
-
+    
     // MARK: - State refresh
-
+    
     func refreshState() {
         let hadRules = !activeRules.isEmpty
         let hasRules = rebuildRulesPreservingState()
-
+        
         if isManuallyPaused {
             statusMessage = .paused
         } else if isSessionActive {
-            statusMessage = .monitoring
+            statusMessage = hasRules ? .monitoring : .monitoring
         } else {
-            statusMessage = hasRules ? .notMonitoring : .noReminders
+            statusMessage = isMonitoringEnabled ? .notMonitoring : .notMonitoring
         }
-
+        
         _startOrStopMonitoring(hasRules: hasRules, previouslyHadRules: hadRules)
     }
-
+    
     private func rebuildRulesPreservingState() -> Bool {
-        guard let useCase = fetchRemindersUseCase else { return false }
-        let reminders = useCase.execute() ?? []
-
         var next: [AlertRule] = []
         next.reserveCapacity(reminders.count)
 
@@ -220,17 +215,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
             next.append(newRule)
 
-            // Ensure runtime entry exists (don’t publish anything)
             if runtimeByRuleID[rem.id] == nil {
                 runtimeByRuleID[rem.id] = RuleRuntimeState()
             }
         }
 
-        // Drop runtime for removed rules
         let validIDs = Set(next.map(\.id))
         runtimeByRuleID = runtimeByRuleID.filter { validIDs.contains($0.key) }
 
-        // Only publish if config truly changed
         if next != activeRules {
             activeRules = next
         }
@@ -257,16 +249,23 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - Start/Stop monitoring
 
     private func _startOrStopMonitoring(hasRules: Bool, previouslyHadRules: Bool) {
-        guard !isManuallyPaused else { return }
-        let sessionIsRunning = (workoutSession?.state == .running)
-
-        if hasRules && !sessionIsRunning {
-            startWorkoutSession()
-        } else if !hasRules && sessionIsRunning {
-            endWorkoutSession()
-        } else if hasRules && previouslyHadRules {
-            // No-op: rules still exist; we preserved timers so don't restart anything.
+        if isManuallyPaused {
+            return
         }
+
+        guard isMonitoringEnabled else {
+            /// User turned monitoring off
+            if workoutSession != nil { endWorkoutSession() }
+            return
+        }
+
+        /// Monitoring enabled => ensure workout session is running (even if no reminders)
+        let sessionIsRunning = (workoutSession?.state == .running)
+        if !sessionIsRunning {
+            startWorkoutSession()
+        }
+
+        /// Rules presence only affects rule evaluation + status text, not the workout session
     }
 
     private func startWorkoutSession() {
@@ -296,10 +295,11 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 session.startActivity(with: Date())
                 try await builder.beginCollection(at: Date())
                 isSessionActive = true
+                startComplicationHeartbeat()
                 statusMessage = .monitoring
                 startStepsTimer()
 
-                sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+                writeComplicationState(.active)
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
             } catch {
                 statusMessage = .error
@@ -318,7 +318,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = false
         statusMessage = .notMonitoring
 
-        sharedUserDefaults?.set(ComplicationState.inactive.rawValue, forKey: "monitoringState")
+        stopComplicationHeartbeat()
+        writeComplicationState(.inactive)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
 
@@ -352,7 +353,29 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
         }
     }
-    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {}
+    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        Task { @MainActor in
+            // Only update complication if the state change wasn't triggered by user (manual pause/resume)
+            // This handles system-triggered pauses (wrist down, app backgrounded, etc.)
+            switch toState {
+            case .running:
+                if !self.isManuallyPaused {
+                    self.writeComplicationState(.active)
+                    self.startComplicationHeartbeat()
+                }
+            case .paused:
+                if !self.isManuallyPaused {
+                    self.writeComplicationState(.paused)
+                    self.stopComplicationHeartbeat()
+                }
+            case .stopped, .ended:
+                self.writeComplicationState(.inactive)
+                self.stopComplicationHeartbeat()
+            default:
+                break
+            }
+        }
+    }
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
 
@@ -381,7 +404,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         let now = Date()
         let startDate = Calendar.current.startOfDay(for: now)
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
+        // Use empty options [] to include step samples that may span across midnight
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: [])
         let descriptor = HKStatisticsQueryDescriptor(
             predicate: .quantitySample(type: stepType, predicate: predicate),
             options: .cumulativeSum
@@ -496,15 +520,42 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         guard !stepRules.isEmpty else { return }
 
         let now = Date()
+        let calendar = Calendar.current
+
+        let dayStepsMutedToday = StepDayMuteStore.isMutedToday(now: now, calendar: calendar)
 
         for rule in stepRules {
             guard case .steps(let threshold) = rule.ruleType else { continue }
 
-            let endDate = now
-            let startDate = endDate.addingTimeInterval(-rule.duration)
-            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
+            if rule.interval == .oneDay, dayStepsMutedToday {
+                continue
+            }
 
-            let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { [weak self] _, result, error in
+            let endDate = now
+            let startDate: Date
+            
+            // For 1-day intervals, we MUST use calendar day (midnight to now), not rolling 24 hours
+            // Check both the interval enum AND duration to be defensive against any data inconsistencies
+            let isOneDayInterval = (rule.interval == .oneDay) || (rule.duration == 86400)
+            
+            if isOneDayInterval {
+                startDate = calendar.startOfDay(for: now)
+            } else {
+                startDate = endDate.addingTimeInterval(-rule.duration)
+            }
+
+            // For 1-day intervals, we need to capture all steps from midnight onwards.
+            // Using empty options [] ensures we include samples that may span across midnight
+            // (e.g., a sample from 11:58 PM yesterday to 12:02 AM today).
+            // For other intervals, .strictStartDate is appropriate.
+            let options: HKQueryOptions = isOneDayInterval ? [] : .strictStartDate
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: options)
+
+            let query = HKStatisticsQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { [weak self] _, result, error in
                 guard let self else { return }
                 guard error == nil, let sum = result?.sumQuantity() else { return }
                 let total = sum.doubleValue(for: .count())
@@ -513,14 +564,21 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     Task { @MainActor in
                         guard let idx = self.activeRules.firstIndex(where: { $0.id == rule.id }) else { return }
                         let r = self.activeRules[idx]
-
                         var state = self.runtimeByRuleID[r.id] ?? RuleRuntimeState()
 
-                        let buffer = BufferManager.shared.buffer(for: r.interval, context: .steps)
-                        if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer { return }
+                        if r.interval == .oneDay {
+                            if let last = state.lastNotificationDate, calendar.isDate(last, inSameDayAs: now) {
+                                return
+                            }
+                            if StepDayMuteStore.isMutedToday(now: now, calendar: calendar) {
+                                return
+                            }
+                        } else {
+                            let buffer = BufferManager.shared.buffer(for: r.interval, context: .steps)
+                            if let last = state.lastNotificationDate, now.timeIntervalSince(last) < buffer { return }
+                        }
 
                         let series = await self.buildStepSeries(for: r, windowEnd: now)
-
                         self.sendNotification(for: r, stepsSeries: series)
 
                         state.notificationSent = true
@@ -539,6 +597,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     }
                 }
             }
+
             healthStore.execute(query)
         }
     }
@@ -619,7 +678,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = true
         statusMessage = .paused
 
-        sharedUserDefaults?.set(ComplicationState.paused.rawValue, forKey: "monitoringState")
+        stopComplicationHeartbeat()
+        writeComplicationState(.paused)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
 
@@ -629,7 +689,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         isManuallyPaused = false
         statusMessage = .monitoring
 
-        sharedUserDefaults?.set(ComplicationState.active.rawValue, forKey: "monitoringState")
+        writeComplicationState(.active)
+        startComplicationHeartbeat()
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
     
@@ -690,13 +751,60 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private func buildStepSeries(for rule: AlertRule, windowEnd: Date) async -> [MeasurementSample] {
         let windowStart = windowEnd.addingTimeInterval(-rule.duration)
 
-        // For .oneDay rules, still send per-bucket raw samples
-        let start = (rule.interval == .oneDay)
+        // For 1-day intervals, MUST use calendar day (midnight to now), not rolling 24 hours
+        // Check both the interval enum AND duration to be defensive
+        let isOneDayInterval = (rule.interval == .oneDay) || (rule.duration == 86400)
+        let start = isOneDayInterval
             ? Calendar.current.startOfDay(for: windowEnd)
             : windowStart
 
         let buckets = await fetchStepBuckets(from: start, to: windowEnd, bucket: DateComponents(minute: 1))
         // Map to MeasurementSample (raw bucket values)
         return buckets.map { MeasurementSample(type: .steps, value: $0.steps, date: $0.date) }
+    }
+    
+    private func writeComplicationState(_ state: ComplicationState) {
+        let defaults = UserDefaults(suiteName: AppGroupPaths.groupID)
+        defaults?.set(state.rawValue, forKey: ComplicationKeys.state)
+        defaults?.set(Date().timeIntervalSince1970, forKey: ComplicationKeys.lastUpdated)
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+    }
+    
+    private func startComplicationHeartbeat() {
+        complicationHeartbeat?.cancel()
+
+        let t = DispatchSource.makeTimerSource(queue: .main)
+        t.schedule(deadline: .now(), repeating: 60) // every 60 s
+        t.setEventHandler { [weak self] in
+            guard let self else { return }
+            guard self.isSessionActive, !self.isManuallyPaused else { return }
+            self.writeComplicationState(.active)
+        }
+
+        complicationHeartbeat = t
+        t.resume()
+    }
+
+    private func stopComplicationHeartbeat() {
+        complicationHeartbeat?.cancel()
+        complicationHeartbeat = nil
+    }
+    
+    // MARK: - App Launch State Verification
+    
+    /// Verifies that the complication state matches actual monitoring state on app launch.
+    /// This fixes stale state issues when the app was force-closed.
+    func verifyComplicationStateOnLaunch() {
+        let defaults = UserDefaults(suiteName: AppGroupPaths.groupID)
+        let savedStateRaw = defaults?.integer(forKey: ComplicationKeys.state) ?? ComplicationState.inactive.rawValue
+        let savedState = ComplicationState(rawValue: savedStateRaw) ?? .inactive
+        
+        if savedState == .active {
+            if workoutSession == nil || workoutSession?.state != .running {
+                writeComplicationState(.inactive)
+            } else if !isManuallyPaused {
+                startComplicationHeartbeat()
+            }
+        }
     }
 }

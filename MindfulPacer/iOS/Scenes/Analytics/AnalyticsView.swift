@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - Presentation Enums
 
@@ -28,6 +29,21 @@ struct AnalyticsView: View {
     // MARK: Properties
     
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
+    
+    @Query private var allReminders: [Reminder]
+    @Query(sort: \Reflection.date, order: .reverse) private var allReflections: [Reflection]
+    
+    private var reminders: [Reminder] {
+        let groupedReminders = Dictionary(grouping: allReminders) { $0.measurementType }
+        let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
+            if lhs == .heartRate { return true }
+            else if rhs == .heartRate { return false }
+            else { return lhs.rawValue < rhs.rawValue }
+        }
+        return sortedKeys.flatMap { key in
+            groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
+        }
+    }
 
     // MARK: Body
     
@@ -72,10 +88,17 @@ struct AnalyticsView: View {
                     sheetContent(for: sheet)
                 })
                 .onViewFirstAppear {
+                    viewModel.updateReminders(reminders)
                     viewModel.onViewFirstAppear()
                 }
                 .onAppear {
                     viewModel.onViewAppear()
+                }
+                .onChange(of: reminders) { _, newValue in
+                    viewModel.updateReminders(newValue)
+                }
+                .onChange(of: allReflections) { _, _ in
+                    viewModel.updateReflectionsInPeriod()
                 }
         }
     }
@@ -88,13 +111,10 @@ struct AnalyticsView: View {
                 IconLabel(
                     icon: viewModel.selectedMeasurementType.icon,
                     title: viewModel.selectedMeasurementType.localized,
+                    description: viewModel.navigationSubtitle,
                     labelColor: viewModel.selectedMeasurementType.color,
                     background: true
-                ),
-            description:
-                Text(viewModel.chartDescriptionText)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                )
         ) {
             VStack(spacing: 16) {
                 Picker(selection: $viewModel.selectedPeriod) {

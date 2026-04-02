@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreData
 import Foundation
 import SwiftData
 import SwiftUI
@@ -20,17 +21,11 @@ class HomeViewModel {
     
     private let modelContext: ModelContext
     private let checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase
-    private let createReflectionUseCase: CreateReflectionUseCase
-    private let deleteReflectionUseCase: DeleteReflectionUseCase
     private let fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase
     private let fetchCurrentStepsUseCase: FetchCurrentStepsUseCase
-    private let fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase
     private let fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase
     private let fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase
-    private let fetchReflectionsUseCase: FetchReflectionsUseCase
-    private let fetchRemindersUseCase: FetchRemindersUseCase
     private let fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
-    private let filterReflectionsUseCase: FilterReflectionsUseCase
     
     // MARK: - Published Properties
     
@@ -58,6 +53,9 @@ class HomeViewModel {
         Array(reminders.prefix(3))
     }
     
+    private var activities: [Activity] = []
+    private var backgroundStoreSyncWork: DispatchWorkItem?
+
     var missedPageSize: Int = 10
     var missedVisibleCount: Int = 10
     
@@ -114,84 +112,83 @@ class HomeViewModel {
     init(
         modelContext: ModelContext,
         checkHealthPermissionsUseCase: CheckHealthPermissionsUseCase,
-        createReflectionUseCase: CreateReflectionUseCase,
-        deleteReflectionUseCase: DeleteReflectionUseCase,
         fetchCurrentHeartRateUseCase: FetchCurrentHeartRateUseCase,
         fetchCurrentStepsUseCase: FetchCurrentStepsUseCase,
-        fetchDefaultActivitiesUseCase: FetchDefaultActivitiesUseCase,
         fetchHeartRateDataLast24HoursUseCase: FetchHeartRateDataLast24HoursUseCase,
         fetchMissedReflectionsUseCase: FetchMissedReflectionsUseCase,
-        fetchReflectionsUseCase: FetchReflectionsUseCase,
-        fetchRemindersUseCase: FetchRemindersUseCase,
-        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase,
-        filterReflectionsUseCase: FilterReflectionsUseCase
+        fetchStepDataLast24HoursUseCase: FetchStepsDataLast24HoursUseCase
     ) {
         self.modelContext = modelContext
         self.checkHealthPermissionsUseCase = checkHealthPermissionsUseCase
-        self.createReflectionUseCase = createReflectionUseCase
-        self.deleteReflectionUseCase = deleteReflectionUseCase
         self.fetchCurrentHeartRateUseCase = fetchCurrentHeartRateUseCase
         self.fetchCurrentStepsUseCase = fetchCurrentStepsUseCase
-        self.fetchDefaultActivitiesUseCase = fetchDefaultActivitiesUseCase
         self.fetchHeartRateDataLast24HoursUseCase = fetchHeartRateDataLast24HoursUseCase
         self.fetchMissedReflectionsUseCase = fetchMissedReflectionsUseCase
-        self.fetchReflectionsUseCase = fetchReflectionsUseCase
-        self.fetchRemindersUseCase = fetchRemindersUseCase
         self.fetchStepDataLast24HoursUseCase = fetchStepDataLast24HoursUseCase
-        self.filterReflectionsUseCase = filterReflectionsUseCase
         
         subscribeToWatchEvents()
         subscribeToWatchStatus()
+        subscribeToRemoteStoreChanges()
     }
-    
+
     // MARK: - View Lifecycle
-    
-    func onViewFirstAppear() {
+
+    func onViewFirstAppear(reminders: [Reminder]) {
         setupBindings()
         resetMissedPagination()
-        fetchReminders()
+        updateReminders(reminders)
         fetchReflections()
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchHealthData()
-        fetchMissedReflections()
+        fetchMissedReflections(reminders: reminders)
         checkHealthPermissions()
     }
-    
+
     func onViewAppear() {
-        fetchReminders()
         fetchReflections()
+        fetchMissedReflections(reminders: reminders)
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchHealthData()
         checkHealthPermissions()
     }
     
-    func onRefresh() {
+    func onRefresh(reminders: [Reminder]) {
         checkHealthPermissions()
-        fetchReminders()
+        updateReminders(reminders)
         fetchReflections()
         fetchCurrentSteps()
         fetchCurrentHeartRate()
         fetchHealthData()
-        fetchMissedReflections()
+        fetchMissedReflections(reminders: reminders)
     }
     
     func onSheetDismissed() {
         fetchReflections()
-        fetchReminders()
     }
     
     func configure(_ deviceMode: DeviceMode) {
         self.deviceMode = deviceMode
     }
     
+    func updateReminders(_ newReminders: [Reminder]) {
+        reminders = newReminders
+    }
+    
+    func updateActivities(_ newActivities: [Activity]) {
+        activities = newActivities
+    }
+    
     // MARK: - User Actions
     
     func rejectMissedReflection(reflection: Reflection) {
+        missedReflections.removeAll { $0.id == reflection.id }
+        clampMissedPaginationAfterMutation()
+
         switch deviceMode {
         case .iPhoneOnly:
-            _ = createReflectionUseCase.execute(
+            let rejectedReflection = Reflection(
                 date: reflection.date,
                 activity: reflection.activity,
                 subactivity: reflection.subactivity,
@@ -212,13 +209,36 @@ class HomeViewModel {
                 triggerSamples: reflection.triggerSamples,
                 isRejected: true
             )
-            
+            modelContext.insert(rejectedReflection)
+
         case .iPhoneAndWatch:
-            deleteReflectionUseCase.execute(reflection: reflection)
+            modelContext.delete(reflection)
         }
-        
-        missedReflections.removeAll { $0.id == reflection.id }
-        clampMissedPaginationAfterMutation()
+
+        do {
+            try modelContext.save()
+        } catch {
+            print("DEBUG: Could not save rejected reflection: \(error.localizedDescription)")
+        }
+
+        backgroundStoreSyncWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            self?.refreshBackgroundReflectionSnapshots()
+        }
+        backgroundStoreSyncWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
+    }
+
+    private func refreshBackgroundReflectionSnapshots() {
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            syncBackgroundReflectionSnapshots(allReflections: allReflections)
+        } catch {
+            print("DEBUG: Could not sync background reflection snapshots: \(error.localizedDescription)")
+        }
     }
     
     func acceptMissedReflection(reflection: Reflection) {
@@ -301,37 +321,44 @@ class HomeViewModel {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 
-                guard let reflections = self.fetchReflectionsUseCase.execute() else {
-                    print("ERROR: iPhone could not find reflection with ID \(event.reflectionID)")
-                    return
-                }
+                let reflectionID = event.reflectionID
                 
-                guard let reflection = reflections.first(where: { $0.id == event.reflectionID }) else { return }
-                
-                if let activityID = event.activityID {
-                    if let allActivities = self.fetchDefaultActivitiesUseCase.execute(),
-                       let matchingActivity = allActivities.first(where: { $0.id == activityID }) {
-                        
-                        reflection.activity = matchingActivity
-                        
-                        if let subactivityID = event.subactivityID,
-                           let matchingSubactivity = matchingActivity.subactivities?.first(where: { $0.id == subactivityID }) {
-                            reflection.subactivity = matchingSubactivity
-                        } else {
-                            reflection.subactivity = nil
-                        }
-                        
-                        do {
-                            try self.modelContext.save()
-                        } catch {
-                            print("DEBUGY: Failed to save reflection after watch event: \(error.localizedDescription)")
-                        }
-                        
-                        BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+                do {
+                    let descriptor = FetchDescriptor<Reflection>(
+                        predicate: #Predicate { $0.id == reflectionID }
+                    )
+                    guard let reflection = try modelContext.fetch(descriptor).first else {
+                        print("ERROR: iPhone could not find reflection with ID \(reflectionID)")
+                        return
                     }
+                    
+                    if let activityID = event.activityID {
+                        if let matchingActivity = self.activities.first(where: { $0.id == activityID }) {
+                            
+                            reflection.activity = matchingActivity
+                            
+                            if let subactivityID = event.subactivityID,
+                               let matchingSubactivity = matchingActivity.subactivities?.first(where: { $0.id == subactivityID }) {
+                                reflection.subactivity = matchingSubactivity
+                            } else {
+                                reflection.subactivity = nil
+                            }
+                            
+                            do {
+                                try self.modelContext.save()
+                                BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+                            } catch {
+                                print("DEBUGY: Failed to save reflection after watch event: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                    
+                    self.fetchReflections()
+                    self.fetchMissedReflections(reminders: self.reminders)
+                    self.presentSheet(.editReflectionView(reflection))
+                } catch {
+                    print("ERROR: Failed to fetch reflection: \(error.localizedDescription)")
                 }
-                
-                self.presentSheet(.editReflectionView(reflection))
             }
             .store(in: &cancellables)
     }
@@ -348,11 +375,7 @@ class HomeViewModel {
     }
     
     private func applyFilterAndSorting(_ filter: ReflectionFilter, _ sorting: ReflectionSorting) {
-        filteredReflections = filterReflectionsUseCase.execute(
-            reflections: reflections,
-            filters: filter,
-            sorting: sorting
-        )
+        filteredReflections = reflections.filtered(by: filter, sorting: sorting)
     }
     
     private func updateFilter(_ updateBlock: () -> Void) {
@@ -405,46 +428,59 @@ class HomeViewModel {
     }
     
     private func fetchReflections() {
-        reminders = fetchRemindersUseCase.execute() ?? []
-        let allReflections = fetchReflectionsUseCase.execute() ?? []
-        
-        syncBackgroundReflectionSnapshots(allReflections: allReflections)
-        
-        reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
-        applyFilterAndSorting(reviewFilter, reviewSorting)
-    }
-    
-    private func fetchMissedReflections() {
-        isFetchingMissedReflections = true
-        let allReflections = fetchReflectionsUseCase.execute() ?? []
-        
-        switch deviceMode {
-        case .iPhoneOnly:
-            fetchMissedReflectionsUseCase.execute(
-                reminders: reminders,
-                existingReflections: allReflections
-            ) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let fetchedMissedReflections):
-                    self.missedReflections = MissedReflectionsDisplayPolicy.apply(fetchedMissedReflections)
-                    self.resetMissedPagination()
-                case .failure(let failure):
-                    print("DEBUGY:", failure.localizedDescription)
-                }
-                self.isFetchingMissedReflections = false
-                self.applyFilterAndSorting(self.reviewFilter, self.reviewSorting)
-            }
-        case .iPhoneAndWatch:
-            missedReflections = allReflections.filter { $0.isMissedReflection }
-            resetMissedPagination()
-            isFetchingMissedReflections = false
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            
+            syncBackgroundReflectionSnapshots(allReflections: allReflections)
+            
+            reflections = allReflections.filter { !$0.isMissedReflection && !$0.isRejected }
             applyFilterAndSorting(reviewFilter, reviewSorting)
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            reflections = []
         }
     }
     
-    private func fetchReminders() {
-        reminders = fetchRemindersUseCase.execute() ?? []
+    private func fetchMissedReflections(reminders: [Reminder]) {
+        guard !isFetchingMissedReflections else { return }
+        isFetchingMissedReflections = true
+
+        do {
+            let descriptor = FetchDescriptor<Reflection>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allReflections = try modelContext.fetch(descriptor)
+            
+            switch deviceMode {
+            case .iPhoneOnly:
+                fetchMissedReflectionsUseCase.execute(
+                    reminders: reminders,
+                    existingReflections: allReflections
+                ) { [weak self] result in
+                    guard let self else { return }
+                    switch result {
+                    case .success(let fetchedMissedReflections):
+                        self.missedReflections = MissedReflectionsDisplayPolicy.apply(fetchedMissedReflections)
+                        self.resetMissedPagination()
+                    case .failure(let failure):
+                        print("DEBUGY:", failure.localizedDescription)
+                    }
+                    self.isFetchingMissedReflections = false
+                    self.applyFilterAndSorting(self.reviewFilter, self.reviewSorting)
+                }
+            case .iPhoneAndWatch:
+                missedReflections = allReflections.filter { $0.isMissedReflection }
+                resetMissedPagination()
+                isFetchingMissedReflections = false
+                applyFilterAndSorting(reviewFilter, reviewSorting)
+            }
+        } catch {
+            print("DEBUG: Could not fetch reflections: \(error.localizedDescription)")
+            isFetchingMissedReflections = false
+        }
     }
     
     private func checkHealthPermissions() {
@@ -468,6 +504,18 @@ class HomeViewModel {
             .store(in: &cancellables)
     }
     
+    private func subscribeToRemoteStoreChanges() {
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.fetchReflections()
+                self.fetchMissedReflections(reminders: self.reminders)
+            }
+            .store(in: &cancellables)
+    }
+
     private func syncBackgroundReflectionSnapshots(allReflections: [Reflection]) {
         let snapshots = allReflections.map(BackgroundReflectionSnapshot.init(from:))
         BackgroundReflectionsStore.shared.replace(with: snapshots)

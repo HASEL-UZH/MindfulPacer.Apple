@@ -19,9 +19,7 @@ class CreateReminderViewModel {
     // MARK: - Dependencies
 
     private let modelContext: ModelContext
-    private let createReminderUseCase: CreateReminderUseCase
-    private let deleteReminderUseCase: DeleteReminderUseCase
-    private let saveReminderUseCase: SaveReminderUseCase
+    private let watchUpdateService: WatchUpdateService
     private let triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
 
     // MARK: - Published Properties
@@ -130,15 +128,11 @@ class CreateReminderViewModel {
 
     init(
         modelContext: ModelContext,
-        createReminderUseCase: CreateReminderUseCase,
-        deleteReminderUseCase: DeleteReminderUseCase,
-        saveReminderUseCase: SaveReminderUseCase,
+        watchUpdateService: WatchUpdateService,
         triggerWatchNotificationUseCase: TriggerWatchNotificationUseCase
     ) {
         self.modelContext = modelContext
-        self.createReminderUseCase = createReminderUseCase
-        self.deleteReminderUseCase = deleteReminderUseCase
-        self.saveReminderUseCase = saveReminderUseCase
+        self.watchUpdateService = watchUpdateService
         self.triggerWatchNotificationUseCase = triggerWatchNotificationUseCase
     }
 
@@ -177,24 +171,29 @@ class CreateReminderViewModel {
     }
 
     func saveReminder(_ reminder: Reminder?) {
-        let result = saveReminderUseCase.execute(
-            existingReminder: reminder.unsafelyUnwrapped,
-            newMeasurementType: selectedMeasurementType.unsafelyUnwrapped,
-            newReminderType: selectedReminderType.unsafelyUnwrapped,
-            newThreshold: threshold.unsafelyUnwrapped,
-            newInterval: selectedInterval.unsafelyUnwrapped
-        )
+        guard let reminder else { return }
+        
+        reminder.measurementType = selectedMeasurementType.unsafelyUnwrapped
+        reminder.reminderType = selectedReminderType.unsafelyUnwrapped
+        reminder.threshold = threshold.unsafelyUnwrapped
+        reminder.interval = selectedInterval.unsafelyUnwrapped
 
-        if case .failure = result {
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: reminder))
+            watchUpdateService.notifyWatchOfReminderChange()
+            shouldDismiss = true
+        } catch {
             presentAlert(.unableToSaveReminder)
         }
-
-        shouldDismiss = true
     }
 
     func deleteReminder(_ reminder: Reminder?) {
         guard let reminder else { return }
-        deleteReminderUseCase.execute(reminder: reminder)
+        modelContext.delete(reminder)
+        BackgroundRemindersStore.shared.remove(id: reminder.id)
+        watchUpdateService.notifyWatchOfReminderChange()
+        try? modelContext.save()
         shouldDismiss = true
     }
 
@@ -249,18 +248,23 @@ class CreateReminderViewModel {
                   return
               }
 
-        let result = createReminderUseCase.execute(
+        let reminder = Reminder(
             measurementType: measurementType,
             reminderType: reminderType,
             threshold: threshold,
             interval: interval
         )
-
-        if case .failure = result {
-            self.presentAlert(.unableToSaveReminder)
+        
+        modelContext.insert(reminder)
+        
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: reminder))
+            watchUpdateService.notifyWatchOfReminderChange()
+            shouldDismiss = true
+        } catch {
+            presentAlert(.unableToSaveReminder)
         }
-
-        shouldDismiss = true
     }
     
     private func resetSelectedFields() {
