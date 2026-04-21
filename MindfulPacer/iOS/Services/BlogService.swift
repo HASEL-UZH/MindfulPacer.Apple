@@ -11,7 +11,7 @@ import SwiftSoup
 
 // MARK: - BlogServiceProtocol
 
-protocol BlogServiceProtocol {
+protocol BlogServiceProtocol: Sendable {
     func fetchBlogArticles() async throws -> [BlogArticle]
 }
 

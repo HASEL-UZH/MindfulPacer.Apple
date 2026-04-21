@@ -10,13 +10,13 @@ import Network
 
 // MARK: - CheckInternetConnectivityUseCase Protocol
 
-protocol CheckInternetConnectivityUseCase {
+protocol CheckInternetConnectivityUseCase: Sendable {
     func execute() async -> Bool
 }
 
 // MARK: - DefaultCheckInternetConnectivityUseCase
 
-class DefaultCheckInternetConnectivityUseCase: CheckInternetConnectivityUseCase {
+final class DefaultCheckInternetConnectivityUseCase: CheckInternetConnectivityUseCase {
     private let networkMonitor: NetworkMonitorService
 
     init(networkMonitor: NetworkMonitorService) {

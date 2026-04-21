@@ -9,16 +9,16 @@ import Foundation
 
 // MARK: - BlogRepository
 
-protocol BlogRepository {
+protocol BlogRepository: Sendable {
     func getBlogArticles() async throws -> [BlogArticle]
 }
 
 // MARK: - DefaultBlogRepository
 
-class DefaultBlogRepository: BlogRepository {
-    private let blogService: BlogServiceProtocol
+final class DefaultBlogRepository: BlogRepository, Sendable {
+    private let blogService: any BlogServiceProtocol
 
-    init(blogService: BlogServiceProtocol) {
+    init(blogService: any BlogServiceProtocol) {
         self.blogService = blogService
     }
 

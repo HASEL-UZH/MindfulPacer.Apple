@@ -9,13 +9,13 @@ import Foundation
 
 // MARK: - FetchBlogArticlesUseCase Protocol
 
-protocol FetchBlogArticlesUseCase {
+protocol FetchBlogArticlesUseCase: Sendable {
     func execute(category: BlogCategory?) async throws -> [BlogArticle]
 }
 
 // MARK: - Use Case Implementation
 
-class DefaultFetchBlogArticlesUseCase: FetchBlogArticlesUseCase {
+final class DefaultFetchBlogArticlesUseCase: FetchBlogArticlesUseCase, Sendable {
     private let repository: BlogRepository
 
     init(repository: BlogRepository) {

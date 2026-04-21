@@ -16,7 +16,25 @@
             "state" : "new",
             "value" : "MindfulPacerStatus"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatus"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacerStatus"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -34,7 +52,25 @@
             "state" : "new",
             "value" : "MindfulPacerStatusExtension"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatusExtension"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacerStatusExtension"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacerStatusExtension"
+            }
+          }
       }
     },
     "NSHumanReadableCopyright" : {
@@ -52,7 +88,25 @@
             "state" : "new",
             "value" : ""
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : ""
+            }
+          }
       }
     }
   },
