@@ -2015,6 +2015,16 @@
         }
       }
     },
+    "Help us test new features before release" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilf uns, neue Funktionen vor der Veröffentlichung zu testen"
+          }
+        }
+      }
+    },
     "Helping Others" : {
       "localizations" : {
         "de" : {
@@ -2234,6 +2244,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "nur iPhone"
+          }
+        }
+      }
+    },
+    "Join TestFlight" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TestFlight beitreten"
           }
         }
       }
