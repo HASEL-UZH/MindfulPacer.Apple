@@ -135,12 +135,12 @@ final class ScenesContainer: SharedContainer, @unchecked Sendable {
         }
     }
     
-    // MARK: - Whats New
-    
+    // MARK: - Release Notes
+
     @MainActor
-    var whatsNewViewModel: Factory<WhatsNewViewModel> {
+    var releaseNotesViewModel: Factory<ReleaseNotesViewModel> {
         self {
-            WhatsNewViewModel()
+            ReleaseNotesViewModel()
         }
     }
 }

@@ -23,6 +23,10 @@ struct DataManagementView: View {
             VStack(spacing: 16) {
                 exportData
                 deleteData
+
+                #if DEBUG
+                debugMissedReflections
+                #endif
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -104,7 +108,7 @@ struct DataManagementView: View {
     }
     
     // MARK: Delete Data
-    
+
     private var deleteData: some View {
         IconLabelGroupBox(
             label: IconLabel(
@@ -132,6 +136,52 @@ struct DataManagementView: View {
         }
         .padding(.horizontal)
     }
+
+    // MARK: Debug Missed Reflections
+
+    #if DEBUG
+    private var debugMissedReflections: some View {
+        IconLabelGroupBox(
+            label: IconLabel(
+                icon: "ladybug.fill",
+                title: "Debug: Missed Reflections",
+                labelColor: .purple,
+                background: true
+            )
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                Stepper("Count: \(viewModel.seedMissedReflectionsCount)",
+                        value: $viewModel.seedMissedReflectionsCount,
+                        in: 5...100,
+                        step: 5)
+
+                Text("Inserts mock missed reflections with realistic trigger data (HR & steps, mixed severity).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        } footer: {
+            HStack(spacing: 16) {
+                Button {
+                    viewModel.seedMockMissedReflections()
+                } label: {
+                    Label("Seed", systemImage: "plus.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.purple)
+                }
+
+                Button {
+                    viewModel.deleteAllMissedReflections()
+                } label: {
+                    Label("Delete Missed", systemImage: "trash.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.red)
+                }
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(.horizontal)
+    }
+    #endif
 }
 
 // MARK: - Preview

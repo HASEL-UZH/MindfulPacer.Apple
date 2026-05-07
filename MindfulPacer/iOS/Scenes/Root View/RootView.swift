@@ -15,7 +15,7 @@ enum Tab: String { case home, analytics, outreach, settings, debug }
 // MARK: - Presentation Enums
 
 enum RootSheet: Identifiable {
-    case onboardingView, whatsNewView
+    case onboardingView, releaseNotesView
     var id: Int { hashValue }
 }
 
@@ -57,8 +57,8 @@ struct RootView: View {
             OnboardingView()
                 .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
-        case .whatsNewView:
-            WhatsNewView()
+        case .releaseNotesView:
+            ReleaseNotesView()
                 .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
         }

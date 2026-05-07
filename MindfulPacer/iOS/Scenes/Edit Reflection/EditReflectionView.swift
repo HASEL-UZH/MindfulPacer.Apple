@@ -589,12 +589,16 @@ struct TriggerDataChartView: View {
     @State private var windowEnd: Date?
     @State private var chartColor: Color = .teal
     @State private var yLabel: String = "Value"
+    @State private var isReady = false
 
     private let maxDataPoints = 200
 
     var body: some View {
         Group {
-            if downsampled.isEmpty {
+            if !isReady {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if downsampled.isEmpty {
                 Text("No trigger data was saved for this reflection.")
                     .font(.footnote)
                     .foregroundColor(.secondary)
@@ -655,57 +659,91 @@ struct TriggerDataChartView: View {
                 .chartXSelection(value: $selectedDate)
             }
         }
-        .onAppear(perform: buildCachesIfNeeded)
-        .onChange(of: reflection.id) { _, _ in buildCaches() }
-    }
-
-    // MARK: - Build caches once
-
-    @MainActor
-    private func buildCachesIfNeeded() {
-        if series.isEmpty { buildCaches() }
-    }
-
-    @MainActor
-    private func buildCaches() {
-        let samples = decodeSamples(from: reflection.triggerData)
-        cachedSamples = samples
-
-        let sorted = samples.sorted { $0.date < $1.date }
-
-        let isSteps = samples.first?.type == .steps
-        let interval = reflection.interval
-        let isOneDay = (interval == .oneDay)
-        let windowSeconds = interval?.timeInterval ?? 0
-
-        let s: [MeasurementSample]
-        if isSteps {
-            if isOneDay {
-                s = runningTotalSeries(sorted)
-            } else {
-                s = rollingSumSeries(sorted, window: windowSeconds)
-            }
-        } else {
-            s = sorted
+        .task(id: reflection.id) {
+            await buildCachesAsync()
         }
-        series = s
-
-        downsampled = downsample(s, to: maxDataPoints)
-
-        xAxisValues = makeXAxisValues(for: s)
-        (windowStart, windowEnd) = makeTriggerWindow(for: s, interval: interval)
-
-        yDomain = makeYDomain(for: s, threshold: reflection.threshold)
-
-        chartColor = (samples.first?.type == .heartRate) ? .pink : .teal
-        yLabel = (samples.first?.type == .steps)
-            ? (isOneDay ? "Steps (running total)" : "Steps (rolling sum)")
-            : "BPM"
     }
 
-    // MARK: - Helpers
+    // MARK: - Build caches (off main thread)
 
-    private func decodeSamples(from data: Data?) -> [MeasurementSample] {
+    private func buildCachesAsync() async {
+        // Capture immutable inputs before going off-thread.
+        let triggerData = reflection.triggerData
+        let interval = reflection.interval
+        let threshold = reflection.threshold
+
+        // Do the expensive work (decode, sort, rolling sums, downsample) off-main.
+        let result: ChartCacheResult? = await Task.detached(priority: .userInitiated) {
+            let samples = Self.decodeSamplesStatic(from: triggerData)
+            guard !samples.isEmpty else { return nil as ChartCacheResult? }
+
+            let sorted = samples.sorted { $0.date < $1.date }
+            let isSteps = samples.first?.type == .steps
+            let isOneDay = (interval == .oneDay)
+            let windowSeconds = interval?.timeInterval ?? 0
+
+            let s: [MeasurementSample]
+            if isSteps {
+                if isOneDay {
+                    s = Self.runningTotalSeriesStatic(sorted)
+                } else {
+                    s = Self.rollingSumSeriesStatic(sorted, window: windowSeconds)
+                }
+            } else {
+                s = sorted
+            }
+
+            let ds = Self.downsampleStatic(s, to: 200)
+            let xAxis = Self.makeXAxisValuesStatic(for: s)
+            let window = Self.makeTriggerWindowStatic(for: s, interval: interval)
+            let yDom = Self.makeYDomainStatic(for: s, threshold: threshold)
+            let color: Color = (samples.first?.type == .heartRate) ? .pink : .teal
+            let label = (samples.first?.type == .steps)
+                ? (isOneDay ? "Steps (running total)" : "Steps (rolling sum)")
+                : "BPM"
+
+            return ChartCacheResult(
+                samples: samples, series: s, downsampled: ds,
+                yDomain: yDom, xAxisValues: xAxis,
+                windowStart: window.0, windowEnd: window.1,
+                chartColor: color, yLabel: label
+            )
+        }.value
+
+        // Apply the results on the main thread.
+        guard let result else {
+            isReady = true
+            return
+        }
+
+        cachedSamples = result.samples
+        series = result.series
+        downsampled = result.downsampled
+        yDomain = result.yDomain
+        xAxisValues = result.xAxisValues
+        windowStart = result.windowStart
+        windowEnd = result.windowEnd
+        chartColor = result.chartColor
+        yLabel = result.yLabel
+        isReady = true
+    }
+
+    /// Intermediate struct to shuttle computed results back to the main thread.
+    private struct ChartCacheResult: Sendable {
+        let samples: [MeasurementSample]
+        let series: [MeasurementSample]
+        let downsampled: [MeasurementSample]
+        let yDomain: ClosedRange<Double>
+        let xAxisValues: [Date]
+        let windowStart: Date?
+        let windowEnd: Date?
+        let chartColor: Color
+        let yLabel: String
+    }
+
+    // MARK: - Helpers (static for off-main-thread use)
+
+    nonisolated private static func decodeSamplesStatic(from data: Data?) -> [MeasurementSample] {
         guard let data else { return [] }
         do { return try JSONDecoder().decode([MeasurementSample].self, from: data) }
         catch {
@@ -714,7 +752,7 @@ struct TriggerDataChartView: View {
         }
     }
 
-    private func rollingSumSeries(_ data: [MeasurementSample], window: TimeInterval) -> [MeasurementSample] {
+    nonisolated private static func rollingSumSeriesStatic(_ data: [MeasurementSample], window: TimeInterval) -> [MeasurementSample] {
         guard window > 0 else { return data }
         var out: [MeasurementSample] = []
         var q: [(Date, Double)] = []
@@ -734,7 +772,7 @@ struct TriggerDataChartView: View {
         return out
     }
 
-    private func runningTotalSeries(_ data: [MeasurementSample]) -> [MeasurementSample] {
+    nonisolated private static func runningTotalSeriesStatic(_ data: [MeasurementSample]) -> [MeasurementSample] {
         var out: [MeasurementSample] = []
         out.reserveCapacity(data.count)
         var total: Double = 0
@@ -745,7 +783,7 @@ struct TriggerDataChartView: View {
         return out
     }
 
-    private func downsample(_ data: [MeasurementSample], to maxPoints: Int) -> [MeasurementSample] {
+    nonisolated private static func downsampleStatic(_ data: [MeasurementSample], to maxPoints: Int) -> [MeasurementSample] {
         guard data.count > maxPoints else { return data }
         var out: [MeasurementSample] = []
         out.reserveCapacity(maxPoints)
@@ -762,7 +800,7 @@ struct TriggerDataChartView: View {
         return out
     }
 
-    private func makeYAxisRange(for values: [Double], threshold: Double?) -> ClosedRange<Double> {
+    nonisolated private static func makeYAxisRangeStatic(for values: [Double], threshold: Double?) -> ClosedRange<Double> {
         let minY = values.min() ?? 0
         let maxY = values.max() ?? 1
         let t = threshold ?? maxY
@@ -772,17 +810,17 @@ struct TriggerDataChartView: View {
         return (overallMin - padding)...(overallMax + padding)
     }
 
-    private func makeYDomain(for series: [MeasurementSample], threshold: Int?) -> ClosedRange<Double> {
-        makeYAxisRange(for: series.map { $0.value }, threshold: threshold.map(Double.init))
+    nonisolated private static func makeYDomainStatic(for series: [MeasurementSample], threshold: Int?) -> ClosedRange<Double> {
+        makeYAxisRangeStatic(for: series.map { $0.value }, threshold: threshold.map(Double.init))
     }
 
-    private func makeXAxisValues(for series: [MeasurementSample]) -> [Date] {
+    nonisolated private static func makeXAxisValuesStatic(for series: [MeasurementSample]) -> [Date] {
         guard let first = series.first?.date, let last = series.last?.date, first < last else { return [] }
         let mid = first.addingTimeInterval(last.timeIntervalSince(first) / 2)
         return [first, mid, last]
     }
 
-    private func makeTriggerWindow(for series: [MeasurementSample], interval: Reminder.Interval?) -> (Date?, Date?) {
+    nonisolated private static func makeTriggerWindowStatic(for series: [MeasurementSample], interval: Reminder.Interval?) -> (Date?, Date?) {
         guard let end = series.last?.date, let seconds = interval?.timeInterval else { return (nil, nil) }
         return (end.addingTimeInterval(-seconds), end)
     }
