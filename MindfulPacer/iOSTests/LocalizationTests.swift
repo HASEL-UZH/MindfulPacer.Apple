@@ -7,10 +7,8 @@
 //  reports any string keys that are missing a translation (excluding keys
 //  marked `shouldTranslate = false` or `extractionState = "stale"`).
 //
-//  The project declares en (source), de, fr, it as known regions.
-//  Currently only German (de) translations are present, so the test
-//  validates de, fr and it locales. Extend `expectedLanguages` when
-//  fr / it translations are added.
+//  The project declares en (source), de, fr, it and es as known regions.
+//  This test validates de, fr, it and es locales.
 //
 
 import Testing
