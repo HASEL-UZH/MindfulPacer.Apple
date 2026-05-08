@@ -28,6 +28,7 @@ struct IconLabelStyleConfiguration {
     let background: Bool
     let axis: Axis
     let truncationMode: Text.TruncationMode
+    let descriptionPlacement: IconLabelDescriptionPlacement
 }
 
 // MARK: - Type-Erased Style Wrapper
@@ -53,6 +54,62 @@ enum IconLabelStyleType {
     case pill
 }
 
+enum IconLabelDescriptionPlacement {
+    case below
+    case inline
+}
+
+private struct IconLabelText: View {
+    let configuration: IconLabelStyleConfiguration
+    let descriptionSpacing: CGFloat
+    let showsBelowDescription: Bool
+
+    private var titleColor: Color {
+        configuration.labelColor ?? configuration.textColor ?? .primary
+    }
+
+    private var descriptionColor: Color {
+        configuration.descriptionTextColor ?? .secondary
+    }
+
+    var body: some View {
+        if let description = configuration.description {
+            switch configuration.descriptionPlacement {
+            case .below where showsBelowDescription:
+                VStack(alignment: .leading, spacing: descriptionSpacing) {
+                    titleText
+                    descriptionText(description)
+                }
+            case .inline:
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    titleText
+                    Text("•")
+                        .foregroundStyle(descriptionColor)
+                    descriptionText(description)
+                }
+                .lineLimit(1)
+            default:
+                titleText
+            }
+        } else {
+            titleText
+        }
+    }
+
+    private var titleText: some View {
+        Text(configuration.title)
+            .foregroundStyle(titleColor)
+            .truncationMode(configuration.truncationMode)
+    }
+
+    private func descriptionText(_ description: String) -> some View {
+        Text(description)
+            .font(.subheadline)
+            .foregroundStyle(descriptionColor)
+            .truncationMode(configuration.truncationMode)
+    }
+}
+
 // MARK: - Plain Style
 
 struct PlainIconLabelStyle: IconLabelStyle {
@@ -61,20 +118,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
             switch configuration.axis {
             case .horizontal:
                 Label {
-                    if let description = configuration.description {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(configuration.title)
-                                .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                                .truncationMode(configuration.truncationMode) // Apply truncation mode
-                            Text(description)
-                                .font(.subheadline)
-                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
-                        }
-                    } else {
-                        Text(configuration.title)
-                            .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                            .truncationMode(configuration.truncationMode) // Apply truncation mode
-                    }
+                    IconLabelText(configuration: configuration, descriptionSpacing: 4, showsBelowDescription: true)
                 } icon: {
                     Icon(
                         name: configuration.icon,
@@ -96,20 +140,7 @@ struct PlainIconLabelStyle: IconLabelStyle {
                         background: configuration.background
                     )
                     
-                    if let description = configuration.description {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(configuration.title)
-                                .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                                .truncationMode(configuration.truncationMode)
-                            Text(description)
-                                .font(.subheadline)
-                                .foregroundStyle(configuration.descriptionTextColor ?? Color.secondary)
-                        }
-                    } else {
-                        Text(configuration.title)
-                            .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                            .truncationMode(configuration.truncationMode)
-                    }
+                    IconLabelText(configuration: configuration, descriptionSpacing: 8, showsBelowDescription: true)
                 }
             }
         }
@@ -124,9 +155,7 @@ struct PillIconLabelStyle: IconLabelStyle {
             switch configuration.axis {
             case .horizontal:
                 Label {
-                    Text(configuration.title)
-                        .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(configuration.truncationMode)
+                    IconLabelText(configuration: configuration, descriptionSpacing: 4, showsBelowDescription: false)
                 } icon: {
                     Icon(
                         name: configuration.icon,
@@ -148,9 +177,7 @@ struct PillIconLabelStyle: IconLabelStyle {
                         background: configuration.background
                     )
 
-                    Text(configuration.title)
-                        .foregroundStyle(configuration.labelColor ?? configuration.textColor ?? .primary)
-                        .truncationMode(configuration.truncationMode)
+                    IconLabelText(configuration: configuration, descriptionSpacing: 8, showsBelowDescription: false)
                 }
             }
         }
@@ -194,6 +221,7 @@ struct IconLabel: View {
     var background: Bool = false
     var axis: Axis = .horizontal
     var truncationMode: Text.TruncationMode = .middle
+    var descriptionPlacement: IconLabelDescriptionPlacement = .below
 
     @Environment(\.iconLabelStyle) private var style
 
@@ -211,7 +239,8 @@ struct IconLabel: View {
             symbolRenderingMode: symbolRenderingMode,
             background: background,
             axis: axis,
-            truncationMode: truncationMode
+            truncationMode: truncationMode,
+            descriptionPlacement: descriptionPlacement
         ))
     }
 }
@@ -247,7 +276,8 @@ extension View {
             description: "Your total step count.",
             titleColor: .blue,
             labelColor: .teal,
-            background: true
+            background: true,
+            descriptionPlacement: .inline
         )
         
         IconLabel(

@@ -113,7 +113,8 @@ struct AnalyticsView: View {
                     title: viewModel.selectedMeasurementType.localized,
                     description: viewModel.navigationSubtitle,
                     labelColor: viewModel.selectedMeasurementType.color,
-                    background: true
+                    background: true,
+                    descriptionPlacement: .inline
                 )
         ) {
             VStack(spacing: 16) {
