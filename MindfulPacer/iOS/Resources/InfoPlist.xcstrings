@@ -16,7 +16,25 @@
             "state" : "new",
             "value" : "MindfulPacer"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacer"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -34,7 +52,25 @@
             "state" : "new",
             "value" : "iOS"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "iOS"
+            }
+          }
       }
     },
     "NSHealthShareUsageDescription" : {
@@ -52,7 +88,25 @@
             "state" : "new",
             "value" : "Need access to health data for heart rate and step count."
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux données de santé pour la fréquence cardiaque et le nombre de pas nécessaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Se necesita acceso a los datos de salud para la frecuencia cardíaca y el conteo de pasos."
+            }
+          }
       }
     },
     "NSHealthUpdateUsageDescription" : {
@@ -70,7 +124,25 @@
             "state" : "new",
             "value" : "Need access to health data for heart rate and step count."
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux données de santé pour la fréquence cardiaque et le nombre de pas nécessaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È necessario l'accesso ai dati sulla salute per la frequenza cardiaca e il conteggio dei passi."
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Se necesita acceso a los datos de salud para la frecuencia cardíaca y el conteo de pasos."
+            }
+          }
       }
     }
   },

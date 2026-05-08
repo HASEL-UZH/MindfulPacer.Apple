@@ -8,7 +8,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MindfulPacer "
+            "value" : "MindfulPacer"
           }
         },
         "en" : {
@@ -16,7 +16,25 @@
             "state" : "new",
             "value" : "MindfulPacer"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "MindfulPacer"
+            }
+          }
       }
     },
     "CFBundleName" : {
@@ -26,7 +44,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WatchOS "
+            "value" : "WatchOS"
           }
         },
         "en" : {
@@ -34,7 +52,25 @@
             "state" : "new",
             "value" : "WatchOS"
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WatchOS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WatchOS"
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "WatchOS"
+            }
+          }
       }
     },
     "NSHealthShareUsageDescription" : {
@@ -43,7 +79,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },
@@ -52,7 +88,25 @@
             "state" : "new",
             "value" : "This app reads your heart rate to detect high heart rate events and reads your step count to alert you based on your activity goals."
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette app lit votre fréquence cardiaque pour détecter les événements de fréquence cardiaque élevée et lit votre nombre de pas pour vous alerter en fonction de vos objectifs d'activité."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa app legge la tua frequenza cardiaca per rilevare eventi di frequenza cardiaca elevata e legge il conteggio dei passi per avvisarti in base ai tuoi obiettivi di attività."
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Esta app lee tu frecuencia cardíaca para detectar eventos de frecuencia cardíaca elevada y lee tu conteo de pasos para alertarte según tus objetivos de actividad."
+            }
+          }
       }
     },
     "NSHealthUpdateUsageDescription" : {
@@ -61,7 +115,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zugriff auf Gesundheitsdaten für Herzfrequenz und Schrittanzahl erforderlich."
           }
         },
@@ -70,7 +124,25 @@
             "state" : "new",
             "value" : "This app creates workout sessions in the background to monitor your heart rate continuously."
           }
-        }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette app crée des sessions d'entraînement en arrière-plan pour surveiller votre fréquence cardiaque en continu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa app crea sessioni di allenamento in background per monitorare continuamente la tua frequenza cardiaca."
+          }
+        },
+          "es" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Esta app crea sesiones de entrenamiento en segundo plano para monitorear tu frecuencia cardíaca de forma continua."
+            }
+          }
       }
     }
   },

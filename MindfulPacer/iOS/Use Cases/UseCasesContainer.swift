@@ -97,7 +97,7 @@ extension UseCasesContainer {
     // MARK: - Settings
     
     @MainActor
-    var fetchRoadmapUseCase: Factory<FetchRoadmapUseCase> {
+    var fetchRoadmapUseCase: Factory<any FetchRoadmapUseCase> {
         self { DefaultFetchRoadmapUseCase(roadmapRepository: DataContainer.shared.roadmapRepository()) }
     }
     

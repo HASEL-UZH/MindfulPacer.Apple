@@ -202,7 +202,7 @@ class CreateReminderViewModel {
             switch result {
             case .success:
                 print("Notification sent successfully")
-            case .failure(let error):
+            case .failure:
                 self.presentAlert(.unableToSendTestNotification)
             }
         }
