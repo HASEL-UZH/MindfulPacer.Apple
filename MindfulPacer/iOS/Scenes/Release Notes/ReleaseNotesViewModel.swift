@@ -32,7 +32,9 @@ final class ReleaseNotesViewModel {
         ReleaseNote(
             version: "1.9",
             notes: [
-                String(localized: "AI-translations of the apps into French, Italian and Spanish.")
+                String(localized: "AI-translations of the apps into French, Italian and Spanish."),
+                String(localized: "Minor UI improvements."),
+                String(localized: "Join TestFlight link.")
             ]
         ),
         ReleaseNote(
