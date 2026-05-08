@@ -20,15 +20,21 @@ struct ReleaseNote: Identifiable {
 
 @Observable
 final class ReleaseNotesViewModel {
-
+    
     // MARK: - Storage Keys
-
+    
     private let whatsNewDefaultsKey = "lastSeenWhatsNewVersion"
-
+    
     // MARK: - Data Source
-
+    
     /// Ordered newest-first. One entry per public release with a short summary.
     let releaseNotes: [ReleaseNote] = [
+        ReleaseNote(
+            version: "1.9",
+            notes: [
+                String(localized: "AI-translations of the apps into French, Italian and Spanish.")
+            ]
+        ),
         ReleaseNote(
             version: "1.8",
             notes: [
@@ -39,25 +45,25 @@ final class ReleaseNotesViewModel {
             ]
         )
     ]
-
+    
     // MARK: - Computed
-
+    
     private var currentVersion: String {
         (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.0.0"
     }
-
+    
     /// True when the current app version has release notes the user hasn't seen.
     var isCurrentVersionNew: Bool {
         releaseNotes.contains { $0.version == currentVersion }
     }
-
+    
     // MARK: - API
-
+    
     func shouldPresentWhatsNew() -> Bool {
         let lastSeen = UserDefaults.standard.string(forKey: whatsNewDefaultsKey)
         return isCurrentVersionNew && lastSeen != currentVersion
     }
-
+    
     func markWhatsNewSeen() {
         UserDefaults.standard.set(currentVersion, forKey: whatsNewDefaultsKey)
     }
