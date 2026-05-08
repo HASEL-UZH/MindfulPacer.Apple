@@ -48,7 +48,8 @@ class HomeViewModel {
     var showStatusInfo: Bool = false
     var showMissedReflectionsInfo: Bool = false
     
-    var alertState: AlertState = .none
+//    var alertState: AlertState = .none
+    var alertState: AlertState = .showing(rule: AlertRule(id: UUID(), alertID: UUID(), measurementType: .heartRate, reminderType: .strong, ruleType: .heartRate(threshold: 55), duration: TimeInterval(60.0), alertMessage: "Heart Rate above 55 bpm for 1 min", interval: .oneMinute, triggerDate: Date.now, dipDate: .now, lastNotificationDate: .now, notificationSent: true), alertID: UUID())
 
     var heartRateSamples: [(value: Double, date: Date)] = []
     var hourlyStepData: [(date: Date, steps: Double)] = []

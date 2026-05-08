@@ -10280,6 +10280,16 @@
         }
       }
     },
+    "Reminder to Reflect" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerung zur Reflexion"
+          }
+        }
+      }
+    },
     "Reminder Triggered" : {
       "localizations" : {
         "de" : {
