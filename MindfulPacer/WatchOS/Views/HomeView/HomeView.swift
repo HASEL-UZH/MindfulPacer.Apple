@@ -113,10 +113,6 @@ struct HomeView: View {
                             }
                             .foregroundColor(.white)
                         }
-                        
-                        Text("(\(rule.reminderType.localized) Reminder)")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
                     }
                     
                     VStack {
