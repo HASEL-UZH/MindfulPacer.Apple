@@ -175,7 +175,7 @@ struct HomeView: View {
                              background: true)
                     }
                     .buttonStyle(.borderless)
-                    .disabled(!viewModel.isMonitoring)
+                    .disabled(!viewModel.isMonitoring && !viewModel.isManuallyPaused)
 
                     Spacer(); Divider(); Spacer()
                     
