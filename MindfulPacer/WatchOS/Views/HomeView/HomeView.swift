@@ -87,20 +87,32 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(spacing: 8) {
-                        Label {
-                            Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
-                                .multilineTextAlignment(.center)
-                                .font(.footnote.weight(.bold))
-                                .layoutPriority(1)
-                        } icon: {
-                            Image(systemName: rule.measurementType.icon)
-                                .foregroundStyle(rule.measurementType.color)
-                        }
-                        .foregroundColor(.white)
+                        Text("Reminder to Reflect")
+                            .font(.body.weight(.bold))
+                            .layoutPriority(1)
                         
-                        Text("(\(rule.reminderType.localized) Reminder)")
-                            .font(.headline)
+                        if #available(watchOS 26.0, *) {
+                            Label {
+                                Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
+                                    .multilineTextAlignment(.center)
+                                    .font(.footnote)
+                            } icon: {
+                                Image(systemName: rule.measurementType.icon)
+                                    .foregroundStyle(rule.measurementType.color)
+                            }
+                            .labelIconToTitleSpacing(0)
                             .foregroundColor(.white)
+                        } else {
+                            Label {
+                                Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
+                                    .multilineTextAlignment(.center)
+                                    .font(.footnote)
+                            } icon: {
+                                Image(systemName: rule.measurementType.icon)
+                                    .foregroundStyle(rule.measurementType.color)
+                            }
+                            .foregroundColor(.white)
+                        }
                     }
                     
                     VStack {
@@ -163,7 +175,7 @@ struct HomeView: View {
                              background: true)
                     }
                     .buttonStyle(.borderless)
-                    .disabled(!viewModel.isMonitoring)
+                    .disabled(!viewModel.isMonitoring && !viewModel.isManuallyPaused)
 
                     Spacer(); Divider(); Spacer()
                     

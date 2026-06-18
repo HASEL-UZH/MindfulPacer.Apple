@@ -9,10 +9,20 @@ import SwiftUI
 import SwiftData
 import UserNotifications
 import WatchConnectivity
+import WatchKit
+
+final class WatchApplicationDelegate: NSObject, WKApplicationDelegate {
+    func handleActiveWorkoutRecovery() {
+        Task { @MainActor in
+            Services.shared.monitorService.handleActiveWorkoutRecovery()
+        }
+    }
+}
 
 @main
 struct WatchOSApp: App {
     
+    @WKApplicationDelegateAdaptor(WatchApplicationDelegate.self) private var applicationDelegate
     @StateObject private var navigationManager = Services.shared.navigationManager
     private let systemDelegate = Services.shared.systemDelegate
 
@@ -29,6 +39,7 @@ struct WatchOSApp: App {
         registerNotificationCategories()
         
         Task {
+            Services.shared.monitorService.checkForRecoveredWorkoutSessionOnLaunch()
             Services.shared.monitorService.verifyComplicationStateOnLaunch()
         }
     }
@@ -44,13 +55,13 @@ struct WatchOSApp: App {
     private func registerNotificationCategories() {
         let acceptAddDetailsAction = UNNotificationAction(
             identifier: "ACCEPT_ADD_DETAILS_ACTION",
-            title: "Accept & Add Details",
+            title: String(localized: "Accept & Add Details"),
             options: .foreground
         )
         
         let acceptLaterAction = UNNotificationAction(
             identifier: "ACCEPT_LATER_ACTION",
-            title: "Accept & Add Later",
+            title: String(localized: "Accept & Add Later"),
             options: []
         )
         

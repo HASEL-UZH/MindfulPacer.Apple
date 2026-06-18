@@ -9,13 +9,13 @@ import Foundation
 
 // MARK: - FetchRoadmapUseCase
 
-protocol FetchRoadmapUseCase {
+protocol FetchRoadmapUseCase: Sendable {
     func execute() async throws -> [RoadmapItem]
 }
 
 // MARK: - DefaultFetchRoadmapUseCase
 
-class DefaultFetchRoadmapUseCase: FetchRoadmapUseCase {
+final class DefaultFetchRoadmapUseCase: FetchRoadmapUseCase {
     private let roadmapRepository: RoadmapRepository
 
     init(roadmapRepository: RoadmapRepository) {

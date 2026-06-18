@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-protocol AddDefaultActivitiesUseCase {
+protocol AddDefaultActivitiesUseCase: Sendable {
     func execute() async
 }
 

@@ -94,6 +94,7 @@ struct SettingsView: View {
                     releaseNotes
                     contactUs
                     roadmap
+                    joinTestFlight
                     moreInfo
                     privacyPolicy
                     disclaimer
@@ -408,6 +409,25 @@ struct SettingsView: View {
                     background: true
                 ),
                 accessoryIndicatorIcon: "arrow.up.forward.square"
+            )
+        }
+    }
+
+    // MARK: Join TestFlight
+
+    private var joinTestFlight: some View {
+        Button {
+            openURL(URL(string: "https://mindfulpacer.ch/apple-testflight")!)
+        } label: {
+            RoundedListCell(
+                label: IconLabel(
+                    icon: "airplane",
+                    title: String(localized: "Join TestFlight"),
+                    description: String(localized: "Help us test new features before release"),
+                    labelColor: Color("BrandPrimary"),
+                    background: true
+                ),
+                accessoryIndicatorIcon: "link"
             )
         }
     }

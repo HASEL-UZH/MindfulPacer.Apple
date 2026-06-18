@@ -81,7 +81,7 @@ struct StepsChartView: View {
             } else {
                 let state = viewModel.emptyState(for: .steps)
                 ContentUnavailableView(
-                    state.title,
+                    String(localized: state.title),
                     systemImage: state.symbol,
                     description: Text(state.subtitle)
                 )

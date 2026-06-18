@@ -65,8 +65,8 @@ class HomeViewModel {
     enum ChartMetric { case heartRate, steps }
 
     struct ChartEmptyState {
-        let title: String
-        let subtitle: String
+        let title: LocalizedStringResource
+        let subtitle: LocalizedStringResource
         let symbol: String
     }
 
