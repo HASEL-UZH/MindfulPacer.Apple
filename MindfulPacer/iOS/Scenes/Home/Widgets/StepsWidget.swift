@@ -42,8 +42,6 @@ extension HomeView {
                             .font(.title.weight(.semibold))
                             .minimumScaleFactor(0.75)
                             .lineLimit(1)
-                        Text("steps")
-                            .foregroundStyle(.secondary)
                     }
                     
                     Text("**Updated:** \(currentSteps.timestamp.formatted(.dateTime.hour().minute()))")
@@ -55,8 +53,6 @@ extension HomeView {
                     HStack(alignment: .center, spacing: 4) {
                         Text("--")
                             .font(.title.weight(.semibold))
-                        Text("steps")
-                            .foregroundStyle(.secondary)
                     }
                     
                     Text("No data")
