@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/HASEL-UZH/MindfulPacer.Apple/issues
+    about: Browse existing issues or open a new one
+  - name: FAQ
+    url: https://www.mindfulpacer.ch/faq
+    about: Answers to common questions about MindfulPacer
+  - name: Contact the team
+    url: mailto:info@mindfulpacer.ch
+    about: For anything else, reach out to us directly
