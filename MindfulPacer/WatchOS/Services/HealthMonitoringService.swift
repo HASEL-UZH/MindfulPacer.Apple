@@ -127,6 +127,12 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         var notificationSent: Bool = false
     }
 
+    private enum MonitoringIntent: Int {
+        case active = 0
+        case paused = 1
+        case stopped = 2
+    }
+
     private var runtimeByRuleID: [UUID: RuleRuntimeState] = [:]
     
     @Published var heartRate: Double = 0
@@ -142,6 +148,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
+    private var isStartingWorkoutSession = false
+    private var isEndingWorkoutSession = false
+    private var isCheckingRecoveredWorkoutSession = false
+    private var monitoringIntent: MonitoringIntent = .active
 
     var isAppInForeground: Bool = true
 
@@ -149,15 +159,34 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private var cancellables = Set<AnyCancellable>()
     private var stepsTimer: DispatchSourceTimer?
     private var complicationHeartbeat: DispatchSourceTimer?
+    private let monitoringIntentKey = "com.mindfulpacer.watch.monitoringIntent"
 
     override init() {
         super.init()
         _ = AppGroupPaths.prepareApplicationSupport()
+        monitoringIntent = loadMonitoringIntent()
+        isManuallyPaused = (monitoringIntent == .paused)
+        isMonitoringEnabled = (monitoringIntent != .stopped)
         subscribeToCloudKitChanges()
     }
 
     private var sharedUserDefaults: UserDefaults? {
         UserDefaults(suiteName: "group.com.MindfulPacer")
+    }
+
+    private func loadMonitoringIntent() -> MonitoringIntent {
+        guard let rawValue = sharedUserDefaults?.object(forKey: monitoringIntentKey) as? Int,
+              let intent = MonitoringIntent(rawValue: rawValue) else {
+            return .active
+        }
+        return intent
+    }
+
+    private func setMonitoringIntent(_ intent: MonitoringIntent) {
+        monitoringIntent = intent
+        sharedUserDefaults?.set(intent.rawValue, forKey: monitoringIntentKey)
+        isMonitoringEnabled = (intent != .stopped)
+        isManuallyPaused = (intent == .paused)
     }
 
     // MARK: - CloudKit change handling (debounced)
@@ -249,11 +278,19 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - Start/Stop monitoring
 
     private func _startOrStopMonitoring(hasRules: Bool, previouslyHadRules: Bool) {
-        if isManuallyPaused {
+        if monitoringIntent == .paused || isManuallyPaused {
+            statusMessage = .paused
+            if workoutSession != nil {
+                endWorkoutSession(
+                    statusAfterEnd: .paused,
+                    shouldClearManualPause: false,
+                    complicationStateAfterEnd: .paused
+                )
+            }
             return
         }
 
-        guard isMonitoringEnabled else {
+        guard isMonitoringEnabled, monitoringIntent == .active else {
             /// User turned monitoring off
             if workoutSession != nil { endWorkoutSession() }
             return
@@ -270,12 +307,24 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private func startWorkoutSession() {
         guard workoutSession == nil else { return }
+        guard !isStartingWorkoutSession, !isEndingWorkoutSession, !isCheckingRecoveredWorkoutSession else { return }
+        guard monitoringIntent == .active, !isManuallyPaused else { return }
+
+        isStartingWorkoutSession = true
 
         Task {
+            var pendingSession: HKWorkoutSession?
+            var pendingBuilder: HKLiveWorkoutBuilder?
+
             do {
                 let isAuthorized = try await requestAuthorization()
                 guard isAuthorized else {
+                    isStartingWorkoutSession = false
                     statusMessage = .permissionDenied
+                    return
+                }
+                guard monitoringIntent == .active, !isManuallyPaused else {
+                    isStartingWorkoutSession = false
                     return
                 }
 
@@ -285,6 +334,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
                 let session = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
                 let builder = session.associatedWorkoutBuilder()
+                pendingSession = session
+                pendingBuilder = builder
                 session.delegate = self
                 builder.delegate = self
                 builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
@@ -294,6 +345,18 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
                 session.startActivity(with: Date())
                 try await builder.beginCollection(at: Date())
+                guard monitoringIntent == .active, !isManuallyPaused else {
+                    isStartingWorkoutSession = false
+                    discardAndEndUnsavedWorkoutSession(session: session, builder: builder)
+                    if self.workoutSession === session {
+                        self.workoutSession = nil
+                    }
+                    if self.workoutBuilder === builder {
+                        self.workoutBuilder = nil
+                    }
+                    return
+                }
+                isStartingWorkoutSession = false
                 isSessionActive = true
                 startComplicationHeartbeat()
                 statusMessage = .monitoring
@@ -302,25 +365,156 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 writeComplicationState(.active)
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
             } catch {
+                if pendingSession != nil || pendingBuilder != nil {
+                    discardAndEndUnsavedWorkoutSession(session: pendingSession, builder: pendingBuilder)
+                    if self.workoutSession === pendingSession {
+                        self.workoutSession = nil
+                    }
+                    if self.workoutBuilder === pendingBuilder {
+                        self.workoutBuilder = nil
+                    }
+                }
+                isStartingWorkoutSession = false
                 statusMessage = .error
             }
         }
     }
 
-    private func endWorkoutSession() {
+    private func endWorkoutSession(
+        statusAfterEnd: StatusMessage = .notMonitoring,
+        shouldClearManualPause: Bool = true,
+        complicationStateAfterEnd: ComplicationState = .inactive
+    ) {
+        guard !isEndingWorkoutSession else { return }
+
+        let session = workoutSession
+        let builder = workoutBuilder
+        isEndingWorkoutSession = true
         stopStepsTimer()
-        workoutSession?.end()
-        workoutBuilder?.discardWorkout()
-        workoutSession = nil
-        workoutBuilder = nil
+        stopComplicationHeartbeat()
         isSessionActive = false
         heartRate = 0
-        isManuallyPaused = false
-        statusMessage = .notMonitoring
-
-        stopComplicationHeartbeat()
-        writeComplicationState(.inactive)
+        if shouldClearManualPause {
+            isManuallyPaused = false
+        }
+        statusMessage = statusAfterEnd
+        writeComplicationState(complicationStateAfterEnd)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+
+        discardAndEndUnsavedWorkoutSession(session: session, builder: builder)
+        if self.workoutSession === session {
+            self.workoutSession = nil
+        }
+        if self.workoutBuilder === builder {
+            self.workoutBuilder = nil
+        }
+        self.isEndingWorkoutSession = false
+        if self.monitoringIntent == .active, !self.isManuallyPaused {
+            self.startWorkoutSession()
+        }
+    }
+
+    private func discardAndEndUnsavedWorkoutSession(session: HKWorkoutSession?, builder: HKLiveWorkoutBuilder?) {
+        let endDate = Date()
+
+        if let builder {
+            // MP uses workouts only for live monitoring/background execution; do not save workout records.
+            builder.dataSource = nil
+            builder.discardWorkout()
+            builder.delegate = nil
+        }
+
+        guard let session, session.state != .ended else { return }
+
+        switch session.state {
+        case .running, .paused:
+            session.stopActivity(with: endDate)
+            session.end()
+        case .stopped:
+            session.end()
+        case .notStarted, .prepared:
+            session.end()
+        @unknown default:
+            session.stopActivity(with: endDate)
+            session.end()
+        }
+
+        session.delegate = nil
+    }
+
+    private func endRecoveredWorkoutSession(_ session: HKWorkoutSession) {
+        let builder = session.associatedWorkoutBuilder()
+        session.delegate = self
+        builder.delegate = self
+        builder.dataSource = nil
+
+        Task {
+            discardAndEndUnsavedWorkoutSession(session: session, builder: builder)
+            if self.workoutSession === session {
+                self.workoutSession = nil
+            }
+            if self.workoutBuilder === builder {
+                self.workoutBuilder = nil
+            }
+            self.isSessionActive = false
+            self.heartRate = 0
+            self.statusMessage = .paused
+            self.isCheckingRecoveredWorkoutSession = false
+            self.stopStepsTimer()
+            self.stopComplicationHeartbeat()
+            self.writeComplicationState(.paused)
+            WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+        }
+    }
+
+    func handleActiveWorkoutRecovery() {
+        recoverActiveWorkoutSessionForTeardown(pauseImmediately: true)
+    }
+
+    func checkForRecoveredWorkoutSessionOnLaunch() {
+        recoverActiveWorkoutSessionForTeardown(pauseImmediately: false)
+    }
+
+    private func recoverActiveWorkoutSessionForTeardown(pauseImmediately: Bool) {
+        guard !isCheckingRecoveredWorkoutSession else { return }
+        isCheckingRecoveredWorkoutSession = true
+
+        if pauseImmediately {
+            stopCurrentWorkoutForRecovery()
+        }
+
+        healthStore.recoverActiveWorkoutSession { [weak self] session, _ in
+            Task { @MainActor in
+                guard let self else { return }
+
+                guard let session else {
+                    self.isCheckingRecoveredWorkoutSession = false
+                    self.refreshState()
+                    return
+                }
+
+                self.setMonitoringIntent(.paused)
+                self.stopCurrentWorkoutForRecovery()
+                self.endRecoveredWorkoutSession(session)
+            }
+        }
+    }
+
+    private func stopCurrentWorkoutForRecovery() {
+        setMonitoringIntent(.paused)
+        statusMessage = .paused
+        stopStepsTimer()
+        stopComplicationHeartbeat()
+        writeComplicationState(.paused)
+        WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+
+        if workoutSession != nil {
+            endWorkoutSession(
+                statusAfterEnd: .paused,
+                shouldClearManualPause: false,
+                complicationStateAfterEnd: .paused
+            )
+        }
     }
 
     // MARK: - HealthKit
@@ -369,7 +563,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     self.stopComplicationHeartbeat()
                 }
             case .stopped, .ended:
-                self.writeComplicationState(.inactive)
+                self.isSessionActive = false
+                self.writeComplicationState(self.monitoringIntent == .paused ? .paused : .inactive)
                 self.stopComplicationHeartbeat()
             default:
                 break
@@ -673,24 +868,30 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     func pauseMonitoring() {
-        guard isSessionActive, !isManuallyPaused else { return }
-        workoutSession?.pause()
-        isManuallyPaused = true
+        guard !isManuallyPaused else { return }
+        setMonitoringIntent(.paused)
         statusMessage = .paused
 
         stopComplicationHeartbeat()
         writeComplicationState(.paused)
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+
+        if workoutSession != nil {
+            endWorkoutSession(
+                statusAfterEnd: .paused,
+                shouldClearManualPause: false,
+                complicationStateAfterEnd: .paused
+            )
+        }
     }
 
     func resumeMonitoring() {
-        guard isSessionActive, isManuallyPaused else { return }
-        workoutSession?.resume()
-        isManuallyPaused = false
+        guard isManuallyPaused else { return }
+        setMonitoringIntent(.active)
         statusMessage = .monitoring
 
         writeComplicationState(.active)
-        startComplicationHeartbeat()
+        startWorkoutSession()
         WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
     }
     
