@@ -124,6 +124,7 @@
 		0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */; };
 		0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10102F61000000ABC001 /* LabeledCard.swift */; };
 		0D7F10212F62000000ABC001 /* ExpandableMetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */; };
+		0D7F10312F63000000ABC001 /* EntryFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10302F63000000ABC001 /* EntryFormSheet.swift */; };
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */; };
@@ -395,6 +396,7 @@
 		0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCapsuleButton.swift; sourceTree = "<group>"; };
 		0D7F10102F61000000ABC001 /* LabeledCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledCard.swift; sourceTree = "<group>"; };
 		0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMetadataRow.swift; sourceTree = "<group>"; };
+		0D7F10302F63000000ABC001 /* EntryFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryFormSheet.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
@@ -632,6 +634,7 @@
 		0D34C4532C82643B00928C53 /* Sheets */ = {
 			isa = PBXGroup;
 			children = (
+				0D7F10302F63000000ABC001 /* EntryFormSheet.swift */,
 				0D4EBE352C727B6200C1865D /* InfoSheet.swift */,
 				0D4AF7342C9A12B50067D24E /* MailView.swift */,
 			);
@@ -1828,6 +1831,7 @@
 				0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */,
 				0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */,
 				0D7F10212F62000000ABC001 /* ExpandableMetadataRow.swift in Sources */,
+				0D7F10312F63000000ABC001 /* EntryFormSheet.swift in Sources */,
 				0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */,
 				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
