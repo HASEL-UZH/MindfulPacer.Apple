@@ -16,6 +16,8 @@ struct RemindersListView: View {
     @Bindable var viewModel: HomeViewModel
     @State private var activeReminderID: UUID?
     @State private var reminderPendingDeletion: Reminder?
+    @State private var thresholdEditorSelection: ReminderThresholdEditorSelection?
+    @State private var collapsedMeasurementTypes: Set<MeasurementType> = []
     
     // MARK: Body
     
@@ -41,6 +43,12 @@ struct RemindersListView: View {
             }
         } message: {
             Text("Are you sure you want to delete this reminder? This action cannot be undone.")
+        }
+        .sheet(item: $thresholdEditorSelection) { selection in
+            ReminderThresholdEditorSheet(
+                viewModel: viewModel,
+                reminder: selection.reminder
+            )
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -68,10 +76,11 @@ struct RemindersListView: View {
                         }
 
                     LazyVStack(alignment: .leading, spacing: 6) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            ForEach(viewModel.reminders, id: \.id) { reminder in
-                                reminderRow(reminder)
-                            }
+                        ForEach(reminderSections) { section in
+                            reminderSection(
+                                section,
+                                isLast: section.id == reminderSections.last?.id
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -85,6 +94,14 @@ struct RemindersListView: View {
     private var navigationSubtitleText: String {
         let count = viewModel.reminders.count
         return count == 1 ? String(localized: "1 reminder") : String(localized: "\(count) reminders")
+    }
+
+    private var reminderSections: [ReminderSection] {
+        MeasurementType.allCases.compactMap { measurementType in
+            let reminders = viewModel.reminders.filter { $0.measurementType == measurementType }
+            guard !reminders.isEmpty else { return nil }
+            return ReminderSection(measurementType: measurementType, reminders: reminders)
+        }
     }
 
     private var isDeleteConfirmationPresented: Binding<Bool> {
@@ -115,6 +132,35 @@ struct RemindersListView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+    }
+
+    private func reminderSection(_ section: ReminderSection, isLast: Bool) -> some View {
+        let isCollapsed = collapsedMeasurementTypes.contains(section.measurementType)
+
+        return VStack(alignment: .leading, spacing: 4) {
+            ReminderMeasurementSectionHeader(
+                measurementType: section.measurementType,
+                reminderCount: section.reminders.count,
+                isCollapsed: isCollapsed
+            ) {
+                toggleSection(section.measurementType)
+            }
+
+            if !isCollapsed {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(section.reminders, id: \.id) { reminder in
+                        reminderRow(reminder)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .bottom) {
+            Divider()
+                .opacity(isLast ? 0 : 1)
+                .offset(y: 6)
+        }
+        .padding(.bottom, isLast ? 0 : 12)
     }
 
     @ViewBuilder
@@ -150,10 +196,10 @@ struct RemindersListView: View {
 
     private func reminderRowContent(_ reminder: Reminder, isActive: Bool) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: reminder.measurementType.icon)
-                .symbolVariant(.circle.fill)
+            Image(systemName: reminderIconName(for: reminder.measurementType))
+                .symbolVariant(.fill)
                 .font(.title2.weight(.semibold))
-                .foregroundStyle(isActive ? reminder.measurementType.color : .secondary)
+                .foregroundStyle(reminder.measurementType.color)
                 .frame(width: 32, height: 32)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -235,11 +281,23 @@ struct RemindersListView: View {
                 }
             }
 
-            ExpandableMetadataChip(
+            ExpandableMetadataChipButton(
                 title: "\(reminder.threshold) \(reminder.thresholdUnits)",
                 systemImage: "number",
-                isActive: true
-            )
+                isActive: true,
+                tint: reminder.measurementType.color
+            ) {
+                thresholdEditorSelection = ReminderThresholdEditorSelection(reminder: reminder)
+            }
+        }
+    }
+
+    private func reminderIconName(for measurementType: MeasurementType) -> String {
+        switch measurementType {
+        case .heartRate:
+            measurementType.icon
+        case .steps:
+            "figure.walk"
         }
     }
 
@@ -268,6 +326,175 @@ struct RemindersListView: View {
         reminderPendingDeletion = nil
         activeReminderID = nil
         viewModel.deleteReminder(reminder)
+    }
+
+    private func toggleSection(_ measurementType: MeasurementType) {
+        withAnimation(.snappy(duration: 0.24)) {
+            activeReminderID = nil
+            if collapsedMeasurementTypes.contains(measurementType) {
+                collapsedMeasurementTypes.remove(measurementType)
+            } else {
+                collapsedMeasurementTypes.insert(measurementType)
+            }
+        }
+    }
+}
+
+private struct ReminderSection: Identifiable {
+    let measurementType: MeasurementType
+    let reminders: [Reminder]
+
+    var id: MeasurementType {
+        measurementType
+    }
+}
+
+private struct ReminderThresholdEditorSelection: Identifiable {
+    let reminder: Reminder
+
+    var id: UUID {
+        reminder.id
+    }
+}
+
+private struct ReminderMeasurementSectionHeader: View {
+    let measurementType: MeasurementType
+    let reminderCount: Int
+    let isCollapsed: Bool
+    let onToggleCollapsed: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: iconName)
+                .symbolVariant(.fill)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(measurementType.color)
+                .frame(width: 40, height: 40)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(measurementType.localized)
+                    .font(.title3.weight(.bold))
+
+                Text(reminderCountText)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 12)
+
+            Button(action: onToggleCollapsed) {
+                Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isCollapsed ? "Expand \(measurementType.localized)" : "Collapse \(measurementType.localized)")
+        }
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .contentShape(.rect)
+    }
+
+    private var iconName: String {
+        switch measurementType {
+        case .heartRate:
+            measurementType.icon
+        case .steps:
+            "figure.walk"
+        }
+    }
+
+    private var reminderCountText: String {
+        reminderCount == 1 ? String(localized: "1 reminder") : String(localized: "\(reminderCount) reminders")
+    }
+}
+
+private struct ReminderThresholdEditorSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Bindable var viewModel: HomeViewModel
+    let reminder: Reminder
+
+    @State private var threshold: Int?
+    @FocusState private var isThresholdFocused: Bool
+
+    init(
+        viewModel: HomeViewModel,
+        reminder: Reminder
+    ) {
+        self.viewModel = viewModel
+        self.reminder = reminder
+        self._threshold = State(initialValue: reminder.threshold)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        TextField("0", value: $threshold, format: .number)
+                            .keyboardType(.numberPad)
+                            .focused($isThresholdFocused)
+                            .font(.title2.weight(.semibold))
+
+                        Text(reminder.thresholdUnits)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                } footer: {
+                    Text(footerText)
+                }
+            }
+            .navigationTitle("Threshold")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        save()
+                    }
+                    .disabled(threshold == nil)
+                }
+
+                ToolbarItem(placement: .keyboard) {
+                    Button {
+                        isThresholdFocused = false
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down.fill")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+            .onSubmit {
+                save()
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+        .onAppear {
+            isThresholdFocused = true
+        }
+    }
+
+    private func save() {
+        guard let threshold else { return }
+        viewModel.updateReminder(reminder, threshold: threshold)
+        dismiss()
+    }
+
+    private var footerText: String {
+        switch reminder.measurementType {
+        case .heartRate:
+            String(localized: "Heart rate thresholds can be between 0 and 250 bpm.")
+        case .steps:
+            String(localized: "Step thresholds can be between 0 and 100000 steps.")
+        }
     }
 }
 

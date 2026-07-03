@@ -348,6 +348,14 @@ class HomeViewModel {
         saveReminderChanges(reminder)
     }
 
+    func updateReminder(
+        _ reminder: Reminder,
+        threshold: Int
+    ) {
+        reminder.threshold = clampedThreshold(threshold, for: reminder.measurementType)
+        saveReminderChanges(reminder)
+    }
+
     func deleteReflection(_ reflection: Reflection) {
         let reflectionID = reflection.id
 
