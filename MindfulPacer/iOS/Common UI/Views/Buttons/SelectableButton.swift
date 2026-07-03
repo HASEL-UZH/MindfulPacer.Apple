@@ -14,20 +14,52 @@ struct SelectableButton<Label: View>: View {
 
     enum ButtonShape {
         case roundedRectangle(cornerRadius: CGFloat)
+        case capsule
         case circle
     }
 
     // MARK: Properties
 
-    var shape: ButtonShape
+    private var buttonBorderShape: ButtonBorderShape
+    private var shape: SelectableButtonShape
     var backgroundColor: Color
-    var foregroundColor: Color
-    var selectionColor: Color
+    var selectionFillColor: Color
+    var selectionTextColor: Color
+    var unselectedTextColor: Color
+    var padding: CGFloat
     var isSelected: Bool
+    var hasOutline: Bool
+    var outlineWidth: CGFloat
     let action: () -> Void
     let label: () -> Label
 
     // MARK: Initializer
+
+    init(
+        shape: ButtonBorderShape = .roundedRectangle(radius: 20),
+        backgroundColor: Color = Color(.secondarySystemGroupedBackground),
+        selectionFillColor: Color = Color("BrandPrimary"),
+        selectionTextColor: Color = Color("BrandPrimary"),
+        padding: CGFloat = 16.0,
+        isSelected: Bool,
+        hasOutline: Bool = false,
+        outlineWidth: CGFloat = 1,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        self.buttonBorderShape = shape
+        self.shape = SelectableButtonShape(shape)
+        self.backgroundColor = backgroundColor
+        self.selectionFillColor = selectionFillColor
+        self.selectionTextColor = selectionTextColor
+        self.unselectedTextColor = .primary
+        self.padding = padding
+        self.isSelected = isSelected
+        self.hasOutline = hasOutline
+        self.outlineWidth = outlineWidth
+        self.action = action
+        self.label = label
+    }
 
     init(
         shape: ButtonShape,
@@ -38,11 +70,16 @@ struct SelectableButton<Label: View>: View {
         action: @escaping () -> Void,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.shape = shape
+        self.buttonBorderShape = shape.buttonBorderShape
+        self.shape = shape.selectableButtonShape
         self.backgroundColor = backgroundColor
-        self.foregroundColor = foregroundColor
-        self.selectionColor = selectionColor
+        self.selectionFillColor = selectionColor
+        self.selectionTextColor = selectionColor
+        self.unselectedTextColor = foregroundColor
+        self.padding = 16.0
         self.isSelected = isSelected
+        self.hasOutline = true
+        self.outlineWidth = 2
         self.action = action
         self.label = label
     }
@@ -52,47 +89,136 @@ struct SelectableButton<Label: View>: View {
     var body: some View {
         Button(action: action) {
             label()
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background {
-                    backgroundShape()
-                        .foregroundStyle(
-                            isSelected ? selectionColor
-                                .opacity(0.1) : backgroundColor
-                        )
-                }
-                .overlay {
-                    if isSelected {
-                        overlayShape()
+        }
+        .buttonStyle(
+            SelectableBorderedButtonStyle(
+                shape: shape,
+                backgroundColor: backgroundColor,
+                selectionFillColor: selectionFillColor,
+                selectionTextColor: selectionTextColor,
+                unselectedTextColor: unselectedTextColor,
+                padding: padding,
+                isSelected: isSelected,
+                hasOutline: hasOutline,
+                outlineWidth: outlineWidth
+            )
+        )
+        .buttonBorderShape(buttonBorderShape)
+    }
+}
+
+// MARK: - Button Shape
+
+private enum SelectableButtonShape {
+    case roundedRectangle(cornerRadius: CGFloat)
+    case capsule
+    case circle
+
+    init(_ shape: ButtonBorderShape) {
+        if shape == .circle {
+            self = .circle
+        } else if shape == .capsule {
+            self = .capsule
+        } else {
+            self = .roundedRectangle(cornerRadius: 20)
+        }
+    }
+}
+
+private extension SelectableButton.ButtonShape {
+    var buttonBorderShape: ButtonBorderShape {
+        switch self {
+        case .roundedRectangle(let cornerRadius):
+            .roundedRectangle(radius: cornerRadius)
+        case .capsule:
+            .capsule
+        case .circle:
+            .circle
+        }
+    }
+
+    var selectableButtonShape: SelectableButtonShape {
+        switch self {
+        case .roundedRectangle(let cornerRadius):
+            .roundedRectangle(cornerRadius: cornerRadius)
+        case .capsule:
+            .capsule
+        case .circle:
+            .circle
+        }
+    }
+}
+
+// MARK: - SelectableBorderedButtonStyle
+
+private struct SelectableBorderedButtonStyle: ButtonStyle {
+    var shape: SelectableButtonShape
+    var backgroundColor: Color
+    var selectionFillColor: Color
+    var selectionTextColor: Color
+    var unselectedTextColor: Color
+    var padding: CGFloat
+    var isSelected: Bool
+    var hasOutline: Bool
+    var outlineWidth: CGFloat
+
+    func makeBody(configuration: Configuration) -> some View {
+        let isPressed = configuration.isPressed
+        let fillColor = isSelected
+            ? selectionFillColor.opacity(isPressed ? 0.22 : 0.14)
+            : backgroundColor.opacity(isPressed ? 0.90 : 1.0)
+        let strokeColor = isSelected
+            ? selectionFillColor.opacity(0.95)
+            : Color(.separator).opacity(0.75)
+
+        configuration.label
+            .foregroundStyle(isSelected ? selectionTextColor : unselectedTextColor)
+            .padding(padding)
+            .frame(maxWidth: .infinity)
+            .background {
+                ZStack {
+                    shapeBackground(fillColor)
+                    if hasOutline {
+                        shapeStroke(strokeColor, lineWidth: outlineWidth)
                     }
                 }
-        }
-        .foregroundStyle(isSelected ? selectionColor : foregroundColor)
+            }
+            .contentShape(.rect)
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: isPressed)
     }
 
-    // MARK: Background Shape
+    // MARK: Shape Background
 
     @ViewBuilder
-    private func backgroundShape() -> some View {
+    private func shapeBackground(_ color: Color) -> some View {
         switch shape {
         case .roundedRectangle(let cornerRadius):
-            RoundedRectangle(cornerRadius: cornerRadius)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(color)
+        case .capsule:
+            Capsule()
+                .fill(color)
         case .circle:
             Circle()
+                .fill(color)
         }
     }
 
-    // MARK: Overlay Shape
+    // MARK: Shape Stroke
 
     @ViewBuilder
-    private func overlayShape() -> some View {
+    private func shapeStroke(_ color: Color, lineWidth: CGFloat) -> some View {
         switch shape {
         case .roundedRectangle(let cornerRadius):
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(selectionColor, lineWidth: 2)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .strokeBorder(color, lineWidth: lineWidth)
+        case .capsule:
+            Capsule()
+                .strokeBorder(color, lineWidth: lineWidth)
         case .circle:
             Circle()
-                .stroke(selectionColor, lineWidth: 2)
+                .strokeBorder(color, lineWidth: lineWidth)
         }
     }
 }
@@ -109,8 +235,9 @@ struct SelectableButton<Label: View>: View {
 
         VStack(spacing: 32) {
             SelectableButton(
-                shape: .roundedRectangle(cornerRadius: 16),
-                isSelected: isRoundedRectangleButtonSelected
+                shape: .roundedRectangle(radius: 20),
+                isSelected: isRoundedRectangleButtonSelected,
+                hasOutline: true
             ) {
                 isRoundedRectangleButtonSelected.toggle()
             } label: {
@@ -120,7 +247,9 @@ struct SelectableButton<Label: View>: View {
 
             SelectableButton(
                 shape: .circle,
-                selectionColor: .yellow,
+                selectionFillColor: .yellow,
+                selectionTextColor: .yellow,
+                padding: 16,
                 isSelected: isCircleButtonSelected
             ) {
                 isCircleButtonSelected.toggle()

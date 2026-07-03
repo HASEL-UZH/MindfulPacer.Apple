@@ -21,7 +21,7 @@ extension SettingsView {
         
         var body: some View {
             if viewModel.isWatchAppInstalled {
-                RoundedList {
+                List {
                     Section {
                         IconLabelGroupBox(
                             label: IconLabel(
@@ -59,9 +59,12 @@ extension SettingsView {
                             }
                         }
                         .iconLabelGroupBoxStyle(.divider)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
                     }
                     .frame(maxWidth: .infinity)
                 }
+                .listStyle(.insetGrouped)
                 .navigationTitle("Apple Watch")
                 .onAppear {
                     ConnectivityService.shared.startPinging()

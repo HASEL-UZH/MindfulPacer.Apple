@@ -38,7 +38,7 @@ struct OutreachView: View {
     
     var body: some View {
         NavigationStack {
-            RoundedList {
+            List {
                 Section {
                     intro
                 }
@@ -47,9 +47,7 @@ struct OutreachView: View {
                     community
                 }
                 
-                Section {
-                    articles
-                }
+                articles
                 
                 Section {
                     website
@@ -57,10 +55,9 @@ struct OutreachView: View {
                     contactUs
                 } header: {
                     Text("Learn More")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
                 }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Outreach")
             .navigationDestination(
                 for: OutreachViewNavigationDestination.self,
@@ -110,6 +107,8 @@ struct OutreachView: View {
     private var intro: some View {
         InfoBox(text: String(localized: "Provides opportunities to connect & exchange strategies, learn about scientific discoveries and learn more about MindfulPacer."))
             .foregroundStyle(.secondary)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
     }
     
     // MARK: Community
@@ -146,6 +145,8 @@ struct OutreachView: View {
                 .font(.subheadline.weight(.semibold))
             }
         }
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
     }
     
     // MARK: Articles
@@ -204,7 +205,7 @@ struct OutreachView: View {
         Button {
             openURL(URL(string: "https://mindfulpacer.ch")!)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     image: "MindfulPacer Icon",
                     title: String(localized: "Our Website"),
@@ -228,7 +229,7 @@ struct OutreachView: View {
                 )
             )
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "envelope",
                     title: String(localized: "Contact Us"),
@@ -246,7 +247,7 @@ struct OutreachView: View {
         Button {
             viewModel.presentSheet(.roadmap)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "map",
                     title: String(localized: "Roadmap"),

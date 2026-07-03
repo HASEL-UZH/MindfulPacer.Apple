@@ -18,24 +18,22 @@ struct RemindersListView: View {
     // MARK: Body
     
     var body: some View {
-        VStack {
+        Group {
             if viewModel.reminders.isEmpty {
                 remindersEmptyState
                     .frame(maxHeight: .infinity, alignment: .center)
             } else {
-                RoundedList {
-                    Section {
-                        ForEach(viewModel.reminders) { reminder in
-                            ReminderCell(reminder: reminder) {
-                                viewModel.presentSheet(.createReminderView(reminder))
-                            }
+                List {
+                    ForEach(viewModel.reminders) { reminder in
+                        ReminderCell(reminder: reminder, backgroundColor: .clear) {
+                            viewModel.presentSheet(.createReminderView(reminder))
                         }
                     }
                 }
+                .listStyle(.insetGrouped)
             }
         }
         .background(Color(.systemGroupedBackground))
-        .listStyle(.grouped)
         .navigationTitle("Reminders")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

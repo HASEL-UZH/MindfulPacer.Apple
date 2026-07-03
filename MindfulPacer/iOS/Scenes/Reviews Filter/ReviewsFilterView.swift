@@ -10,327 +10,301 @@ import SwiftUI
 
 // MARK: - ReflectionsFilterView
 
-// swiftlint:disable:next type_body_length
 struct ReflectionsFilterView: View {
-    
+
+    // MARK: Dependencies
+
+    @Environment(\.dismiss) private var dismiss
+
     // MARK: Properties
 
     @State private var viewModel: ReflectionsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
+
     let filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
+    let activities: [Activity]
+
+    // MARK: Init
+
+    init(
+        filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?,
+        activities: [Activity] = []
+    ) {
+        self.filterAndSortingPublisher = filterAndSortingPublisher
+        self.activities = activities
+    }
 
     // MARK: Body
 
     var body: some View {
         NavigationStack {
-            RoundedList {
-                dateRange
-
-                Section {
-                    activities
-                    subactivities
-                    moods
-                    triggeredCrash
+            filterSections
+                .background(Color(.systemGroupedBackground))
+                .navigationTitle("Filter Reflections")
+                .navigationBarTitleDisplayMode(.inline)
+                .modifier(FilterNavigationSubtitleModifier(subtitle: viewModel.navigationSubtitle))
+                .toolbar { toolbarContent }
+                .onViewFirstAppear {
+                    viewModel.onViewFirstAppear()
+                    viewModel.setPublisher(filterAndSortingPublisher)
+                    viewModel.updateActivities(activities)
                 }
-
-                dateSorting
-
-            }
-            .navigationTitle("Filter Reflections")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    resetButton
+                .onChange(of: activities) { _, newValue in
+                    viewModel.updateActivities(newValue)
                 }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    CloseButton()
-                }
+        }
+    }
+}
+
+// MARK: - Toolbar Content
+
+private extension ReflectionsFilterView {
+    @ToolbarContentBuilder
+    var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            CloseButton()
+        }
+
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Done") {
+                dismiss()
             }
-            .onViewFirstAppear {
-                viewModel.onViewFirstAppear()
-                viewModel.setPublisher(filterAndSortingPublisher)
+            .fontWeight(.semibold)
+        }
+    }
+}
+
+// MARK: - Filter Sections
+
+private extension ReflectionsFilterView {
+    var filterSections: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 24) {
+                dateRangeSection
+                activitiesSection
+                subactivitiesSection
+                moodSection
+                crashSection
+                sortingSection
             }
+            .padding(.vertical, 20)
         }
     }
 
-    // MARK: Reset Button
-
-    private var resetButton: some View {
-        Button("Reset") {
-            viewModel.resetFilters()
-        }
-        .fontWeight(.semibold)
-    }
-
-    // MARK: Date Range
-
-    private var dateRange: some View {
-        Section {
-            VStack(spacing: 16) {
-                IconLabel(
-                    icon: "calendar",
-                    title: "Date",
-                    labelColor: Color("BrandPrimary"),
-                    background: true
+    var dateRangeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                FilterSectionHeader(
+                    title: "Date Range",
+                    subtitle: viewModel.dateRangeSummary
                 )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
 
-                Group {
-                    DatePicker(
-                        "From",
-                        selection: viewModel.fromDateBinding,
-                        in: ...viewModel.reviewFilter.toDate,
-                        displayedComponents: [.date]
-                    )
-                    .datePickerStyle(.compact)
+                Spacer()
 
-                    DatePicker(
-                        "To",
-                        selection: viewModel.toDateBinding,
-                        in: viewModel.reviewFilter.fromDate...,
-                        displayedComponents: [.date]
-                    )
-                    .datePickerStyle(.compact)
-                }
-                .font(.subheadline.weight(.semibold))
+                clearAllButton
             }
-            .padding()
-            .background(Color(.secondarySystemGroupedBackground))
-        }
-    }
 
-    // MARK: Activities
+            VStack(spacing: 8) {
+                DatePicker(
+                    "From",
+                    selection: viewModel.fromDateBinding,
+                    in: ...viewModel.reviewFilter.toDate,
+                    displayedComponents: [.date]
+                )
+                .datePickerStyle(.compact)
+                .filterControlBackground()
 
-    private var activities: some View {
-        NavigationLink {
-            activitiesFilterView
-        } label: {
-            filterItem(
-                icon: "rectangle.grid.2x2.fill",
-                title: "Activities",
-                selectedCount: viewModel.reviewFilter.selectedActivities.count,
-                selectedSummary: viewModel.selectedFilterActivitiesSummary
-            )
-        }
-    }
-
-    // MARK: Subactivities
-
-    private var subactivities: some View {
-        NavigationLink {
-            subactivitiesFilterView
-        } label: {
-            filterItem(
-                icon: "rectangle.grid.3x3.fill",
-                title: "Subactivities",
-                selectedCount: viewModel.reviewFilter.selectedSubactivities.count,
-                selectedSummary: viewModel.selectedFilterSubactivitiesSummary
-            )
-        }
-    }
-
-    // MARK: Moods
-
-    private var moods: some View {
-        NavigationLink {
-            moodFilterView
-        } label: {
-            filterItem(
-                icon: "face.smiling.fill",
-                title: "Mood",
-                selectedCount: viewModel.reviewFilter.selectedMoods.count,
-                selectedSummary: viewModel.selectedFilterMoodsSummary
-            )
-        }
-    }
-
-    // MARK: Filter Item
-
-    @ViewBuilder
-    private func filterItem(
-        icon: String,
-        title: String,
-        selectedCount: Int,
-        selectedSummary: String
-    ) -> some View {
-        HStack {
-            IconLabel(
-                icon: icon,
-                title: title,
-                description: selectedSummary.isEmpty ? nil : selectedSummary,
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
+                DatePicker(
+                    "To",
+                    selection: viewModel.toDateBinding,
+                    in: viewModel.reviewFilter.fromDate...,
+                    displayedComponents: [.date]
+                )
+                .datePickerStyle(.compact)
+                .filterControlBackground()
+            }
             .font(.subheadline.weight(.semibold))
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            HStack(spacing: 4) {
-                if selectedCount > 0 {
-                    Text("\(selectedCount)")
-                        .foregroundStyle(Color(.systemGray2))
-                }
-
-                Icon(name: "chevron.right", color: Color(.systemGray2))
-                    .font(.subheadline.weight(.semibold))
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
-        .foregroundStyle(.primary)
-    }
-
-    // MARK: Activities Filter View
-
-    private var activitiesFilterView: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(spacing: 16), count: 3),
-                spacing: 16
-            ) {
-                ForEach(viewModel.activities) { activity in
-                    SelectableButton(
-                        shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedActivities.contains(activity)
-                    ) {
-                        viewModel.toggleFilterActivity(activity)
-                    } label: {
-                        VStack(spacing: 16) {
-                            Image(systemName: activity.icon)
-                                .resizable()
-                                .scaledToFit()
-                                .symbolVariant(.fill)
-                                .frame(width: 24, height: 24)
-                            Text(activity.name)
-                                .font(.footnote)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                        }
-                    }
-                }
-            }
             .padding(.horizontal)
         }
-        .navigationTitle("Activities")
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 
-    // MARK: Subactivities Filter View
-
-    private var subactivitiesFilterView: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(spacing: 16), count: 3),
-                spacing: 16
-            ) {
-                ForEach(viewModel.subactivities) { subactivity in
-                    SelectableButton(
-                        shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
-                    ) {
-                        viewModel.toggleFilterSubactivity(subactivity)
-                    } label: {
-                        VStack(spacing: 16) {
-                            Image(systemName: subactivity.icon)
-                                .resizable()
-                                .scaledToFit()
-                                .symbolVariant(.fill)
-                                .frame(width: 24, height: 24)
-                            Text(subactivity.name)
-                                .font(.footnote)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                        }
-                    }
+    var activitiesSection: some View {
+        filterChipSection(
+            title: "Activities",
+            subtitle: viewModel.activitiesSubtitle,
+            isEmpty: viewModel.activities.isEmpty,
+            emptyTitle: "No activities available"
+        ) {
+            ForEach(viewModel.activities) { activity in
+                FilterCapsuleButton(
+                    title: activity.name,
+                    systemImage: activity.icon,
+                    isSelected: viewModel.reviewFilter.selectedActivities.contains(activity)
+                ) {
+                    viewModel.toggleFilterActivity(activity)
                 }
             }
-            .padding(.horizontal)
         }
-        .navigationTitle("Subactivities")
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 
-    // MARK: Mood Filter View
+    var subactivitiesSection: some View {
+        filterChipSection(
+            title: "Subactivities",
+            subtitle: viewModel.subactivitiesSubtitle,
+            isEmpty: viewModel.subactivities.isEmpty,
+            emptyTitle: "No subactivities available"
+        ) {
+            ForEach(viewModel.subactivities) { subactivity in
+                FilterCapsuleButton(
+                    title: subactivity.name,
+                    systemImage: subactivity.icon,
+                    isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
+                ) {
+                    viewModel.toggleFilterSubactivity(subactivity)
+                }
+            }
+        }
+    }
 
-    private var moodFilterView: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(spacing: 16), count: 5),
-                spacing: 16
-            ) {
+    var moodSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FilterSectionHeader(
+                title: "Mood",
+                subtitle: viewModel.moodsSubtitle
+            )
+
+            LazyVGrid(columns: filterGridColumns, spacing: 8) {
                 ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
-                    SelectableButton(
-                        shape: .roundedRectangle(cornerRadius: 12),
+                    FilterCapsuleButton(
+                        title: mood.text,
+                        emoji: mood.emoji,
                         isSelected: viewModel.reviewFilter.selectedMoods.contains(mood)
                     ) {
                         viewModel.toggleFilterMood(mood)
-                    } label: {
-                        Text(mood.emoji)
-                            .font(.title)
-                    }
-                    .contextMenu {
-                        Text(mood.text)
                     }
                 }
             }
             .padding(.horizontal)
         }
-        .navigationTitle("Mood")
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 
-    // MARK: Triggered Crash
-
-    private var triggeredCrash: some View {
-        Toggle(isOn: viewModel.triggeredCrashBinding) {
-            IconLabel(
-                icon: "exclamationmark.triangle.fill",
-                title: "Triggered Crash",
-                labelColor: Color("BrandPrimary"),
-                background: true
+    var crashSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FilterSectionHeader(
+                title: "Crash",
+                subtitle: viewModel.crashSubtitle
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Toggle(isOn: viewModel.triggeredCrashBinding) {
+                Label {
+                    Text("Triggered Crash Only")
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                }
+            }
             .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .layoutPriority(1)
+            .tint(Color("BrandPrimary"))
+            .filterControlBackground()
+            .padding(.horizontal)
         }
-        .tint(.accentColor)
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
     }
 
-    // MARK: Date Sorting
+    var sortingSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FilterSectionHeader(
+                title: "Sorting",
+                subtitle: viewModel.sortingSubtitle
+            )
 
-    private var dateSorting: some View {
-        Section {
-            HStack {
-                IconLabel(
-                    icon: "arrow.up.arrow.down",
-                    title: "Date",
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .font(.subheadline.weight(.semibold))
-
-                Spacer(minLength: 32)
-
-                Picker(String(), selection: viewModel.reviewSortingBinding) {
-                    Label("Descending", systemImage: "arrow.down")
-                        .tag(ReflectionSorting.dateDescending)
-                    Label("Ascending", systemImage: "arrow.up")
-                        .tag(ReflectionSorting.dateAscending)
+            LazyVGrid(columns: filterGridColumns, spacing: 8) {
+                ForEach(ReflectionSorting.allCases, id: \.self) { sorting in
+                    FilterCapsuleButton(
+                        title: sorting.title,
+                        systemImage: sorting.systemImage,
+                        isSelected: viewModel.reviewSorting == sorting
+                    ) {
+                        viewModel.updateSorting(sorting)
+                    }
                 }
-                .pickerStyle(.segmented)
             }
-            .padding()
-            .background(Color(.secondarySystemGroupedBackground))
-        } header: {
-            Text("Sorting")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+            .padding(.horizontal)
         }
+    }
+}
+
+// MARK: - Helpers
+
+private extension ReflectionsFilterView {
+    var filterGridColumns: [GridItem] {
+        [
+            GridItem(.flexible(), spacing: 8),
+            GridItem(.flexible(), spacing: 8)
+        ]
+    }
+
+    var clearAllButton: some View {
+        Button("Clear All") {
+            viewModel.resetFilters()
+        }
+        .disabled(!viewModel.hasActiveFilters)
+        .fontWeight(.semibold)
+        .padding(.trailing)
+    }
+
+    @ViewBuilder
+    func filterChipSection<Content: View>(
+        title: String,
+        subtitle: String?,
+        isEmpty: Bool,
+        emptyTitle: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FilterSectionHeader(title: title, subtitle: subtitle)
+
+            if isEmpty {
+                Text(emptyTitle)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .filterControlBackground()
+                    .padding(.horizontal)
+            } else {
+                LazyVGrid(columns: filterGridColumns, spacing: 8) {
+                    content()
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+// MARK: - Filter Navigation Subtitle Modifier
+
+private struct FilterNavigationSubtitleModifier: ViewModifier {
+    let subtitle: String
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.navigationSubtitle(subtitle)
+        } else {
+            content
+        }
+    }
+}
+
+// MARK: - View Helpers
+
+private extension View {
+    func filterControlBackground() -> some View {
+        self
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background {
+                Capsule()
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+            }
     }
 }
 

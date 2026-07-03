@@ -1,5 +1,5 @@
 //
-//  RoundedListCell.swift
+//  IconListRow.swift
 //  iOS
 //
 //  Created by Grigor Dochev on 03.02.2025.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-// MARK: - RoundedListCell
+// MARK: - IconListRow
 
-struct RoundedListCell: View {
+struct IconListRow: View {
     var label: IconLabel
     var accessoryIndicatorText: String?
     var accessoryIndicatorIcon: String?
@@ -34,17 +34,15 @@ struct RoundedListCell: View {
                 }
             }
         }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    RoundedList {
+    List {
         Section {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "map",
                     title: "Roadmap",
@@ -53,7 +51,7 @@ struct RoundedListCell: View {
                 )
             )
             
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     image: "MindfulPacer Icon",
                     title: "MindfulPacer",

@@ -64,7 +64,7 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
-            RoundedList {
+            List {
 
                 Section {
                     mindfulPacerExpanded
@@ -107,8 +107,8 @@ struct SettingsView: View {
                 }
 
                 appVersion
-                    .padding(.bottom)
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
                 navigationDestination(for: destination)
@@ -209,7 +209,7 @@ struct SettingsView: View {
 
     private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "circle.lefthalf.striped.horizontal.inverse",
                     title: String(localized: "Theme"),
@@ -242,8 +242,6 @@ struct SettingsView: View {
                 .font(.subheadline.weight(.semibold))
             }
         }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
         .tint(Color.brandPrimary)
     }
 
@@ -251,7 +249,7 @@ struct SettingsView: View {
 
     private var deviceModeSetting: some View {
         NavigationLink(value: SettingsNavigationDestination.deviceMode) {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "iphone.motion",
                     title: String(localized: "Device Mode"),
@@ -267,7 +265,7 @@ struct SettingsView: View {
 
     private var algorithms: some View {
         NavigationLink(value: SettingsNavigationDestination.algorithms) {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "slider.horizontal.below.square.filled.and.square",
                     title: String(localized: "Algorithms"),
@@ -285,7 +283,7 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.releaseNotes)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "doc.text.fill",
                     title: String(localized: "Release Notes"),
@@ -302,7 +300,7 @@ struct SettingsView: View {
 
     private var dataManagement: some View {
         NavigationLink(value: SettingsNavigationDestination.dataManagement) {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "externaldrive",
                     title: String(localized: "Manage Data"),
@@ -327,7 +325,7 @@ struct SettingsView: View {
                 )
             )
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "envelope",
                     title: String(localized: "Contact Us"),
@@ -345,7 +343,7 @@ struct SettingsView: View {
         Button {
             openURL(viewModel.landingPageURL)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "info",
                     title: String(localized: "More Info"),
@@ -363,7 +361,7 @@ struct SettingsView: View {
         Button {
             openURL(viewModel.privacyPolicyURL)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "hand.raised",
                     title: String(localized: "Privacy Policy"),
@@ -381,7 +379,7 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.onboardingView)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "square.stack",
                     title: String(localized: "Onboarding"),
@@ -400,7 +398,7 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.roadmap)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "map",
                     title: String(localized: "Roadmap"),
@@ -419,7 +417,7 @@ struct SettingsView: View {
         Button {
             openURL(URL(string: "https://mindfulpacer.ch/apple-testflight")!)
         } label: {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "airplane",
                     title: String(localized: "Join TestFlight"),
@@ -435,7 +433,7 @@ struct SettingsView: View {
     // MARK: Disclaimer
 
     private var disclaimer: some View {
-        RoundedListCell(
+        IconListRow(
             label: IconLabel(
                 icon: "exclamationmark.triangle",
                 title: String(localized: "Disclaimer"),
@@ -486,15 +484,13 @@ struct SettingsView: View {
             }
             .scrollTargetBehavior(.viewAligned)
         }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
     }
 
     // MARK: Apple Watch
 
     private var appleWatch: some View {
         NavigationLink(value: SettingsNavigationDestination.appleWatch) {
-            RoundedListCell(
+            IconListRow(
                 label: IconLabel(
                     icon: "applewatch",
                     title: String(localized: "Apple Watch"),

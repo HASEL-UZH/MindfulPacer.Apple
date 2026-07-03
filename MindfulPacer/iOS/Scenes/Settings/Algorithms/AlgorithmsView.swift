@@ -16,8 +16,8 @@ struct AlgorithmsView: View {
     @State private var resetToken: Int = 0
 
     var body: some View {
-        RoundedList {
-            VStack(spacing: 16) {
+        List {
+            Section {
                 IconLabelGroupBox(
                     label: IconLabel(
                         icon: "timer",
@@ -75,8 +75,11 @@ struct AlgorithmsView: View {
                     }
                 }
                 .iconLabelGroupBoxStyle(.divider)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Algorithms")
     }
 }

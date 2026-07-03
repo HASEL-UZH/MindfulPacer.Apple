@@ -37,13 +37,14 @@ extension HomeView {
                     filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
                 } else {
-                    RoundedList {
+                    List {
                         ForEach(viewModel.filteredReflections, id: \.id) { reflection in
-                            ReflectionCell(reflection: reflection) {
+                            ReflectionCell(reflection: reflection, backgroundColor: .clear) {
                                 viewModel.presentSheet(.editReflectionView(reflection))
                             }
                         }
                     }
+                    .listStyle(.insetGrouped)
                 }
             }
             .background(Color(.systemGroupedBackground))

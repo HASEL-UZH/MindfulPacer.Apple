@@ -317,7 +317,10 @@ struct HomeView: View {
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(reminder.isNil ? .hidden : .visible)
         case .reviewsFilterView:
-            ReflectionsFilterView(filterAndSortingPublisher: viewModel.filterAndSortingPublisher)
+            ReflectionsFilterView(
+                filterAndSortingPublisher: viewModel.filterAndSortingPublisher,
+                activities: activities
+            )
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         }
