@@ -17,6 +17,7 @@ extension HomeView {
 
         @Bindable var viewModel: HomeViewModel
         @State private var activeReflectionID: UUID?
+        @State private var reflectionPendingDeletion: Reflection?
 
         @Query(sort: \Activity.name) private var activities: [Activity]
 
@@ -36,6 +37,17 @@ extension HomeView {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Reflections")
+            .alert("Delete Reflection", isPresented: isDeleteConfirmationPresented) {
+                Button("Delete", role: .destructive) {
+                    deletePendingReflection()
+                }
+
+                Button("Cancel", role: .cancel) {
+                    reflectionPendingDeletion = nil
+                }
+            } message: {
+                Text("Are you sure you want to delete this reflection? This action cannot be undone.")
+            }
             .toolbar {
                 if !viewModel.reflections.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -78,17 +90,7 @@ extension HomeView {
 
                             VStack(alignment: .leading, spacing: 4) {
                                 ForEach(viewModel.filteredReflections, id: \.id) { reflection in
-                                    ExpandableMetadataRow(
-                                        id: reflection.id,
-                                        activeID: $activeReflectionID,
-                                        expandedContentLeadingInset: 44
-                                    ) { isActive in
-                                        reflectionRowContent(reflection, isActive: isActive)
-                                    } rowAccessory: { isActive in
-                                        reflectionRowAccessory(reflection, isActive: isActive)
-                                    } expandedContent: {
-                                        reflectionQuickActions(reflection)
-                                    }
+                                    reflectionRow(reflection)
                                 }
                             }
                         }
@@ -97,6 +99,16 @@ extension HomeView {
                     }
                 }
                 .background(Color(.systemGroupedBackground))
+            }
+        }
+
+        private var isDeleteConfirmationPresented: Binding<Bool> {
+            Binding {
+                reflectionPendingDeletion != nil
+            } set: { isPresented in
+                if !isPresented {
+                    reflectionPendingDeletion = nil
+                }
             }
         }
 
@@ -147,6 +159,37 @@ extension HomeView {
                     .buttonBorderShape(.capsule)
                     .buttonStyle(.borderedProminent)
                 }
+            }
+        }
+
+        @ViewBuilder
+        private func reflectionRow(_ reflection: Reflection) -> some View {
+            let metadataRow = ExpandableMetadataRow(
+                id: reflection.id,
+                activeID: $activeReflectionID,
+                expandedContentLeadingInset: 44
+            ) { isActive in
+                reflectionRowContent(reflection, isActive: isActive)
+            } rowAccessory: { isActive in
+                reflectionRowAccessory(reflection, isActive: isActive)
+            } expandedContent: {
+                reflectionQuickActions(reflection)
+            }
+
+            if activeReflectionID != reflection.id {
+                metadataRow
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            presentDeleteConfirmation(for: reflection)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } onPresentationChanged: { isPresented in
+                        guard isPresented else { return }
+                        clearActiveReflection()
+                    }
+            } else {
+                metadataRow
             }
         }
 
@@ -280,6 +323,18 @@ extension HomeView {
             withAnimation(.snappy(duration: 0.24)) {
                 activeReflectionID = nil
             }
+        }
+
+        private func presentDeleteConfirmation(for reflection: Reflection) {
+            clearActiveReflection()
+            reflectionPendingDeletion = reflection
+        }
+
+        private func deletePendingReflection() {
+            guard let reflection = reflectionPendingDeletion else { return }
+            reflectionPendingDeletion = nil
+            activeReflectionID = nil
+            viewModel.deleteReflection(reflection)
         }
 
         private func reflectionIconName(_ reflection: Reflection) -> String {

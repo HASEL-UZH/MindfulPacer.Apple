@@ -316,6 +316,25 @@ class HomeViewModel {
         reflection.didTriggerCrash.toggle()
         saveReflectionChanges(reflection)
     }
+
+    func deleteReflection(_ reflection: Reflection) {
+        let reflectionID = reflection.id
+
+        modelContext.delete(reflection)
+
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.remove(id: reflectionID)
+            reflections.removeAll { $0.id == reflectionID }
+            filteredReflections.removeAll { $0.id == reflectionID }
+            missedReflections.removeAll { $0.id == reflectionID }
+            clampMissedPaginationAfterMutation()
+            fetchReflections()
+        } catch {
+            print("DEBUG: Could not delete reflection: \(error.localizedDescription)")
+            fetchReflections()
+        }
+    }
     
     // MARK: - Presentation
     
