@@ -244,13 +244,17 @@ extension HomeView {
                     systemImage: reflection.activity?.icon ?? "rectangle.grid.2x2",
                     isActive: reflection.activity != nil
                 ) {
-                    Button("Uncategorized", systemImage: "questionmark") {
-                        viewModel.updateReflection(reflection, activity: nil)
+                    Section {
+                        ForEach(activities) { activity in
+                            Button(activity.name, systemImage: activity.icon) {
+                                viewModel.updateReflection(reflection, activity: activity)
+                            }
+                        }
                     }
 
-                    ForEach(activities) { activity in
-                        Button(activity.name, systemImage: activity.icon) {
-                            viewModel.updateReflection(reflection, activity: activity)
+                    Section {
+                        Button("Uncategorized", systemImage: "questionmark") {
+                            viewModel.updateReflection(reflection, activity: nil)
                         }
                     }
                 }
@@ -261,13 +265,17 @@ extension HomeView {
                         systemImage: reflection.subactivity?.icon ?? "rectangle.grid.3x3",
                         isActive: reflection.subactivity != nil
                     ) {
-                        Button("None", systemImage: "minus.circle") {
-                            viewModel.updateReflection(reflection, subactivity: nil)
+                        Section {
+                            ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
+                                Button(subactivity.name, systemImage: subactivity.icon) {
+                                    viewModel.updateReflection(reflection, subactivity: subactivity)
+                                }
+                            }
                         }
 
-                        ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
-                            Button(subactivity.name, systemImage: subactivity.icon) {
-                                viewModel.updateReflection(reflection, subactivity: subactivity)
+                        Section {
+                            Button("None", systemImage: "minus.circle") {
+                                viewModel.updateReflection(reflection, subactivity: nil)
                             }
                         }
                     }
@@ -278,13 +286,17 @@ extension HomeView {
                     systemImage: "face.smiling",
                     isActive: reflection.mood != nil
                 ) {
-                    Button("None", systemImage: "minus.circle") {
-                        viewModel.updateReflection(reflection, mood: nil)
+                    Section {
+                        ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
+                            Button("\(mood.emoji) \(mood.text)") {
+                                viewModel.updateReflection(reflection, mood: mood)
+                            }
+                        }
                     }
 
-                    ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
-                        Button("\(mood.emoji) \(mood.text)") {
-                            viewModel.updateReflection(reflection, mood: mood)
+                    Section {
+                        Button("None", systemImage: "minus.circle") {
+                            viewModel.updateReflection(reflection, mood: nil)
                         }
                     }
                 }
@@ -296,13 +308,17 @@ extension HomeView {
                     isActive: reflection.wellBeing != nil,
                     tint: wellBeing.color
                 ) {
-                    Button("Not Set", systemImage: "minus.circle") {
-                        viewModel.updateReflection(reflection, wellBeing: nil)
+                    Section {
+                        ForEach(0 ..< wellBeing.numOptions, id: \.self) { value in
+                            Button(wellBeing.description(for: value), systemImage: "\(value).circle") {
+                                viewModel.updateReflection(reflection, wellBeing: value)
+                            }
+                        }
                     }
 
-                    ForEach(0 ..< wellBeing.numOptions, id: \.self) { value in
-                        Button(wellBeing.description(for: value), systemImage: "\(value).circle") {
-                            viewModel.updateReflection(reflection, wellBeing: value)
+                    Section {
+                        Button("Not Set", systemImage: "minus.circle") {
+                            viewModel.updateReflection(reflection, wellBeing: nil)
                         }
                     }
                 }
