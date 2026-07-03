@@ -164,9 +164,9 @@ private extension ReflectionsFilterView {
                     .filterControlBackground()
                     .padding(.horizontal)
             } else {
-                VStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 14) {
                     ForEach(viewModel.activitiesWithSubactivities) { activity in
-                        subactivityDisclosureGroup(for: activity)
+                        subactivityGroup(for: activity)
                     }
                 }
                 .padding(.horizontal)
@@ -261,58 +261,74 @@ private extension ReflectionsFilterView {
         .padding(.trailing)
     }
 
-    func subactivityDisclosureGroup(for activity: Activity) -> some View {
-        DisclosureGroup(
-            isExpanded: Binding(
-                get: { expandedSubactivityActivityIDs.contains(activity.id) },
-                set: { isExpanded in
-                    if isExpanded {
-                        expandedSubactivityActivityIDs.insert(activity.id)
-                    } else {
-                        expandedSubactivityActivityIDs.remove(activity.id)
-                    }
+    func subactivityGroup(for activity: Activity) -> some View {
+        let isExpanded = expandedSubactivityActivityIDs.contains(activity.id)
+
+        return VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.18)) {
+                    toggleSubactivityGroup(activity)
                 }
-            )
-        ) {
-            LazyVGrid(columns: filterGridColumns, spacing: 8) {
-                ForEach(activity.subactivities ?? []) { subactivity in
-                    FilterCapsuleButton(
-                        title: subactivity.name,
-                        systemImage: subactivity.icon,
-                        isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
-                    ) {
-                        viewModel.toggleFilterSubactivity(subactivity)
-                    }
-                }
+            } label: {
+                subactivityDisclosureLabel(for: activity, isExpanded: isExpanded)
             }
-            .padding(.top, 12)
-        } label: {
-            subactivityDisclosureLabel(for: activity)
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+
+            if isExpanded {
+                LazyVGrid(columns: filterGridColumns, spacing: 8) {
+                    ForEach(activity.subactivities ?? []) { subactivity in
+                        FilterCapsuleButton(
+                            title: subactivity.name,
+                            systemImage: subactivity.icon,
+                            isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
+                        ) {
+                            viewModel.toggleFilterSubactivity(subactivity)
+                        }
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
-        .font(.subheadline.weight(.semibold))
-        .tint(Color("BrandPrimary"))
-        .filterDisclosureBackground()
     }
 
-    func subactivityDisclosureLabel(for activity: Activity) -> some View {
+    func subactivityDisclosureLabel(for activity: Activity, isExpanded: Bool) -> some View {
         HStack(spacing: 8) {
             Image(systemName: activity.icon)
                 .symbolVariant(.fill)
+                .foregroundStyle(Color("BrandPrimary"))
 
             Text(activity.name)
+                .font(.subheadline.weight(.semibold))
 
             Spacer()
 
             Text(subactivitySelectionSubtitle(for: activity))
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
+
+            Image(systemName: "chevron.down")
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(.secondary)
+                .rotationEffect(.degrees(isExpanded ? 0 : -90))
         }
         .foregroundStyle(.primary)
+        .contentShape(.rect)
+        .padding(.vertical, 2)
     }
 
     func subactivitySelectionSubtitle(for activity: Activity) -> String {
         let selectedCount = viewModel.selectedSubactivityCount(for: activity)
         return selectedCount == 0 ? String(localized: "All") : String(localized: "\(selectedCount) selected")
+    }
+
+    func toggleSubactivityGroup(_ activity: Activity) {
+        if expandedSubactivityActivityIDs.contains(activity.id) {
+            expandedSubactivityActivityIDs.remove(activity.id)
+        } else {
+            expandedSubactivityActivityIDs.insert(activity.id)
+        }
     }
 
     func expandSelectedSubactivityGroups() {
@@ -377,15 +393,6 @@ private extension View {
             }
     }
 
-    func filterDisclosureBackground() -> some View {
-        self
-            .padding(.horizontal)
-            .padding(.vertical, 12)
-            .background {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
-            }
-    }
 }
 
 // MARK: - Preview
