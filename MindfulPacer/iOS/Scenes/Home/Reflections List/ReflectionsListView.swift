@@ -59,33 +59,45 @@ extension HomeView {
         }
 
         private var reflectionsList: some View {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 6) {
-                    ExpandableMetadataSectionHeader(
-                        title: "All Reflections",
-                        count: viewModel.filteredReflections.count
-                    )
+            GeometryReader { proxy in
+                ScrollView {
+                    ZStack(alignment: .top) {
+                        Color.clear
+                            .contentShape(.rect)
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: proxy.size.height)
+                            .onTapGesture {
+                                clearActiveReflection()
+                            }
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
-                            ExpandableMetadataRow(
-                                id: reflection.id,
-                                activeID: $activeReflectionID,
-                                expandedContentLeadingInset: 44
-                            ) { isActive in
-                                reflectionRowContent(reflection, isActive: isActive)
-                            } rowAccessory: { isActive in
-                                reflectionRowAccessory(isActive: isActive)
-                            } expandedContent: {
-                                reflectionQuickActions(reflection)
+                        LazyVStack(alignment: .leading, spacing: 6) {
+                            ExpandableMetadataSectionHeader(
+                                title: "All Reflections",
+                                count: viewModel.filteredReflections.count
+                            )
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(viewModel.filteredReflections, id: \.id) { reflection in
+                                    ExpandableMetadataRow(
+                                        id: reflection.id,
+                                        activeID: $activeReflectionID,
+                                        expandedContentLeadingInset: 44
+                                    ) { isActive in
+                                        reflectionRowContent(reflection, isActive: isActive)
+                                    } rowAccessory: { isActive in
+                                        reflectionRowAccessory(reflection, isActive: isActive)
+                                    } expandedContent: {
+                                        reflectionQuickActions(reflection)
+                                    }
+                                }
                             }
                         }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
+                .background(Color(.systemGroupedBackground))
             }
-            .background(Color(.systemGroupedBackground))
         }
 
         // MARK: Filter Button State
@@ -164,11 +176,22 @@ extension HomeView {
             .padding(.vertical, 4)
         }
 
-        private func reflectionRowAccessory(isActive: Bool) -> some View {
-            Image(systemName: isActive ? "checkmark.circle.fill" : "slider.horizontal.3")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(isActive ? Color("BrandPrimary") : Color(.tertiaryLabel))
-                .padding(.top, 8)
+        @ViewBuilder
+        private func reflectionRowAccessory(_ reflection: Reflection, isActive: Bool) -> some View {
+            if isActive {
+                Button {
+                    viewModel.presentSheet(.editReflectionView(reflection))
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(Color("BrandPrimary"))
+                        .frame(width: 32, height: 32)
+                        .contentShape(.circle)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Edit Reflection")
+                .padding(.top, 4)
+            }
         }
 
         private func reflectionQuickActions(_ reflection: Reflection) -> some View {
@@ -250,13 +273,12 @@ extension HomeView {
                     viewModel.toggleReflectionCrash(reflection)
                 }
 
-                ExpandableMetadataChipButton(
-                    title: "Edit",
-                    systemImage: "pencil",
-                    isActive: true
-                ) {
-                    viewModel.presentSheet(.editReflectionView(reflection))
-                }
+            }
+        }
+
+        private func clearActiveReflection() {
+            withAnimation(.snappy(duration: 0.24)) {
+                activeReflectionID = nil
             }
         }
 
