@@ -19,17 +19,7 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            VStack(spacing: 16) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        reviewFilterDateRangeSummary
-                        if viewModel.reviewFilter.activeFilterCount != 0 {
-                            reviewFilterSortingSummary
-                        }
-                    }
-                    .safeAreaPadding(.horizontal)
-                }
-                
+            VStack {
                 if viewModel.reflections.isEmpty {
                     reviewsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
@@ -55,7 +45,8 @@ extension HomeView {
                         Button {
                             viewModel.presentSheet(.reviewsFilterView)
                         } label: {
-                            Label("Filter Reflections", systemImage: "line.3.horizontal.decrease.circle.fill")
+                            Label("Filter Reflections", systemImage: filterButtonSystemImage)
+                                .foregroundStyle(hasActiveFilters ? Color("BrandPrimary") : .primary)
                         }
                     }
                 }
@@ -68,6 +59,16 @@ extension HomeView {
                     }
                 }
             }
+        }
+
+        // MARK: Filter Button State
+
+        private var hasActiveFilters: Bool {
+            viewModel.reviewFilter.activeFilterCount != 0
+        }
+
+        private var filterButtonSystemImage: String {
+            hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease"
         }
         
         // MARK: Reflections Empty State
@@ -107,126 +108,6 @@ extension HomeView {
                     .buttonBorderShape(.capsule)
                     .buttonStyle(.borderedProminent)
                 }
-            }
-        }
-        
-        // MARK: Reflection Filter Date Range Summary
-        
-        private var reviewFilterDateRangeSummary: some View {
-            Button {
-                viewModel.presentSheet(.reviewsFilterView)
-            } label: {
-                HStack(spacing: 4) {
-                    Icon(name: "calendar")
-
-                    Text(viewModel.filterDateRangeSummary)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.accent)
-                    
-                }
-                .layoutPriority(1)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    Capsule()
-                        .foregroundStyle(Color("BrandPrimary").opacity(0.1))
-                }
-            }
-        }
-        
-        // MARK: Reflection Filter Sorting Summary
-
-        private var reviewFilterSortingSummary: some View {
-            HStack(spacing: 8) {
-                activityFilterSummary
-                subactivityFilterSummary
-                moodFilterSummary
-                crashFilterSummary
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-
-        // MARK: Activity Filter Summary
-
-        private var activityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedActivities) { activity in
-                filterItem(
-                    icon: activity.icon,
-                    label: activity.name,
-                    removeAction: { viewModel.toggleFilterActivity(activity) }
-                )
-            }
-        }
-
-        // MARK: Subactivity Filter Summary
-
-        private var subactivityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubactivities, id: \.id) { subactivity in
-                filterItem(
-                    icon: subactivity.icon,
-                    label: subactivity.name,
-                    removeAction: { viewModel.toggleFilterSubactivity(subactivity) }
-                )
-            }
-        }
-
-        // MARK: Mood Filter Summary
-
-        private var moodFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedMoods, id: \.text) { mood in
-                filterItem(
-                    emoji: mood.emoji,
-                    removeAction: { viewModel.toggleFilterMood(mood) }
-                )
-            }
-        }
-
-        // MARK: Crash Filter Summary
-
-        @ViewBuilder
-        private var crashFilterSummary: some View {
-            if viewModel.reviewFilter.triggeredCrash {
-                filterItem(
-                    icon: "pill",
-                    label: "Triggered Crash",
-                    removeAction: { viewModel.toggleTriggeredCrash() }
-                )
-            }
-        }
-
-        // MARK: Filter Item
-
-        @ViewBuilder
-        private func filterItem(
-            icon: String? = nil,
-            emoji: String? = nil,
-            label: String? = nil,
-            removeAction: @escaping () -> Void
-        ) -> some View {
-            HStack(spacing: 4) {
-                if let icon = icon {
-                    Icon(name: icon)
-                }
-                if let emoji = emoji {
-                    Text(emoji)
-                        .frame(width: 24, height: 24)
-                }
-                if let label = label {
-                    Text(label)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.accent)
-                }
-                Button {
-                    removeAction()
-                } label: {
-                    Icon(name: "xmark.circle", renderingMode: .hierarchical)
-                }
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .background {
-                Capsule()
-                    .foregroundStyle(Color("BrandPrimary").opacity(0.1))
             }
         }
     }
