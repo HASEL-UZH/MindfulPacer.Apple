@@ -317,6 +317,37 @@ class HomeViewModel {
         saveReflectionChanges(reflection)
     }
 
+    func updateReminder(
+        _ reminder: Reminder,
+        measurementType: MeasurementType
+    ) {
+        reminder.measurementType = measurementType
+
+        let validIntervals = validIntervals(for: measurementType)
+        if !validIntervals.contains(reminder.interval), let defaultInterval = validIntervals.first {
+            reminder.interval = defaultInterval
+        }
+
+        reminder.threshold = clampedThreshold(reminder.threshold, for: measurementType)
+        saveReminderChanges(reminder)
+    }
+
+    func updateReminder(
+        _ reminder: Reminder,
+        reminderType: Reminder.ReminderType
+    ) {
+        reminder.reminderType = reminderType
+        saveReminderChanges(reminder)
+    }
+
+    func updateReminder(
+        _ reminder: Reminder,
+        interval: Reminder.Interval
+    ) {
+        reminder.interval = interval
+        saveReminderChanges(reminder)
+    }
+
     func deleteReflection(_ reflection: Reflection) {
         let reflectionID = reflection.id
 
@@ -333,6 +364,22 @@ class HomeViewModel {
         } catch {
             print("DEBUG: Could not delete reflection: \(error.localizedDescription)")
             fetchReflections()
+        }
+    }
+
+    func deleteReminder(_ reminder: Reminder) {
+        let reminderID = reminder.id
+
+        modelContext.delete(reminder)
+
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.remove(id: reminderID)
+            WatchUpdateService.shared.notifyWatchOfReminderChange()
+            reminders.removeAll { $0.id == reminderID }
+            fetchMissedReflections(reminders: reminders)
+        } catch {
+            print("DEBUG: Could not delete reminder: \(error.localizedDescription)")
         }
     }
     
@@ -443,6 +490,35 @@ class HomeViewModel {
             fetchReflections()
         } catch {
             print("DEBUG: Could not save reflection changes: \(error.localizedDescription)")
+        }
+    }
+
+    private func saveReminderChanges(_ reminder: Reminder) {
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: reminder))
+            WatchUpdateService.shared.notifyWatchOfReminderChange()
+            fetchMissedReflections(reminders: reminders)
+        } catch {
+            print("DEBUG: Could not save reminder changes: \(error.localizedDescription)")
+        }
+    }
+
+    private func validIntervals(for measurementType: MeasurementType) -> [Reminder.Interval] {
+        switch measurementType {
+        case .heartRate:
+            Reminder.Interval.heartRateIntervals
+        case .steps:
+            Reminder.Interval.stepsIntervals
+        }
+    }
+
+    private func clampedThreshold(_ threshold: Int, for measurementType: MeasurementType) -> Int {
+        switch measurementType {
+        case .heartRate:
+            min(max(threshold, 0), 250)
+        case .steps:
+            min(max(threshold, 0), 100_000)
         }
     }
     
