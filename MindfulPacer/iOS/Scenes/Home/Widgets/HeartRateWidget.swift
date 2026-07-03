@@ -41,64 +41,59 @@ extension HomeView {
         let timestamp: Date?
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Label {
-                        Text(title)
-                    } icon: {
-                        Image(systemName: systemImage)
-                    }
-                    .labelIconToTitleSpacing(6)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(tint)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-
-                    Spacer(minLength: 4)
-
-                    HStack(spacing: 4) {
-                        Text(timestampText)
-                            .font(.footnote)
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.systemGray3))
-                    }
+            LabeledCard(
+                contentSpacing: 18,
+                contentPadding: 14,
+                cornerRadius: 22
+            ) {
+                metricContent
+            } label: {
+                Label {
+                    Text(title)
+                } icon: {
+                    Image(systemName: systemImage)
                 }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Latest")
-                        .font(.callout.weight(.bold))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+            } accessory: {
+                HStack(spacing: 4) {
+                    Text(timestampText)
+                        .font(.footnote)
+                        .monospacedDigit()
                         .foregroundStyle(.secondary)
 
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text(value ?? "--")
-                            .font(.system(size: 30, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.62)
-
-                        Text(unit)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                    }
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Color(.systemGray3))
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
-            }
-            .containerShape(.rect(cornerRadius: 22, style: .continuous))
         }
 
         private var timestampText: String {
             guard let timestamp else { return "--" }
             return timestamp.formatted(.dateTime.hour().minute())
+        }
+
+        private var metricContent: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Latest")
+                    .font(.callout.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text(value ?? "--")
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.62)
+
+                    Text(unit)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 }

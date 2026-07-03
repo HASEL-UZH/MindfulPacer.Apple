@@ -13,10 +13,16 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
     private let label: Label
     private let accessory: Accessory
     private let content: Content
+    private let contentSpacing: CGFloat
+    private let contentPadding: CGFloat
+    private let cornerRadius: CGFloat
 
     @Environment(\.backgroundStyle) private var backgroundStyle
 
     init(
+        contentSpacing: CGFloat = 24,
+        contentPadding: CGFloat = 16,
+        cornerRadius: CGFloat = 24,
         @ViewBuilder content: () -> Content,
         @ViewBuilder label: () -> Label,
         @ViewBuilder accessory: () -> Accessory
@@ -24,19 +30,28 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
         self.content = content()
         self.label = label()
         self.accessory = accessory()
+        self.contentSpacing = contentSpacing
+        self.contentPadding = contentPadding
+        self.cornerRadius = cornerRadius
     }
 
     init(
+        contentSpacing: CGFloat = 24,
+        contentPadding: CGFloat = 16,
+        cornerRadius: CGFloat = 24,
         @ViewBuilder content: () -> Content,
         @ViewBuilder label: () -> Label
     ) where Accessory == EmptyView {
         self.content = content()
         self.label = label()
         self.accessory = EmptyView()
+        self.contentSpacing = contentSpacing
+        self.contentPadding = contentPadding
+        self.cornerRadius = cornerRadius
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: contentSpacing) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 label
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -50,15 +65,15 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(contentPadding)
         .background {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(
                     backgroundStyle
                     ?? AnyShapeStyle(Color(.secondarySystemGroupedBackground))
                 )
         }
-        .containerShape(.rect(cornerRadius: 24, style: .continuous))
+        .containerShape(.rect(cornerRadius: cornerRadius, style: .continuous))
     }
 }
 
