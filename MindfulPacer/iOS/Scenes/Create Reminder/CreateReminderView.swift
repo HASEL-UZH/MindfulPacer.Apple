@@ -246,6 +246,18 @@ struct ReminderCreationSelectionRow<Content: View>: View {
     let action: () -> Void
     @ViewBuilder let content: () -> Content
 
+    init(
+        isSelected: Bool,
+        tint: Color,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Content
+    ) {
+        self.isSelected = isSelected
+        self.tint = tint
+        self.action = action
+        self.content = label
+    }
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
