@@ -268,7 +268,7 @@ struct HomeView: View {
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {
-        VStack(spacing: 10) {
+        HStack(alignment: .top, spacing: 10) {
             Button {
                 onWidgetTap()
             } label: {

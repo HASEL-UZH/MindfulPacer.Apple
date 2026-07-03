@@ -41,89 +41,64 @@ extension HomeView {
         let timestamp: Date?
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 46) {
+            VStack(alignment: .leading, spacing: 18) {
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
                     Label {
                         Text(title)
                     } icon: {
                         Image(systemName: systemImage)
                     }
-                    .labelIconToTitleSpacing(8)
-                    .font(.title2.weight(.bold))
+                    .labelIconToTitleSpacing(6)
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(tint)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.78)
+                    .minimumScaleFactor(0.72)
 
-                    Spacer(minLength: 8)
+                    Spacer(minLength: 4)
 
-                    HStack(spacing: 8) {
+                    HStack(spacing: 4) {
                         Text(timestampText)
-                            .font(.title3)
+                            .font(.footnote)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
 
                         Image(systemName: "chevron.right")
-                            .font(.title2.weight(.semibold))
+                            .font(.footnote.weight(.semibold))
                             .foregroundStyle(Color(.systemGray3))
                     }
                 }
 
-                HStack(alignment: .bottom, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Latest")
-                            .font(.title3.weight(.bold))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Latest")
+                        .font(.callout.weight(.bold))
+                        .foregroundStyle(.secondary)
+
+                    HStack(alignment: .lastTextBaseline, spacing: 4) {
+                        Text(value ?? "--")
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.62)
+
+                        Text(unit)
+                            .font(.caption.weight(.bold))
                             .foregroundStyle(.secondary)
-
-                        HStack(alignment: .lastTextBaseline, spacing: 6) {
-                            Text(value ?? "--")
-                                .font(.system(size: 44, weight: .bold, design: .rounded))
-                                .monospacedDigit()
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.72)
-
-                            Text(unit)
-                                .font(.title2.weight(.bold))
-                                .foregroundStyle(.secondary)
-                        }
                     }
-
-                    Spacer(minLength: 12)
-
-                    HealthMetricSparkline(tint: tint)
-                        .frame(width: 90, height: 56)
-                        .accessibilityHidden(true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .padding(14)
             .background {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
-            .containerShape(.rect(cornerRadius: 24, style: .continuous))
+            .containerShape(.rect(cornerRadius: 22, style: .continuous))
         }
 
         private var timestampText: String {
             guard let timestamp else { return "--" }
             return timestamp.formatted(.dateTime.hour().minute())
-        }
-    }
-
-    struct HealthMetricSparkline: View {
-        let tint: Color
-
-        private let barHeights: [CGFloat] = [18, 22, 20, 16, 28, 50, 8, 56, 38, 34, 6]
-
-        var body: some View {
-            HStack(alignment: .bottom, spacing: 6) {
-                ForEach(Array(barHeights.enumerated()), id: \.offset) { index, height in
-                    Capsule()
-                        .fill(index == barHeights.count - 1 ? tint : Color(.systemGray5))
-                        .frame(width: 7, height: height)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
         }
     }
 }
