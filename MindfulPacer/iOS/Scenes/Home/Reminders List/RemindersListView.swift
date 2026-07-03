@@ -198,7 +198,7 @@ struct RemindersListView: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: reminderIconName(for: reminder.measurementType))
                 .symbolVariant(.fill)
-                .font(.title2.weight(.semibold))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(reminder.measurementType.color)
                 .frame(width: 32, height: 32)
 
@@ -365,12 +365,6 @@ private struct ReminderMeasurementSectionHeader: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Image(systemName: iconName)
-                .symbolVariant(.fill)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(measurementType.color)
-                .frame(width: 40, height: 40)
-
             VStack(alignment: .leading, spacing: 4) {
                 Text(measurementType.localized)
                     .font(.title3.weight(.bold))
@@ -395,15 +389,6 @@ private struct ReminderMeasurementSectionHeader: View {
         .padding(.top, 8)
         .padding(.bottom, 4)
         .contentShape(.rect)
-    }
-
-    private var iconName: String {
-        switch measurementType {
-        case .heartRate:
-            measurementType.icon
-        case .steps:
-            "figure.walk"
-        }
     }
 
     private var reminderCountText: String {
