@@ -309,7 +309,9 @@ struct HomeView: View {
         case .editReflectionView(let reflection):
             EditReflectionView(reflection: reflection)
             .interactiveDismissDisabled()
+            .presentationDetents([.large])
             .presentationCornerRadius(16)
+            .presentationDragIndicator(.visible)
         case .createReminderView(let reminder):
             CreateReminderView(reminder: reminder)
                 .interactiveDismissDisabled(reminder.isNil)

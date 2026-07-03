@@ -23,7 +23,7 @@ extension EditReflectionView {
         var body: some View {
             NavigationStack {
                 content
-                .background(selectedBackground)
+                .background(Color(.systemGroupedBackground).ignoresSafeArea())
                 .navigationTitle(symptom.displayName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { toolbarContent }
@@ -44,7 +44,7 @@ private extension EditReflectionView.SymptomValueView {
     var content: some View {
         VStack(spacing: 16) {
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 64), spacing: 12)],
+                columns: [GridItem(.adaptive(minimum: 64, maximum: 64), spacing: 12, alignment: .center)],
                 spacing: 16
             ) {
                 ForEach(0 ..< symptom.numOptions, id: \.self) { index in
@@ -56,13 +56,7 @@ private extension EditReflectionView.SymptomValueView {
 
             Spacer(minLength: 0)
         }
-    }
-
-    var selectedBackground: Color {
-        guard let value = symptom.value else {
-            return Color(.systemBackground)
-        }
-        return symptom.color(for: value).opacity(0.1)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 
@@ -130,7 +124,7 @@ private extension EditReflectionView.SymptomValueView {
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: 64)
         }
         .buttonStyle(.plain)
     }

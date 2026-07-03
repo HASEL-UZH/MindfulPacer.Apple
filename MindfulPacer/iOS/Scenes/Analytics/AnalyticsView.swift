@@ -313,6 +313,7 @@ struct AnalyticsView: View {
         case .editReflectionView(let reflection):
             EditReflectionView(reflection: reflection)
                 .interactiveDismissDisabled(reflection.isNil)
+                .presentationDetents([.large])
                 .presentationCornerRadius(16)
                 .presentationDragIndicator(reflection.isNil ? .hidden : .visible)
         case .dateSelection:

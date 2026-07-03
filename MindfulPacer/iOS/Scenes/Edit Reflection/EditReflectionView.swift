@@ -278,8 +278,9 @@ struct EditReflectionView: View {
             Section {
                 Toggle(isOn: $viewModel.didTriggerCrash) {
                     Label("Triggered Crash", systemImage: "exclamationmark.triangle.fill")
+                        .font(.body)
                 }
-                .tint(.orange)
+                .tint(.accentColor)
 
                 TextField("Additional Information", text: $viewModel.additionalInformation, axis: .vertical)
                     .focused($focusedField, equals: .additionalInformation)
@@ -304,13 +305,14 @@ struct EditReflectionView: View {
         } label: {
             HStack(spacing: 12) {
                 Label(symptom.displayName, systemImage: symptom.icon)
+                    .font(.body)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
 
                 Spacer()
 
                 Text(symptom.description)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(symptom.value == nil ? Color.secondary : Color.accentColor)
                     .lineLimit(1)
             }
@@ -326,12 +328,13 @@ struct EditReflectionView: View {
             Section("Reminder") {
                 HStack {
                     Label(reminderMeasurementType.localized, systemImage: reminderMeasurementType.icon)
+                        .font(.body)
                         .foregroundStyle(reminderMeasurementType.color)
 
                     Spacer()
 
                     Text(reflection.reminderTriggerSummary)
-                        .font(.subheadline)
+                        .font(.body)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
@@ -356,6 +359,7 @@ struct EditReflectionView: View {
     ) -> some View {
         HStack(spacing: 12) {
             Label(title, systemImage: systemImage)
+                .font(.body)
                 .foregroundStyle(.primary)
                 .lineLimit(1)
 
@@ -373,7 +377,7 @@ struct EditReflectionView: View {
         Text(title)
             .lineLimit(1)
             .truncationMode(.middle)
-        .font(.subheadline.weight(.semibold))
+        .font(.body)
         .foregroundStyle(isRequiredMissing ? Color.red : Color.accentColor)
     }
 
@@ -424,8 +428,10 @@ struct EditReflectionView: View {
             viewModel.presentAlert(.deleteConfirmation)
         } label: {
             Label("Delete Reflection", systemImage: "trash")
+                .foregroundStyle(.red)
                 .frame(maxWidth: .infinity)
         }
+        .tint(.red)
     }
 
     // MARK: Toolbar Content
