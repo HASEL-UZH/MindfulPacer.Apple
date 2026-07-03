@@ -19,75 +19,98 @@ extension CreateReminderView {
         // MARK: Body
         
         var body: some View {
-            GeometryReader { proxy in
-                ZStack(alignment: .top) {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                    
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            measurementType
-                            reminderType
-                            threshold
-                            interval
-                            
-                            if viewModel.mode == .edit {
-                                deleteButton
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, viewModel.mode == .create ? proxy.safeAreaInsets.bottom + 48 : 0)
-                    }
+            List {
+                Section {
+                    measurementType
+                    reminderType
+                    threshold
+                    interval
+                } footer: {
+                    Text("Review the reminder before saving it.")
                 }
-                .navigationTitle(viewModel.summaryViewTitle)
-                .toolbar {
-                    if viewModel.mode == .create {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Cancel") {
-                                viewModel.dismissView()
-                            }
-                        }
+
+                if viewModel.mode == .edit {
+                    Section {
+                        deleteButton
                     }
                 }
             }
+            .navigationTitle(viewModel.summaryViewTitle)
         }
         
-        // MARK: Summary Widget
-        
+        // MARK: Summary Row
+
         @ViewBuilder
-        private func summaryWidget<Content: View>(
+        private func summaryRow<Content: View>(
             icon: String,
             title: String,
             destination: CreateReminderNavigationDestination?,
-            @ViewBuilder label: @escaping () -> Content
+            tint: Color = Color("BrandPrimary"),
+            @ViewBuilder value: @escaping () -> Content
         ) -> some View {
-            IconLabelGroupBox(
-                label: IconLabel(
+            if let destination {
+                Button {
+                    viewModel.navigationPath.append(destination)
+                } label: {
+                    summaryRowContent(
+                        icon: icon,
+                        title: title,
+                        tint: tint,
+                        value: value
+                    )
+                }
+                .buttonStyle(.plain)
+            } else {
+                summaryRowContent(
                     icon: icon,
                     title: title,
-                    labelColor: Color("BrandPrimary"),
-                    background: true
+                    tint: tint,
+                    value: value
                 )
-            ) {
-                label()
-            } accessoryIndicator: {
-                if let destination {
-                    Button {
-                        viewModel.navigationPath.append(destination)
-                    } label: {
-                        Icon(name: "pencil.circle", variant: .fill)
-                    }
+            }
+        }
+
+        private func summaryRowContent<Content: View>(
+            icon: String,
+            title: String,
+            tint: Color,
+            @ViewBuilder value: @escaping () -> Content
+        ) -> some View {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .symbolVariant(.fill)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 28)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+
+                    value()
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if viewModel.mode == .create {
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
                 }
             }
+            .contentShape(.rect)
         }
         
         // MARK: Measurement Type
         
         private var measurementType: some View {
-            summaryWidget(
+            summaryRow(
                 icon: "ruler",
                 title: String(localized: "Measurement Type"),
-                destination: viewModel.mode == .create ? .measurementType : nil
+                destination: viewModel.mode == .create ? .measurementType : nil,
+                tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
             ) {
                 if let measurementType = viewModel.selectedMeasurementType {
                     Text(measurementType.localized)
@@ -101,10 +124,11 @@ extension CreateReminderView {
         // MARK: Reminder Type
         
         private var reminderType: some View {
-            summaryWidget(
+            summaryRow(
                 icon: "alarm",
                 title: String(localized: "Reminder Type"),
-                destination: .reminderType
+                destination: .reminderType,
+                tint: viewModel.selectedReminderType?.color ?? Color("BrandPrimary")
             ) {
                 if let reminderType = viewModel.selectedReminderType {
                     Text(reminderType.localized)
@@ -118,10 +142,11 @@ extension CreateReminderView {
         // MARK: Threshold
         
         private var threshold: some View {
-            summaryWidget(
+            summaryRow(
                 icon: "chart.line.flattrend.xyaxis",
                 title: String(localized: "Threshold"),
-                destination: .threshold
+                destination: .threshold,
+                tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
             ) {
                 if let threshold = viewModel.threshold {
                     HStack(alignment: .bottom, spacing: 4) {
@@ -140,7 +165,7 @@ extension CreateReminderView {
         // MARK: Interval
         
         private var interval: some View {
-            summaryWidget(
+            summaryRow(
                 icon: "timer",
                 title: String(localized: "Interval"),
                 destination: .interval
@@ -154,75 +179,13 @@ extension CreateReminderView {
             }
         }
         
-        // MARK: Notification Preview
-        
-        private var notificationPreview: some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: "eye",
-                    title: String(localized: "Preview Notification"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                description:
-                    Text("See how the notification will look.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            ) {
-                VStack(spacing: 16) {
-                    HStack(spacing: 16) {
-                        Image("MindfulPacer Icon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 32, height: 32)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Reminder Triggered")
-                                .font(.subheadline.weight(.semibold))
-                            
-                            Text(viewModel.notificationPreviewBodyText)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(.thinMaterial)
-                    }
-                }
-            } footer: {
-                notificationPreviewButton
-            }
-            .iconLabelGroupBoxStyle(.divider)
-        }
-        
-        // MARK: Notification Preview Button
-        
-        private var notificationPreviewButton: some View {
-            Button {
-                viewModel.sendNotificationToWatch()
-            } label: {
-                IconLabel(
-                    icon: "bell.badge",
-                    title: String(localized: "Test on Apple Watch"),
-                    labelColor: viewModel.isActionButtonDisabled ? Color.secondary : Color("BrandPrimary")
-                )
-                .font(.subheadline.weight(.semibold))
-            }
-            .disabled(viewModel.isActionButtonDisabled)
-        }
-        
         // MARK: Delete Button
         
         private var deleteButton: some View {
-            PrimaryButton(
-                title: String(localized: "Delete Reminder"),
-                icon: "trash",
-                color: .red
-            ) {
+            Button(role: .destructive) {
                 viewModel.presentAlert(.deleteConfirmation)
+            } label: {
+                Label("Delete Reminder", systemImage: "trash")
             }
         }
     }

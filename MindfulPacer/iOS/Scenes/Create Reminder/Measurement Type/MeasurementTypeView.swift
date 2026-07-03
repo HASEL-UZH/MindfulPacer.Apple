@@ -19,25 +19,14 @@ extension CreateReminderView {
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
+            List {
+                Section {
                     measurementTypeSelectionList
-                    descriptionText
-                    Spacer()
+                } footer: {
+                    Text("Select the measurement that should trigger this reminder.")
                 }
-                .padding(.horizontal)
             }
             .navigationTitle("Measurement Type")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
-                    }
-                }
-            }
         }
 
         // MARK: Measurement Type Selection List
@@ -45,38 +34,23 @@ extension CreateReminderView {
         @ViewBuilder
         private var measurementTypeSelectionList: some View {
             ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                SelectableButton(
-                    shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedMeasurementType == measurementType
+                ReminderCreationSelectionRow(
+                    isSelected: viewModel.selectedMeasurementType == measurementType,
+                    tint: measurementType.color
                 ) {
                     viewModel.toggleSelection(
                         measurementType,
                         selectedItem: &viewModel.selectedMeasurementType
                     )
                 } label: {
-                    HStack {
-                        IconLabel(
-                            icon: measurementType.icon,
-                            title: measurementType.localized,
-                            labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
-                        )
-                        Spacer()
-                        if viewModel.selectedMeasurementType == measurementType {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }
+                    ReminderCreationOptionLabel(
+                        title: measurementType.localized,
+                        subtitle: measurementType.units,
+                        systemImage: measurementType.icon,
+                        tint: measurementType.color
+                    )
                 }
             }
-        }
-
-        // MARK: Description Text
-
-        private var descriptionText: some View {
-            Text("Select for which measurement type you want to receive reminders to do a reflection.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
         }
     }
 }

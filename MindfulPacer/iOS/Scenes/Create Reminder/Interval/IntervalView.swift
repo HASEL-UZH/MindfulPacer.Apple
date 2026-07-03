@@ -19,22 +19,20 @@ extension CreateReminderView {
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
+            List {
+                Section {
                     intervalSelectionList
+                } footer: {
                     description
-                    Spacer()
                 }
-                .padding(.horizontal)
             }
             .navigationTitle("Interval")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+                    Button {
+                        viewModel.presentSheet(.intervalInfo)
+                    } label: {
+                        Image(systemName: "info.circle")
                     }
                 }
             }
@@ -48,26 +46,21 @@ extension CreateReminderView {
                 InfoBox(text: "Select a measurement type to see the available intervals.")
             } else {
                 ForEach(viewModel.validIntervals, id: \.self) { interval in
-                    SelectableButton(
-                        shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.selectedInterval == interval
+                    ReminderCreationSelectionRow(
+                        isSelected: viewModel.selectedInterval == interval,
+                        tint: Color("BrandPrimary")
                     ) {
                         viewModel.toggleSelection(
                             interval,
                             selectedItem: &viewModel.selectedInterval
                         )
                     } label: {
-                        HStack {
-                            IconLabel(
-                                icon: interval.icon,
-                                title: interval.localized,
-                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
-                            )
-                            Spacer()
-                            if viewModel.selectedInterval == interval {
-                                Image(systemName: "checkmark.circle.fill")
-                            }
-                        }
+                        ReminderCreationOptionLabel(
+                            title: interval.localized,
+                            subtitle: nil,
+                            systemImage: interval.icon,
+                            tint: Color("BrandPrimary")
+                        )
                     }
                 }
             }
@@ -76,18 +69,7 @@ extension CreateReminderView {
         // MARK: Description
 
         private var description: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                
-                Button("Learn More") {
-                    viewModel.presentSheet(.intervalInfo)
-                }
-                .font(.subheadline.weight(.semibold))
-            }
-            .padding(.horizontal)
+            Text("Choose how long the measurement needs to stay above the threshold before the reminder triggers.")
         }
     }
 }

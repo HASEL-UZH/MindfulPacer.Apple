@@ -24,31 +24,28 @@ extension CreateReminderView {
         @Bindable var viewModel: CreateReminderViewModel
         @FocusState private var isThresholdFocused: Bool
         
-        let onFocusChange: (Bool) -> Void
-        
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
+            Form {
+                Section {
                     thresholdInput
+                } footer: {
                     description
-                    Spacer()
                 }
-                .padding(.horizontal)
             }
             .navigationTitle("Threshold")
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .keyboard) {
                     hideKeyboardButton
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+                    Button {
+                        viewModel.presentSheet(.heartRateThresholdInfo)
+                    } label: {
+                        Image(systemName: "info.circle")
                     }
                 }
             }
@@ -59,40 +56,22 @@ extension CreateReminderView {
         private var thresholdInput: some View {
             HStack(alignment: .lastTextBaseline) {
                 TextField("0", value: $viewModel.threshold, format: .number)
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(Color("BrandPrimary"))
+                    .font(.title.weight(.semibold))
+                    .foregroundStyle(viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary"))
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
                     .focused($isThresholdFocused)
-                    .onChange(of: isThresholdFocused) { _, newValue in
-                        onFocusChange(newValue)
-                    }
 
-                Text(viewModel.selectedMeasurementType!.units)
+                Text(viewModel.thresholdUnitText)
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(.secondary)
-            }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
 
         // MARK: Description
 
         private var description: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Set a threshold that triggers a reminder when reached for a specified interval.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                
-                Button("Learn More") {
-                    viewModel.presentSheet(.heartRateThresholdInfo)
-                }
-                .font(.subheadline.weight(.semibold))
-            }
-            .padding(.horizontal)
+            Text("Set the value that must be reached before this reminder can trigger.")
         }
 
         // MARK: Hide Keyboard Button
@@ -100,7 +79,6 @@ extension CreateReminderView {
         private var hideKeyboardButton: some View {
             Button {
                 isThresholdFocused = false
-                print("Hide keyboard button tapped")
             } label: {
                 Image(systemName: "keyboard.chevron.compact.down.fill")
             }
@@ -115,9 +93,7 @@ extension CreateReminderView {
     let viewModel = ScenesContainer.shared.createReminderViewModel()
 
     NavigationStack {
-        CreateReminderView.ThresholdView(viewModel: viewModel) { isFocused in
-            print("Preview: TextField focus changed to \(isFocused)")
-        }
+        CreateReminderView.ThresholdView(viewModel: viewModel)
     }
     .tint(Color("BrandPrimary"))
 }
