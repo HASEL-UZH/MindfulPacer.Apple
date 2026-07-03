@@ -37,6 +37,7 @@ extension HomeView {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Reflections")
+            .navigationSubtitle(navigationSubtitleText)
             .alert("Delete Reflection", isPresented: isDeleteConfirmationPresented) {
                 Button("Delete", role: .destructive) {
                     deletePendingReflection()
@@ -83,11 +84,6 @@ extension HomeView {
                             }
 
                         LazyVStack(alignment: .leading, spacing: 6) {
-                            ExpandableMetadataSectionHeader(
-                                title: "All Reflections",
-                                count: viewModel.filteredReflections.count
-                            )
-
                             VStack(alignment: .leading, spacing: 4) {
                                 ForEach(viewModel.filteredReflections, id: \.id) { reflection in
                                     reflectionRow(reflection)
@@ -100,6 +96,21 @@ extension HomeView {
                 }
                 .background(Color(.systemGroupedBackground))
             }
+        }
+
+        private var navigationSubtitleText: String {
+            let total = viewModel.reflections.count
+            let filtered = viewModel.filteredReflections.count
+
+            if total == 0 {
+                return String(localized: "0 reflections")
+            }
+
+            if filtered == total {
+                return String(localized: "\(total) reflections")
+            }
+
+            return String(localized: "\(filtered) of \(total) reflections")
         }
 
         private var isDeleteConfirmationPresented: Binding<Bool> {
@@ -377,33 +388,6 @@ extension HomeView {
 
             return parts.joined(separator: " - ")
         }
-    }
-}
-
-// MARK: - Expandable Metadata Section Header
-
-private struct ExpandableMetadataSectionHeader: View {
-    let title: String
-    let count: Int
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(title)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.primary)
-
-            Text(count, format: .number)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 2)
-                .background {
-                    Capsule(style: .continuous)
-                        .fill(Color(.tertiarySystemGroupedBackground))
-                }
-        }
-        .padding(.top, 6)
-        .padding(.bottom, 2)
     }
 }
 
