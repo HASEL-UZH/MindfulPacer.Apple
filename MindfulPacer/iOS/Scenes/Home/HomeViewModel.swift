@@ -278,6 +278,44 @@ class HomeViewModel {
             reviewFilter.triggeredCrash.toggle()
         }
     }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        activity: Activity?
+    ) {
+        reflection.activity = activity
+        reflection.subactivity = nil
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        subactivity: Subactivity?
+    ) {
+        reflection.subactivity = subactivity
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        mood: Mood?
+    ) {
+        reflection.mood = mood
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        wellBeing: Int?
+    ) {
+        reflection.wellBeing = wellBeing
+        saveReflectionChanges(reflection)
+    }
+
+    func toggleReflectionCrash(_ reflection: Reflection) {
+        reflection.didTriggerCrash.toggle()
+        saveReflectionChanges(reflection)
+    }
     
     // MARK: - Presentation
     
@@ -377,6 +415,16 @@ class HomeViewModel {
     private func updateFilter(_ updateBlock: () -> Void) {
         updateBlock()
         filterAndSortingPublisher.send((reviewFilter, reviewSorting))
+    }
+
+    private func saveReflectionChanges(_ reflection: Reflection) {
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+            fetchReflections()
+        } catch {
+            print("DEBUG: Could not save reflection changes: \(error.localizedDescription)")
+        }
     }
     
     private func fetchCurrentSteps() {

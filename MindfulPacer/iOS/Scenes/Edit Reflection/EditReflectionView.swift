@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import SwiftData
 
 // MARK: - Presentation Enums
 
@@ -35,6 +36,18 @@ enum EditReflectionAlert: Identifiable {
     }
 }
 
+enum EditReflectionEditorRow: Hashable {
+    case date
+    case activity
+    case subactivity
+    case mood
+    case wellBeing
+    case symptoms
+    case triggerCrash
+    case additionalInformation
+    case reminder
+}
+
 // MARK: - EditReflectionView
 
 // swiftlint:disable:next type_body_length
@@ -44,6 +57,9 @@ struct EditReflectionView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
+    @State private var activeEditorRow: EditReflectionEditorRow?
+
+    @Query(sort: \Activity.name) private var activities: [Activity]
     
     @AppStorage(ModeOfUse.appStorageKey, store: DefaultsStore.shared)
     private var modeOfUseRaw: String = ModeOfUse.essentials.rawValue
@@ -59,43 +75,7 @@ struct EditReflectionView: View {
     
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
-            GeometryReader { proxy in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        date
-                        
-                        VStack(spacing: 0) {
-                            activity
-                            if viewModel.selectedActivity.isNotNil {
-                                Divider()
-                                subactivity
-                            }
-                        }
-                        
-                        if modeOfUse == .expanded {
-                            mood
-                        }
-                        
-                        wellBeing
-                        
-                        if modeOfUse == .expanded {
-                            symptoms(width: proxy.size.width / 2)
-                            triggerCrash
-                            additionalInformation
-                        }
-                        
-                        if !viewModel.isReflectionDeleted {
-                            reminder
-                        }
-                        
-                        if viewModel.mode == .edit {
-                            deleteButton
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .safeAreaPadding(.bottom)
-            }
+            editorContent
             .foregroundStyle(Color.primary)
             .scrollContentBackground(.hidden)
             .background {
@@ -206,318 +186,396 @@ struct EditReflectionView: View {
         }
     }
     
-    // MARK: Date
-    
-    private var date: some View {
-        Card {
-            DatePicker(selection: $viewModel.date) {
-                IconLabel(
-                    icon: "calendar",
-                    title: String(localized: "Date"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-            }
-        }
-    }
-    
-    // MARK: Activity
-    
-    private var activity: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.activity) {
-            HStack {
-                IconLabel(
-                    icon: "rectangle.grid.2x2.fill",
-                    title: String(localized: "Activity"),
-                    labelColor: viewModel.selectedActivity.isNil ? Color.red : Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-                
-                Spacer(minLength: 16)
-                
-                HStack(spacing: 4) {
-                    if let activity = viewModel.selectedActivity {
-                        Text(activity.name)
-                            .foregroundStyle(Color(.systemGray2))
-                            .fixedSize(horizontal: true, vertical: false)
-                    } else {
-                        Label("Uncategorized", systemImage: "questionmark")
-                            .foregroundStyle(Color.red)
-                            .fixedSize(horizontal: true, vertical: false)
-                    }
-                    
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
+    // MARK: Editor Content
+
+    private var editorContent: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 6) {
+                dateRow
+                activityRow
+
+                if viewModel.selectedActivity != nil {
+                    subactivityRow
+                }
+
+                if modeOfUse == .expanded {
+                    moodRow
+                }
+
+                wellBeingRow
+
+                if modeOfUse == .expanded {
+                    symptomsRow
+                    triggerCrashRow
+                    additionalInformationRow
+                }
+
+                if !viewModel.isReflectionDeleted {
+                    reminderRow
+                }
+
+                if viewModel.mode == .edit {
+                    deleteButton
+                        .padding(.top, 10)
                 }
             }
-            .padding()
-            .background {
-                if viewModel.selectedActivity.isNil {
-                    RoundedRectangle(cornerRadius: 16)
-                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                } else {
-                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, topTrailing: 16))
-                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                }
-            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
         }
+        .safeAreaPadding(.bottom)
     }
-    
-    // MARK: Subactivity
-    
-    private var subactivity: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.subactivity(viewModel.selectedActivity)) {
-            HStack {
-                IconLabel(
-                    icon: "rectangle.grid.3x3.fill",
-                    title: String(localized: "Subactivity"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-                
-                Spacer(minLength: 16)
-                
-                HStack(spacing: 4) {
-                    if let subactivity = viewModel.selectedSubactivity {
-                        Text(subactivity.name)
-                            .foregroundStyle(Color(.systemGray2))
-                            .fixedSize(horizontal: true, vertical: false)
-                    }
-                    
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-            .padding()
-            .background {
-                UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 16, bottomTrailing: 16))
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
-            }
-        }
-    }
-    
-    // MARK: Mood
-    
-    private var mood: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.mood) {
-            Card {
-                HStack {
-                    IconLabel(
-                        icon: "face.smiling.fill",
-                        title: String(localized: "Mood"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .layoutPriority(1)
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 4) {
-                        if let mood = viewModel.selectedMood {
-                            Text(mood.emoji)
-                                .frame(width: 24, height: 24)
-                        }
-                        
-                        Icon(name: "chevron.right", color: Color(.systemGray2))
-                            .font(.subheadline.weight(.semibold))
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: Well Being
-    
-    private var wellBeing: some View {
-        Button {
-            viewModel.presentSymptomValueSheet(for: .wellBeing(nil))
-        } label: {
-            Card {
-                HStack {
-                    IconLabel(
-                        icon: viewModel.wellBeing.icon,
-                        title: viewModel.wellBeing.displayName,
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    
-                    Spacer()
-                    
-                    Text(viewModel.wellBeing.description)
-                        .foregroundColor(viewModel.wellBeing.description == "Not Set" ? Color(.systemGray2) : viewModel.wellBeing.color)
-                }
-            }
-        }
-    }
-    
-    // MARK: Symptoms
-    
-    @ViewBuilder private func symptoms(width: CGFloat) -> some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(spacing: 16), count: 2),
-            spacing: 16
+
+    private var dateRow: some View {
+        editorRow(
+            id: .date,
+            title: "Date",
+            subtitle: viewModel.date.formatted(.dateTime.day().month().year().hour().minute()),
+            systemImage: "calendar",
+            tint: Color("BrandPrimary")
         ) {
-            Group {
-                symptomCard(for: viewModel.fatigue)
-                symptomCard(for: viewModel.shortnessOfBreath)
-                symptomCard(for: viewModel.sleepDisorder)
-                symptomCard(for: viewModel.cognitiveImpairment)
-                symptomCard(for: viewModel.physicalPain)
-                symptomCard(for: viewModel.depressionOrAnxiety)
-            }
-            .frame(maxWidth: width)
-        }
-    }
-    
-    // MARK: Symptom Card
-    
-    @ViewBuilder private func symptomCard(for symptom: Symptom) -> some View {
-        Button {
-            viewModel.presentSymptomValueSheet(for: symptom)
-        } label: {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: symptom.icon,
-                    title: symptom.displayName,
-                    labelColor: Color("BrandPrimary"),
-                    background: true,
-                    axis: .vertical,
-                    truncationMode: symptom.truncationMode
-                )
-            ) {
-                Text(symptom.description)
-                    .foregroundColor(symptom.description == "Not Set" ? Color(.systemGray2) : symptom.color)
-            }
-        }
-    }
-    
-    // MARK: Trigger Crash
-    
-    private var triggerCrash: some View {
-        Card {
-            Toggle(isOn: $viewModel.didTriggerCrash) {
-                IconLabel(
-                    icon: "exclamationmark.triangle.fill",
-                    title: String(localized: "Did this trigger a crash?"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
+            DatePicker("Date", selection: $viewModel.date)
+                .datePickerStyle(.compact)
                 .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-            }
-            .tint(.accentColor)
         }
     }
-    
-    // MARK: Additional Information
-    
-    private var additionalInformation: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "pencil.line",
-                title: String(localized: "Additional Information"),
-                labelColor: Color("BrandPrimary"),
-                background: true
+
+    private var activityRow: some View {
+        editorRow(
+            id: .activity,
+            title: "Activity",
+            subtitle: viewModel.selectedActivity?.name ?? String(localized: "Uncategorized"),
+            systemImage: viewModel.selectedActivity?.icon ?? "rectangle.grid.2x2",
+            tint: viewModel.selectedActivity == nil ? .red : Color("BrandPrimary")
+        ) {
+            ExpandableMetadataScroll {
+                ExpandableMetadataChipButton(
+                    title: "Uncategorized",
+                    systemImage: "questionmark",
+                    isActive: viewModel.selectedActivity == nil,
+                    tint: .red
+                ) {
+                    viewModel.selectedActivity = nil
+                }
+
+                ForEach(activities) { activity in
+                    ExpandableMetadataChipButton(
+                        title: activity.name,
+                        systemImage: activity.icon,
+                        isActive: viewModel.selectedActivity == activity
+                    ) {
+                        viewModel.selectedActivity = activity
+                    }
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Full Editor",
+                    systemImage: "arrow.up.right.square",
+                    isActive: false
+                ) {
+                    viewModel.navigateTo(destination: .activity)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var subactivityRow: some View {
+        if let activity = viewModel.selectedActivity {
+            editorRow(
+                id: .subactivity,
+                title: "Subactivity",
+                subtitle: viewModel.selectedSubactivity?.name ?? String(localized: "None"),
+                systemImage: viewModel.selectedSubactivity?.icon ?? "rectangle.grid.3x3",
+                tint: Color("BrandPrimary")
+            ) {
+                ExpandableMetadataScroll {
+                    ExpandableMetadataChipButton(
+                        title: "None",
+                        systemImage: "minus.circle",
+                        isActive: viewModel.selectedSubactivity == nil
+                    ) {
+                        viewModel.selectedSubactivity = nil
+                    }
+
+                    ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
+                        ExpandableMetadataChipButton(
+                            title: subactivity.name,
+                            systemImage: subactivity.icon,
+                            isActive: viewModel.selectedSubactivity == subactivity
+                        ) {
+                            viewModel.selectedSubactivity = subactivity
+                        }
+                    }
+
+                    ExpandableMetadataChipButton(
+                        title: "Full Editor",
+                        systemImage: "arrow.up.right.square",
+                        isActive: false
+                    ) {
+                        viewModel.navigateTo(destination: .subactivity(activity))
+                    }
+                }
+            }
+        }
+    }
+
+    private var moodRow: some View {
+        editorRow(
+            id: .mood,
+            title: "Mood",
+            subtitle: viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set"),
+            systemImage: "face.smiling",
+            tint: Color("BrandPrimary")
+        ) {
+            ExpandableMetadataScroll {
+                ExpandableMetadataChipButton(
+                    title: "None",
+                    systemImage: "minus.circle",
+                    isActive: viewModel.selectedMood == nil
+                ) {
+                    viewModel.selectedMood = nil
+                }
+
+                ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
+                    ExpandableMetadataChipButton(
+                        title: "\(mood.emoji) \(mood.text)",
+                        systemImage: "face.smiling",
+                        isActive: viewModel.selectedMood == mood
+                    ) {
+                        viewModel.selectedMood = mood
+                    }
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Full Editor",
+                    systemImage: "arrow.up.right.square",
+                    isActive: false
+                ) {
+                    viewModel.navigateTo(destination: .mood)
+                }
+            }
+        }
+    }
+
+    private var wellBeingRow: some View {
+        editorRow(
+            id: .wellBeing,
+            title: viewModel.wellBeing.displayName,
+            subtitle: viewModel.wellBeing.description,
+            systemImage: viewModel.wellBeing.icon,
+            tint: viewModel.wellBeing.color
+        ) {
+            symptomValueChips(
+                symptom: viewModel.wellBeing,
+                setValue: { viewModel.wellBeing.setValue($0) },
+                openFullEditor: { viewModel.presentSymptomValueSheet(for: .wellBeing(nil)) }
             )
+        }
+    }
+
+    private var symptomsRow: some View {
+        editorRow(
+            id: .symptoms,
+            title: "Symptoms",
+            subtitle: symptomsSubtitle,
+            systemImage: "cross.case.fill",
+            tint: Color("BrandPrimary")
+        ) {
+            ExpandableMetadataScroll {
+                ForEach(editableSymptoms, id: \.displayName) { symptom in
+                    ExpandableMetadataChipButton(
+                        title: symptomChipTitle(symptom),
+                        systemImage: symptom.icon,
+                        isActive: symptom.value != nil,
+                        tint: symptom.color
+                    ) {
+                        viewModel.presentSymptomValueSheet(for: symptom)
+                    }
+                }
+            }
+        }
+    }
+
+    private var triggerCrashRow: some View {
+        editorRow(
+            id: .triggerCrash,
+            title: "Crash",
+            subtitle: viewModel.didTriggerCrash ? String(localized: "Triggered") : String(localized: "Not Triggered"),
+            systemImage: "exclamationmark.triangle.fill",
+            tint: .orange
+        ) {
+            ExpandableMetadataScroll {
+                ExpandableMetadataChipButton(
+                    title: "No",
+                    systemImage: "xmark.circle",
+                    isActive: !viewModel.didTriggerCrash
+                ) {
+                    viewModel.didTriggerCrash = false
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Yes",
+                    systemImage: "checkmark.circle",
+                    isActive: viewModel.didTriggerCrash,
+                    tint: .orange
+                ) {
+                    viewModel.didTriggerCrash = true
+                }
+            }
+        }
+    }
+
+    private var additionalInformationRow: some View {
+        editorRow(
+            id: .additionalInformation,
+            title: "Additional Information",
+            subtitle: viewModel.additionalInformation.isEmpty ? String(localized: "None") : viewModel.additionalInformation,
+            systemImage: "pencil.line",
+            tint: Color("BrandPrimary")
         ) {
             TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
+                .textFieldStyle(.plain)
+                .lineLimit(3...8)
+                .padding(12)
+                .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
-    
-    // MARK: - Reminder
-    
+
     @ViewBuilder
-    private var reminder: some View {
-        VStack(spacing: 16) {
-            if let reflection {
-                if let reminderMeasurementType = reflection.measurementType,
-                   let reminderType = reflection.reminderType {
-                    IconLabelGroupBox(
-                        label: IconLabel(
-                            icon: "alarm",
-                            title: String(localized: "Reminder"),
-                            labelColor: Color("BrandPrimary"),
-                            background: true
-                        ),
-                        description:
-                            Text("View the data that triggered this reminder.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    ) {
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            HStack(spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    IconLabel(
-                                        icon: reminderMeasurementType.icon,
-                                        title: reminderMeasurementType.rawValue,
-                                        labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
-                                    )
-                                    .font(.subheadline.weight(.semibold))
-                                    
-                                    Text(reflection.reminderTriggerSummary)
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                Icon(
-                                    name: "alarm",
-                                    color: reminderType.color,
-                                    background: true
-                                )
-                            }
-                            .foregroundStyle(Color.primary)
-                        }
-                    } footer: {
-                        TriggerDataChartView(reflection: reflection)
-                            .frame(height: 250)
-                    }
-                    .iconLabelGroupBoxStyle(.divider)
-                } else {
-                    Card(backgroundColor: Color(.tertiarySystemFill)) {
-                        IconLabel(
-                            icon: "person",
-                            title: String(localized: "Manually Created Reflection"),
-                            labelColor: .secondary,
-                            background: true
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
+    private var reminderRow: some View {
+        if let reflection,
+           let reminderMeasurementType = reflection.measurementType,
+           let reminderType = reflection.reminderType {
+            editorRow(
+                id: .reminder,
+                title: "Reminder",
+                subtitle: reflection.reminderTriggerSummary,
+                systemImage: reminderMeasurementType.icon,
+                tint: reminderType.color
+            ) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Label(reminderMeasurementType.localized, systemImage: reminderMeasurementType.icon)
                         .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .layoutPriority(1)
-                    }
+                        .foregroundStyle(reminderMeasurementType.color)
+
+                    TriggerDataChartView(reflection: reflection)
+                        .frame(height: 250)
                 }
             }
+        } else if reflection != nil {
+            editorRow(
+                id: .reminder,
+                title: "Manual Reflection",
+                subtitle: "Not created from a reminder",
+                systemImage: "person",
+                tint: .secondary
+            ) {
+                Text("This reflection was created manually.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
+    }
+
+    private func editorRow<ExpandedContent: View>(
+        id: EditReflectionEditorRow,
+        title: String,
+        subtitle: String,
+        systemImage: String,
+        tint: Color,
+        @ViewBuilder expandedContent: @escaping () -> ExpandedContent
+    ) -> some View {
+        ExpandableMetadataRow(
+            id: id,
+            activeID: $activeEditorRow,
+            expandedContentLeadingInset: 44
+        ) { isActive in
+            EditReflectionRowContent(
+                title: title,
+                subtitle: subtitle,
+                systemImage: systemImage,
+                tint: tint,
+                isActive: isActive
+            )
+        } rowAccessory: { isActive in
+            Image(systemName: isActive ? "checkmark.circle.fill" : "slider.horizontal.3")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(isActive ? tint : Color(.tertiaryLabel))
+                .padding(.top, 8)
+        } expandedContent: {
+            expandedContent()
+        }
+    }
+
+    private func symptomValueChips(
+        symptom: Symptom,
+        setValue: @escaping (Int?) -> Void,
+        openFullEditor: @escaping () -> Void
+    ) -> some View {
+        ExpandableMetadataScroll {
+            ExpandableMetadataChipButton(
+                title: "Not Set",
+                systemImage: "minus.circle",
+                isActive: symptom.value == nil
+            ) {
+                setValue(nil)
+            }
+
+            ForEach(0 ..< symptom.numOptions, id: \.self) { value in
+                ExpandableMetadataChipButton(
+                    title: symptom.description(for: value),
+                    systemImage: "\(value).circle",
+                    isActive: symptom.value == value,
+                    tint: symptom.color(for: value)
+                ) {
+                    setValue(value)
+                }
+            }
+
+            ExpandableMetadataChipButton(
+                title: "Full Editor",
+                systemImage: "arrow.up.right.square",
+                isActive: false
+            ) {
+                openFullEditor()
+            }
+        }
+    }
+
+    private var editableSymptoms: [Symptom] {
+        [
+            viewModel.fatigue,
+            viewModel.shortnessOfBreath,
+            viewModel.sleepDisorder,
+            viewModel.cognitiveImpairment,
+            viewModel.physicalPain,
+            viewModel.depressionOrAnxiety
+        ]
+    }
+
+    private var symptomsSubtitle: String {
+        let count = editableSymptoms.filter { $0.value != nil }.count
+        return count == 0 ? String(localized: "None Set") : String(localized: "\(count) set")
+    }
+
+    private func symptomChipTitle(_ symptom: Symptom) -> String {
+        symptom.value == nil ? symptom.displayName : "\(symptom.displayName): \(symptom.description)"
     }
     
     // MARK: Create Button
     
     private var createButton: some View {
-        PrimaryButton(title: String(localized: "Create")) {
+        Button {
             viewModel.createReflection()
             onReflectionCreation?()
             dismiss()
+        } label: {
+            Label("Create", systemImage: "checkmark")
+                .font(.headline.weight(.semibold))
+                .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
         .padding([.horizontal, .top])
         .background(.ultraThinMaterial)
         .disabled(viewModel.isActionButtonDisabled)
@@ -529,13 +587,16 @@ struct EditReflectionView: View {
     // MARK: Delete Button
     
     private var deleteButton: some View {
-        PrimaryButton(
-            title: String(localized: "Delete Reflection"),
-            icon: "trash",
-            color: .red
-        ) {
+        Button(role: .destructive) {
             viewModel.presentAlert(.deleteConfirmation)
+        } label: {
+            Label("Delete Reflection", systemImage: "trash")
+                .font(.headline.weight(.semibold))
+                .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .tint(.red)
     }
     
     // MARK: Hide Keyboard Button
@@ -571,6 +632,42 @@ struct EditReflectionView: View {
             message: Text("Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us."),
             dismissButton: .default(Text("Ok"))
         )
+    }
+}
+
+// MARK: - Edit Reflection Row Content
+
+private struct EditReflectionRowContent: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let tint: Color
+    let isActive: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(isActive ? tint : .secondary)
+                .frame(width: 32, height: 32)
+                .background(
+                    (isActive ? tint.opacity(0.16) : Color(.tertiarySystemGroupedBackground)),
+                    in: Circle()
+                )
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 

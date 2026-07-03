@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - ReflectionsListView
 
@@ -15,11 +16,14 @@ extension HomeView {
         // MARK: - Properties
 
         @Bindable var viewModel: HomeViewModel
+        @State private var activeReflectionID: UUID?
+
+        @Query(sort: \Activity.name) private var activities: [Activity]
 
         // MARK: Body
         
         var body: some View {
-            VStack {
+            Group {
                 if viewModel.reflections.isEmpty {
                     reviewsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
@@ -27,14 +31,7 @@ extension HomeView {
                     filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
                 } else {
-                    List {
-                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
-                            ReflectionCell(reflection: reflection, backgroundColor: .clear) {
-                                viewModel.presentSheet(.editReflectionView(reflection))
-                            }
-                        }
-                    }
-                    .listStyle(.insetGrouped)
+                    reflectionsList
                 }
             }
             .background(Color(.systemGroupedBackground))
@@ -59,6 +56,36 @@ extension HomeView {
                     }
                 }
             }
+        }
+
+        private var reflectionsList: some View {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 6) {
+                    ExpandableMetadataSectionHeader(
+                        title: "All Reflections",
+                        count: viewModel.filteredReflections.count
+                    )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
+                            ExpandableMetadataRow(
+                                id: reflection.id,
+                                activeID: $activeReflectionID,
+                                expandedContentLeadingInset: 44
+                            ) { isActive in
+                                reflectionRowContent(reflection, isActive: isActive)
+                            } rowAccessory: { isActive in
+                                reflectionRowAccessory(isActive: isActive)
+                            } expandedContent: {
+                                reflectionQuickActions(reflection)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+            }
+            .background(Color(.systemGroupedBackground))
         }
 
         // MARK: Filter Button State
@@ -110,6 +137,183 @@ extension HomeView {
                 }
             }
         }
+
+        private func reflectionRowContent(_ reflection: Reflection, isActive: Bool) -> some View {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: reflectionIconName(reflection))
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(isActive ? Color("BrandPrimary") : .secondary)
+                    .frame(width: 32, height: 32)
+                    .background(
+                        (isActive ? Color("BrandPrimary").opacity(0.16) : Color(.tertiarySystemGroupedBackground)),
+                        in: Circle()
+                    )
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(reflectionTitle(reflection))
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+
+                    Text(reflectionSubtitle(reflection))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+
+        private func reflectionRowAccessory(isActive: Bool) -> some View {
+            Image(systemName: isActive ? "checkmark.circle.fill" : "slider.horizontal.3")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(isActive ? Color("BrandPrimary") : Color(.tertiaryLabel))
+                .padding(.top, 8)
+        }
+
+        private func reflectionQuickActions(_ reflection: Reflection) -> some View {
+            ExpandableMetadataScroll {
+                ExpandableMetadataMenuChip(
+                    title: reflection.activity?.name ?? String(localized: "Activity"),
+                    systemImage: reflection.activity?.icon ?? "rectangle.grid.2x2",
+                    isActive: reflection.activity != nil
+                ) {
+                    Button("Uncategorized", systemImage: "questionmark") {
+                        viewModel.updateReflection(reflection, activity: nil)
+                    }
+
+                    ForEach(activities) { activity in
+                        Button(activity.name, systemImage: activity.icon) {
+                            viewModel.updateReflection(reflection, activity: activity)
+                        }
+                    }
+                }
+
+                if let activity = reflection.activity {
+                    ExpandableMetadataMenuChip(
+                        title: reflection.subactivity?.name ?? String(localized: "Subactivity"),
+                        systemImage: reflection.subactivity?.icon ?? "rectangle.grid.3x3",
+                        isActive: reflection.subactivity != nil
+                    ) {
+                        Button("None", systemImage: "minus.circle") {
+                            viewModel.updateReflection(reflection, subactivity: nil)
+                        }
+
+                        ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
+                            Button(subactivity.name, systemImage: subactivity.icon) {
+                                viewModel.updateReflection(reflection, subactivity: subactivity)
+                            }
+                        }
+                    }
+                }
+
+                ExpandableMetadataMenuChip(
+                    title: reflection.mood?.emoji ?? String(localized: "Mood"),
+                    systemImage: "face.smiling",
+                    isActive: reflection.mood != nil
+                ) {
+                    Button("None", systemImage: "minus.circle") {
+                        viewModel.updateReflection(reflection, mood: nil)
+                    }
+
+                    ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
+                        Button("\(mood.emoji) \(mood.text)") {
+                            viewModel.updateReflection(reflection, mood: mood)
+                        }
+                    }
+                }
+
+                let wellBeing = Symptom.wellBeing(reflection.wellBeing)
+                ExpandableMetadataMenuChip(
+                    title: wellBeing.description,
+                    systemImage: wellBeing.icon,
+                    isActive: reflection.wellBeing != nil,
+                    tint: wellBeing.color
+                ) {
+                    Button("Not Set", systemImage: "minus.circle") {
+                        viewModel.updateReflection(reflection, wellBeing: nil)
+                    }
+
+                    ForEach(0 ..< wellBeing.numOptions, id: \.self) { value in
+                        Button(wellBeing.description(for: value), systemImage: "\(value).circle") {
+                            viewModel.updateReflection(reflection, wellBeing: value)
+                        }
+                    }
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Crash",
+                    systemImage: "exclamationmark.triangle.fill",
+                    isActive: reflection.didTriggerCrash,
+                    tint: .orange
+                ) {
+                    viewModel.toggleReflectionCrash(reflection)
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Edit",
+                    systemImage: "pencil",
+                    isActive: true
+                ) {
+                    viewModel.presentSheet(.editReflectionView(reflection))
+                }
+            }
+        }
+
+        private func reflectionIconName(_ reflection: Reflection) -> String {
+            reflection.subactivity?.icon ?? reflection.activity?.icon ?? "book.closed.fill"
+        }
+
+        private func reflectionTitle(_ reflection: Reflection) -> String {
+            reflection.subactivity?.name ?? reflection.activity?.name ?? String(localized: "Uncategorized")
+        }
+
+        private func reflectionSubtitle(_ reflection: Reflection) -> String {
+            var parts: [String] = [
+                reflection.date.formatted(.dateTime.day().month().hour().minute())
+            ]
+
+            if let mood = reflection.mood {
+                parts.append("\(mood.emoji) \(mood.text)")
+            }
+
+            if let wellBeing = reflection.wellBeing {
+                parts.append(Symptom.wellBeing(wellBeing).description)
+            }
+
+            if reflection.didTriggerCrash {
+                parts.append(String(localized: "Crash"))
+            }
+
+            return parts.joined(separator: " - ")
+        }
+    }
+}
+
+// MARK: - Expandable Metadata Section Header
+
+private struct ExpandableMetadataSectionHeader: View {
+    let title: String
+    let count: Int
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(title)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.primary)
+
+            Text(count, format: .number)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 2)
+                .background {
+                    Capsule(style: .continuous)
+                        .fill(Color(.tertiarySystemGroupedBackground))
+                }
+        }
+        .padding(.top, 6)
+        .padding(.bottom, 2)
     }
 }
 
