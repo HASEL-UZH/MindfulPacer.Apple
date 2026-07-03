@@ -108,6 +108,9 @@ class ReflectionsFilterViewModel {
     var subactivities: [Subactivity] {
         activities.flatMap { $0.subactivities ?? [] }
     }
+    var activitiesWithSubactivities: [Activity] {
+        activities.filter { !($0.subactivities ?? []).isEmpty }
+    }
     var reviewFilter = ReflectionFilter()
     var reviewSorting = ReflectionSorting.dateDescending
     
@@ -162,6 +165,11 @@ class ReflectionsFilterViewModel {
 
     var sortingSubtitle: String {
         reviewSorting.title
+    }
+
+    func selectedSubactivityCount(for activity: Activity) -> Int {
+        let subactivityIDs = Set((activity.subactivities ?? []).map(\.id))
+        return reviewFilter.selectedSubactivities.filter { subactivityIDs.contains($0.id) }.count
     }
 
     private var isDefaultDateRange: Bool {

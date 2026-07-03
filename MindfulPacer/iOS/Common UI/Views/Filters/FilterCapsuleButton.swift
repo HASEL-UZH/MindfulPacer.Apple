@@ -42,7 +42,7 @@ struct FilterCapsuleButton: View {
                     .truncationMode(.tail)
             }
             .font(.subheadline.weight(.semibold))
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

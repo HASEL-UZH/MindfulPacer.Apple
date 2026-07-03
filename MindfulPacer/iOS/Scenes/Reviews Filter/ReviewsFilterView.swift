@@ -19,6 +19,7 @@ struct ReflectionsFilterView: View {
     // MARK: Properties
 
     @State private var viewModel: ReflectionsFilterViewModel = ScenesContainer.shared.reviewsFilterViewModel()
+    @State private var expandedSubactivityActivityIDs: Set<UUID> = []
 
     let filterAndSortingPublisher: CurrentValueSubject<(ReflectionFilter, ReflectionSorting), Never>?
     let activities: [Activity]
@@ -47,9 +48,11 @@ struct ReflectionsFilterView: View {
                     viewModel.onViewFirstAppear()
                     viewModel.setPublisher(filterAndSortingPublisher)
                     viewModel.updateActivities(activities)
+                    expandSelectedSubactivityGroups()
                 }
                 .onChange(of: activities) { _, newValue in
                     viewModel.updateActivities(newValue)
+                    expandSelectedSubactivityGroups()
                 }
         }
     }
@@ -147,20 +150,26 @@ private extension ReflectionsFilterView {
     }
 
     var subactivitiesSection: some View {
-        filterChipSection(
-            title: "Subactivities",
-            subtitle: viewModel.subactivitiesSubtitle,
-            isEmpty: viewModel.subactivities.isEmpty,
-            emptyTitle: "No subactivities available"
-        ) {
-            ForEach(viewModel.subactivities) { subactivity in
-                FilterCapsuleButton(
-                    title: subactivity.name,
-                    systemImage: subactivity.icon,
-                    isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
-                ) {
-                    viewModel.toggleFilterSubactivity(subactivity)
+        VStack(alignment: .leading, spacing: 12) {
+            FilterSectionHeader(
+                title: "Subactivities",
+                subtitle: viewModel.subactivitiesSubtitle
+            )
+
+            if viewModel.activitiesWithSubactivities.isEmpty {
+                Text("No subactivities available")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .filterControlBackground()
+                    .padding(.horizontal)
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(viewModel.activitiesWithSubactivities) { activity in
+                        subactivityDisclosureGroup(for: activity)
+                    }
                 }
+                .padding(.horizontal)
             }
         }
     }
@@ -245,10 +254,71 @@ private extension ReflectionsFilterView {
     var clearAllButton: some View {
         Button("Clear All") {
             viewModel.resetFilters()
+            expandedSubactivityActivityIDs.removeAll()
         }
         .disabled(!viewModel.hasActiveFilters)
         .fontWeight(.semibold)
         .padding(.trailing)
+    }
+
+    func subactivityDisclosureGroup(for activity: Activity) -> some View {
+        DisclosureGroup(
+            isExpanded: Binding(
+                get: { expandedSubactivityActivityIDs.contains(activity.id) },
+                set: { isExpanded in
+                    if isExpanded {
+                        expandedSubactivityActivityIDs.insert(activity.id)
+                    } else {
+                        expandedSubactivityActivityIDs.remove(activity.id)
+                    }
+                }
+            )
+        ) {
+            LazyVGrid(columns: filterGridColumns, spacing: 8) {
+                ForEach(activity.subactivities ?? []) { subactivity in
+                    FilterCapsuleButton(
+                        title: subactivity.name,
+                        systemImage: subactivity.icon,
+                        isSelected: viewModel.reviewFilter.selectedSubactivities.contains(subactivity)
+                    ) {
+                        viewModel.toggleFilterSubactivity(subactivity)
+                    }
+                }
+            }
+            .padding(.top, 12)
+        } label: {
+            subactivityDisclosureLabel(for: activity)
+        }
+        .font(.subheadline.weight(.semibold))
+        .tint(Color("BrandPrimary"))
+        .filterDisclosureBackground()
+    }
+
+    func subactivityDisclosureLabel(for activity: Activity) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: activity.icon)
+                .symbolVariant(.fill)
+
+            Text(activity.name)
+
+            Spacer()
+
+            Text(subactivitySelectionSubtitle(for: activity))
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .foregroundStyle(.primary)
+    }
+
+    func subactivitySelectionSubtitle(for activity: Activity) -> String {
+        let selectedCount = viewModel.selectedSubactivityCount(for: activity)
+        return selectedCount == 0 ? String(localized: "All") : String(localized: "\(selectedCount) selected")
+    }
+
+    func expandSelectedSubactivityGroups() {
+        for activity in viewModel.activitiesWithSubactivities where viewModel.selectedSubactivityCount(for: activity) > 0 {
+            expandedSubactivityActivityIDs.insert(activity.id)
+        }
     }
 
     @ViewBuilder
@@ -303,6 +373,16 @@ private extension View {
             .padding(.vertical, 12)
             .background {
                 Capsule()
+                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
+            }
+    }
+
+    func filterDisclosureBackground() -> some View {
+        self
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
     }
