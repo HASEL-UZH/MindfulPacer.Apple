@@ -18,16 +18,12 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: "figure.walk",
-                    title: String(localized: "Steps"),
-                    labelColor: .teal,
-                    background: true
-                )
-            ) {
+            LabeledCard {
                 stepsSummary
                     .foregroundStyle(Color.primary)
+            } label: {
+                Label("Steps", systemImage: "figure.walk")
+                    .foregroundStyle(.teal)
             }
         }
         
@@ -37,23 +33,20 @@ extension HomeView {
         private var stepsSummary: some View {
             if let currentSteps = viewModel.currentSteps {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text("\(Int(currentSteps.stepCount))")
-                            .font(.title.weight(.semibold))
-                            .minimumScaleFactor(0.75)
-                            .lineLimit(1)
-                    }
+                    Text(Int(currentSteps.stepCount).formatted())
+                        .font(.title.weight(.semibold))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.75)
+                        .lineLimit(1)
                     
-                    Text("**Updated:** \(currentSteps.timestamp.formatted(.dateTime.hour().minute()))")
+                    Text("Updated \(currentSteps.timestamp.formatted(.dateTime.hour().minute()))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .center, spacing: 4) {
-                        Text("--")
-                            .font(.title.weight(.semibold))
-                    }
+                    Text("--")
+                        .font(.title.weight(.semibold))
                     
                     Text("No data")
                         .font(.footnote)

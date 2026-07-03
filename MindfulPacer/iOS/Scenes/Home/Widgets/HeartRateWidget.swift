@@ -19,16 +19,12 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: "heart.fill",
-                    title: String(localized: "Heart Rate"),
-                    labelColor: .pink,
-                    background: true
-                )
-            ) {
+            LabeledCard {
                 heartRateSummary
                     .foregroundStyle(Color.primary)
+            } label: {
+                Label("Heart Rate", systemImage: "heart.fill")
+                    .foregroundStyle(.pink)
             }
         }
         
@@ -38,26 +34,21 @@ extension HomeView {
         private var heartRateSummary: some View {
             if let currentHeartRate = viewModel.currentHeartRate {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text("\(Int(currentHeartRate.heartRate))")
-                            .font(.title.weight(.semibold))
-                            .lineLimit(1)
-                        Text("bpm")
-                            .foregroundStyle(.secondary)
-                    }
+                    Text("\(Int(currentHeartRate.heartRate))")
+                        .font(.title.weight(.semibold))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .unit("bpm")
                     
-                    Text("**Updated:** \(currentHeartRate.timestamp.formatted(.dateTime.hour().minute()))")
+                    Text("Updated \(currentHeartRate.timestamp.formatted(.dateTime.hour().minute()))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .center, spacing: 4) {
-                        Text("--")
-                            .font(.title.weight(.semibold))
-                        Text("bpm")
-                            .foregroundStyle(.secondary)
-                    }
+                    Text("--")
+                        .font(.title.weight(.semibold))
+                        .unit("bpm")
                     
                     Text("No data")
                         .font(.footnote)

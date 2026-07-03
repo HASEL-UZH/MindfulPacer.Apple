@@ -65,34 +65,34 @@ extension HomeView {
         
         private var missedReflectionsList: some View {
             ScrollView {
-                LazyVStack(spacing: 16) {
+                LazyVStack(spacing: 10) {
                     ForEach(viewModel.displayedMissedReflections, id: \.id) { reflection in
-                        IconLabelGroupBox(
-                            label: IconLabel(
-                                icon: reflection.measurementType!.icon,
-                                title: reflection.measurementType!.localized,
-                                description: reflection.reminderTriggerSummary,
-                                labelColor: reflection.measurementType!.color
-                            )
-                        ) {
+                        LabeledCard {
                             VStack(alignment: .leading, spacing: 16) {
+                                Text(reflection.reminderTriggerSummary)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
                                 TriggerDataChartView(reflection: reflection)
                                     .frame(height: 150)
                                 
                                 Text(String(localized: "Triggered on \(reflection.date.formatted(.dateTime.month().day().hour().minute()))"))
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
+
+                                Divider()
+
+                                actionButtons(for: reflection)
                             }
-                        } accessoryIndicator: {
-                            Icon(
-                                name: "alarm",
-                                color: reflection.reminderType!.color,
-                                background: true
+                        } label: {
+                            Label(
+                                reflection.measurementType?.localized ?? String(localized: "Measurement"),
+                                systemImage: reflection.measurementType?.icon ?? "waveform.path.ecg"
                             )
-                        } footer: {
-                            actionButtons(for: reflection)
+                            .foregroundStyle(reflection.measurementType?.color ?? Color("BrandPrimary"))
+                        } accessory: {
+                            missedReflectionAccessory(reflection)
                         }
-                        .iconLabelGroupBoxStyle(.divider)
                         .padding(.horizontal)
                     }
 
@@ -116,12 +116,9 @@ extension HomeView {
                                 viewModel.loadMoreMissed()
                             }
                         } label: {
-                            IconLabel(
-                                icon: "arrow.down.circle.fill",
-                                title: "Load More",
-                                labelColor: .brandPrimary
-                            )
-                            .font(.subheadline.weight(.semibold))
+                            Label("Load More", systemImage: "arrow.down.circle.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Color("BrandPrimary"))
                         }
                         .buttonStyle(.plain)
                     }
@@ -131,6 +128,17 @@ extension HomeView {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Missed Reflections")
+        }
+
+        @ViewBuilder
+        private func missedReflectionAccessory(_ reflection: Reflection) -> some View {
+            if let reminderType = reflection.reminderType {
+                Image(systemName: "alarm")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(reminderType.color)
+                    .frame(width: 30, height: 30)
+                    .background(reminderType.color.opacity(0.12), in: Circle())
+            }
         }
         
         // MARK: Empty State

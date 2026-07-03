@@ -87,8 +87,8 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-//                    healthPermissionsWidget
+                LazyVStack(spacing: 10) {
+                    healthPermissionsWidget
                     missedReflectionsWidget
                     ReflectionsWidget(viewModel: viewModel)
                     stepsAndHeartRateWidgets
@@ -97,9 +97,28 @@ struct HomeView: View {
                 .padding([.horizontal, .bottom])
             }
             .navigationTitle("Home")
+            .navigationBarTitleDisplayMode(.large)
             .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                ZStack {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+
+                    VStack(spacing: 0) {
+                        LinearGradient(
+                            colors: [
+                                Color("BrandPrimary").opacity(0.16),
+                                Color.pink.opacity(0.08),
+                                Color(.systemGroupedBackground).opacity(0)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 280)
+                        .ignoresSafeArea(edges: .top)
+
+                        Spacer()
+                    }
+                }
             }
             .navigationDestination(for: HomeNavigationDestination.self, destination: navigationDestination)
             .refreshable {
@@ -161,53 +180,49 @@ struct HomeView: View {
     
     // MARK: Health Kit Permission Widget
     
+    @ViewBuilder
     private var healthPermissionsWidget: some View {
-        Group {
-            switch viewModel.healthPermissionState {
-            case .ok:
-                EmptyView()
-            case .needsRequest:
-                IconLabelGroupBox(
-                    label:
-                        IconLabel(
-                            image: "Apple Health",
-                            title: String(localized: "Connect Apple Health"),
-                            labelColor: .pink,
-                            background: true
-                        )
-                ) {
+        switch viewModel.healthPermissionState {
+        case .ok:
+            EmptyView()
+        case .needsRequest:
+            LabeledCard {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("We need Health permission to read steps and heart rate.")
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
-                } footer: {
+
                     Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) {
                             openURL(url)
                         }
                     } label: {
-                        IconLabel(
-                            icon: "arrow.up.right.square.fill",
-                            title: String(localized: "Open Settings"),
-                            labelColor: .secondary
-                        )
-                        .font(.subheadline.weight(.semibold))
+                        Label("Open Settings", systemImage: "arrow.up.right.square")
+                            .font(.subheadline.weight(.semibold))
                     }
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                    .tint(.pink)
                 }
-            case .unavailable:
-                Card {
-                    HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.orange)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Health Not Available")
-                                .font(.subheadline.weight(.semibold))
-                            Text("Apple Health isn’t available on this device.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    }
+            } label: {
+                Label {
+                    Text("Connect Apple Health")
+                } icon: {
+                    Image("Apple Health")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                 }
+                .foregroundStyle(.pink)
+            }
+        case .unavailable:
+            LabeledCard {
+                Text("Apple Health isn’t available on this device.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } label: {
+                Label("Health Not Available", systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
             }
         }
     }
@@ -217,53 +232,35 @@ struct HomeView: View {
     @ViewBuilder
     private var missedReflectionsWidget: some View {
         if viewModel.missedReflections.isEmpty {
-            Card {
-                HStack {
-                    IconLabel(
-                        image: "book.pages.fill.badge.checkmark",
-                        title: String(localized: "No Missed Reflections"),
-                        labelColor: .brandPrimary,
-                        background: true
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .layoutPriority(1)
-                    
-                    Spacer()
-                }
+            LabeledCard {
+                Text("You're caught up.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } label: {
+                Label("No Missed Reflections", systemImage: "book.pages.fill.badge.checkmark")
+                    .foregroundStyle(Color("BrandPrimary"))
             }
         } else {
             NavigationLink(value: HomeNavigationDestination.missedReflectionsList) {
-                Card {
-                    HStack {
-                        IconLabel(
-                            image: "book.pages.fill.badge.exclamationmark",
-                            title: String(localized: "Missed Reflections"),
-                            labelColor: .red,
-                            background: true
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .layoutPriority(1)
-                        
-                        Spacer(minLength: 16)
-                        
-                        HStack(spacing: 4) {
-                            Text(viewModel.missedReflections.count > 10 ? "10+" : String(viewModel.missedReflections.count))
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.red)
-                                .fixedSize(horizontal: true, vertical: false)
-                            
-                            
-                            Icon(name: "chevron.right", color: Color(.systemGray2))
-                                .font(.subheadline.weight(.semibold))
-                                .redacted(reason: .init())
-                        }
+                LabeledCard {
+                    HStack(alignment: .lastTextBaseline, spacing: 4) {
+                        Text(viewModel.missedReflections.count > 10 ? "10+" : String(viewModel.missedReflections.count))
+                            .font(.title2.weight(.semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(.red)
+
+                        Text(viewModel.missedReflections.count == 1 ? "reflection needs review" : "reflections need review")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
+                } label: {
+                    Label("Missed Reflections", systemImage: "book.pages.fill.badge.exclamationmark")
+                        .foregroundStyle(.red)
+                } accessory: {
+                    navigationAccessory("Review")
                 }
             }
+            .buttonStyle(.plain)
             .redacted(reason: viewModel.isFetchingMissedReflections ? .placeholder : .init())
         }
     }
@@ -271,18 +268,20 @@ struct HomeView: View {
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {
-        HStack(spacing: 16) {
+        HStack(alignment: .top, spacing: 10) {
             Button {
                 onWidgetTap()
             } label: {
                 StepsWidget(viewModel: viewModel)
             }
+            .buttonStyle(.plain)
             
             Button {
                 onWidgetTap()
             } label: {
                 HeartRateWidget(viewModel: viewModel)
             }
+            .buttonStyle(.plain)
         }
     }
     
@@ -371,6 +370,17 @@ struct HomeView: View {
             },
             secondaryButton: .cancel()
         )
+    }
+
+    // MARK: Shared Home Components
+
+    private func navigationAccessory(_ title: String) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+            Image(systemName: "chevron.right")
+        }
+        .font(.subheadline)
+        .foregroundStyle(Color(.systemGray2))
     }
 }
 

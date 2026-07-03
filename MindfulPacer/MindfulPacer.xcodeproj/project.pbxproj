@@ -122,6 +122,7 @@
 		0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */; };
 		0D7F10012F60000000ABC001 /* FilterSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */; };
 		0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */; };
+		0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10102F61000000ABC001 /* LabeledCard.swift */; };
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */; };
@@ -391,6 +392,7 @@
 		0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
 		0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSectionHeader.swift; sourceTree = "<group>"; };
 		0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCapsuleButton.swift; sourceTree = "<group>"; };
+		0D7F10102F61000000ABC001 /* LabeledCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledCard.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
@@ -1322,6 +1324,7 @@
 				0D34C4532C82643B00928C53 /* Sheets */,
 				0DC136B82D4EAC9A00001D08 /* UIKit */,
 				0DD3FDAC2C8A3ED100859A1C /* Card.swift */,
+				0D7F10102F61000000ABC001 /* LabeledCard.swift */,
 				0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */,
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0DA77E3F2D1596C50057DFA2 /* Toast.swift */,
@@ -1812,6 +1815,7 @@
 				0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */,
 				0D7F10012F60000000ABC001 /* FilterSectionHeader.swift in Sources */,
 				0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */,
+				0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */,
 				0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */,
 				0D67F42E2C90E181000F6114 /* MainFeaturesView.swift in Sources */,
 				0D4EBE392C727C7A00C1865D /* MeasurementTypeView.swift in Sources */,
