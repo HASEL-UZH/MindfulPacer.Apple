@@ -18,41 +18,14 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            LabeledCard {
-                stepsSummary
-                    .foregroundStyle(Color.primary)
-            } label: {
-                Label("Steps", systemImage: "figure.walk")
-                    .foregroundStyle(.teal)
-            }
-        }
-        
-        // MARK: Steps Summary
-        
-        @ViewBuilder
-        private var stepsSummary: some View {
-            if let currentSteps = viewModel.currentSteps {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(Int(currentSteps.stepCount).formatted())
-                        .font(.title.weight(.semibold))
-                        .monospacedDigit()
-                        .minimumScaleFactor(0.75)
-                        .lineLimit(1)
-                    
-                    Text("Updated \(currentSteps.timestamp.formatted(.dateTime.hour().minute()))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("--")
-                        .font(.title.weight(.semibold))
-                    
-                    Text("No data")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            HealthMetricCard(
+                title: String(localized: "Steps"),
+                systemImage: "figure.walk",
+                tint: .teal,
+                value: viewModel.currentSteps.map { Int($0.stepCount).formatted() },
+                unit: "STEPS",
+                timestamp: viewModel.currentSteps?.timestamp
+            )
         }
     }
 }

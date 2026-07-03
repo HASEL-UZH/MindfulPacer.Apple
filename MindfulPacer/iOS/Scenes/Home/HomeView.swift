@@ -237,7 +237,7 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             } label: {
-                Label("No Missed Reflections", systemImage: "book.pages.fill.badge.checkmark")
+                Label("No Missed Reflections", systemImage: "book.closed.fill")
                     .foregroundStyle(Color("BrandPrimary"))
             }
         } else {
@@ -254,7 +254,7 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                     }
                 } label: {
-                    Label("Missed Reflections", systemImage: "book.pages.fill.badge.exclamationmark")
+                    Label("Missed Reflections", systemImage: "book.closed.fill")
                         .foregroundStyle(.red)
                 } accessory: {
                     navigationAccessory("Review")
@@ -268,7 +268,7 @@ struct HomeView: View {
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {
-        HStack(alignment: .top, spacing: 10) {
+        VStack(spacing: 10) {
             Button {
                 onWidgetTap()
             } label: {
