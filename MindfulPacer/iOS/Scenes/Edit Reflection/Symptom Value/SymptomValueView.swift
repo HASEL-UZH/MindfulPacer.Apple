@@ -43,6 +43,8 @@ private extension EditReflectionView.SymptomValueView {
 
     var content: some View {
         VStack(spacing: 16) {
+            Spacer(minLength: 0)
+
             LazyVGrid(
                 columns: [GridItem(.adaptive(minimum: 64, maximum: 64), spacing: 12, alignment: .center)],
                 spacing: 16
@@ -52,11 +54,10 @@ private extension EditReflectionView.SymptomValueView {
                 }
             }
             .padding(.horizontal)
-            .padding(.top)
 
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 

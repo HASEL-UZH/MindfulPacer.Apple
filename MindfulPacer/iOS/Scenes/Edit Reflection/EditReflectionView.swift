@@ -316,6 +316,8 @@ struct EditReflectionView: View {
                     .foregroundStyle(symptom.value == nil ? Color.secondary : Color.accentColor)
                     .lineLimit(1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }
