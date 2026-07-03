@@ -129,9 +129,8 @@ struct EditReflectionView: View {
                     SymptomValueView(symptom: viewModel.depressionOrAnxietyBinding)
                 }
             }
-            .presentationDetents([.height(220)])
+            .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
-            .presentationCornerRadius(16)
         }
     }
 
@@ -157,7 +156,7 @@ struct EditReflectionView: View {
 
     @ViewBuilder
     private var primaryRows: some View {
-        formRow(title: "Date") {
+        formRow(title: "Date", systemImage: "calendar") {
             DatePicker(
                 "Date",
                 selection: $viewModel.date,
@@ -182,7 +181,7 @@ struct EditReflectionView: View {
 
     @ViewBuilder
     private var activityRow: some View {
-        formRow(title: "Activity") {
+        formRow(title: "Activity", systemImage: "rectangle.grid.2x2") {
             Menu {
                 Button("Uncategorized", systemImage: "questionmark") {
                     viewModel.selectedActivity = nil
@@ -196,7 +195,6 @@ struct EditReflectionView: View {
             } label: {
                 rowValue(
                     viewModel.selectedActivity?.name ?? String(localized: "Select"),
-                    systemImage: viewModel.selectedActivity?.icon ?? "rectangle.grid.2x2",
                     isRequiredMissing: viewModel.selectedActivity == nil
                 )
             }
@@ -206,7 +204,7 @@ struct EditReflectionView: View {
     @ViewBuilder
     private var subactivityRow: some View {
         if let activity = viewModel.selectedActivity {
-            formRow(title: "Subactivity") {
+            formRow(title: "Subactivity", systemImage: "rectangle.grid.3x3") {
                 Menu {
                     Button("None", systemImage: "minus.circle") {
                         viewModel.selectedSubactivity = nil
@@ -219,8 +217,7 @@ struct EditReflectionView: View {
                     }
                 } label: {
                     rowValue(
-                        viewModel.selectedSubactivity?.name ?? String(localized: "None"),
-                        systemImage: viewModel.selectedSubactivity?.icon ?? "rectangle.grid.3x3"
+                        viewModel.selectedSubactivity?.name ?? String(localized: "None")
                     )
                 }
             }
@@ -228,7 +225,7 @@ struct EditReflectionView: View {
     }
 
     private var moodRow: some View {
-        formRow(title: "Mood") {
+        formRow(title: "Mood", systemImage: "face.smiling") {
             Menu {
                 Button("None", systemImage: "minus.circle") {
                     viewModel.selectedMood = nil
@@ -241,15 +238,14 @@ struct EditReflectionView: View {
                 }
             } label: {
                 rowValue(
-                    viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set"),
-                    systemImage: "face.smiling"
+                    viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set")
                 )
             }
         }
     }
 
     private var wellBeingRow: some View {
-        formRow(title: viewModel.wellBeing.displayName) {
+        formRow(title: viewModel.wellBeing.displayName, systemImage: viewModel.wellBeing.icon) {
             Menu {
                 Button("Not Set", systemImage: "minus.circle") {
                     viewModel.wellBeing.setValue(nil)
@@ -262,9 +258,7 @@ struct EditReflectionView: View {
                 }
             } label: {
                 rowValue(
-                    viewModel.wellBeing.description,
-                    systemImage: viewModel.wellBeing.icon,
-                    tint: viewModel.wellBeing.color
+                    viewModel.wellBeing.description
                 )
             }
         }
@@ -317,7 +311,7 @@ struct EditReflectionView: View {
 
                 Text(symptom.description)
                     .font(.subheadline)
-                    .foregroundStyle(symptom.color)
+                    .foregroundStyle(symptom.value == nil ? Color.secondary : Color.accentColor)
                     .lineLimit(1)
             }
         }
@@ -357,11 +351,13 @@ struct EditReflectionView: View {
 
     private func formRow<Field: View>(
         title: String,
+        systemImage: String,
         @ViewBuilder field: () -> Field
     ) -> some View {
         HStack(spacing: 12) {
-            Text(title)
-                .foregroundStyle(.secondary)
+            Label(title, systemImage: systemImage)
+                .foregroundStyle(.primary)
+                .lineLimit(1)
 
             Spacer(minLength: 12)
 
@@ -372,19 +368,13 @@ struct EditReflectionView: View {
 
     private func rowValue(
         _ title: String,
-        systemImage: String,
-        tint: Color = Color("BrandPrimary"),
         isRequiredMissing: Bool = false
     ) -> some View {
-        Label {
-            Text(title)
-                .lineLimit(1)
-                .truncationMode(.middle)
-        } icon: {
-            Image(systemName: systemImage)
-        }
+        Text(title)
+            .lineLimit(1)
+            .truncationMode(.middle)
         .font(.subheadline.weight(.semibold))
-        .foregroundStyle(isRequiredMissing ? .red : tint)
+        .foregroundStyle(isRequiredMissing ? Color.red : Color.accentColor)
     }
 
     private var editableSymptoms: [Symptom] {

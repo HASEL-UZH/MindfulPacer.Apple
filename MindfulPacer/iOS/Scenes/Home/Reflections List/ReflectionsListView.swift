@@ -196,13 +196,10 @@ extension HomeView {
         private func reflectionRowContent(_ reflection: Reflection, isActive: Bool) -> some View {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: reflectionIconName(reflection))
-                    .font(.headline.weight(.semibold))
+                    .symbolVariant(.circle.fill)
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(isActive ? Color("BrandPrimary") : .secondary)
                     .frame(width: 32, height: 32)
-                    .background(
-                        (isActive ? Color("BrandPrimary").opacity(0.16) : Color(.tertiarySystemGroupedBackground)),
-                        in: Circle()
-                    )
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(reflectionTitle(reflection))
