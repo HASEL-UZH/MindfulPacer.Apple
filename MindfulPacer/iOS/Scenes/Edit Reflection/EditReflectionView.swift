@@ -319,7 +319,6 @@ struct EditReflectionView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder

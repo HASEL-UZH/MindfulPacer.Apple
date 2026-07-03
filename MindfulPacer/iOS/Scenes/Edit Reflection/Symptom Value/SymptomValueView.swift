@@ -42,22 +42,18 @@ extension EditReflectionView {
 private extension EditReflectionView.SymptomValueView {
 
     var content: some View {
-        VStack(spacing: 16) {
-            Spacer(minLength: 0)
-
-            LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 64, maximum: 64), spacing: 12, alignment: .center)],
-                spacing: 16
-            ) {
+        VStack {
+            HStack(alignment: .top, spacing: 12) {
                 ForEach(0 ..< symptom.numOptions, id: \.self) { index in
                     symptomButton(index)
                 }
             }
             .padding(.horizontal)
+            .padding(.top, 24)
 
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
