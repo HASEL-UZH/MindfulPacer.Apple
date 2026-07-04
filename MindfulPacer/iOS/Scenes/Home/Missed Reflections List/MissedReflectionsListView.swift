@@ -294,7 +294,7 @@ private struct MissedReflectionHealthChart: View {
         .chartXAxis {
             AxisMarks(position: .bottom, values: data.axisDates) { value in
                 if let date = value.as(Date.self) {
-                    AxisValueLabel(anchor: .top) {
+                    AxisValueLabel(anchor: data.axisAnchor(for: date)) {
                         Text(data.axisLabel(for: date))
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -404,15 +404,36 @@ private struct MissedReflectionHealthChartData {
     }
 
     var xRange: ClosedRange<Date> {
+        let visibleRange = unpaddedXRange
+        let visibleSpan = max(visibleRange.upperBound.timeIntervalSince(visibleRange.lowerBound), 60)
+        let intervalSpan = reflection.interval?.timeInterval ?? visibleSpan
+        let minimumPadding: TimeInterval = axisTimeStyleShowsSeconds ? 20 : 60
+        let maximumPadding = max(minimumPadding, intervalSpan * 0.25)
+        let leadingPadding = min(max(minimumPadding, visibleSpan * 0.08), maximumPadding)
+        let trailingPadding = min(max(minimumPadding * 2, visibleSpan * 0.24), maximumPadding)
+
+        let lowerBound = visibleRange.lowerBound.addingTimeInterval(-leadingPadding)
+        let upperBound = visibleRange.upperBound.addingTimeInterval(trailingPadding)
+        return lowerBound...upperBound
+    }
+
+    private var unpaddedXRange: ClosedRange<Date> {
         guard let first = samples.first?.date, let last = samples.last?.date else {
             return triggerDate.addingTimeInterval(-60)...triggerDate.addingTimeInterval(60)
+        }
+
+        let lowerBound = min(first, triggerWindowStart ?? first, triggerDate)
+        let upperBound = max(last, triggerDate)
+
+        guard lowerBound < upperBound else {
+            return lowerBound.addingTimeInterval(-60)...upperBound.addingTimeInterval(60)
         }
 
         if first == last {
             return first.addingTimeInterval(-60)...last.addingTimeInterval(60)
         }
 
-        return first...last
+        return lowerBound...upperBound
     }
 
     var valueRange: ClosedRange<Double> {
@@ -428,7 +449,7 @@ private struct MissedReflectionHealthChartData {
     }
 
     var axisDates: [Date] {
-        let dates = [xRange.lowerBound, clampedTriggerDate, xRange.upperBound]
+        let dates = [axisStartDate, clampedTriggerDate, axisEndDate]
         return dates.reduce(into: [Date]()) { result, date in
             guard !result.contains(where: { abs($0.timeIntervalSince(date)) < 1 }) else { return }
             result.append(date)
@@ -436,15 +457,27 @@ private struct MissedReflectionHealthChartData {
     }
 
     func axisLabel(for date: Date) -> String {
-        if abs(date.timeIntervalSince(xRange.lowerBound)) < 1 {
+        if abs(date.timeIntervalSince(axisStartDate)) < 1 {
             return xRange.lowerBound.formatted(axisTimeStyle)
         }
 
-        if abs(date.timeIntervalSince(xRange.upperBound)) < 1 {
+        if abs(date.timeIntervalSince(axisEndDate)) < 1 {
             return xRange.upperBound.formatted(axisTimeStyle)
         }
 
         return triggerDate.formatted(axisTimeStyle)
+    }
+
+    func axisAnchor(for date: Date) -> UnitPoint {
+        if abs(date.timeIntervalSince(axisStartDate)) < 1 {
+            return .topLeading
+        }
+
+        if abs(date.timeIntervalSince(axisEndDate)) < 1 {
+            return .topTrailing
+        }
+
+        return .top
     }
 
     init(reflection: Reflection) {
@@ -467,6 +500,31 @@ private struct MissedReflectionHealthChartData {
         case .fourHours, .oneDay:
             return .dateTime.hour()
         }
+    }
+
+    private var axisTimeStyleShowsSeconds: Bool {
+        guard let interval = reflection.interval else { return true }
+        switch interval {
+        case .immediately, .oneMinute, .twoMinutes:
+            return true
+        case .fiveMinutes, .tenMinutes,
+             .fifteenMinutes, .thirtyMinutes,
+             .oneHour, .twoHours,
+             .fourHours, .oneDay:
+            return false
+        }
+    }
+
+    private var axisStartDate: Date {
+        xRange.lowerBound.addingTimeInterval(axisEdgeInset)
+    }
+
+    private var axisEndDate: Date {
+        xRange.upperBound.addingTimeInterval(-axisEdgeInset)
+    }
+
+    private var axisEdgeInset: TimeInterval {
+        max(axisTimeStyleShowsSeconds ? 8 : 30, xRange.upperBound.timeIntervalSince(xRange.lowerBound) * 0.025)
     }
 
     private func formattedValue(_ value: Double) -> String {
