@@ -18,7 +18,6 @@
 		0D0507192E587BF100C5123A /* CroppedIPhoneImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */; };
 		0D05071B2E58910800C5123A /* FetchMissedReflectionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05071A2E58910800C5123A /* FetchMissedReflectionsUseCase.swift */; };
 		0D05072A2E59077000C5123A /* MissedReflectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0507292E59077000C5123A /* MissedReflectionsListView.swift */; };
-		0D05072C2E59077000C5123A /* MissedReflectionHealthCardConcept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05072B2E59077000C5123A /* MissedReflectionHealthCardConcept.swift */; };
 		0D0DE2D62C32DEB100C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D52C32DEB100C54B0C /* Factory */; };
 		0D0DE2D82C32DEE900C54B0C /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0DE2D72C32DEE900C54B0C /* Factory */; };
 		0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */; };
@@ -302,7 +301,6 @@
 		0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CroppedIPhoneImage.swift; sourceTree = "<group>"; };
 		0D05071A2E58910800C5123A /* FetchMissedReflectionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMissedReflectionsUseCase.swift; sourceTree = "<group>"; };
 		0D0507292E59077000C5123A /* MissedReflectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionsListView.swift; sourceTree = "<group>"; };
-		0D05072B2E59077000C5123A /* MissedReflectionHealthCardConcept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionHealthCardConcept.swift; sourceTree = "<group>"; };
 		0D0DE2D92C32DF1F00C54B0C /* ScenesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenesContainer.swift; sourceTree = "<group>"; };
 		0D0FE4A32C7772C1002E001B /* IconLabelGroupBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabelGroupBox.swift; sourceTree = "<group>"; };
 		0D1016F12C57B229008AF31D /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -570,7 +568,6 @@
 			isa = PBXGroup;
 			children = (
 				0D0507292E59077000C5123A /* MissedReflectionsListView.swift */,
-				0D05072B2E59077000C5123A /* MissedReflectionHealthCardConcept.swift */,
 			);
 			path = "Missed Reflections List";
 			sourceTree = "<group>";
@@ -1911,7 +1908,6 @@
 				0DD858922C71465A00061F63 /* SessionError.swift in Sources */,
 				0D9351502D12F98D0028AA61 /* RoadmapRepository.swift in Sources */,
 				0D05072A2E59077000C5123A /* MissedReflectionsListView.swift in Sources */,
-				0D05072C2E59077000C5123A /* MissedReflectionHealthCardConcept.swift in Sources */,
 				0DC136BA2D4EACA400001D08 /* HTMLText.swift in Sources */,
 				0D34C4632C837F7D00928C53 /* HeartRateWidget.swift in Sources */,
 				0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
