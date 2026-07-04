@@ -71,7 +71,14 @@ extension CreateReminderView {
         // MARK: Description
 
         private var description: some View {
-            Text("Set the value that must be reached before this reminder can trigger.")
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Set a threshold that triggers a reminder when reached for a specified interval.")
+
+                Button("Learn More") {
+                    viewModel.presentSheet(.heartRateThresholdInfo)
+                }
+                .font(.subheadline.weight(.semibold))
+            }
         }
 
         // MARK: Hide Keyboard Button

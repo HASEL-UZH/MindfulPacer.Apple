@@ -42,7 +42,7 @@ class CreateReminderViewModel {
 
     var isActionButtonDisabled: Bool {
         guard let lastDestination = navigationPath.last else {
-            return selectedMeasurementType == nil
+            return false
         }
 
         switch lastDestination {
@@ -152,7 +152,7 @@ class CreateReminderViewModel {
     func actionButtonTapped() {
         /// Check if we are on the first page
         guard let currentDestination = navigationPath.last else {
-            navigateTo(destination: .reminderType)
+            navigateTo(destination: .measurementType)
             return
         }
 

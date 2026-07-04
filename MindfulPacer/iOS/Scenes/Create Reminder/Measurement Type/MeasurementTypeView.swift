@@ -23,7 +23,7 @@ extension CreateReminderView {
                 Section {
                     measurementTypeSelectionList
                 } footer: {
-                    Text("Select the measurement that should trigger this reminder.")
+                    Text("Select for which measurement type you want to receive reminders to do a reflection.")
                 }
             }
             .navigationTitle("Measurement Type")

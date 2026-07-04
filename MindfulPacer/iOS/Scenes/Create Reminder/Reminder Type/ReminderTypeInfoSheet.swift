@@ -13,24 +13,61 @@ struct ReminderTypeInfoSheet: View {
             title: String(localized: "Reminder Type Information"),
             info: String(localized: "You can choose between three different Reminder types.")
         ) {
-            VStack(spacing: 12) {
-                ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
-                    ReminderCreationInfoBlock(
-                        title: reminderType.localized,
-                        systemImage: reminderType.icon,
-                        tint: reminderType.color,
-                        text: reminderType.description
-                    )
+            VStack(alignment: .leading, spacing: 16) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        reminderTypeCard(
+                            title: "Light Reminder",
+                            color: .yellow,
+                            image: Image(.lightReminder)
+                        )
+
+                        reminderTypeCard(
+                            title: "Medium Reminder",
+                            color: .orange,
+                            image: Image(.mediumReminder)
+                        )
+
+                        reminderTypeCard(
+                            title: "Strong Reminder",
+                            color: .red,
+                            image: Image(.strongReminder)
+                        )
+                    }
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.viewAligned)
 
                 Label("The strength and duration of the vibration varies by reminder type.", systemImage: "applewatch.radiowaves.left.and.right")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(16)
+    }
+
+    private func reminderTypeCard(
+        title: String,
+        color: Color,
+        image: Image
+    ) -> some View {
+        VStack(alignment: .center, spacing: 16) {
+            Label(title, systemImage: "circle")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(color)
+
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(height: 256)
+        }
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.tertiarySystemGroupedBackground))
+        }
     }
 }
 

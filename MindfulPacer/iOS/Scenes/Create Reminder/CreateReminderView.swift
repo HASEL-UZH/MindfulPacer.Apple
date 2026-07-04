@@ -90,7 +90,7 @@ struct CreateReminderView: View {
     private var rootContent: some View {
         switch viewModel.mode {
         case .create:
-            MeasurementTypeView(viewModel: viewModel)
+            intro
         case .edit:
             SummaryView(viewModel: viewModel)
         }
@@ -164,7 +164,9 @@ struct CreateReminderView: View {
 
             if viewModel.mode == .create {
                 ToolbarItem(placement: .topBarTrailing) {
-                    CloseButton()
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
         }
@@ -201,6 +203,34 @@ struct CreateReminderView: View {
         .buttonBorderShape(.capsule)
         .tint(Color("BrandPrimary"))
         .disabled(viewModel.isActionButtonDisabled)
+    }
+
+    // MARK: Intro
+
+    private var intro: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("Create Reminder")
+                    .font(.largeTitle.bold())
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top)
+
+                LabeledCard {
+                    Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
+                } label: {
+                    Label {
+                        Text(String(localized: "Reminder"))
+                    } icon: {
+                        Image(systemName: "exclamationmark.applewatch")
+                    }
+                    .foregroundStyle(Color("BrandPrimary"))
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding()
+        }
+        .background(Color(.systemGroupedBackground))
     }
     
     // MARK: Unable to Save Reminder Alert

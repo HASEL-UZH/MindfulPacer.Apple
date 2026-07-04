@@ -21,7 +21,7 @@ struct ThresholdInfoSheet: View {
                     text: """
                     The current step count, as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
 
-                    For example: Completing more than 2000 steps in 30 minutes.
+                    For example: Completing more than 2000 steps in 30 minutes.\n\nPlease note that you can set the interval on the next page.
                     """
                 )
 
@@ -30,9 +30,9 @@ struct ThresholdInfoSheet: View {
                     systemImage: "heart",
                     tint: .pink,
                     text: """
-                    The current heart rate, in beats per minute, must stay at or above the threshold for a Reminder to be triggered.
+                    The current heart rate (in beats per minute, BPM), as detected by the Apple Watch, must stay at or above the threshold for a Reminder to be triggered.
 
-                    Thresholds are highly individual. Please consult with your healthcare professional if you are unsure which value to set.
+                    Please note that such thresholds for pacing and managing your activity are highly individual. We recommend to experiment with different (and several) thresholds to identify what works best for you. One starting point could be (220 - AgeInYears) * 0.5. For example, a 40-year old person would set a threshold as (220-40)*0.5=90 beats per minute.
                     """
                 )
             }

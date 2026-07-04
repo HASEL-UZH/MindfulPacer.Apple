@@ -59,12 +59,21 @@ extension CreateReminderView {
                         selectedItem: &viewModel.selectedReminderType
                     )
                 } label: {
-                    ReminderCreationOptionLabel(
-                        title: reminderType.localized,
-                        subtitle: reminderType.description,
-                        systemImage: reminderType.icon,
-                        tint: reminderType.color
-                    )
+                    HStack(spacing: 16) {
+                        if deviceMode == .iPhoneAndWatch {
+                            reminderType.image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 128)
+                        }
+
+                        ReminderCreationOptionLabel(
+                            title: reminderType.localized,
+                            subtitle: nil,
+                            systemImage: "circle.fill",
+                            tint: reminderType.color
+                        )
+                    }
                 }
             }
         }
@@ -75,8 +84,6 @@ extension CreateReminderView {
         private var description: some View {
             if deviceMode == .iPhoneAndWatch {
                 Text("The strength and duration of the vibration varies by reminder type.")
-            } else {
-                Text("Choose how prominent this reminder should be.")
             }
         }
     }

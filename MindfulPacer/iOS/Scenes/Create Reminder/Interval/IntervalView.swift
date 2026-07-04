@@ -69,7 +69,14 @@ extension CreateReminderView {
         // MARK: Description
 
         private var description: some View {
-            Text("Choose how long the measurement needs to stay above the threshold before the reminder triggers.")
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
+
+                Button("Learn More") {
+                    viewModel.presentSheet(.intervalInfo)
+                }
+                .font(.subheadline.weight(.semibold))
+            }
         }
     }
 }

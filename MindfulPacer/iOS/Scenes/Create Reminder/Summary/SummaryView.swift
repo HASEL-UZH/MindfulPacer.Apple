@@ -25,8 +25,6 @@ extension CreateReminderView {
                     reminderType
                     threshold
                     interval
-                } footer: {
-                    Text("Review the reminder before saving it.")
                 }
 
                 if viewModel.mode == .edit {
