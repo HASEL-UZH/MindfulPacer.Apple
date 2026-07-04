@@ -278,9 +278,13 @@ private struct MissedReflectionHealthChart: View {
                 }
 
                 if let triggerSample = data.triggerSample {
-                    RuleMark(x: .value("Triggered", data.clampedTriggerDate))
-                        .foregroundStyle(Color(.systemGray3))
-                        .lineStyle(.init(lineWidth: 2))
+                    RectangleMark(
+                        xStart: .value("Triggered Start", data.triggerLineXRange.lowerBound),
+                        xEnd: .value("Triggered End", data.triggerLineXRange.upperBound),
+                        yStart: .value("Trigger Baseline", data.triggerLineYRange.lowerBound),
+                        yEnd: .value("Trigger Top", data.triggerLineYRange.upperBound)
+                    )
+                    .foregroundStyle(Color(.systemGray3))
 
                     PointMark(
                         x: .value("Triggered", data.clampedTriggerDate),
@@ -301,10 +305,45 @@ private struct MissedReflectionHealthChart: View {
                     .clipped()
             }
 
+            timelineRail
             timeLabels
         }
         .accessibilityLabel("\(data.measurementTitle) missed reflection trigger chart")
         .accessibilityValue("\(data.triggerValueText) \(data.unit), threshold \(data.thresholdText) \(data.unit)")
+    }
+
+    private var timelineRail: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+
+            ZStack(alignment: .leading) {
+                ForEach(data.timelineDotFractions.indices, id: \.self) { index in
+                    let fraction = data.timelineDotFractions[index]
+
+                    Circle()
+                        .fill(Color(.systemGray4))
+                        .frame(width: 3.5, height: 3.5)
+                        .position(
+                            x: width * fraction,
+                            y: proxy.size.height / 2
+                        )
+                }
+
+                ForEach(data.timelineTickFractions.indices, id: \.self) { index in
+                    let fraction = data.timelineTickFractions[index]
+
+                    Capsule(style: .continuous)
+                        .fill(Color(.systemGray3))
+                        .frame(width: 3.5, height: 12)
+                        .position(
+                            x: width * fraction,
+                            y: proxy.size.height / 2
+                        )
+                }
+            }
+        }
+        .frame(height: 12)
+        .padding(.horizontal, 2)
     }
 
     private var timeLabels: some View {
@@ -458,6 +497,33 @@ private struct MissedReflectionHealthChartData {
         clampedValue(threshold)
     }
 
+    var triggerLineXRange: ClosedRange<Date> {
+        let halfWidth = max(0.5, xRange.upperBound.timeIntervalSince(xRange.lowerBound) * 0.002)
+        let lowerBound = clampedTriggerDate.addingTimeInterval(-halfWidth)
+        let upperBound = clampedTriggerDate.addingTimeInterval(halfWidth)
+        return clampedDate(lowerBound)...clampedDate(upperBound)
+    }
+
+    var triggerLineYRange: ClosedRange<Double> {
+        let span = max(1, valueRange.upperBound - valueRange.lowerBound)
+        let lowerBound = valueRange.lowerBound + span * 0.07
+        return lowerBound...valueRange.upperBound
+    }
+
+    var timelineDotFractions: [CGFloat] {
+        let tickFractions = timelineTickFractions
+
+        return (0...20)
+            .map { CGFloat($0) / 20 }
+            .filter { dotFraction in
+                !tickFractions.contains { abs($0 - dotFraction) < 0.035 }
+            }
+    }
+
+    var timelineTickFractions: [CGFloat] {
+        [0, xFraction(for: clampedTriggerDate), 1]
+    }
+
     var startTimeText: String {
         xRange.lowerBound.formatted(axisTimeStyle)
     }
@@ -515,6 +581,14 @@ private struct MissedReflectionHealthChartData {
 
     func clampedValue(_ value: Double) -> Double {
         min(max(value, valueRange.lowerBound), valueRange.upperBound)
+    }
+
+    private func xFraction(for date: Date) -> CGFloat {
+        let span = xRange.upperBound.timeIntervalSince(xRange.lowerBound)
+        guard span > 0 else { return 0 }
+
+        let offset = date.timeIntervalSince(xRange.lowerBound)
+        return CGFloat(min(max(offset / span, 0), 1))
     }
 
     private static func chartSeries(
