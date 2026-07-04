@@ -415,7 +415,7 @@ private struct MissedReflectionHealthChartData {
     var thresholdExceededSamples: [MissedReflectionHealthSample] {
         guard hasThreshold else { return [] }
 
-        samples.filter { sample in
+        return samples.filter { sample in
             let isInWindow = triggerWindowStart.map { sample.date >= $0 } ?? true
             return isInWindow &&
             sample.date <= triggerDate &&
