@@ -49,7 +49,7 @@ struct MissedReflectionHealthCardConcept: View {
     private var metricSummary: some View {
         HStack(alignment: .top, spacing: 16) {
             metricColumn(
-                title: "Triggered",
+                title: "At trigger",
                 value: concept.triggerValueText,
                 unit: concept.unit,
                 color: concept.tint
@@ -104,61 +104,67 @@ private struct MissedReflectionHealthChartConcept: View {
     let concept: MissedReflectionHealthConceptData
 
     var body: some View {
-        Chart {
-            RuleMark(y: .value("Threshold", concept.threshold))
-                .foregroundStyle(Color(.systemGray3))
-                .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
-
-            ForEach(concept.samples) { sample in
-                LineMark(
-                    x: .value("Time", sample.date),
-                    y: .value(concept.measurementTitle, sample.value)
-                )
-                .foregroundStyle(concept.tint)
-                .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                .interpolationMethod(.catmullRom)
-            }
-
-            if let triggerSample = concept.triggerSample {
-                RuleMark(x: .value("Triggered", concept.triggerDate))
+        VStack(spacing: 8) {
+            Chart {
+                RuleMark(y: .value("Threshold", concept.threshold))
                     .foregroundStyle(Color(.systemGray3))
-                    .lineStyle(.init(lineWidth: 2))
+                    .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
 
-                PointMark(
-                    x: .value("Triggered", triggerSample.date),
-                    y: .value(concept.measurementTitle, triggerSample.value)
-                )
-                .foregroundStyle(concept.tint)
-                .symbolSize(56)
-            }
-        }
-        .chartXScale(domain: concept.dayRange)
-        .chartYScale(domain: concept.valueRange)
-        .chartXAxis {
-            AxisMarks(values: concept.axisDates) { axisValue in
-                AxisTick()
-                    .foregroundStyle(Color(.systemGray3))
+                ForEach(concept.samples) { sample in
+                    LineMark(
+                        x: .value("Time", sample.date),
+                        y: .value(concept.measurementTitle, sample.value)
+                    )
+                    .foregroundStyle(concept.tint)
+                    .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
+                }
 
-                AxisGridLine(stroke: StrokeStyle(lineWidth: 0, dash: [1, 10]))
-                    .foregroundStyle(Color(.systemGray4))
+                if let triggerSample = concept.triggerSample {
+                    RuleMark(x: .value("Triggered", concept.triggerDate))
+                        .foregroundStyle(Color(.systemGray3))
+                        .lineStyle(.init(lineWidth: 2))
 
-                if let date = axisValue.as(Date.self) {
-                    AxisValueLabel {
-                        Text(date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute()))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
+                    PointMark(
+                        x: .value("Triggered", triggerSample.date),
+                        y: .value(concept.measurementTitle, triggerSample.value)
+                    )
+                    .foregroundStyle(concept.tint)
+                    .symbolSize(56)
                 }
             }
-        }
-        .chartYAxis(.hidden)
-        .chartLegend(.hidden)
-        .chartPlotStyle { plotArea in
-            plotArea
-                .background(.clear)
+            .chartXScale(domain: concept.dayRange)
+            .chartYScale(domain: concept.valueRange)
+            .chartXAxis(.hidden)
+            .chartYAxis(.hidden)
+            .chartLegend(.hidden)
+            .chartPlotStyle { plotArea in
+                plotArea
+                    .background(.clear)
+            }
+
+            axisLabels
         }
         .accessibilityLabel("\(concept.measurementTitle) missed reflection trigger chart")
         .accessibilityValue("\(concept.triggerValueText) \(concept.unit), threshold \(concept.thresholdText) \(concept.unit)")
+    }
+
+    private var axisLabels: some View {
+        HStack(spacing: 12) {
+            Text(concept.startTimeText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(concept.triggerTimeText)
+                .frame(maxWidth: .infinity, alignment: .center)
+
+            Text(concept.endTimeText)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .monospacedDigit()
+        .lineLimit(1)
+        .minimumScaleFactor(0.85)
     }
 }
 
@@ -192,8 +198,16 @@ private struct MissedReflectionHealthConceptData {
         dayStart...dayEnd
     }
 
-    var axisDates: [Date] {
-        [dayStart, triggerDate, dayEnd]
+    var startTimeText: String {
+        dayStart.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute())
+    }
+
+    var triggerTimeText: String {
+        triggerDate.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute())
+    }
+
+    var endTimeText: String {
+        "24:00"
     }
 
     var valueRange: ClosedRange<Double> {
