@@ -239,6 +239,8 @@ private struct MissedReflectionHealthCard<Actions: View>: View {
 
 private struct MissedReflectionHealthChart: View {
     let data: MissedReflectionHealthChartData
+    private let plotHeight: CGFloat = 166
+    private let timestampHeight: CGFloat = 18
 
     var body: some View {
         VStack(spacing: 6) {
@@ -255,7 +257,7 @@ private struct MissedReflectionHealthChart: View {
 
                 RuleMark(y: .value("Threshold", data.clampedThreshold))
                     .foregroundStyle(Color(.systemGray3))
-                    .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
+                    .lineStyle(.init(lineWidth: 2, dash: [4, 4]))
 
                 ForEach(data.thresholdExceededSamples) { sample in
                     AreaMark(
@@ -273,7 +275,7 @@ private struct MissedReflectionHealthChart: View {
                         y: .value(data.measurementTitle, data.clampedValue(sample.value))
                     )
                     .foregroundStyle(data.tint)
-                    .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                    .lineStyle(.init(lineWidth: 2, lineCap: .round, lineJoin: .round))
                     .interpolationMethod(.monotone)
                 }
 
@@ -304,9 +306,12 @@ private struct MissedReflectionHealthChart: View {
                     .background(.clear)
                     .clipped()
             }
+            .frame(height: plotHeight)
 
             timeLabels
+                .frame(height: timestampHeight)
         }
+        .frame(height: plotHeight + timestampHeight + 6, alignment: .top)
         .accessibilityLabel("\(data.measurementTitle) missed reflection trigger chart")
         .accessibilityValue("\(data.triggerValueText) \(data.unit), threshold \(data.thresholdText) \(data.unit)")
     }
@@ -451,10 +456,26 @@ private struct MissedReflectionHealthChartData {
 
     var valueRange: ClosedRange<Double> {
         let values = samples.map(\.value) + [threshold]
-        let minValue = values.min() ?? 0
-        let maxValue = values.max() ?? 1
-        let padding = max(8, (maxValue - minValue) * 0.18)
-        return max(0, minValue - padding)...(maxValue + padding)
+        let minValue = values.min() ?? threshold
+        let maxValue = values.max() ?? threshold
+        let thresholdPositionFromBottom = 0.3
+        let belowThreshold = max(1, threshold - minValue)
+        let aboveThreshold = max(1, maxValue - threshold)
+        let minimumSpan = max(12, abs(threshold) * 0.2)
+        let span = max(
+            minimumSpan,
+            belowThreshold / thresholdPositionFromBottom,
+            aboveThreshold / (1 - thresholdPositionFromBottom)
+        )
+        let lowerBound = threshold - span * thresholdPositionFromBottom
+        let upperBound = threshold + span * (1 - thresholdPositionFromBottom)
+
+        if lowerBound < 0 {
+            let adjustedUpperBound = max(upperBound, threshold / thresholdPositionFromBottom)
+            return 0...adjustedUpperBound
+        }
+
+        return lowerBound...upperBound
     }
 
     var clampedThreshold: Double {
