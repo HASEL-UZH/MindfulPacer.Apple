@@ -258,7 +258,7 @@ private struct MissedReflectionHealthChart: View {
                 if data.hasThreshold {
                     RuleMark(y: .value("Threshold", data.clampedThreshold))
                         .foregroundStyle(Color(.systemGray3))
-                        .lineStyle(.init(lineWidth: 2, dash: [4, 4]))
+                        .lineStyle(.init(lineWidth: 3, dash: [4, 4]))
                 }
 
                 if data.hasThreshold {
@@ -279,7 +279,7 @@ private struct MissedReflectionHealthChart: View {
                         y: .value(data.measurementTitle, data.clampedValue(sample.value))
                     )
                     .foregroundStyle(data.tint)
-                    .lineStyle(.init(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .lineStyle(.init(lineWidth: 3, lineCap: .round, lineJoin: .round))
                     .interpolationMethod(.monotone)
                 }
 
