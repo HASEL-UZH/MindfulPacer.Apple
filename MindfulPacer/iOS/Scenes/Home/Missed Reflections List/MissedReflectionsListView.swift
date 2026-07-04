@@ -241,128 +241,150 @@ private struct MissedReflectionHealthChart: View {
     let data: MissedReflectionHealthChartData
 
     var body: some View {
-        VStack(spacing: 2) {
-            Chart {
-                if let triggerWindowRange = data.visibleTriggerWindowRange {
-                    RectangleMark(
-                        xStart: .value("Trigger Window Start", triggerWindowRange.lowerBound),
-                        xEnd: .value("Trigger Window End", triggerWindowRange.upperBound),
-                        yStart: .value("Threshold", data.clampedThreshold),
-                        yEnd: .value("Peak", data.valueRange.upperBound)
-                    )
-                    .foregroundStyle(data.tint.opacity(0.08))
-                }
-
-                RuleMark(y: .value("Threshold", data.clampedThreshold))
-                    .foregroundStyle(Color(.systemGray3))
-                    .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
-
-                ForEach(data.thresholdExceededSamples) { sample in
-                    AreaMark(
-                        x: .value("Time", sample.date),
-                        yStart: .value("Threshold", data.clampedThreshold),
-                        yEnd: .value("Above Threshold", data.clampedValue(sample.value))
-                    )
-                    .foregroundStyle(data.tint.opacity(0.18))
-                    .interpolationMethod(.monotone)
-                }
-
-                ForEach(data.samples) { sample in
-                    LineMark(
-                        x: .value("Time", sample.date),
-                        y: .value(data.measurementTitle, data.clampedValue(sample.value))
-                    )
-                    .foregroundStyle(data.tint)
-                    .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                    .interpolationMethod(.monotone)
-                }
-
-                if let triggerSample = data.triggerSample {
-                    RectangleMark(
-                        xStart: .value("Triggered Start", data.triggerLineXRange.lowerBound),
-                        xEnd: .value("Triggered End", data.triggerLineXRange.upperBound),
-                        yStart: .value("Trigger Baseline", data.triggerLineYRange.lowerBound),
-                        yEnd: .value("Trigger Top", data.triggerLineYRange.upperBound)
-                    )
-                    .foregroundStyle(Color(.systemGray3))
-
-                    PointMark(
-                        x: .value("Triggered", data.clampedTriggerDate),
-                        y: .value(data.measurementTitle, data.clampedValue(triggerSample.value))
-                    )
-                    .foregroundStyle(data.tint)
-                    .symbolSize(56)
-                }
-            }
-            .chartXScale(domain: data.xRange)
-            .chartYScale(domain: data.valueRange)
-            .chartXAxis(.hidden)
-            .chartYAxis(.hidden)
-            .chartLegend(.hidden)
-            .chartPlotStyle { plotArea in
-                plotArea
-                    .background(.clear)
-                    .clipped()
+        Chart {
+            if let triggerWindowRange = data.visibleTriggerWindowRange {
+                RectangleMark(
+                    xStart: .value("Trigger Window Start", triggerWindowRange.lowerBound),
+                    xEnd: .value("Trigger Window End", triggerWindowRange.upperBound),
+                    yStart: .value("Threshold", data.clampedThreshold),
+                    yEnd: .value("Peak", data.valueRange.upperBound)
+                )
+                .foregroundStyle(data.tint.opacity(0.08))
             }
 
-            timelineRail
-            timeLabels
+            RuleMark(y: .value("Threshold", data.clampedThreshold))
+                .foregroundStyle(Color(.systemGray3))
+                .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
+
+            ForEach(data.thresholdExceededSamples) { sample in
+                AreaMark(
+                    x: .value("Time", sample.date),
+                    yStart: .value("Threshold", data.clampedThreshold),
+                    yEnd: .value("Above Threshold", data.clampedValue(sample.value))
+                )
+                .foregroundStyle(data.tint.opacity(0.18))
+                .interpolationMethod(.monotone)
+            }
+
+            ForEach(data.samples) { sample in
+                LineMark(
+                    x: .value("Time", sample.date),
+                    y: .value(data.measurementTitle, data.clampedValue(sample.value))
+                )
+                .foregroundStyle(data.tint)
+                .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                .interpolationMethod(.monotone)
+            }
+
+            if let triggerSample = data.triggerSample {
+                RectangleMark(
+                    xStart: .value("Triggered Start", data.triggerLineXRange.lowerBound),
+                    xEnd: .value("Triggered End", data.triggerLineXRange.upperBound),
+                    yStart: .value("Trigger Baseline", data.triggerLineYRange.lowerBound),
+                    yEnd: .value("Trigger Top", data.triggerLineYRange.upperBound)
+                )
+                .foregroundStyle(Color(.systemGray3))
+
+                PointMark(
+                    x: .value("Triggered", data.clampedTriggerDate),
+                    y: .value(data.measurementTitle, data.clampedValue(triggerSample.value))
+                )
+                .foregroundStyle(data.tint)
+                .symbolSize(56)
+            }
+        }
+        .chartXScale(domain: data.xRange)
+        .chartYScale(domain: data.valueRange)
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
+        .chartLegend(.hidden)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .background(.clear)
+                .clipped()
+        }
+        .chartOverlay { proxy in
+            GeometryReader { geometry in
+                if let plotFrame = proxy.plotFrame {
+                    let frame = geometry[plotFrame]
+                    timelineOverlay(proxy: proxy, plotFrame: frame)
+                }
+            }
         }
         .accessibilityLabel("\(data.measurementTitle) missed reflection trigger chart")
         .accessibilityValue("\(data.triggerValueText) \(data.unit), threshold \(data.thresholdText) \(data.unit)")
     }
 
-    private var timelineRail: some View {
-        GeometryReader { proxy in
-            let width = proxy.size.width
-
-            ZStack(alignment: .leading) {
-                ForEach(data.timelineDotFractions.indices, id: \.self) { index in
-                    let fraction = data.timelineDotFractions[index]
-
+    private func timelineOverlay(
+        proxy: ChartProxy,
+        plotFrame: CGRect
+    ) -> some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(data.timelineDots) { dot in
+                if let position = proxy.position(forX: dot.date) {
                     Circle()
                         .fill(Color(.systemGray4))
                         .frame(width: 3.5, height: 3.5)
                         .position(
-                            x: width * fraction,
-                            y: proxy.size.height / 2
+                            x: plotFrame.minX + position,
+                            y: plotFrame.maxY - 22
                         )
                 }
+            }
 
-                ForEach(data.timelineTickFractions.indices, id: \.self) { index in
-                    let fraction = data.timelineTickFractions[index]
-
+            ForEach(data.timelineTicks) { tick in
+                if let position = proxy.position(forX: tick.date) {
                     Capsule(style: .continuous)
                         .fill(Color(.systemGray3))
                         .frame(width: 3.5, height: 12)
                         .position(
-                            x: width * fraction,
-                            y: proxy.size.height / 2
+                            x: plotFrame.minX + position,
+                            y: plotFrame.maxY - 22
+                        )
+
+                    Text(tick.label)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(width: 70, alignment: tick.alignment)
+                        .position(
+                            x: plotFrame.minX + position + tick.labelOffset,
+                            y: plotFrame.maxY - 4
                         )
                 }
             }
         }
-        .frame(height: 12)
-        .padding(.horizontal, 2)
+    }
+}
+
+// MARK: - MissedReflectionTimelineDot
+
+private struct MissedReflectionTimelineDot: Identifiable {
+    let id: Int
+    let date: Date
+}
+
+// MARK: - MissedReflectionTimelineTick
+
+private struct MissedReflectionTimelineTick: Identifiable {
+    let id: String
+    let date: Date
+    let label: String
+    let alignment: Alignment
+    let labelOffset: CGFloat
+
+    static func leading(date: Date, label: String) -> Self {
+        .init(id: "start", date: date, label: label, alignment: .leading, labelOffset: 35)
     }
 
-    private var timeLabels: some View {
-        HStack(spacing: 8) {
-            Text(data.startTimeText)
-                .frame(maxWidth: .infinity, alignment: .leading)
+    static func center(date: Date, label: String) -> Self {
+        .init(id: "trigger", date: date, label: label, alignment: .center, labelOffset: 0)
+    }
 
-            Text(data.triggerTimeText)
-                .frame(maxWidth: .infinity, alignment: .center)
-
-            Text(data.endTimeText)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .font(.caption2.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .monospacedDigit()
-        .lineLimit(1)
-        .minimumScaleFactor(0.7)
-        .padding(.horizontal, 2)
+    static func trailing(date: Date, label: String) -> Self {
+        .init(id: "end", date: date, label: label, alignment: .trailing, labelOffset: -35)
     }
 }
 
@@ -510,18 +532,30 @@ private struct MissedReflectionHealthChartData {
         return lowerBound...valueRange.upperBound
     }
 
-    var timelineDotFractions: [CGFloat] {
-        let tickFractions = timelineTickFractions
+    var timelineDots: [MissedReflectionTimelineDot] {
+        let span = xRange.upperBound.timeIntervalSince(xRange.lowerBound)
+        guard span > 0 else { return [] }
 
-        return (0...20)
-            .map { CGFloat($0) / 20 }
-            .filter { dotFraction in
-                !tickFractions.contains { abs($0 - dotFraction) < 0.035 }
+        return (0...20).compactMap { index in
+            let fraction = Double(index) / 20
+            let date = xRange.lowerBound.addingTimeInterval(span * fraction)
+
+            guard !timelineTicks.contains(where: { tick in
+                abs(tick.date.timeIntervalSince(date)) < span * 0.035
+            }) else {
+                return nil
             }
+
+            return MissedReflectionTimelineDot(id: index, date: date)
+        }
     }
 
-    var timelineTickFractions: [CGFloat] {
-        [0, xFraction(for: clampedTriggerDate), 1]
+    var timelineTicks: [MissedReflectionTimelineTick] {
+        [
+            .leading(date: xRange.lowerBound, label: startTimeText),
+            .center(date: clampedTriggerDate, label: triggerTimeText),
+            .trailing(date: xRange.upperBound, label: endTimeText)
+        ]
     }
 
     var startTimeText: String {
@@ -581,14 +615,6 @@ private struct MissedReflectionHealthChartData {
 
     func clampedValue(_ value: Double) -> Double {
         min(max(value, valueRange.lowerBound), valueRange.upperBound)
-    }
-
-    private func xFraction(for date: Date) -> CGFloat {
-        let span = xRange.upperBound.timeIntervalSince(xRange.lowerBound)
-        guard span > 0 else { return 0 }
-
-        let offset = date.timeIntervalSince(xRange.lowerBound)
-        return CGFloat(min(max(offset / span, 0), 1))
     }
 
     private static func chartSeries(
