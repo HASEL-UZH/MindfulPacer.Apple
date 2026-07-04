@@ -34,15 +34,6 @@ extension CreateReminderView {
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
 
-                if viewModel.mode == .create, viewModel.showActionButton {
-                    ReminderCreationActionSection(
-                        title: viewModel.actionButtonTitle,
-                        isDisabled: viewModel.isActionButtonDisabled
-                    ) {
-                        viewModel.actionButtonTapped()
-                    }
-                }
-
                 if viewModel.mode == .edit {
                     Section {
                         deleteButton
@@ -51,6 +42,16 @@ extension CreateReminderView {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle(viewModel.mode == .edit ? viewModel.summaryViewTitle : "")
+            .safeAreaInset(edge: .bottom) {
+                if viewModel.mode == .create, viewModel.showActionButton {
+                    ReminderCreationActionBar(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
+            }
             .toolbar {
                 if viewModel.mode == .create {
                     ToolbarItem(placement: .destructiveAction) {

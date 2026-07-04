@@ -163,33 +163,12 @@ struct CreateReminderView: View {
 
     @ViewBuilder
     private var actionButton: some View {
-        Group {
-            if #available(iOS 26.0, *) {
-                actionButtonBase
-                    .buttonStyle(.glassProminent)
-            } else {
-                actionButtonBase
-                    .buttonStyle(.borderedProminent)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-    }
-
-    private var actionButtonBase: some View {
-        Button {
+        ReminderCreationActionBar(
+            title: viewModel.actionButtonTitle,
+            isDisabled: viewModel.isActionButtonDisabled
+        ) {
             viewModel.actionButtonTapped()
-        } label: {
-            Text(viewModel.actionButtonTitle)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
         }
-        .controlSize(.large)
-        .buttonBorderShape(.capsule)
-        .tint(Color("BrandPrimary"))
-        .disabled(viewModel.isActionButtonDisabled)
     }
 
     // MARK: Intro
@@ -371,22 +350,21 @@ struct ReminderCreationOptionLabel: View {
     }
 }
 
-struct ReminderCreationActionSection: View {
+struct ReminderCreationActionBar: View {
     let title: String
     let isDisabled: Bool
     let action: () -> Void
 
     var body: some View {
-        Section {
-            ReminderCreationActionButton(
-                title: title,
-                isDisabled: isDisabled,
-                action: action
-            )
-        }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 16, leading: 32, bottom: 16, trailing: 32))
-        .listRowSeparator(.hidden)
+        ReminderCreationActionButton(
+            title: title,
+            isDisabled: isDisabled,
+            action: action
+        )
+        .padding(.horizontal)
+        .padding(.horizontal)
+        .padding(.top, 8)
+        .padding(.bottom, 8)
     }
 }
 

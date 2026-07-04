@@ -40,9 +40,13 @@ extension CreateReminderView {
                     description
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
-
+            }
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
+            .scrollDismissesKeyboard(.interactively)
+            .safeAreaInset(edge: .bottom) {
                 if viewModel.showActionButton {
-                    ReminderCreationActionSection(
+                    ReminderCreationActionBar(
                         title: viewModel.actionButtonTitle,
                         isDisabled: viewModel.isActionButtonDisabled
                     ) {
@@ -50,9 +54,6 @@ extension CreateReminderView {
                     }
                 }
             }
-            .scrollContentBackground(.hidden)
-            .navigationTitle("")
-            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 if viewModel.mode == .create {
                     ToolbarItem(placement: .destructiveAction) {
