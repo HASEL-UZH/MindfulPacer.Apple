@@ -20,6 +20,11 @@ extension CreateReminderView {
         
         var body: some View {
             List {
+                ReminderCreationListHero(
+                    systemImage: viewModel.selectedMeasurementType?.icon ?? "checkmark.circle",
+                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                )
+
                 Section {
                     measurementType
                     reminderType

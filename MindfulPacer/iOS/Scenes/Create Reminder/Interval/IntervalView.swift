@@ -20,6 +20,11 @@ extension CreateReminderView {
 
         var body: some View {
             List {
+                ReminderCreationListHero(
+                    systemImage: viewModel.selectedInterval?.icon ?? "timer",
+                    tint: Color("BrandPrimary")
+                )
+
                 Section {
                     intervalSelectionList
                 } footer: {

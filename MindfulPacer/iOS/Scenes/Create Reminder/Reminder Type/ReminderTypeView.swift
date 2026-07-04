@@ -27,6 +27,11 @@ extension CreateReminderView {
         
         var body: some View {
             List {
+                ReminderCreationListHero(
+                    systemImage: viewModel.selectedReminderType?.icon ?? "applewatch.radiowaves.left.and.right",
+                    tint: viewModel.selectedReminderType?.color ?? Color("BrandPrimary")
+                )
+
                 Section {
                     reminderTypeSelectionList
                 } footer: {

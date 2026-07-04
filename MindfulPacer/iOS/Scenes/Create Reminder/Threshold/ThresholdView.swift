@@ -28,6 +28,11 @@ extension CreateReminderView {
 
         var body: some View {
             Form {
+                ReminderCreationListHero(
+                    systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.line.flattrend.xyaxis",
+                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                )
+
                 Section {
                     thresholdInput
                 } footer: {

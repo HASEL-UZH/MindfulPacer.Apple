@@ -20,6 +20,11 @@ extension CreateReminderView {
 
         var body: some View {
             List {
+                ReminderCreationListHero(
+                    systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.xyaxis.line",
+                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                )
+
                 Section {
                     measurementTypeSelectionList
                 } footer: {

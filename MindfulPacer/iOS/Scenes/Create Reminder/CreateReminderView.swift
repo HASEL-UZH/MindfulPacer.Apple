@@ -163,10 +163,8 @@ struct CreateReminderView: View {
             }
 
             if viewModel.mode == .create {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+                ToolbarItem(placement: .destructiveAction) {
+                    CloseButton()
                 }
             }
         }
@@ -208,29 +206,35 @@ struct CreateReminderView: View {
     // MARK: Intro
 
     private var intro: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+        VStack {
+            VStack(spacing: 24) {
+                ReminderCreationHeroIcon(
+                    systemImage: "exclamationmark.applewatch",
+                    tint: Color("BrandPrimary"),
+                    size: 128
+                )
+
                 Text("Create Reminder")
-                    .font(.largeTitle.bold())
+                    .font(.title3.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top)
 
-                LabeledCard {
+                Label {
                     Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
-                } label: {
-                    Label {
-                        Text(String(localized: "Reminder"))
-                    } icon: {
-                        Image(systemName: "exclamationmark.applewatch")
-                    }
-                    .foregroundStyle(Color("BrandPrimary"))
+                } icon: {
+                    Image(systemName: "chart.xyaxis.line")
+                        .resizable()
+                        .foregroundStyle(Color("BrandPrimary"))
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
                 }
-
-                Spacer(minLength: 24)
+                .labelIconToTitleSpacing(16)
             }
-            .padding()
+            .padding(.top, 32)
+            .padding(.horizontal)
+            .padding(.horizontal)
+
+            Spacer()
         }
-        .background(Color(.systemGroupedBackground))
     }
     
     // MARK: Unable to Save Reminder Alert
@@ -294,14 +298,47 @@ struct ReminderCreationSelectionRow<Content: View>: View {
                 content()
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? tint : .secondary)
+                Image(systemName: "checkmark")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(tint)
+                    .opacity(isSelected ? 1 : 0)
                     .contentTransition(.symbolEffect(.replace))
             }
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct ReminderCreationHeroIcon: View {
+    let systemImage: String
+    let tint: Color
+    var size: CGFloat = 88
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .resizable()
+            .symbolRenderingMode(.hierarchical)
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .foregroundStyle(tint)
+            .accessibilityHidden(true)
+    }
+}
+
+struct ReminderCreationListHero: View {
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        Section {
+            ReminderCreationHeroIcon(systemImage: systemImage, tint: tint)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
     }
 }
 
