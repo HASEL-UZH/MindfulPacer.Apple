@@ -106,9 +106,27 @@ private struct MissedReflectionHealthChartConcept: View {
     var body: some View {
         VStack(spacing: 8) {
             Chart {
+                RectangleMark(
+                    xStart: .value("Trigger Window Start", concept.triggerWindowStart),
+                    xEnd: .value("Trigger Window End", concept.triggerDate),
+                    yStart: .value("Threshold", concept.threshold),
+                    yEnd: .value("Peak", concept.valueRange.upperBound)
+                )
+                .foregroundStyle(concept.tint.opacity(0.08))
+
                 RuleMark(y: .value("Threshold", concept.threshold))
                     .foregroundStyle(Color(.systemGray3))
                     .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
+
+                ForEach(concept.thresholdExceededSamples) { sample in
+                    AreaMark(
+                        x: .value("Time", sample.date),
+                        yStart: .value("Threshold", concept.threshold),
+                        yEnd: .value("Above Threshold", sample.value)
+                    )
+                    .foregroundStyle(concept.tint.opacity(0.18))
+                    .interpolationMethod(.catmullRom)
+                }
 
                 ForEach(concept.samples) { sample in
                     LineMark(
@@ -178,6 +196,7 @@ private struct MissedReflectionHealthConceptData {
     let threshold: Double
     let summary: String
     let samples: [MissedReflectionHealthConceptSample]
+    let triggerWindowStart: Date
     let triggerDate: Date
 
     var triggerSample: MissedReflectionHealthConceptSample? {
@@ -192,6 +211,14 @@ private struct MissedReflectionHealthConceptData {
 
     var thresholdText: String {
         formattedValue(threshold)
+    }
+
+    var thresholdExceededSamples: [MissedReflectionHealthConceptSample] {
+        samples.filter { sample in
+            sample.date >= triggerWindowStart &&
+            sample.date <= triggerDate &&
+            sample.value >= threshold
+        }
     }
 
     var dayRange: ClosedRange<Date> {
@@ -233,6 +260,7 @@ private struct MissedReflectionHealthConceptData {
         let calendar = Calendar.current
         let dayStart = calendar.startOfDay(for: .now)
         let triggerDate = calendar.date(bySettingHour: 17, minute: 0, second: 0, of: dayStart) ?? .now
+        let triggerWindowStart = triggerDate.addingTimeInterval(-2 * 60)
 
         return MissedReflectionHealthConceptData(
             measurementTitle: "Heart Rate",
@@ -248,12 +276,18 @@ private struct MissedReflectionHealthConceptData {
                 .init(hour: 9.0, value: 48, dayStart: dayStart),
                 .init(hour: 11.5, value: 51, dayStart: dayStart),
                 .init(hour: 12.5, value: 58, dayStart: dayStart),
-                .init(hour: 13.3, value: 62, dayStart: dayStart),
-                .init(hour: 14.1, value: 60, dayStart: dayStart),
-                .init(hour: 15.2, value: 67, dayStart: dayStart),
-                .init(hour: 16.0, value: 70, dayStart: dayStart),
-                .init(hour: 17.0, value: 72, dayStart: dayStart)
+                .init(hour: 13.3, value: 54, dayStart: dayStart),
+                .init(hour: 14.1, value: 51, dayStart: dayStart),
+                .init(hour: 15.2, value: 49, dayStart: dayStart),
+                .init(hour: 16.90, value: 50, dayStart: dayStart),
+                .init(hour: 16.95, value: 53, dayStart: dayStart),
+                .init(hour: 16.97, value: 58, dayStart: dayStart),
+                .init(hour: 16.985, value: 66, dayStart: dayStart),
+                .init(hour: 17.0, value: 72, dayStart: dayStart),
+                .init(hour: 17.04, value: 63, dayStart: dayStart),
+                .init(hour: 17.08, value: 52, dayStart: dayStart)
             ],
+            triggerWindowStart: triggerWindowStart,
             triggerDate: triggerDate
         )
     }
