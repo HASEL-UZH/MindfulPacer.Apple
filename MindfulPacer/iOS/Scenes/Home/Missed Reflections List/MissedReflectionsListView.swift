@@ -241,87 +241,79 @@ private struct MissedReflectionHealthChart: View {
     let data: MissedReflectionHealthChartData
 
     var body: some View {
-        VStack(spacing: 8) {
-            Chart {
-                if let windowStart = data.triggerWindowStart {
-                    RectangleMark(
-                        xStart: .value("Trigger Window Start", windowStart),
-                        xEnd: .value("Trigger Window End", data.triggerDate),
-                        yStart: .value("Threshold", data.threshold),
-                        yEnd: .value("Peak", data.valueRange.upperBound)
-                    )
-                    .foregroundStyle(data.tint.opacity(0.08))
-                }
+        Chart {
+            if let triggerWindowRange = data.visibleTriggerWindowRange {
+                RectangleMark(
+                    xStart: .value("Trigger Window Start", triggerWindowRange.lowerBound),
+                    xEnd: .value("Trigger Window End", triggerWindowRange.upperBound),
+                    yStart: .value("Threshold", data.clampedThreshold),
+                    yEnd: .value("Peak", data.valueRange.upperBound)
+                )
+                .foregroundStyle(data.tint.opacity(0.08))
+            }
 
-                RuleMark(y: .value("Threshold", data.threshold))
+            RuleMark(y: .value("Threshold", data.clampedThreshold))
+                .foregroundStyle(Color(.systemGray3))
+                .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
+
+            ForEach(data.thresholdExceededSamples) { sample in
+                AreaMark(
+                    x: .value("Time", sample.date),
+                    yStart: .value("Threshold", data.clampedThreshold),
+                    yEnd: .value("Above Threshold", data.clampedValue(sample.value))
+                )
+                .foregroundStyle(data.tint.opacity(0.18))
+                .interpolationMethod(.monotone)
+            }
+
+            ForEach(data.samples) { sample in
+                LineMark(
+                    x: .value("Time", sample.date),
+                    y: .value(data.measurementTitle, data.clampedValue(sample.value))
+                )
+                .foregroundStyle(data.tint)
+                .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                .interpolationMethod(.monotone)
+            }
+
+            if let triggerSample = data.triggerSample {
+                RuleMark(x: .value("Triggered", data.clampedTriggerDate))
                     .foregroundStyle(Color(.systemGray3))
-                    .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
+                    .lineStyle(.init(lineWidth: 2))
 
-                ForEach(data.thresholdExceededSamples) { sample in
-                    AreaMark(
-                        x: .value("Time", sample.date),
-                        yStart: .value("Threshold", data.threshold),
-                        yEnd: .value("Above Threshold", sample.value)
-                    )
-                    .foregroundStyle(data.tint.opacity(0.18))
-                    .interpolationMethod(.catmullRom)
-                }
-
-                ForEach(data.samples) { sample in
-                    LineMark(
-                        x: .value("Time", sample.date),
-                        y: .value(data.measurementTitle, sample.value)
-                    )
-                    .foregroundStyle(data.tint)
-                    .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                    .interpolationMethod(.catmullRom)
-                }
-
-                if let triggerSample = data.triggerSample {
-                    RuleMark(x: .value("Triggered", data.triggerDate))
-                        .foregroundStyle(Color(.systemGray3))
-                        .lineStyle(.init(lineWidth: 2))
-
-                    PointMark(
-                        x: .value("Triggered", triggerSample.date),
-                        y: .value(data.measurementTitle, triggerSample.value)
-                    )
-                    .foregroundStyle(data.tint)
-                    .symbolSize(56)
+                PointMark(
+                    x: .value("Triggered", data.clampedDate(triggerSample.date)),
+                    y: .value(data.measurementTitle, data.clampedValue(triggerSample.value))
+                )
+                .foregroundStyle(data.tint)
+                .symbolSize(56)
+            }
+        }
+        .chartXScale(domain: data.xRange)
+        .chartYScale(domain: data.valueRange)
+        .chartXAxis {
+            AxisMarks(position: .bottom, values: data.axisDates) { value in
+                if let date = value.as(Date.self) {
+                    AxisValueLabel(anchor: .top) {
+                        Text(data.axisLabel(for: date))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
                 }
             }
-            .chartXScale(domain: data.xRange)
-            .chartYScale(domain: data.valueRange)
-            .chartXAxis(.hidden)
-            .chartYAxis(.hidden)
-            .chartLegend(.hidden)
-            .chartPlotStyle { plotArea in
-                plotArea
-                    .background(.clear)
-            }
-
-            axisLabels
+        }
+        .chartYAxis(.hidden)
+        .chartLegend(.hidden)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .background(.clear)
+                .clipped()
         }
         .accessibilityLabel("\(data.measurementTitle) missed reflection trigger chart")
         .accessibilityValue("\(data.triggerValueText) \(data.unit), threshold \(data.thresholdText) \(data.unit)")
-    }
-
-    private var axisLabels: some View {
-        HStack(spacing: 12) {
-            Text(data.startTimeText)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text(data.triggerTimeText)
-                .frame(maxWidth: .infinity, alignment: .center)
-
-            Text(data.endTimeText)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .monospacedDigit()
-        .lineLimit(1)
-        .minimumScaleFactor(0.85)
     }
 }
 
@@ -372,6 +364,10 @@ private struct MissedReflectionHealthChartData {
         reflection.date
     }
 
+    var clampedTriggerDate: Date {
+        clampedDate(triggerDate)
+    }
+
     var triggerSample: MissedReflectionHealthSample? {
         samples.min { lhs, rhs in
             abs(lhs.date.timeIntervalSince(triggerDate)) < abs(rhs.date.timeIntervalSince(triggerDate))
@@ -397,6 +393,16 @@ private struct MissedReflectionHealthChartData {
         }
     }
 
+    var visibleTriggerWindowRange: ClosedRange<Date>? {
+        guard let triggerWindowStart else { return nil }
+
+        let lowerBound = clampedDate(triggerWindowStart)
+        let upperBound = clampedTriggerDate
+        guard lowerBound < upperBound else { return nil }
+
+        return lowerBound...upperBound
+    }
+
     var xRange: ClosedRange<Date> {
         guard let first = samples.first?.date, let last = samples.last?.date else {
             return triggerDate.addingTimeInterval(-60)...triggerDate.addingTimeInterval(60)
@@ -413,20 +419,32 @@ private struct MissedReflectionHealthChartData {
         let values = samples.map(\.value) + [threshold]
         let minValue = values.min() ?? 0
         let maxValue = values.max() ?? 1
-        let padding = max(5, (maxValue - minValue) * 0.12)
+        let padding = max(8, (maxValue - minValue) * 0.18)
         return max(0, minValue - padding)...(maxValue + padding)
     }
 
-    var startTimeText: String {
-        xRange.lowerBound.formatted(axisTimeStyle)
+    var clampedThreshold: Double {
+        clampedValue(threshold)
     }
 
-    var triggerTimeText: String {
-        triggerDate.formatted(axisTimeStyle)
+    var axisDates: [Date] {
+        let dates = [xRange.lowerBound, clampedTriggerDate, xRange.upperBound]
+        return dates.reduce(into: [Date]()) { result, date in
+            guard !result.contains(where: { abs($0.timeIntervalSince(date)) < 1 }) else { return }
+            result.append(date)
+        }
     }
 
-    var endTimeText: String {
-        xRange.upperBound.formatted(axisTimeStyle)
+    func axisLabel(for date: Date) -> String {
+        if abs(date.timeIntervalSince(xRange.lowerBound)) < 1 {
+            return xRange.lowerBound.formatted(axisTimeStyle)
+        }
+
+        if abs(date.timeIntervalSince(xRange.upperBound)) < 1 {
+            return xRange.upperBound.formatted(axisTimeStyle)
+        }
+
+        return triggerDate.formatted(axisTimeStyle)
     }
 
     init(reflection: Reflection) {
@@ -453,6 +471,14 @@ private struct MissedReflectionHealthChartData {
 
     private func formattedValue(_ value: Double) -> String {
         value.formatted(.number.precision(.fractionLength(0)))
+    }
+
+    func clampedDate(_ date: Date) -> Date {
+        min(max(date, xRange.lowerBound), xRange.upperBound)
+    }
+
+    func clampedValue(_ value: Double) -> Double {
+        min(max(value, valueRange.lowerBound), valueRange.upperBound)
     }
 
     private static func chartSeries(
