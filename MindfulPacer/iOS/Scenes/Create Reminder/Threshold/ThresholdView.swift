@@ -40,20 +40,31 @@ extension CreateReminderView {
                     description
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
+
+                if viewModel.showActionButton {
+                    ReminderCreationActionSection(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
-                ToolbarItem(placement: .keyboard) {
-                    hideKeyboardButton
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.heartRateThresholdInfo)
-                    } label: {
-                        Image(systemName: "info.circle")
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        if isThresholdFocused {
+                            Button {
+                                isThresholdFocused = false
+                            } label: {
+                                Image(systemName: "checkmark")
+                            }
+                        } else {
+                            CloseButton()
+                        }
                     }
                 }
             }
@@ -89,16 +100,6 @@ extension CreateReminderView {
             }
         }
 
-        // MARK: Hide Keyboard Button
-
-        private var hideKeyboardButton: some View {
-            Button {
-                isThresholdFocused = false
-            } label: {
-                Image(systemName: "keyboard.chevron.compact.down.fill")
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
     }
 }
 

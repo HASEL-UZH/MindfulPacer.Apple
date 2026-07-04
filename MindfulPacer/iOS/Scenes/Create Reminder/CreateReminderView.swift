@@ -77,11 +77,6 @@ struct CreateReminderView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            if viewModel.mode == .create, viewModel.showActionButton {
-                actionButton
-            }
-        }
     }
 
     // MARK: Root Content
@@ -161,12 +156,6 @@ struct CreateReminderView: View {
                     .disabled(viewModel.isSaveButtonDisabled)
                 }
             }
-
-            if viewModel.mode == .create {
-                ToolbarItem(placement: .destructiveAction) {
-                    CloseButton()
-                }
-            }
         }
     }
 
@@ -235,6 +224,13 @@ struct CreateReminderView: View {
             .padding(.horizontal)
 
             Spacer()
+
+            actionButton
+        }
+        .toolbar {
+            ToolbarItem(placement: .destructiveAction) {
+                CloseButton()
+            }
         }
     }
     
@@ -357,7 +353,7 @@ struct ReminderCreationOptionLabel: View {
         Label {
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.body.weight(.semibold))
+                    .font(.body)
                     .foregroundStyle(.primary)
 
                 if let subtitle {
@@ -372,6 +368,55 @@ struct ReminderCreationOptionLabel: View {
                 .foregroundStyle(tint)
                 .frame(width: 28, alignment: .center)
         }
+    }
+}
+
+struct ReminderCreationActionSection: View {
+    let title: String
+    let isDisabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Section {
+            ReminderCreationActionButton(
+                title: title,
+                isDisabled: isDisabled,
+                action: action
+            )
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 16, leading: 32, bottom: 16, trailing: 32))
+        .listRowSeparator(.hidden)
+    }
+}
+
+struct ReminderCreationActionButton: View {
+    let title: String
+    let isDisabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                button
+                    .buttonStyle(.glassProminent)
+            } else {
+                button
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+
+    private var button: some View {
+        Button(action: action) {
+            Text(title)
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+        }
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
+        .tint(Color("BrandPrimary"))
+        .disabled(isDisabled)
     }
 }
 

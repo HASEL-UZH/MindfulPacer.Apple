@@ -34,6 +34,15 @@ extension CreateReminderView {
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
 
+                if viewModel.mode == .create, viewModel.showActionButton {
+                    ReminderCreationActionSection(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
+
                 if viewModel.mode == .edit {
                     Section {
                         deleteButton
@@ -42,6 +51,13 @@ extension CreateReminderView {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle(viewModel.mode == .edit ? viewModel.summaryViewTitle : "")
+            .toolbar {
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        CloseButton()
+                    }
+                }
+            }
         }
         
         // MARK: Summary Row
@@ -91,7 +107,7 @@ extension CreateReminderView {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.subheadline.weight(.semibold))
+                        .font(.subheadline)
                         .foregroundStyle(.primary)
 
                     value()

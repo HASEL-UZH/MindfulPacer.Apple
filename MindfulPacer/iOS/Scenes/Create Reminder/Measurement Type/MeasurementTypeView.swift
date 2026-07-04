@@ -32,9 +32,25 @@ extension CreateReminderView {
                     Text("Select for which measurement type you want to receive reminders to do a reflection.")
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
+
+                if viewModel.showActionButton {
+                    ReminderCreationActionSection(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
+            .toolbar {
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        CloseButton()
+                    }
+                }
+            }
         }
 
         // MARK: Measurement Type Selection List

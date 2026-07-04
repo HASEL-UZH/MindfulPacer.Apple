@@ -16,13 +16,6 @@ extension CreateReminderView {
         
         @Bindable var viewModel: CreateReminderViewModel
         
-        @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
-        private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
-        
-        private var deviceMode: DeviceMode {
-            DeviceMode(rawValue: deviceModeRaw) ?? .iPhoneAndWatch
-        }
-        
         // MARK: Body
         
         var body: some View {
@@ -39,15 +32,22 @@ extension CreateReminderView {
                     description
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
+
+                if viewModel.showActionButton {
+                    ReminderCreationActionSection(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.reminderTypeInfo)
-                    } label: {
-                        Image(systemName: "info.circle")
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        CloseButton()
                     }
                 }
             }
@@ -67,21 +67,12 @@ extension CreateReminderView {
                         selectedItem: &viewModel.selectedReminderType
                     )
                 } label: {
-                    HStack(spacing: 16) {
-                        if deviceMode == .iPhoneAndWatch {
-                            reminderType.image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 128)
-                        }
-
-                        ReminderCreationOptionLabel(
-                            title: reminderType.localized,
-                            subtitle: nil,
-                            systemImage: "circle.fill",
-                            tint: reminderType.color
-                        )
-                    }
+                    ReminderCreationOptionLabel(
+                        title: reminderType.localized,
+                        subtitle: nil,
+                        systemImage: reminderType.icon,
+                        tint: reminderType.color
+                    )
                 }
             }
         }
@@ -90,8 +81,13 @@ extension CreateReminderView {
         
         @ViewBuilder
         private var description: some View {
-            if deviceMode == .iPhoneAndWatch {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("The strength and duration of the vibration varies by reminder type.")
+
+                Button("Learn More") {
+                    viewModel.presentSheet(.reminderTypeInfo)
+                }
+                .font(.subheadline.weight(.semibold))
             }
         }
     }

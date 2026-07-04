@@ -32,15 +32,22 @@ extension CreateReminderView {
                     description
                 }
                 .listRowBackground(Color(.quaternarySystemFill))
+
+                if viewModel.showActionButton {
+                    ReminderCreationActionSection(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.presentSheet(.intervalInfo)
-                    } label: {
-                        Image(systemName: "info.circle")
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        CloseButton()
                     }
                 }
             }
