@@ -65,7 +65,7 @@ extension HomeView {
                     Button {
                         viewModel.presentSheet(.editReflectionView(nil))
                     } label: {
-                        Label("New Reflection", systemImage: "plus.circle.fill")
+                        Label("New Reflection", systemImage: "plus")
                     }
                 }
             }
@@ -207,7 +207,7 @@ extension HomeView {
         private func reflectionRowContent(_ reflection: Reflection, isActive: Bool) -> some View {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: reflectionIconName(reflection))
-                    .symbolVariant(.circle.fill)
+                    .symbolVariant(.fill)
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(isActive ? Color("BrandPrimary") : .secondary)
                     .frame(width: 32, height: 32)

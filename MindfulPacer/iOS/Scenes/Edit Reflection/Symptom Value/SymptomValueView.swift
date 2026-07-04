@@ -64,19 +64,14 @@ private extension EditReflectionView.SymptomValueView {
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .fontWeight(.semibold)
-            }
+            CloseButton()
         }
 
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 isPresentingInfoSheet = true
             } label: {
-                Image(systemName: "info.circle")
+                Image(systemName: "info")
                     .fontWeight(.semibold)
             }
         }

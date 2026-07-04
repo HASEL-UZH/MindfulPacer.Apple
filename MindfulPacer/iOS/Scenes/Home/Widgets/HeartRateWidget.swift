@@ -41,11 +41,7 @@ extension HomeView {
         let timestamp: Date?
 
         var body: some View {
-            LabeledCard(
-                contentSpacing: 18,
-                contentPadding: 14,
-                cornerRadius: 22
-            ) {
+            LabeledCard {
                 metricContent
             } label: {
                 Label {
@@ -78,19 +74,19 @@ extension HomeView {
         private var metricContent: some View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Latest")
-                    .font(.callout.weight(.bold))
+                    .font(.callout.weight(.semibold))
                     .foregroundStyle(.secondary)
 
-                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(value ?? "--")
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .font(.title.weight(.semibold))
                         .monospacedDigit()
                         .foregroundStyle(.primary)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.62)
+                        .minimumScaleFactor(0.7)
 
                     Text(unit)
-                        .font(.caption.weight(.bold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
             }

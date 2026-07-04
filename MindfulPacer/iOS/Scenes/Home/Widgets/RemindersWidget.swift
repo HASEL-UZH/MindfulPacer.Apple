@@ -19,35 +19,44 @@ extension HomeView {
         // MARK: Body
         
         var body: some View {
-            LabeledCard {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Summary of your Reminders.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            NavigationLink(value: HomeNavigationDestination.remindersList) {
+                LabeledCard(
+                    contentSpacing: 18,
+                    contentPadding: 16,
+                    cornerRadius: 24
+                ) {
+                    VStack(alignment: .leading, spacing: 14) {
+                        if viewModel.reminders.isEmpty {
+                            EmptyStateView(
+                                image: "bell.badge.slash",
+                                title: String(localized: "No Reminders"),
+                                description: String(localized: "Tap the + button to create a reminder.")
+                            )
+                        } else {
+                            Text(remindersHeadline)
+                                .font(.headline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                    if viewModel.reminders.isEmpty {
-                        EmptyStateView(
-                            image: "bell.badge.slash",
-                            title: String(localized: "No Reminders"),
-                            description: String(localized: "Tap the + button to create a reminder.")
-                        )
-                    } else {
-                        recentRemindersSummary
+                            Divider()
+
+                            recentRemindersSummary
+                        }
+
+                        Divider()
+
+                        createReminderButton
                     }
-
-                    Divider()
-
-                    createReminderButton
+                } label: {
+                    Label("Reminders", systemImage: "bell.badge.fill")
+                        .foregroundStyle(Color("BrandPrimary"))
+                } accessory: {
+                    Image(systemName: "chevron.right")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color(.systemGray2))
                 }
-            } label: {
-                Label("Reminders", systemImage: "bell.badge.fill")
-                    .foregroundStyle(Color("BrandPrimary"))
-            } accessory: {
-                NavigationLink(value: HomeNavigationDestination.remindersList) {
-                    navigationAccessory("View")
-                }
-                .buttonStyle(.plain)
             }
+            .buttonStyle(.plain)
         }
 
         // MARK: Recent Reminders Summary
@@ -62,43 +71,60 @@ extension HomeView {
                     }
                 }
             }
-            .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
 
         private func reminderRow(_ reminder: Reminder) -> some View {
             Button {
                 viewModel.presentSheet(.createReminderView(reminder))
             } label: {
-                HStack(spacing: 12) {
+                HStack(alignment: .center, spacing: 12) {
                     Image(systemName: reminder.measurementType.icon)
                         .font(.headline)
-                        .foregroundStyle(reminder.measurementType == .heartRate ? .pink : .teal)
-                        .frame(width: 34, height: 34)
-                        .background((reminder.measurementType == .heartRate ? Color.pink : Color.teal).opacity(0.12), in: Circle())
+                        .foregroundStyle(reminder.measurementType.color)
+                        .frame(width: 28)
 
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(reminder.measurementType.localized)
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
 
-                        Text(reminder.triggerSummary)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text("\(reminder.threshold) \(reminder.thresholdUnits)")
+
+                            subtitleSeparator
+
+                            Text(reminder.interval.localized)
+
+                            subtitleSeparator
+
+                            Text(reminder.reminderType.localized)
+                                .foregroundStyle(reminder.reminderType.color)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                     }
-
-                    Spacer(minLength: 8)
-
-                    Image(systemName: "alarm")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(reminder.reminderType.color)
-                        .frame(width: 30, height: 30)
-                        .background(reminder.reminderType.color.opacity(0.12), in: Circle())
                 }
-                .padding()
+                .padding(.vertical, 10)
+                .contentShape(.rect)
             }
             .buttonStyle(.plain)
+        }
+
+        private var subtitleSeparator: some View {
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(width: 1, height: 13)
+        }
+
+        private var remindersHeadline: String {
+            switch viewModel.reminders.count {
+            case 1:
+                String(localized: "You have 1 active reminder.")
+            default:
+                String(localized: "You have \(viewModel.reminders.count) active reminders.")
+            }
         }
 
         // MARK: Create Reminder Button
@@ -107,20 +133,11 @@ extension HomeView {
             Button {
                 viewModel.presentSheet(.createReminderView(nil))
             } label: {
-                Label("Create Reminder", systemImage: "plus.circle")
+                Label("Create Reminder", systemImage: "plus.circle.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color("BrandPrimary"))
             }
             .buttonStyle(.plain)
-        }
-
-        private func navigationAccessory(_ title: String) -> some View {
-            HStack(spacing: 6) {
-                Text(title)
-                Image(systemName: "chevron.right")
-            }
-            .font(.subheadline)
-            .foregroundStyle(Color(.systemGray2))
         }
     }
 }

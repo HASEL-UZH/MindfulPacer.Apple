@@ -101,6 +101,12 @@
 		0D798B342F3934A900F7912C /* ComplicationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D798B332F3934A900F7912C /* ComplicationKeys.swift */; };
 		0D798B352F3934A900F7912C /* ComplicationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D798B332F3934A900F7912C /* ComplicationKeys.swift */; };
 		0D7BA38A2CDD60700086A47F /* ModeOfUseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */; };
+		0D7F10012F60000000ABC001 /* FilterSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */; };
+		0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */; };
+		0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10102F61000000ABC001 /* LabeledCard.swift */; };
+		0D7F10212F62000000ABC001 /* ExpandableMetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */; };
+		0D7F10312F63000000ABC001 /* EntryFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10302F63000000ABC001 /* EntryFormSheet.swift */; };
+		0D7F10412F64000000ABC001 /* MissedReflectionTrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10402F64000000ABC001 /* MissedReflectionTrendCard.swift */; };
 		0D8203B42C6E9D680023EE2D /* IconLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B32C6E9D680023EE2D /* IconLabel.swift */; };
 		0D8203B62C6EA3D20023EE2D /* InfoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8203B52C6EA3D20023EE2D /* InfoBox.swift */; };
 		0D876BCF2CB6D232007EEEDE /* SystemReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D876BCE2CB6D232007EEEDE /* SystemReportView.swift */; };
@@ -120,11 +126,6 @@
 		0D9351572D12FBBF0028AA61 /* RoadmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9351562D12FBBF0028AA61 /* RoadmapView.swift */; };
 		0D9634382D5A98800038E257 /* HeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9634372D5A98800038E257 /* HeartRateChartView.swift */; };
 		0D9AB0A82C6B7C6E00BB773F /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */; };
-		0D7F10012F60000000ABC001 /* FilterSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */; };
-		0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */; };
-		0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10102F61000000ABC001 /* LabeledCard.swift */; };
-		0D7F10212F62000000ABC001 /* ExpandableMetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */; };
-		0D7F10312F63000000ABC001 /* EntryFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7F10302F63000000ABC001 /* EntryFormSheet.swift */; };
 		0D9AB0AC2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0AD2C6B8BE700BB773F /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */; };
 		0D9AB0C32C6D501C00BB773F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */; };
@@ -374,6 +375,12 @@
 		0D72DCA52E97DF5D0056DB80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0D798B332F3934A900F7912C /* ComplicationKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationKeys.swift; sourceTree = "<group>"; };
 		0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeOfUseView.swift; sourceTree = "<group>"; };
+		0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSectionHeader.swift; sourceTree = "<group>"; };
+		0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCapsuleButton.swift; sourceTree = "<group>"; };
+		0D7F10102F61000000ABC001 /* LabeledCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledCard.swift; sourceTree = "<group>"; };
+		0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMetadataRow.swift; sourceTree = "<group>"; };
+		0D7F10302F63000000ABC001 /* EntryFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryFormSheet.swift; sourceTree = "<group>"; };
+		0D7F10402F64000000ABC001 /* MissedReflectionTrendCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedReflectionTrendCard.swift; sourceTree = "<group>"; };
 		0D8203B32C6E9D680023EE2D /* IconLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconLabel.swift; sourceTree = "<group>"; };
 		0D8203B52C6EA3D20023EE2D /* InfoBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBox.swift; sourceTree = "<group>"; };
 		0D876BCE2CB6D232007EEEDE /* SystemReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemReportView.swift; sourceTree = "<group>"; };
@@ -392,11 +399,6 @@
 		0D9351562D12FBBF0028AA61 /* RoadmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapView.swift; sourceTree = "<group>"; };
 		0D9634372D5A98800038E257 /* HeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartView.swift; sourceTree = "<group>"; };
 		0D9AB0A72C6B7C6E00BB773F /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
-		0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSectionHeader.swift; sourceTree = "<group>"; };
-		0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCapsuleButton.swift; sourceTree = "<group>"; };
-		0D7F10102F61000000ABC001 /* LabeledCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledCard.swift; sourceTree = "<group>"; };
-		0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMetadataRow.swift; sourceTree = "<group>"; };
-		0D7F10302F63000000ABC001 /* EntryFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryFormSheet.swift; sourceTree = "<group>"; };
 		0D9AB0AB2C6B8BE700BB773F /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		0D9AB0C22C6D501C00BB773F /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		0D9AB0C72C6E0C6200BB773F /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
@@ -801,15 +803,6 @@
 			path = Buttons;
 			sourceTree = "<group>";
 		};
-		0D7F10052F60000000ABC001 /* Filters */ = {
-			isa = PBXGroup;
-			children = (
-				0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */,
-				0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */,
-			);
-			path = Filters;
-			sourceTree = "<group>";
-		};
 		0D5947862CBE740C0019BA24 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -944,6 +937,23 @@
 				0D7BA3892CDD60700086A47F /* ModeOfUseView.swift */,
 			);
 			path = "Mode of Use";
+			sourceTree = "<group>";
+		};
+		0D7F10052F60000000ABC001 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				0D7F10042F60000000ABC001 /* FilterCapsuleButton.swift */,
+				0D7F10032F60000000ABC001 /* FilterSectionHeader.swift */,
+			);
+			path = Filters;
+			sourceTree = "<group>";
+		};
+		0D7F10222F62000000ABC001 /* Metadata */ = {
+			isa = PBXGroup;
+			children = (
+				0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */,
+			);
+			path = Metadata;
 			sourceTree = "<group>";
 		};
 		0D876BCD2CB6D228007EEEDE /* System Report */ = {
@@ -1331,20 +1341,13 @@
 				0DC136B82D4EAC9A00001D08 /* UIKit */,
 				0DD3FDAC2C8A3ED100859A1C /* Card.swift */,
 				0D7F10102F61000000ABC001 /* LabeledCard.swift */,
+				0D7F10402F64000000ABC001 /* MissedReflectionTrendCard.swift */,
 				0D6AEB4C2C9C2BD800D8D22F /* EmptyView.swift */,
 				0D8203B52C6EA3D20023EE2D /* InfoBox.swift */,
 				0DA77E3F2D1596C50057DFA2 /* Toast.swift */,
 				0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		0D7F10222F62000000ABC001 /* Metadata */ = {
-			isa = PBXGroup;
-			children = (
-				0D7F10202F62000000ABC001 /* ExpandableMetadataRow.swift */,
-			);
-			path = Metadata;
 			sourceTree = "<group>";
 		};
 		0DC3FDD32C2EDCDC00335543 /* View Modifiers */ = {
@@ -1830,6 +1833,7 @@
 				0D7F10012F60000000ABC001 /* FilterSectionHeader.swift in Sources */,
 				0D7F10022F60000000ABC001 /* FilterCapsuleButton.swift in Sources */,
 				0D7F10112F61000000ABC001 /* LabeledCard.swift in Sources */,
+				0D7F10412F64000000ABC001 /* MissedReflectionTrendCard.swift in Sources */,
 				0D7F10212F62000000ABC001 /* ExpandableMetadataRow.swift in Sources */,
 				0D7F10312F63000000ABC001 /* EntryFormSheet.swift in Sources */,
 				0D4E4DA22E698540001C93C1 /* ResetDatabaseUseCase.swift in Sources */,
@@ -2183,7 +2187,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2357,7 +2361,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2588,7 +2592,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2630,7 +2634,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Charts
 import SwiftData
 
 // MARK: - Presentation Enums
@@ -306,7 +305,7 @@ struct EditReflectionView: View {
             HStack(spacing: 12) {
                 Label(symptom.displayName, systemImage: symptom.icon)
                     .font(.body)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
                 Spacer()
@@ -324,24 +323,17 @@ struct EditReflectionView: View {
     @ViewBuilder
     private var reminderSection: some View {
         if let reflection,
-           let reminderMeasurementType = reflection.measurementType,
-           let reminderType = reflection.reminderType {
+           let trendData = MissedReflectionTrendCard.Data(
+               reflection: reflection,
+               subtitle: String(localized: "Triggered on \(reflection.date.formatted(.dateTime.month().day().hour().minute()))"),
+               layout: .compact,
+               chartHeight: 176
+           ) {
             Section("Reminder") {
-                HStack {
-                    Label(reminderMeasurementType.localized, systemImage: reminderMeasurementType.icon)
-                        .font(.body)
-                        .foregroundStyle(reminderMeasurementType.color)
-
-                    Spacer()
-
-                    Text(reflection.reminderTriggerSummary)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-
-                TriggerDataChartView(reflection: reflection)
-                    .frame(height: 250)
+                MissedReflectionTrendCard(
+                    data: trendData,
+                    presentationStyle: .listSection
+                )
             }
         } else if reflection != nil {
             Section("Reminder") {
@@ -428,7 +420,8 @@ struct EditReflectionView: View {
         Button(role: .destructive) {
             viewModel.presentAlert(.deleteConfirmation)
         } label: {
-            Label("Delete Reflection", systemImage: "trash")
+            Label("Delete Reflection", systemImage: "trash.fill")
+                .fontWeight(.semibold)
                 .foregroundStyle(.red)
                 .frame(maxWidth: .infinity)
         }
@@ -470,311 +463,6 @@ struct EditReflectionView: View {
             message: Text("Unable to save your Reflection.\nPlease try again.\nIf this problem persists, please contact us."),
             dismissButton: .default(Text("Ok"))
         )
-    }
-}
-
-// MARK: - TriggerDataChartView
-
-struct TriggerDataChartView: View {
-    let reflection: Reflection
-    @State private var selectedDate: Date?
-
-    @State private var cachedSamples: [MeasurementSample] = []
-    @State private var series: [MeasurementSample] = []
-    @State private var downsampled: [MeasurementSample] = []
-    @State private var yDomain: ClosedRange<Double> = 0...1
-    @State private var xAxisValues: [Date] = []
-    @State private var windowStart: Date?
-    @State private var windowEnd: Date?
-    @State private var chartColor: Color = .teal
-    @State private var yLabel: String = "Value"
-    @State private var isReady = false
-
-    private let maxDataPoints = 200
-
-    var body: some View {
-        Group {
-            if !isReady {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if downsampled.isEmpty {
-                Text("No trigger data was saved for this reflection.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .frame(height: 150)
-            } else {
-                Chart {
-                    if let start = windowStart, let end = windowEnd, let interval = reflection.interval, interval != .oneDay {
-                        RectangleMark(
-                            xStart: .value("Start", start),
-                            xEnd: .value("End", end)
-                        )
-                        .foregroundStyle(chartColor.opacity(0.1))
-                    }
-
-                    ForEach(downsampled, id: \.date) { s in
-                        LineMark(
-                            x: .value("Time", s.date),
-                            y: .value(yLabel, s.value)
-                        )
-                        .foregroundStyle(chartColor)
-                        .interpolationMethod(.catmullRom)
-                    }
-
-                    if let threshold = reflection.threshold {
-                        RuleMark(y: .value("Goal", threshold))
-                            .foregroundStyle(reflection.reminderType?.color ?? .primary)
-                            .lineStyle(.init(lineWidth: 1, dash: [5]))
-                            .annotation(position: .top, alignment: .leading) {
-                                Text("\(threshold)")
-                                    .font(.caption2)
-                                    .foregroundColor(reflection.reminderType?.color ?? .primary)
-                            }
-                    }
-                }
-                .chartYScale(domain: yDomain)
-                .chartXAxis {
-                    AxisMarks(values: xAxisValues) { _ in
-                        AxisGridLine()
-                        AxisValueLabel(format: xAxisFormatStyle, collisionResolution: .greedy)
-                    }
-                }
-                .chartOverlay { proxy in
-                    GeometryReader { geo in
-                        if let selectedDate {
-                            let xPos = proxy.position(forX: selectedDate) ?? 0
-                            Rectangle()
-                                .fill(chartColor.opacity(0.3))
-                                .frame(width: 2, height: geo.size.height)
-                                .position(x: xPos, y: geo.size.height / 2)
-
-                            if let s = nearestSample(to: selectedDate) {
-                                valuePopover(for: s)
-                                    .position(x: xPos, y: geo.size.height / 2 - 40)
-                            }
-                        }
-                    }
-                }
-                .chartXSelection(value: $selectedDate)
-            }
-        }
-        .task(id: reflection.id) {
-            await buildCachesAsync()
-        }
-    }
-
-    // MARK: - Build caches (off main thread)
-
-    private func buildCachesAsync() async {
-        // Capture immutable inputs before going off-thread.
-        let triggerData = reflection.triggerData
-        let interval = reflection.interval
-        let threshold = reflection.threshold
-
-        // Do the expensive work (decode, sort, rolling sums, downsample) off-main.
-        let result: ChartCacheResult? = await Task.detached(priority: .userInitiated) {
-            let samples = Self.decodeSamplesStatic(from: triggerData)
-            guard !samples.isEmpty else { return nil as ChartCacheResult? }
-
-            let sorted = samples.sorted { $0.date < $1.date }
-            let isSteps = samples.first?.type == .steps
-            let isOneDay = (interval == .oneDay)
-            let windowSeconds = interval?.timeInterval ?? 0
-
-            let s: [MeasurementSample]
-            if isSteps {
-                if isOneDay {
-                    s = Self.runningTotalSeriesStatic(sorted)
-                } else {
-                    s = Self.rollingSumSeriesStatic(sorted, window: windowSeconds)
-                }
-            } else {
-                s = sorted
-            }
-
-            let ds = Self.downsampleStatic(s, to: 200)
-            let xAxis = Self.makeXAxisValuesStatic(for: s)
-            let window = Self.makeTriggerWindowStatic(for: s, interval: interval)
-            let yDom = Self.makeYDomainStatic(for: s, threshold: threshold)
-            let color: Color = (samples.first?.type == .heartRate) ? .pink : .teal
-            let label = (samples.first?.type == .steps)
-                ? (isOneDay ? "Steps (running total)" : "Steps (rolling sum)")
-                : "BPM"
-
-            return ChartCacheResult(
-                samples: samples, series: s, downsampled: ds,
-                yDomain: yDom, xAxisValues: xAxis,
-                windowStart: window.0, windowEnd: window.1,
-                chartColor: color, yLabel: label
-            )
-        }.value
-
-        // Apply the results on the main thread.
-        guard let result else {
-            isReady = true
-            return
-        }
-
-        cachedSamples = result.samples
-        series = result.series
-        downsampled = result.downsampled
-        yDomain = result.yDomain
-        xAxisValues = result.xAxisValues
-        windowStart = result.windowStart
-        windowEnd = result.windowEnd
-        chartColor = result.chartColor
-        yLabel = result.yLabel
-        isReady = true
-    }
-
-    /// Intermediate struct to shuttle computed results back to the main thread.
-    private struct ChartCacheResult: Sendable {
-        let samples: [MeasurementSample]
-        let series: [MeasurementSample]
-        let downsampled: [MeasurementSample]
-        let yDomain: ClosedRange<Double>
-        let xAxisValues: [Date]
-        let windowStart: Date?
-        let windowEnd: Date?
-        let chartColor: Color
-        let yLabel: String
-    }
-
-    // MARK: - Helpers (static for off-main-thread use)
-
-    nonisolated private static func decodeSamplesStatic(from data: Data?) -> [MeasurementSample] {
-        guard let data else { return [] }
-        do { return try JSONDecoder().decode([MeasurementSample].self, from: data) }
-        catch {
-            print("DEBUGY: Error decoding triggerData: \(error)")
-            return []
-        }
-    }
-
-    nonisolated private static func rollingSumSeriesStatic(_ data: [MeasurementSample], window: TimeInterval) -> [MeasurementSample] {
-        guard window > 0 else { return data }
-        var out: [MeasurementSample] = []
-        var q: [(Date, Double)] = []
-        var sum: Double = 0
-        out.reserveCapacity(data.count)
-
-        for s in data {
-            sum += s.value
-            q.append((s.date, s.value))
-            let cutoff = s.date.addingTimeInterval(-window)
-            while let first = q.first, first.0 < cutoff {
-                sum -= first.1
-                q.removeFirst()
-            }
-            out.append(.init(type: s.type, value: sum, date: s.date))
-        }
-        return out
-    }
-
-    nonisolated private static func runningTotalSeriesStatic(_ data: [MeasurementSample]) -> [MeasurementSample] {
-        var out: [MeasurementSample] = []
-        out.reserveCapacity(data.count)
-        var total: Double = 0
-        for s in data {
-            total += s.value
-            out.append(.init(type: s.type, value: total, date: s.date))
-        }
-        return out
-    }
-
-    nonisolated private static func downsampleStatic(_ data: [MeasurementSample], to maxPoints: Int) -> [MeasurementSample] {
-        guard data.count > maxPoints else { return data }
-        var out: [MeasurementSample] = []
-        out.reserveCapacity(maxPoints)
-        let bucketSize = Double(data.count) / Double(maxPoints)
-        for i in 0..<maxPoints {
-            let start = Int(Double(i) * bucketSize)
-            let end   = min(Int(Double(i + 1) * bucketSize), data.count)
-            if start < end {
-                if let pick = data[start..<end].max(by: { $0.value < $1.value }) {
-                    out.append(pick)
-                }
-            }
-        }
-        return out
-    }
-
-    nonisolated private static func makeYAxisRangeStatic(for values: [Double], threshold: Double?) -> ClosedRange<Double> {
-        let minY = values.min() ?? 0
-        let maxY = values.max() ?? 1
-        let t = threshold ?? maxY
-        let overallMin = min(minY, t)
-        let overallMax = max(maxY, t)
-        let padding = max(5, (overallMax - overallMin) * 0.1)
-        return (overallMin - padding)...(overallMax + padding)
-    }
-
-    nonisolated private static func makeYDomainStatic(for series: [MeasurementSample], threshold: Int?) -> ClosedRange<Double> {
-        makeYAxisRangeStatic(for: series.map { $0.value }, threshold: threshold.map(Double.init))
-    }
-
-    nonisolated private static func makeXAxisValuesStatic(for series: [MeasurementSample]) -> [Date] {
-        guard let first = series.first?.date, let last = series.last?.date, first < last else { return [] }
-        let mid = first.addingTimeInterval(last.timeIntervalSince(first) / 2)
-        return [first, mid, last]
-    }
-
-    nonisolated private static func makeTriggerWindowStatic(for series: [MeasurementSample], interval: Reminder.Interval?) -> (Date?, Date?) {
-        guard let end = series.last?.date, let seconds = interval?.timeInterval else { return (nil, nil) }
-        return (end.addingTimeInterval(-seconds), end)
-    }
-
-    private var xAxisFormatStyle: Date.FormatStyle {
-        guard let interval = reflection.interval else { return .dateTime.hour().minute().second() }
-        switch interval {
-        case .immediately, .oneMinute, .twoMinutes: return .dateTime.hour().minute().second()
-        case .fiveMinutes, .tenMinutes,
-             .fifteenMinutes, .thirtyMinutes,
-             .oneHour, .twoHours: return .dateTime.hour().minute()
-        case .fourHours, .oneDay: return .dateTime.hour()
-        }
-    }
-
-    private func nearestSample(to date: Date) -> MeasurementSample? {
-        guard !series.isEmpty else { return nil }
-        return series.min { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }
-    }
-
-    // MARK: - Popover
-
-    @ViewBuilder
-    private func valuePopover(for sample: MeasurementSample) -> some View {
-        let isSteps = (cachedSamples.first?.type == .steps)
-        let isOneDay = (reflection.interval == .oneDay)
-
-        VStack(alignment: .leading, spacing: 2) {
-            Text(sample.date.formatted(.dateTime.hour().minute().second()))
-                .font(.caption)
-                .foregroundColor(chartColor)
-
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text("\(Int(sample.value))")
-                    .font(.body.weight(.bold))
-                Text(isSteps ? (isOneDay ? "steps total" : "steps in window") : "bpm")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(8)
-        .background {
-            RoundedRectangle(cornerRadius: 8).fill(Material.thick)
-        }
-    }
-}
-
-// MARK: - Array+Ext
-
-fileprivate extension Array {
-    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
-        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
-            return self[range]
-        }
-        return nil
     }
 }
 

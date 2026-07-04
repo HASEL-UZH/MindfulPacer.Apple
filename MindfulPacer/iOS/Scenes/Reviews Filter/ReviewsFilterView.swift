@@ -68,10 +68,9 @@ private extension ReflectionsFilterView {
         }
 
         ToolbarItem(placement: .confirmationAction) {
-            Button("Done") {
+            Button(role: .confirm) {
                 dismiss()
             }
-            .fontWeight(.semibold)
         }
     }
 }

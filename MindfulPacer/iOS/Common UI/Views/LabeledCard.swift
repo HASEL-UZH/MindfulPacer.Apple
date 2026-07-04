@@ -20,7 +20,7 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
     @Environment(\.backgroundStyle) private var backgroundStyle
 
     init(
-        contentSpacing: CGFloat = 24,
+        contentSpacing: CGFloat = 32,
         contentPadding: CGFloat = 16,
         cornerRadius: CGFloat = 24,
         @ViewBuilder content: () -> Content,
@@ -36,7 +36,7 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
     }
 
     init(
-        contentSpacing: CGFloat = 24,
+        contentSpacing: CGFloat = 32,
         contentPadding: CGFloat = 16,
         cornerRadius: CGFloat = 24,
         @ViewBuilder content: () -> Content,

@@ -23,7 +23,7 @@ extension HomeView {
                 systemImage: "figure.walk",
                 tint: .teal,
                 value: viewModel.currentSteps.map { Int($0.stepCount).formatted() },
-                unit: "STEPS",
+                unit: "steps",
                 timestamp: viewModel.currentSteps?.timestamp
             )
         }

@@ -19,35 +19,44 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            LabeledCard {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Summary of your most recent reflections.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            NavigationLink(value: HomeNavigationDestination.reviewsList) {
+                LabeledCard(
+                    contentSpacing: 18,
+                    contentPadding: 16,
+                    cornerRadius: 24
+                ) {
+                    VStack(alignment: .leading, spacing: 14) {
+                        if viewModel.reflections.isEmpty {
+                            EmptyStateView(
+                                image: "book.pages",
+                                title: "No Reflections",
+                                description: String(localized: "Tap the + button to create a reflection.")
+                            )
+                        } else {
+                            Text(reflectionsHeadline)
+                                .font(.headline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                    if viewModel.reflections.isEmpty {
-                        EmptyStateView(
-                            image: "book.pages",
-                            title: "No Reflections",
-                            description: String(localized: "Tap the + button to create a reflection.")
-                        )
-                    } else {
-                        recentReflectionsSummary
+                            Divider()
+
+                            recentReflectionsSummary
+                        }
+
+                        Divider()
+
+                        createReflectionButton
                     }
-
-                    Divider()
-
-                    createReflectionButton
+                } label: {
+                    Label("My Reflections", systemImage: "book.pages.fill")
+                        .foregroundStyle(Color("BrandPrimary"))
+                } accessory: {
+                    Image(systemName: "chevron.right")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color(.systemGray2))
                 }
-            } label: {
-                Label("My Reflections", systemImage: "book.pages.fill")
-                    .foregroundStyle(Color("BrandPrimary"))
-            } accessory: {
-                NavigationLink(value: HomeNavigationDestination.reviewsList) {
-                    navigationAccessory("View")
-                }
-                .buttonStyle(.plain)
             }
+            .buttonStyle(.plain)
         }
 
         // MARK: Create Reflection Button
@@ -56,7 +65,7 @@ extension HomeView {
             Button {
                 viewModel.presentSheet(.editReflectionView(nil))
             } label: {
-                Label("Create Reflection", systemImage: "plus.circle")
+                Label("Create Reflection", systemImage: "plus.circle.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color("BrandPrimary"))
             }
@@ -75,78 +84,102 @@ extension HomeView {
                     }
                 }
             }
-            .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
 
         private func reflectionRow(_ reflection: Reflection) -> some View {
             Button {
                 viewModel.presentSheet(.editReflectionView(reflection))
             } label: {
-                HStack(spacing: 12) {
+                HStack(alignment: .center, spacing: 12) {
                     Image(systemName: reflectionIconName(reflection))
                         .font(.headline)
-                        .foregroundStyle(Color("BrandPrimary"))
-                        .frame(width: 34, height: 34)
-                        .background(Color("BrandPrimary").opacity(0.12), in: Circle())
+                        .foregroundStyle(reflectionTint(reflection))
+                        .frame(width: 28)
 
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(reflectionTitle(reflection))
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
 
-                        Text(reflection.date.formatted(.dateTime.day().month().hour().minute()))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text(reflection.date.formatted(.dateTime.month(.abbreviated).day()))
+
+                            subtitleSeparator
+
+                            Text(reflection.date.formatted(.dateTime.hour().minute()))
+
+                            if reflectionHasMetadata(reflection) {
+                                subtitleSeparator
+
+                                reflectionMetadata(reflection)
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                     }
-
-                    Spacer(minLength: 8)
-
-                    reflectionAccessory(reflection)
                 }
-                .padding()
+                .padding(.vertical, 10)
+                .contentShape(.rect)
             }
             .buttonStyle(.plain)
         }
 
         @ViewBuilder
-        private func reflectionAccessory(_ reflection: Reflection) -> some View {
+        private func reflectionMetadata(_ reflection: Reflection) -> some View {
             if reflection.didTriggerCrash {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.subheadline.weight(.semibold))
+                Text("Crash")
                     .foregroundStyle(.red)
-                    .frame(width: 30, height: 30)
-                    .background(.red.opacity(0.12), in: Circle())
             } else if let mood = reflection.mood {
-                Text(mood.emoji)
-                    .font(.title3)
-                    .frame(width: 30, height: 30)
-                    .background(Color.yellow.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                Text("\(mood.emoji) \(mood.text)")
             } else if let wellBeing = reflection.wellBeing {
-                Image(systemName: "cross.fill")
-                    .font(.caption.weight(.bold))
+                Text(Symptom.wellBeing(wellBeing).description)
                     .foregroundStyle(Symptom.wellBeing(wellBeing).color)
-                    .frame(width: 30, height: 30)
-                    .background(Symptom.wellBeing(wellBeing).color.opacity(0.12), in: Circle())
             }
+        }
+
+        private var subtitleSeparator: some View {
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(width: 1, height: 13)
+        }
+
+        private func reflectionHasMetadata(_ reflection: Reflection) -> Bool {
+            if reflection.didTriggerCrash {
+                return true
+            }
+
+            return reflection.mood != nil || reflection.wellBeing != nil
         }
 
         private func reflectionIconName(_ reflection: Reflection) -> String {
             reflection.subactivity?.icon ?? reflection.activity?.icon ?? "questionmark"
         }
 
+        private func reflectionTint(_ reflection: Reflection) -> Color {
+            if reflection.didTriggerCrash {
+                return .red
+            }
+
+            if let wellBeing = reflection.wellBeing {
+                return Symptom.wellBeing(wellBeing).color
+            }
+
+            return Color("BrandPrimary")
+        }
+
         private func reflectionTitle(_ reflection: Reflection) -> String {
             reflection.subactivity?.name ?? reflection.activity?.name ?? String(localized: "Uncategorized")
         }
 
-        private func navigationAccessory(_ title: String) -> some View {
-            HStack(spacing: 6) {
-                Text(title)
-                Image(systemName: "chevron.right")
+        private var reflectionsHeadline: String {
+            switch viewModel.reflections.count {
+            case 1:
+                String(localized: "You've logged 1 reflection.")
+            default:
+                String(localized: "You've logged \(viewModel.reflections.count) reflections.")
             }
-            .font(.subheadline)
-            .foregroundStyle(Color(.systemGray2))
         }
     }
 }
