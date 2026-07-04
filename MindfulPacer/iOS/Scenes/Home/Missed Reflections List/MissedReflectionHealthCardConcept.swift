@@ -5,67 +5,60 @@
 //  Created by Grigor Dochev on 04.07.2026.
 //
 
+import Charts
 import SwiftUI
 
 // MARK: - MissedReflectionHealthCardConcept
 
 struct MissedReflectionHealthCardConcept: View {
-    private let tint: Color = .pink
-    private let thresholdValue = 55
-    private let triggerValue = 72
-    private let triggerTime = "17:00"
+    private let concept = MissedReflectionHealthConceptData.heartRate
 
     var body: some View {
         ScrollView {
             LabeledCard(
-                contentSpacing: 22,
-                contentPadding: 20,
+                contentSpacing: 18,
+                contentPadding: 18,
                 cornerRadius: 24
             ) {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text("Above 55 bpm for 2 minutes")
-                        .font(.title2.weight(.semibold))
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(concept.summary)
+                        .font(.headline.weight(.semibold))
                         .foregroundStyle(.primary)
                         .fixedSize(horizontal: false, vertical: true)
 
                     Divider()
 
-                    comparisonValues
+                    metricSummary
 
-                    MissedReflectionHealthChartConcept(
-                        tint: tint,
-                        thresholdValue: thresholdValue,
-                        triggerValue: triggerValue,
-                        triggerTime: triggerTime
-                    )
-                    .frame(height: 260)
+                    MissedReflectionHealthChartConcept(concept: concept)
+                        .frame(height: 190)
                 }
             } label: {
                 Label {
-                    Text("Heart Rate")
+                    Text(concept.measurementTitle)
                 } icon: {
-                    Image(systemName: "heart.fill")
+                    Image(systemName: concept.measurementIcon)
                 }
-                .foregroundStyle(tint)
+                .foregroundStyle(concept.tint)
             }
             .padding()
         }
         .background(Color(.systemGroupedBackground))
     }
 
-    private var comparisonValues: some View {
-        HStack(alignment: .top, spacing: 20) {
+    private var metricSummary: some View {
+        HStack(alignment: .top, spacing: 16) {
             metricColumn(
                 title: "Triggered",
-                value: "\(triggerValue)",
-                unit: "bpm",
-                color: tint
+                value: concept.triggerValueText,
+                unit: concept.unit,
+                color: concept.tint
             )
 
             metricColumn(
                 title: "Threshold",
-                value: "\(thresholdValue)",
-                unit: "bpm",
+                value: concept.thresholdText,
+                unit: concept.unit,
                 color: .secondary
             )
         }
@@ -77,26 +70,28 @@ struct MissedReflectionHealthCardConcept: View {
         unit: String,
         color: Color
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Label {
                 Text(title)
-                    .font(.headline.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
             } icon: {
                 Circle()
                     .fill(color)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 8, height: 8)
             }
             .foregroundStyle(color)
 
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(value)
-                    .font(.system(size: 44, weight: .semibold, design: .rounded))
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(color)
+                    .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
                 Text(unit)
-                    .font(.title3.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(color)
+                    .lineLimit(1)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -106,187 +101,158 @@ struct MissedReflectionHealthCardConcept: View {
 // MARK: - MissedReflectionHealthChartConcept
 
 private struct MissedReflectionHealthChartConcept: View {
-    let tint: Color
-    let thresholdValue: Int
-    let triggerValue: Int
-    let triggerTime: String
-
-    private let todayPoints: [CGPoint] = [
-        CGPoint(x: 0.00, y: 0.12),
-        CGPoint(x: 0.06, y: 0.13),
-        CGPoint(x: 0.18, y: 0.13),
-        CGPoint(x: 0.32, y: 0.14),
-        CGPoint(x: 0.42, y: 0.18),
-        CGPoint(x: 0.48, y: 0.34),
-        CGPoint(x: 0.54, y: 0.38),
-        CGPoint(x: 0.58, y: 0.44),
-        CGPoint(x: 0.62, y: 0.70),
-        CGPoint(x: 0.66, y: 0.82),
-        CGPoint(x: 0.72, y: 0.82)
-    ]
-
-    private let thresholdPoints: [CGPoint] = [
-        CGPoint(x: 0.32, y: 0.18),
-        CGPoint(x: 0.42, y: 0.26),
-        CGPoint(x: 0.52, y: 0.42),
-        CGPoint(x: 0.62, y: 0.55),
-        CGPoint(x: 0.72, y: 0.72),
-        CGPoint(x: 0.82, y: 0.86),
-        CGPoint(x: 0.94, y: 0.88)
-    ]
+    let concept: MissedReflectionHealthConceptData
 
     var body: some View {
-        Canvas { context, size in
-            let plotRect = CGRect(
-                x: 4,
-                y: 10,
-                width: size.width - 8,
-                height: size.height - 44
-            )
+        Chart {
+            RuleMark(y: .value("Threshold", concept.threshold))
+                .foregroundStyle(Color(.systemGray3))
+                .lineStyle(.init(lineWidth: 1.5, dash: [4, 4]))
 
-            let markerX = plotRect.minX + plotRect.width * 0.72
-            let todayPoint = point(todayPoints.last!, in: plotRect)
-            let thresholdPoint = point(thresholdPoints[4], in: plotRect)
+            ForEach(concept.samples) { sample in
+                LineMark(
+                    x: .value("Time", sample.date),
+                    y: .value(concept.measurementTitle, sample.value)
+                )
+                .foregroundStyle(concept.tint)
+                .lineStyle(.init(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                .interpolationMethod(.catmullRom)
+            }
 
-            drawDottedXAxis(in: &context, plotRect: plotRect)
-            drawPath(
-                todayPoints,
-                in: &context,
-                plotRect: plotRect,
-                color: tint,
-                opacity: 1,
-                lineWidth: 5
-            )
-            drawPath(
-                thresholdPoints,
-                in: &context,
-                plotRect: plotRect,
-                color: Color(.systemGray3),
-                opacity: 0.55,
-                lineWidth: 5
-            )
-            drawHorizontalThresholdLine(in: &context, plotRect: plotRect, y: thresholdPoint.y)
-            drawTriggerMarker(in: &context, plotRect: plotRect, markerX: markerX)
-            drawPoint(in: &context, point: thresholdPoint, color: Color(.systemGray2))
-            drawPoint(in: &context, point: todayPoint, color: tint)
+            if let triggerSample = concept.triggerSample {
+                RuleMark(x: .value("Triggered", concept.triggerDate))
+                    .foregroundStyle(Color(.systemGray3))
+                    .lineStyle(.init(lineWidth: 2))
+
+                PointMark(
+                    x: .value("Triggered", triggerSample.date),
+                    y: .value(concept.measurementTitle, triggerSample.value)
+                )
+                .foregroundStyle(concept.tint)
+                .symbolSize(56)
+            }
         }
-        .overlay(alignment: .bottom) {
-            axisLabels
+        .chartXScale(domain: concept.dayRange)
+        .chartYScale(domain: concept.valueRange)
+        .chartXAxis {
+            AxisMarks(values: concept.axisDates) { axisValue in
+                AxisTick()
+                    .foregroundStyle(Color(.systemGray3))
+
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0, dash: [1, 10]))
+                    .foregroundStyle(Color(.systemGray4))
+
+                if let date = axisValue.as(Date.self) {
+                    AxisValueLabel {
+                        Text(date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute()))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .chartYAxis(.hidden)
+        .chartLegend(.hidden)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .background(.clear)
+        }
+        .accessibilityLabel("\(concept.measurementTitle) missed reflection trigger chart")
+        .accessibilityValue("\(concept.triggerValueText) \(concept.unit), threshold \(concept.thresholdText) \(concept.unit)")
+    }
+}
+
+// MARK: - Concept Data
+
+private struct MissedReflectionHealthConceptData {
+    let measurementTitle: String
+    let measurementIcon: String
+    let unit: String
+    let tint: Color
+    let threshold: Double
+    let summary: String
+    let samples: [MissedReflectionHealthConceptSample]
+    let triggerDate: Date
+
+    var triggerSample: MissedReflectionHealthConceptSample? {
+        samples.min { lhs, rhs in
+            abs(lhs.date.timeIntervalSince(triggerDate)) < abs(rhs.date.timeIntervalSince(triggerDate))
         }
     }
 
-    private var axisLabels: some View {
-        HStack {
-            Text("00:00")
-
-            Spacer()
-
-            Text(triggerTime)
-
-            Spacer()
-
-            Text("00:00")
-        }
-        .font(.subheadline.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .padding(.horizontal, 2)
+    var triggerValueText: String {
+        formattedValue(triggerSample?.value ?? 0)
     }
 
-    private func point(_ point: CGPoint, in rect: CGRect) -> CGPoint {
-        CGPoint(
-            x: rect.minX + rect.width * point.x,
-            y: rect.maxY - rect.height * point.y
-        )
+    var thresholdText: String {
+        formattedValue(threshold)
     }
 
-    private func drawDottedXAxis(in context: inout GraphicsContext, plotRect: CGRect) {
-        var dashPath = Path()
-        dashPath.move(to: CGPoint(x: plotRect.minX, y: plotRect.maxY))
-        dashPath.addLine(to: CGPoint(x: plotRect.maxX, y: plotRect.maxY))
-
-        context.stroke(
-            dashPath,
-            with: .color(Color(.systemGray3)),
-            style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [0.1, 18])
-        )
+    var dayRange: ClosedRange<Date> {
+        dayStart...dayEnd
     }
 
-    private func drawPath(
-        _ points: [CGPoint],
-        in context: inout GraphicsContext,
-        plotRect: CGRect,
-        color: Color,
-        opacity: Double,
-        lineWidth: CGFloat
-    ) {
-        guard let first = points.first else { return }
-
-        var path = Path()
-        path.move(to: point(first, in: plotRect))
-
-        for point in points.dropFirst() {
-            path.addLine(to: self.point(point, in: plotRect))
-        }
-
-        context.stroke(
-            path,
-            with: .color(color.opacity(opacity)),
-            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round)
-        )
+    var axisDates: [Date] {
+        [dayStart, triggerDate, dayEnd]
     }
 
-    private func drawHorizontalThresholdLine(
-        in context: inout GraphicsContext,
-        plotRect: CGRect,
-        y: CGFloat
-    ) {
-        var path = Path()
-        path.move(to: CGPoint(x: plotRect.minX, y: y))
-        path.addLine(to: CGPoint(x: plotRect.maxX, y: y))
-
-        context.stroke(
-            path,
-            with: .color(Color(.systemGray4)),
-            style: StrokeStyle(lineWidth: 2)
-        )
+    var valueRange: ClosedRange<Double> {
+        let values = samples.map(\.value) + [threshold]
+        let minValue = max(0, (values.min() ?? 0) - 8)
+        let maxValue = (values.max() ?? threshold) + 12
+        return minValue...maxValue
     }
 
-    private func drawTriggerMarker(
-        in context: inout GraphicsContext,
-        plotRect: CGRect,
-        markerX: CGFloat
-    ) {
-        var path = Path()
-        path.move(to: CGPoint(x: markerX, y: plotRect.minY + 8))
-        path.addLine(to: CGPoint(x: markerX, y: plotRect.maxY))
-
-        context.stroke(
-            path,
-            with: .color(Color(.systemGray4)),
-            style: StrokeStyle(lineWidth: 3, lineCap: .round)
-        )
+    private var dayStart: Date {
+        Calendar.current.startOfDay(for: triggerDate)
     }
 
-    private func drawPoint(
-        in context: inout GraphicsContext,
-        point: CGPoint,
-        color: Color
-    ) {
-        let outerRect = CGRect(
-            x: point.x - 9,
-            y: point.y - 9,
-            width: 18,
-            height: 18
-        )
-        let innerRect = CGRect(
-            x: point.x - 6,
-            y: point.y - 6,
-            width: 12,
-            height: 12
-        )
+    private var dayEnd: Date {
+        Calendar.current.date(byAdding: .day, value: 1, to: dayStart) ?? triggerDate
+    }
 
-        context.fill(Path(ellipseIn: outerRect), with: .color(.white))
-        context.fill(Path(ellipseIn: innerRect), with: .color(color))
+    private func formattedValue(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(0)))
+    }
+
+    static var heartRate: MissedReflectionHealthConceptData {
+        let calendar = Calendar.current
+        let dayStart = calendar.startOfDay(for: .now)
+        let triggerDate = calendar.date(bySettingHour: 17, minute: 0, second: 0, of: dayStart) ?? .now
+
+        return MissedReflectionHealthConceptData(
+            measurementTitle: "Heart Rate",
+            measurementIcon: "heart.fill",
+            unit: "bpm",
+            tint: .pink,
+            threshold: 55,
+            summary: "Above 55 bpm for 2 minutes",
+            samples: [
+                .init(hour: 0.0, value: 44, dayStart: dayStart),
+                .init(hour: 3.0, value: 45, dayStart: dayStart),
+                .init(hour: 6.0, value: 46, dayStart: dayStart),
+                .init(hour: 9.0, value: 48, dayStart: dayStart),
+                .init(hour: 11.5, value: 51, dayStart: dayStart),
+                .init(hour: 12.5, value: 58, dayStart: dayStart),
+                .init(hour: 13.3, value: 62, dayStart: dayStart),
+                .init(hour: 14.1, value: 60, dayStart: dayStart),
+                .init(hour: 15.2, value: 67, dayStart: dayStart),
+                .init(hour: 16.0, value: 70, dayStart: dayStart),
+                .init(hour: 17.0, value: 72, dayStart: dayStart)
+            ],
+            triggerDate: triggerDate
+        )
+    }
+}
+
+private struct MissedReflectionHealthConceptSample: Identifiable {
+    let id = UUID()
+    let date: Date
+    let value: Double
+
+    init(hour: Double, value: Double, dayStart: Date) {
+        self.date = dayStart.addingTimeInterval(hour * 60 * 60)
+        self.value = value
     }
 }
 
