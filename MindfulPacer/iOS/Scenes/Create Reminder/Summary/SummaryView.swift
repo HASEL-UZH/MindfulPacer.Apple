@@ -20,17 +20,19 @@ extension CreateReminderView {
         
         var body: some View {
             List {
-                ReminderCreationListHero(
-                    systemImage: viewModel.selectedMeasurementType?.icon ?? "checkmark.circle",
-                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
-                )
-
                 Section {
                     measurementType
                     reminderType
                     threshold
                     interval
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Review Reminder",
+                        systemImage: viewModel.selectedMeasurementType?.icon ?? "checkmark.circle",
+                        tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                    )
                 }
+                .listRowBackground(Color(.quaternarySystemFill))
 
                 if viewModel.mode == .edit {
                     Section {
@@ -38,7 +40,8 @@ extension CreateReminderView {
                     }
                 }
             }
-            .navigationTitle(viewModel.summaryViewTitle)
+            .scrollContentBackground(.hidden)
+            .navigationTitle(viewModel.mode == .edit ? viewModel.summaryViewTitle : "")
         }
         
         // MARK: Summary Row

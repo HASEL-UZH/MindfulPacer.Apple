@@ -73,7 +73,7 @@ class CreateReminderViewModel {
 
     var actionButtonTitle: String {
         guard let lastDestination = navigationPath.last else {
-            return String(localized: "Continue")
+            return String(localized: "Get Started")
         }
 
         switch lastDestination {

@@ -20,18 +20,21 @@ extension CreateReminderView {
 
         var body: some View {
             List {
-                ReminderCreationListHero(
-                    systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.xyaxis.line",
-                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
-                )
-
                 Section {
                     measurementTypeSelectionList
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Measurement Type",
+                        systemImage: viewModel.selectedMeasurementType?.icon ?? "waveform.path.ecg.text.clipboard",
+                        tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                    )
                 } footer: {
                     Text("Select for which measurement type you want to receive reminders to do a reflection.")
                 }
+                .listRowBackground(Color(.quaternarySystemFill))
             }
-            .navigationTitle("Measurement Type")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
         }
 
         // MARK: Measurement Type Selection List

@@ -186,7 +186,7 @@ struct CreateReminderView: View {
         .padding(.horizontal)
         .padding(.horizontal)
         .padding(.top, 8)
-        .background(.bar)
+        .padding(.bottom, 8)
     }
 
     private var actionButtonBase: some View {
@@ -213,9 +213,10 @@ struct CreateReminderView: View {
                     tint: Color("BrandPrimary"),
                     size: 128
                 )
+                .padding(.bottom)
 
                 Text("Create Reminder")
-                    .font(.title3.bold())
+                    .font(.title2.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Label {
@@ -313,7 +314,7 @@ struct ReminderCreationSelectionRow<Content: View>: View {
 struct ReminderCreationHeroIcon: View {
     let systemImage: String
     let tint: Color
-    var size: CGFloat = 88
+    var size: CGFloat = 128
 
     var body: some View {
         Image(systemName: systemImage)
@@ -327,18 +328,22 @@ struct ReminderCreationHeroIcon: View {
 }
 
 struct ReminderCreationListHero: View {
+    let title: String
     let systemImage: String
     let tint: Color
 
     var body: some View {
-        Section {
+        VStack(alignment: .center, spacing: 24) {
             ReminderCreationHeroIcon(systemImage: systemImage, tint: tint)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
+
+            Text(title)
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
+        .padding(.bottom)
+        .textCase(nil)
     }
 }
 
@@ -363,7 +368,6 @@ struct ReminderCreationOptionLabel: View {
             }
         } icon: {
             Image(systemName: systemImage)
-                .symbolVariant(.fill)
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(tint)
                 .frame(width: 28, alignment: .center)

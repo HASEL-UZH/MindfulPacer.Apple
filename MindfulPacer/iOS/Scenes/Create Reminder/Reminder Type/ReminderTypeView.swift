@@ -27,18 +27,21 @@ extension CreateReminderView {
         
         var body: some View {
             List {
-                ReminderCreationListHero(
-                    systemImage: viewModel.selectedReminderType?.icon ?? "applewatch.radiowaves.left.and.right",
-                    tint: viewModel.selectedReminderType?.color ?? Color("BrandPrimary")
-                )
-
                 Section {
                     reminderTypeSelectionList
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Reminder Type",
+                        systemImage: viewModel.selectedReminderType?.icon ?? "applewatch.radiowaves.left.and.right",
+                        tint: viewModel.selectedReminderType?.color ?? Color("BrandPrimary")
+                    )
                 } footer: {
                     description
                 }
+                .listRowBackground(Color(.quaternarySystemFill))
             }
-            .navigationTitle("Reminder Type")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

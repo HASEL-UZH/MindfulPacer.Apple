@@ -20,18 +20,21 @@ extension CreateReminderView {
 
         var body: some View {
             List {
-                ReminderCreationListHero(
-                    systemImage: viewModel.selectedInterval?.icon ?? "timer",
-                    tint: Color("BrandPrimary")
-                )
-
                 Section {
                     intervalSelectionList
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Interval",
+                        systemImage: viewModel.selectedInterval?.icon ?? "timer",
+                        tint: Color("BrandPrimary")
+                    )
                 } footer: {
                     description
                 }
+                .listRowBackground(Color(.quaternarySystemFill))
             }
-            .navigationTitle("Interval")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

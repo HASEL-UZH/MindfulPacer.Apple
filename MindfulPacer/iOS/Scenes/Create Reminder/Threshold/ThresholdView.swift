@@ -28,18 +28,21 @@ extension CreateReminderView {
 
         var body: some View {
             Form {
-                ReminderCreationListHero(
-                    systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.line.flattrend.xyaxis",
-                    tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
-                )
-
                 Section {
                     thresholdInput
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Set the Threshold",
+                        systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.line.flattrend.xyaxis",
+                        tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                    )
                 } footer: {
                     description
                 }
+                .listRowBackground(Color(.quaternarySystemFill))
             }
-            .navigationTitle("Threshold")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .keyboard) {
