@@ -144,56 +144,48 @@ struct BackgroundDiagnosticsView: View {
     private var diagnostics: String { BGDebug.diagnosticsDump() }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            IconLabelGroupBox(
-                label:
-                    IconLabel(
-                        icon: "ellipsis.curlybraces",
-                        title: "Diagnostics",
-                        labelColor: .accent, background: true
-                    )
-            ) {
+        List {
+            Section {
                 Text(diagnostics)
                     .font(.system(.footnote, design: .monospaced))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+            } header: {
+                Text("Diagnostics")
             } footer: {
-                HStack {
-                    Button {
+                Text("Includes background refresh, missed reflection, notification throttle, and device mode state.")
+            }
+
+            Section {
+                Button {
+                    UIPasteboard.general.string = diagnostics
+                    showCopyAlert = true
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc.fill")
+                }
+                .foregroundStyle(.primary)
+
+                Button {
+                    if MFMailComposeViewController.canSendMail() {
+                        showMail = true
+                    } else {
                         UIPasteboard.general.string = diagnostics
                         showCopyAlert = true
-                    } label: {
-                        Label("Copy", systemImage: "doc.on.doc.fill")
-                            .font(.footnote.weight(.semibold))
                     }
-                    
-                    Spacer()
-                    
-                    Button {
-                        if MFMailComposeViewController.canSendMail() {
-                            showMail = true
-                        } else {
-                            UIPasteboard.general.string = diagnostics
-                            showCopyAlert = true
-                        }
-                    } label: {
-                        Label("Send via Email", systemImage: "envelope.fill")
-                            .font(.footnote.weight(.semibold))
-                    }
+                } label: {
+                    Label("Send via Email", systemImage: "envelope.fill")
                 }
+                .foregroundStyle(.primary)
             }
-            .iconLabelGroupBoxStyle(.divider)
-            .padding(.horizontal)
-            
-            Spacer()
         }
-        .background(Color(.systemGroupedBackground))
         .navigationTitle("BG Diagnostics")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showInfoSheet = true
                 } label: {
-                    Image(systemName: "info")
+                    Image(systemName: "info.circle")
                 }
             }
         }
@@ -227,59 +219,40 @@ struct DiagnosticsInfoSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    
-                    Group {
-                        info("lastSchedule", "The last time a BGAppRefreshTaskRequest was successfully submitted.")
-                        info("lastRunStart", "When the system actually started running the background task.")
-                        info("lastRunEnd", "When the task finished (successfully or with failure).")
-                        info("lastResult", "Outcome of the last run: success(count), failure, or skipped due to mode.")
-                        info("lastError", "Any error thrown during the task execution or scheduling.")
-                        info("runsCount", "Number of times the task has run since installation.")
-                    }
-                    
-                    Divider().padding(.vertical, 8)
-                    
-                    Group {
-                        info("lastFound", "How many missed reflections the pipeline detected last run.")
-                    }
-                    
-                    Divider().padding(.vertical, 8)
-                    
-                    Group {
-                        info("lastNotifyDateISO", "When the last notification was successfully posted.")
-                        info("lastNotifyCount", "The count value that triggered the last notification.")
-                        info("lastNotifyDecision", """
-                            A high-level label describing whether notification was sent:
-                            - notification_sent
-                            - no_notification
-                            - no_run
-                            - throttled
-                            - failure
-                            """)
-                        info("lastNotifyReason", "Explains *why* a notification was or wasn’t sent.")
-                    }
-                    
-                    Divider().padding(.vertical, 8)
-                    
-                    Group {
-                        info("DeviceMode", "The current mode (iPhoneOnly or Watch mode), which controls whether background tasks should run.")
-                        info("GeneratedAt", "When this diagnostics snapshot was created.")
-                    }
+        NavigationStack {
+            List {
+                Section("General") {
+                    info("lastSchedule", "The last time a BGAppRefreshTaskRequest was successfully submitted.")
+                    info("lastRunStart", "When the system actually started running the background task.")
+                    info("lastRunEnd", "When the task finished, successfully or with failure.")
+                    info("lastResult", "Outcome of the last run: success(count), failure, or skipped due to mode.")
+                    info("lastError", "Any error thrown during task execution or scheduling.")
+                    info("runsCount", "Number of times the task has run since installation.")
                 }
-                .padding()
+
+                Section("Missed Reflections") {
+                    info("lastFound", "How many missed reflections the pipeline detected last run.")
+                }
+
+                Section("Notification Throttle") {
+                    info("lastNotifyDateISO", "When the last notification was successfully posted.")
+                    info("lastNotifyCount", "The count value that triggered the last notification.")
+                    info("lastNotifyDecision", "Whether a notification was sent, skipped, throttled, or failed.")
+                    info("lastNotifyReason", "Why a notification was or was not sent.")
+                }
+
+                Section("Device") {
+                    info("DeviceMode", "The current mode, which controls whether background tasks should run.")
+                    info("GeneratedAt", "When this diagnostics snapshot was created.")
+                }
             }
             .navigationTitle("Diagnostics Info")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
                         dismiss()
-                    } label: {
-                        Image(systemName: "checkmark")
                     }
-                    .buttonStyle(.borderedProminent)
                 }
             }
         }
@@ -291,7 +264,7 @@ struct DiagnosticsInfoSheet: View {
                 .font(.headline)
             Text(description)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -300,7 +273,7 @@ struct DiagnosticsInfoSheet: View {
 // MARK: - Preview
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         BackgroundDiagnosticsView()
     }
 }

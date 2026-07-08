@@ -25,95 +25,62 @@ extension SettingsView {
         }
         
         var body: some View {
-            ScrollView {
-                IconLabelGroupBox(
-                    label:
-                        IconLabel(
-                            icon: "iphone.motion",
-                            title: String(localized: "Device Selection"),
-                            labelColor: Color("BrandPrimary"),
-                            background: true
-                        ),
-                    description:
-                        Text(String(localized: "Please select which devices you want to use MindfulPacer on."))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-                    VStack(spacing: 16) {
-                        ForEach(DeviceMode.allCases) { mode in
-                            let isSelectable = (mode == .iPhoneOnly) || viewModel.isWatchAppInstalled
+            List {
+                Section {
+                    ForEach(DeviceMode.allCases) { mode in
+                        let isSelectable = (mode == .iPhoneOnly) || viewModel.isWatchAppInstalled
 
-                            SelectableButton(
-                                shape: .roundedRectangle(cornerRadius: 16),
-                                backgroundColor: Color(.tertiarySystemGroupedBackground),
-                                isSelected: viewModel.deviceMode == mode
-                            ) {
-                                if isSelectable {
-                                    deviceModeBinding.wrappedValue = mode
-                                    viewModel.presentAlert(.restartApp)
-                                }
-                            } label: {
-                                IconLabel(
-                                    icon: mode.icon,
+                        Button {
+                            guard isSelectable else { return }
+                            deviceModeBinding.wrappedValue = mode
+                            viewModel.deviceMode = mode
+                            viewModel.presentAlert(.restartApp)
+                        } label: {
+                            HStack(alignment: .center) {
+                                SettingsRowLabel(
                                     title: mode.localized,
-                                    description: mode.description,
-                                    titleColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                        : (isSelectable ? .primary : .secondary),
-                                    iconColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                        : (isSelectable ? .primary : .secondary),
-                                    descriptionTextColor: viewModel.deviceMode == mode ? Color("BrandPrimary")
-                                        : (isSelectable ? .secondary : .secondary),
-                                    background: true
+                                    subtitle: mode.description,
+                                    systemImage: mode.settingsIcon
                                 )
-                                .redacted(reason: (mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled) ? .invalidated : .init())
-                                .font(.subheadline.weight(.semibold))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .overlay(alignment: .bottomTrailing) {
-                                    if mode == .iPhoneAndWatch && !viewModel.isWatchAppInstalled {
-                                        IconLabel(
-                                            icon: "exclamationmark.triangle.fill",
-                                            title: String(localized: "Requires Watch App"),
-                                            labelColor: .secondary
-                                        )
-                                        .font(.caption2.weight(.semibold))
-                                        .padding(6)
-                                        .background(.thickMaterial, in: Capsule())
-                                    }
+                                .opacity(isSelectable ? 1.0 : 0.55)
+
+                                Spacer()
+
+                                if viewModel.deviceMode == mode {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(Color.accentColor)
+                                } else if !isSelectable {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(.secondary)
                                 }
-                                .opacity(isSelectable ? 1.0 : 0.6)
                             }
-                            .disabled(!isSelectable)
                         }
+                        .buttonStyle(.plain)
+                        .disabled(!isSelectable)
                     }
+                } header: {
+                    Text("Device Selection")
                 } footer: {
                     if !viewModel.isWatchAppInstalled {
-                        VStack(alignment: .leading, spacing: 4) {
-                            IconLabel(
-                                icon: "applewatch",
-                                title: String(localized: "To use “iPhone + Apple Watch”, install and set up the MindfulPacer Watch app first."),
-                                labelColor: .secondary
-                            )
-                            .font(.footnote)
-
-                            Button {
-                                viewModel.navigationPath.append(.appleWatch)
-                            } label: {
-                                IconLabel(
-                                    icon: "arrow.right.circle.fill",
-                                    title: String(localized: "Open Apple Watch Setup"),
-                                    labelColor: .brandPrimary
-                                )
-                                .font(.footnote.weight(.semibold))
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("To use “iPhone + Apple Watch”, install and set up the MindfulPacer Watch app first.")
+                    } else {
+                        Text("Choose which devices MindfulPacer should use for reminders and activity tracking.")
                     }
                 }
-                .iconLabelGroupBoxStyle(.divider)
-                .padding(.horizontal)
+
+                if !viewModel.isWatchAppInstalled {
+                    Section {
+                        Button {
+                            viewModel.navigationPath.append(.appleWatch)
+                        } label: {
+                            Label("Open Apple Watch Setup", systemImage: "applewatch")
+                        }
+                        .foregroundStyle(.primary)
+                    }
+                }
             }
-            .background(Color(.systemGroupedBackground))
             .navigationTitle(String(localized: "Device Mode"))
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 if !viewModel.isWatchAppInstalled && deviceModeBinding.wrappedValue == .iPhoneAndWatch {
                     deviceModeBinding.wrappedValue = .iPhoneOnly
@@ -131,6 +98,17 @@ extension SettingsView {
                 }
                 Task { await MissedReflectionsMonitorService.shared.onDeviceModeChanged(mode) }
             }
+        }
+    }
+}
+
+private extension DeviceMode {
+    var settingsIcon: String {
+        switch self {
+        case .iPhoneAndWatch:
+            "applewatch.radiowaves.left.and.right"
+        case .iPhoneOnly:
+            "iphone.circle.fill"
         }
     }
 }

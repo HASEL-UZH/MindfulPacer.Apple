@@ -14,55 +14,36 @@ extension SettingsView {
         
         // MARK: Properties
         
+        @Environment(\.dismiss) private var dismiss
         @Bindable var viewModel: SettingsViewModel
         
         // MARK: Body
         
         var body: some View {
             NavigationStack {
-                VStack {
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "iphone.gen3",
-                                title: "Details",
-                                labelColor: Color("BrandPrimary"),
-                                background: true
-                            ),
-                        description:
-                            Text("Share this report to help us troubleshoot issues.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    ) {
-                        infoCell(
-                            title: "App Version",
-                            value: viewModel.appVersion
-                        )
-                        infoCell(
-                            title: "System Version",
-                            value: viewModel.systemVersion
-                        )
-                        infoCell(
-                            title: "Screen Size",
-                            value: viewModel.screenSize
-                        )
-                        infoCell(
-                            title: "Model Name",
-                            value: viewModel.modelName
-                        )
+                List {
+                    Section {
+                        infoCell(title: "App Version", value: viewModel.appVersion)
+                        infoCell(title: "System Version", value: viewModel.systemVersion)
+                        infoCell(title: "Screen Size", value: viewModel.screenSize)
+                        infoCell(title: "Model Name", value: viewModel.modelName)
+                    } header: {
+                        Text("Details")
+                    } footer: {
+                        Text("Share this report to help us troubleshoot issues.")
                     }
-                    .iconLabelGroupBoxStyle(.divider)
-                    .padding(.horizontal)
-                    
-                    Spacer()
-                    
-                    systemReportShareButton
+
+                    Section {
+                        systemReportShareButton
+                    }
                 }
-                .background(Color(.systemGroupedBackground))
                 .navigationTitle("System Report")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        CloseButton()
+                        Button("Done") {
+                            dismiss()
+                        }
                     }
                 }
             }
@@ -75,27 +56,30 @@ extension SettingsView {
             title: String,
             value: String
         ) -> some View {
-            HStack {
-                Text(title)
-                Spacer()
+            LabeledContent {
                 Text(value)
                     .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            } label: {
+                Text(title)
             }
         }
         
         // MARK: System Report Share Button
         
         private var systemReportShareButton: some View {
-            PrimaryButton(title: "Share System Report", icon: "square.and.arrow.up.fill") {
+            Button {
                 viewModel.presentSheet(
                     .mailView(
                         recipient: viewModel.contactSupportRecipient,
-                        subject: viewModel.contactSupportRecipient,
+                        subject: viewModel.contactSupportSubject,
                         body: viewModel.systemReport
                     )
                 )
+            } label: {
+                Label("Share System Report", systemImage: "square.and.arrow.up.fill")
             }
-            .padding(.horizontal)
+            .foregroundStyle(.primary)
         }
     }
 }
