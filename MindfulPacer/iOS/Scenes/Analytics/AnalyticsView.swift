@@ -30,26 +30,13 @@ struct AnalyticsView: View {
     
     @State private var viewModel: AnalyticsViewModel = ScenesContainer.shared.analyticsViewModel()
     
-    @Query private var allReminders: [Reminder]
     @Query(sort: \Reflection.date, order: .reverse) private var allReflections: [Reflection]
-    
-    private var reminders: [Reminder] {
-        let groupedReminders = Dictionary(grouping: allReminders) { $0.measurementType }
-        let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
-            if lhs == .heartRate { return true }
-            else if rhs == .heartRate { return false }
-            else { return lhs.rawValue < rhs.rawValue }
-        }
-        return sortedKeys.flatMap { key in
-            groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
-        }
-    }
 
     // MARK: Body
     
     var body: some View {
         NavigationStack {
-            chart
+            content
                 .navigationTitle("Analytics")
                 .background {
                     Color(.systemGroupedBackground)
@@ -74,8 +61,14 @@ struct AnalyticsView: View {
                                 Label("Selected Date", systemImage: "calendar")
                                 Text(viewModel.selectedDateForPeriod.formatted(.dateTime.day().month()))
                             }
+
+                            Button {
+                                viewModel.presentSheet(.editReflectionView(nil))
+                            } label: {
+                                Label("Create Reflection", systemImage: "plus.circle")
+                            }
                         } label: {
-                            Text("View Options")
+                            Image(systemName: "ellipsis")
                         }
                         .tint(Color("BrandPrimary"))
                     }
@@ -88,14 +81,7 @@ struct AnalyticsView: View {
                     sheetContent(for: sheet)
                 })
                 .onViewFirstAppear {
-                    viewModel.updateReminders(reminders)
                     viewModel.onViewFirstAppear()
-                }
-                .onAppear {
-                    viewModel.onViewAppear()
-                }
-                .onChange(of: reminders) { _, newValue in
-                    viewModel.updateReminders(newValue)
                 }
                 .onChange(of: allReflections) { _, _ in
                     viewModel.updateReflectionsInPeriod()
@@ -105,206 +91,66 @@ struct AnalyticsView: View {
     
     // MARK: Chart
     
-    private var chart: some View {
-        IconLabelGroupBox(
-            label:
-                IconLabel(
-                    icon: viewModel.selectedMeasurementType.icon,
-                    title: viewModel.selectedMeasurementType.localized,
-                    description: viewModel.navigationSubtitle,
-                    labelColor: viewModel.selectedMeasurementType.color,
-                    background: true,
-                    descriptionPlacement: .inline
-                )
-        ) {
-            VStack(spacing: 16) {
-                Picker(selection: $viewModel.selectedPeriod) {
-                    ForEach(Period.activeCases(for: viewModel.selectedDateForPeriod), id: \.self) { period in
-                        Text(period.displayName)
-                            .tag(period.displayName)
-                    }
-                } label: {
-                    EmptyView()
-                }
-                .pickerStyle(.segmented)
-                
-                switch viewModel.selectedMeasurementType {
-                case .heartRate:
-                    HeartRateChartView(viewModel: viewModel)
-                case .steps:
-                    StepsChartView(viewModel: viewModel)
-                }
-                
-                Divider()
-                
-                if viewModel.selectedReflectionBucket.isNotNil {
-                    reflectionsInBucket
-                } else {
-                    reflectionsInPeriod
-                }
-            }
-        } footer: {
-            Button {
-                viewModel.presentSheet(.editReflectionView(nil))
-            } label: {
-                IconLabel(
-                    icon: "plus.circle",
-                    title: String(localized: "Create Reflection"),
-                    labelColor: Color("BrandPrimary")
-                )
-                .font(.subheadline.weight(.semibold))
-            }
-        }
-        .iconLabelGroupBoxStyle(.divider)
-        .overlay(alignment: .top) {
-            selectedValueDetail
-        }
-        .padding([.horizontal, .bottom])
-    }
-    
-    // MARK: Reflections in Period
-    
-    private var reflectionsInPeriod: some View {
-        VStack(spacing: 0) {
-            Text("Reflections")
-                .font(.title2.bold())
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            if viewModel.reflectionsInPeriod.isEmpty {
-                EmptyStateView(
-                    image: "book.pages",
-                    title: String(localized: "No Reflections"),
-                    description: String(localized: "There are no reflections.")
-                )
-            } else {
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.reflectionsInPeriod) { reflectionBucket in
-                            ForEach(reflectionBucket.reflections) { reflection in
-                                ReflectionCell(
-                                    reflection: reflection,
-                                    backgroundColor: Color(.tertiarySystemGroupedBackground)
-                                ) {
-                                    viewModel.presentSheet(.editReflectionView(reflection))
-                                }
-                                
-                                Divider()
-                            }
-                        }
-                    }
-                    .cornerRadius(16)
-                }
-                .safeAreaPadding(.vertical)
-            }
+    private var content: some View {
+        ScrollView {
+            chartContent
+                .padding([.horizontal, .bottom])
+                .padding(.top, 8)
         }
     }
-    
-    // MARK: Reflections in Bucket
-    
+
     @ViewBuilder
-    private var reflectionsInBucket: some View {
-        if let reflectionBucket = viewModel.selectedReflectionBucket {
-            VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text("Reflections")
-                            .font(.title2.bold())
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Button {
-                            viewModel.selectedReflectionBucket = nil
-                        } label: {
-                            IconLabel(
-                                icon: "arrow.trianglehead.counterclockwise",
-                                title: "Reset",
-                                labelColor: Color("BrandPrimary")
-                            )
-                            .font(.subheadline.weight(.semibold))
-                        }
-                    }
-                    
-                    Group {
-                        Text(reflectionBucket.startDate.formatted(.dateTime.weekday(.wide).year().month().day().minute().hour()))
-                        +
-                        Text(" - ")
-                        +
-                        Text(reflectionBucket.endDate.formatted(.dateTime.weekday(.wide).year().month().day().minute().hour()))
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-                
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(reflectionBucket.reflections) { reflection in
-                            ReflectionCell(
-                                reflection: reflection,
-                                backgroundColor: Color(.tertiarySystemGroupedBackground)
-                            ) {
-                                viewModel.presentSheet(.editReflectionView(reflection))
-                            }
-                            
-                            Divider()
-                        }
-                    }
-                    .cornerRadius(16)
-                }
-                .safeAreaPadding(.vertical)
-            }
-        }
-    }
-    
-    // MARK: Selected Value Detail
-    
-    @ViewBuilder
-    private var selectedValueDetail: some View {
-        if let selectedChartDataItem = viewModel.selectedChartDataItem {
-            HStack {
-                VStack(alignment: .leading, spacing: 16) {
-                    IconLabel(
-                        icon: "calendar",
-                        title: selectedChartDataItem.startDate.formatted(.dateTime.weekday(.wide).year().month().day()),
-                        labelColor: .secondary,
-                        background: true
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    
-                    Group {
-                        switch viewModel.selectedMeasurementType {
-                        case .heartRate:
-                            Text("\(selectedChartDataItem.startDate.formatted(.dateTime.minute().hour()))")
-                        case .steps:
-                            switch viewModel.selectedPeriod {
-                            case .oneHour, .twoHours, .day:
-                                Text("\(selectedChartDataItem.startDate.formatted(.dateTime.minute().hour()))")
-                            case .week:
-                                Text("Total for Day")
-                            }
-                        }
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-                
-                Spacer()
-                
-                Text("\(Int(selectedChartDataItem.value))")
-                    .font(.title3.bold())
-                +
-                Text(" \(viewModel.selectedMeasurementType.units)")
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background {
-                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, topTrailing: 16))
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
-            }
+    private var chartContent: some View {
+        if viewModel.statChartData.isEmpty {
+            EmptyStateView(
+                image: viewModel.chartEmptyStateImage,
+                title: viewModel.chartEmptyStateTitle,
+                description: String(localized: "Synchronize your smartwatch")
+            )
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 360)
         } else {
-            EmptyView()
+            StatChart(
+                entries: viewModel.statChartData,
+                configuration: statChartConfiguration,
+                selectedPeriod: viewModel.statChartPeriodBinding,
+                activeChipID: $viewModel.activeReflectionChipID
+            )
         }
     }
-    
+
+    private var statChartConfiguration: StatChartConfiguration {
+        StatChartConfiguration(
+            markStyle: viewModel.statChartMarkStyle,
+            tintColor: viewModel.selectedMeasurementType.color,
+            chartHeight: 260,
+            unitLabel: viewModel.selectedMeasurementType.units,
+            summaryMode: viewModel.statChartSummaryMode,
+            periods: viewModel.activeStatChartPeriods,
+            defaultPeriod: viewModel.statChartPeriod,
+            visibleDomainLength: viewModel.statChartDomainMapping[viewModel.statChartPeriod] ?? 86_400,
+            valueFormatter: { value in Int(value).formatted() },
+            xAxisDateFormat: viewModel.statChartXAxisDateFormat,
+            xAxisDateUnit: viewModel.getXUnitForPeriod(viewModel.selectedPeriod),
+            chips: viewModel.reflectionChips,
+            periodDomainMapping: viewModel.statChartDomainMapping,
+            xAxisDateFormatForPeriod: { period in
+                switch period {
+                case .oneHour, .twoHours:
+                    "HH:mm"
+                case .day:
+                    "HH"
+                case .week:
+                    "EEE"
+                case .month:
+                    "d"
+                case .sixMonths, .year:
+                    "MMM"
+                }
+            }
+        )
+    }
+
     // MARK: Sheet Content
     
     @ViewBuilder

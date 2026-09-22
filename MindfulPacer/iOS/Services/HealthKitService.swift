@@ -63,15 +63,6 @@ enum Period: String, CaseIterable {
         }
     }
     
-    var granularity: ChartGranularity {
-        switch self {
-        case .oneHour: .minute
-        case .twoHours: .minute
-        case .day: .hour
-        case .week: .day
-        }
-    }
-    
     func startDate(relativeTo endDate: Date = Date()) -> Date {
         switch self {
         case .oneHour:
