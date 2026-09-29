@@ -16,6 +16,12 @@ extension AnalyticsView {
         
         @Environment(\.dismiss) private var dismiss
         @Bindable var viewModel: AnalyticsViewModel
+        @State private var selectedDate: Date
+
+        init(viewModel: AnalyticsViewModel) {
+            self.viewModel = viewModel
+            _selectedDate = State(initialValue: viewModel.selectedDateForPeriod)
+        }
         
         // MARK: Body
         
@@ -24,8 +30,8 @@ extension AnalyticsView {
                 List {
                     Section {
                         DatePicker(
-                            "",
-                            selection: $viewModel.selectedDateForPeriod,
+                            "Selected Date",
+                            selection: $selectedDate,
                             in: Date.distantPast...Date(),
                             displayedComponents: .date
                         )
@@ -44,7 +50,7 @@ extension AnalyticsView {
                         } label: {
                             Label("Today", systemImage: "calendar")
                         }
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.accentColor)
                     }
                 }
                 .navigationTitle("Date")
@@ -60,6 +66,7 @@ extension AnalyticsView {
                     
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
+                            viewModel.selectedDateForPeriod = selectedDate
                             viewModel.onSelectedDateForPeriodChanged()
                             dismiss()
                         } label: {

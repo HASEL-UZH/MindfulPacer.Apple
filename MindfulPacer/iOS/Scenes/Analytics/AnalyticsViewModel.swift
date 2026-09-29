@@ -12,7 +12,7 @@ import SwiftUI
 // MARK: - ChartDataItem
 
 struct ChartDataItem: Identifiable, Equatable {
-    let id = UUID()
+    var id = UUID()
     let startDate: Date
     let endDate: Date
     let value: Double
@@ -27,7 +27,7 @@ extension ChartDataItem: StatChartEntry {
 // MARK: - ReflectionBucket
 
 struct ReflectionBucket: Identifiable {
-    let id: UUID = UUID()
+    var id: String { reflections.map(\.id.uuidString).joined(separator: "-") }
     let startDate: Date
     let endDate: Date
     let reflections: [Reflection]
@@ -51,54 +51,62 @@ class AnalyticsViewModel {
     
     var reflectionsInPeriod: [ReflectionBucket] = []
     
-    var selectedDateForPeriod: Date = Date.now
-
-    /// Returns the effective end date for data queries.
-    /// For today, uses the current time. For past dates, uses end of day (23:59:59)
-    var effectiveEndDate: Date {
-        if Calendar.current.isDateInToday(selectedDateForPeriod) {
-            return selectedDateForPeriod
-        } else {
-            let startOfNextDay = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: selectedDateForPeriod))!
-            return startOfNextDay.addingTimeInterval(-1)
+    var selectedDateForPeriod: Date = .now
+    private(set) var isLoading = false
+    private(set) var loadFailed = false
+    private var requestID = UUID()
+    private var referenceNow = Date.now
+    private var cachedReflections: [Reflection] = []
+    var chartRevision = UUID()
+    var visibleWindow: StatChartVisibleWindow? {
+        didSet {
+            guard visibleWindow != oldValue else { return }
+            updateReflectionsInPeriod(reload: false)
         }
+    }
+
+    var effectiveEndDate: Date {
+        min(referenceNow, Calendar.current.date(byAdding: .day, value: 1,
+            to: Calendar.current.startOfDay(for: selectedDateForPeriod))!)
+    }
+
+    var initialVisibleWindow: StatChartVisibleWindow {
+        let calendar = Calendar.current
+        let day = calendar.startOfDay(for: selectedDateForPeriod)
+        let start: Date
+        let end: Date
+        switch selectedPeriod {
+        case .oneHour, .twoHours:
+            end = effectiveEndDate
+            start = selectedPeriod.startDate(relativeTo: end)
+        case .day:
+            start = day
+            end = calendar.date(byAdding: .day, value: 1, to: day)!
+        case .week:
+            start = calendar.date(byAdding: .day, value: -6, to: day)!
+            end = calendar.date(byAdding: .day, value: 1, to: day)!
+        }
+        return .init(startDate: start, endDate: end, period: statChartPeriod)
+    }
+
+    /// A fixed, fully fetched range. The chart cannot drift into unqueried dates.
+    var chartDateDomain: ClosedRange<Date> {
+        let calendar = Calendar.current
+        let days = selectedPeriod == .week ? 28 : 7
+        let start = calendar.date(byAdding: .day, value: -days,
+            to: calendar.startOfDay(for: selectedDateForPeriod))!
+        return start...initialVisibleWindow.endDate
     }
 
     var selectedPeriod: Period = .oneHour {
         didSet { refreshChart() }
     }
-    var selectedMeasurementType: MeasurementType = .steps {
+    var selectedMeasurementType: MeasurementType = .heartRate {
         didSet { refreshChart() }
     }
     
     var heartRateChartData: [ChartDataItem] = []
     var stepsChartData: [ChartDataItem] = []
-    
-    var downsampledChartData: [ChartDataItem] {
-        let maxDataPoints = 100
-        
-        guard chartData.count > maxDataPoints else {
-            return chartData
-        }
-        
-        var downsampledData: [ChartDataItem] = []
-        let bucketSize = Double(chartData.count) / Double(maxDataPoints)
-        
-        for i in 0..<maxDataPoints {
-            let bucketStart = Int(Double(i) * bucketSize)
-            let bucketEnd = Int(Double(i + 1) * bucketSize)
-            
-            guard let bucketSlice = chartData[safe: bucketStart..<bucketEnd] else { continue }
-            let bucket = Array(bucketSlice)
-            guard !bucket.isEmpty else { continue }
-            
-            if let significantPoint = bucket.max(by: { $0.value < $1.value }) {
-                downsampledData.append(significantPoint)
-            }
-        }
-        
-        return downsampledData
-    }
     
     var activeReflectionChipID: String? {
         didSet {
@@ -119,10 +127,13 @@ class AnalyticsViewModel {
     }
 
     var statChartData: [ChartDataItem] {
-        if selectedMeasurementType == .steps && selectedPeriod == .week {
-            return chartData
+        guard selectedMeasurementType == .steps, selectedPeriod != .week else { return chartData }
+        let window = visibleWindow ?? initialVisibleWindow
+        var total = 0.0
+        return stepsChartData.filter { $0.date >= window.startDate && $0.date < window.endDate }.map { entry in
+            total += entry.value
+            return ChartDataItem(id: entry.id, startDate: entry.startDate, endDate: entry.endDate, value: total)
         }
-        return downsampledChartData
     }
 
     var statChartPeriod: StatChartPeriod {
@@ -146,12 +157,11 @@ class AnalyticsViewModel {
     }
 
     var statChartDomainMapping: [StatChartPeriod: TimeInterval] {
-        [
-            .oneHour: 3_600,
-            .twoHours: 7_200,
-            .day: 86_400,
-            .week: 7 * 86_400
+        var durations: [StatChartPeriod: TimeInterval] = [
+            .oneHour: 3_600, .twoHours: 7_200, .day: 86_400, .week: 7 * 86_400
         ]
+        durations[statChartPeriod] = initialVisibleWindow.endDate.timeIntervalSince(initialVisibleWindow.startDate)
+        return durations
     }
 
     var statChartXAxisDateFormat: String {
@@ -166,14 +176,14 @@ class AnalyticsViewModel {
     }
 
     var statChartMarkStyle: StatChartMarkStyle {
-        if selectedMeasurementType == .steps && selectedPeriod == .week {
-            return .bar()
+        if selectedMeasurementType == .steps {
+            return selectedPeriod == .week ? .bar() : .line(lineWidth: 2, showPoints: false)
         }
         return .area(lineWidth: 2, opacity: 0.18)
     }
 
     var statChartSummaryMode: StatChartSummaryMode {
-        selectedMeasurementType == .heartRate ? .average : .latest
+        selectedMeasurementType == .heartRate ? .average : (selectedPeriod == .week ? .total : .latest)
     }
 
     var reflectionChips: [StatChartChip] {
@@ -183,7 +193,8 @@ class AnalyticsViewModel {
                 label: reflectionChipLabel(for: bucket),
                 valueText: reflectionChipValueText(for: bucket),
                 unitText: reflectionChipUnitText(for: bucket),
-                overlay: .focusDate(bucket.startDate)
+                overlay: .focusDate(bucket.startDate),
+                systemImage: bucket.reflections.first?.subactivity?.icon ?? bucket.reflections.first?.activity?.icon ?? "book.closed.fill"
             )
         }
     }
@@ -236,17 +247,25 @@ class AnalyticsViewModel {
     }
     
     func onSheetDismissed() {
-        refreshChart()
+        // Keep a browsed historical window in place. If the chart was following
+        // the present, advance it so a reflection just created at "now" is visible.
+        if Calendar.current.isDateInToday(selectedDateForPeriod),
+           selectedPeriod == .oneHour || selectedPeriod == .twoHours,
+           let visibleWindow,
+           abs(visibleWindow.endDate.timeIntervalSince(referenceNow)) < 1 {
+            refreshChart()
+        } else {
+            updateReflectionsInPeriod()
+        }
     }
     
     // MARK: - Chart Related
     
     func getXUnitForPeriod(_ period: Period) -> Calendar.Component {
+        if selectedMeasurementType == .heartRate { return .second }
         switch period {
-        case .oneHour, .twoHours:
+        case .oneHour, .twoHours, .day:
             return .minute
-        case .day:
-            return .hour
         case .week:
             return .day
         }
@@ -254,73 +273,62 @@ class AnalyticsViewModel {
     
     // MARK: - Private Methods
     
-    private func fetchHeartRateChartData() {
-        fetchHeartRateUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
-            switch result {
-            case .success(let success):
-                Task { @MainActor in
-                    self.heartRateChartData = success
-                }
-            case .failure:
-                print("Could not fetch heart data")
-            }
-        }
-    }
-    
-    private func fetchStepsChartData() {
-        // Base (non-bucketed) data
-        fetchStepsUseCase.execute(for: selectedPeriod, endDate: effectiveEndDate) { result in
-            switch result {
-            case .success(let success):
-                Task { @MainActor in
-                    self.stepsChartData = success
-                }
-            case .failure:
-                print("Could not fetch cumulative steps data")
-            }
-        }
-        
-        // Bucketed weekly data
-        if selectedPeriod == .week {
-            fetchStepsUseCase.executeBucketed(for: selectedPeriod, endDate: effectiveEndDate) { result in
+    func refreshChart() {
+        referenceNow = .now
+        let token = UUID()
+        requestID = token
+        activeReflectionChipID = nil
+        visibleWindow = initialVisibleWindow
+        chartRevision = UUID()
+        isLoading = true
+        loadFailed = false
+        heartRateChartData = []
+        stepsChartData = []
+        weeklyStepsChartData = []
+        let measurement = selectedMeasurementType
+        let period = selectedPeriod
+        let completion: @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void = { [weak self] result in
+            Task { @MainActor in
+                guard let self, self.requestID == token else { return }
+                self.isLoading = false
                 switch result {
-                case .success(let success):
-                    Task { @MainActor in
-                        self.weeklyStepsChartData = success
+                case .success(let entries):
+                    let sorted = entries.sorted { $0.startDate < $1.startDate }
+                    if measurement == .heartRate {
+                        self.heartRateChartData = sorted
+                    } else if period == .week {
+                        self.weeklyStepsChartData = sorted
+                    } else {
+                        self.stepsChartData = sorted
                     }
                 case .failure:
-                    print("Could not fetch bucketed weekly steps data")
+                    self.loadFailed = true
                 }
             }
+        }
+        if measurement == .heartRate {
+            fetchHeartRateUseCase.executeHistory(for: period, startDate: chartDateDomain.lowerBound,
+                                                endDate: effectiveEndDate, completion: completion)
         } else {
-            self.weeklyStepsChartData = []
+            fetchStepsUseCase.executeHistory(for: period, startDate: chartDateDomain.lowerBound,
+                                            endDate: effectiveEndDate, completion: completion)
         }
-    }
-    
-    private func refreshChart() {
-        activeReflectionChipID = nil
-        
-        switch selectedMeasurementType {
-        case .heartRate:
-            fetchHeartRateChartData()
-        case .steps:
-            fetchStepsChartData()
-        }
-        
         updateReflectionsInPeriod()
     }
-    
-    func updateReflectionsInPeriod() {
+
+    func updateReflectionsInPeriod(reload: Bool = true) {
         do {
             let descriptor = FetchDescriptor<Reflection>(
                 sortBy: [SortDescriptor(\Reflection.date, order: .reverse)]
             )
-            let allReflections = try modelContext.fetch(descriptor)
+            if reload { cachedReflections = try modelContext.fetch(descriptor) }
+            let allReflections = cachedReflections
             
-            let endDate = effectiveEndDate
-            let start = selectedPeriod.startDate(relativeTo: endDate)
+            let window = visibleWindow ?? initialVisibleWindow
+            let endDate = window.endDate
+            let start = window.startDate
             let filteredReflections = allReflections.filter { reflection in
-                reflection.date >= start && reflection.date <= endDate
+                reflection.date >= start && reflection.date < endDate
             }
             
             let groupingInterval: TimeInterval
@@ -388,7 +396,7 @@ class AnalyticsViewModel {
         }
     }
 
-    private func reflectionChipID(for bucket: ReflectionBucket) -> String {
+    func reflectionChipID(for bucket: ReflectionBucket) -> String {
         let reflectionIDs = bucket.reflections
             .map(\.id.uuidString)
             .joined(separator: "-")
@@ -436,15 +444,6 @@ class AnalyticsViewModel {
         }
 
         return ""
-    }
-}
-
-fileprivate extension Array {
-    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
-        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
-            return self[range]
-        }
-        return nil
     }
 }
 

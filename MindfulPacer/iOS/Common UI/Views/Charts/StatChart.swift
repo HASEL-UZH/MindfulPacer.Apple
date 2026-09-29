@@ -116,13 +116,15 @@ struct StatChartChip: Identifiable {
     let valueText: String
     let unitText: String
     let overlay: StatChartChipOverlay
+    let systemImage: String?
 
-    init(id: String? = nil, label: String, valueText: String, unitText: String, overlay: StatChartChipOverlay) {
+    init(id: String? = nil, label: String, valueText: String, unitText: String, overlay: StatChartChipOverlay, systemImage: String? = nil) {
         self.id = id ?? label
         self.label = label
         self.valueText = valueText
         self.unitText = unitText
         self.overlay = overlay
+        self.systemImage = systemImage
     }
 }
 
@@ -184,6 +186,49 @@ struct StatChartConfiguration {
     /// Returns the x-axis date format for a given period.
     /// When nil, uses the fixed `xAxisDateFormat` for all periods.
     var xAxisDateFormatForPeriod: ((StatChartPeriod) -> String)?
+
+    /// Optional fixed lower padding for line/area charts, in the measurement's units.
+    var minimumValuePadding: Double? = nil
+    var dateDomain: ClosedRange<Date>? = nil
+    var initialWindowStart: Date? = nil
+    var startsAtZero: Bool = false
+
+    /// Scale shared by the chart and its validation, including empty and constant series.
+    func yScaleDomain(for values: [Double]) -> ClosedRange<Double> {
+        let values = values.filter(\.isFinite)
+        guard let minValue = values.min(),
+              let maxValue = values.max(),
+              minValue.isFinite,
+              maxValue.isFinite else {
+            return 0...1
+        }
+
+        let shouldIncludeZero: Bool = {
+            if case .bar = markStyle { return true }
+            return false
+        }()
+
+        let rawRange = maxValue - minValue
+        let fallbackPadding = max(abs(maxValue) * 0.1, 1)
+        let padding = rawRange > 0 ? max(rawRange * 0.12, 1) : fallbackPadding
+        let allValuesAreNonNegative = values.allSatisfy { $0 >= 0 }
+
+        let lowerPadding = minimumValuePadding ?? padding
+        let lower: Double
+        if shouldIncludeZero || startsAtZero {
+            lower = 0
+        } else if allValuesAreNonNegative {
+            lower = max(0, minValue - lowerPadding)
+        } else {
+            lower = minValue - lowerPadding
+        }
+
+        let upper = maxValue + padding
+        if lower == upper {
+            return (lower - 1)...(upper + 1)
+        }
+        return lower...upper
+    }
 
     /// Summary mode label shown above the value when nothing is selected.
     var summaryModeLabel: String {
@@ -367,6 +412,22 @@ struct StatChart<Entry: StatChartEntry>: View {
         return entries.filter { $0.date >= windowStart && $0.date <= windowEnd }
     }
 
+    /// A line or area cannot show a lone reading without a point marker.
+    /// Check the visible window, since the rest of the history may be offscreen.
+    private var isolatedVisibleEntry: Entry? {
+        let visible = visibleEntries
+        return visible.count == 1 ? visible.first : nil
+    }
+
+    private func xValue(for date: Date) -> PlottableValue<Date> {
+        if case .bar = configuration.markStyle {
+            return .value("Date", date, unit: configuration.xAxisDateUnit)
+        }
+        // Only bars are calendar buckets. Rounding a measurement to a bucket's
+        // midpoint can move a reading at the edge outside the visible window.
+        return .value("Date", date)
+    }
+
     /// Entries rendered into the chart. This is intentionally wider than the visible
     /// window so scrolling has breathing room without forcing Charts to draw the full series.
     private var renderedEntries: [Entry] {
@@ -401,38 +462,7 @@ struct StatChart<Entry: StatChartEntry>: View {
     /// Y-domain based on the visible window instead of the full dataset.
     /// This prevents off-looking axes when distant outliers exist outside the current scroll window.
     private var yScaleDomain: ClosedRange<Double> {
-        let values = yDomainValues
-        guard let minValue = values.min(),
-              let maxValue = values.max(),
-              minValue.isFinite,
-              maxValue.isFinite else {
-            return 0...1
-        }
-
-        let shouldIncludeZero: Bool = {
-            if case .bar = configuration.markStyle { return true }
-            return false
-        }()
-
-        let rawRange = maxValue - minValue
-        let fallbackPadding = max(abs(maxValue) * 0.1, 1)
-        let padding = rawRange > 0 ? max(rawRange * 0.12, 1) : fallbackPadding
-        let allValuesAreNonNegative = values.allSatisfy { $0 >= 0 }
-
-        let lower: Double
-        if shouldIncludeZero {
-            lower = 0
-        } else if allValuesAreNonNegative {
-            lower = max(0, minValue - padding)
-        } else {
-            lower = minValue - padding
-        }
-
-        let upper = maxValue + padding
-        if lower == upper {
-            return (lower - 1)...(upper + 1)
-        }
-        return lower...upper
+        configuration.yScaleDomain(for: yDomainValues)
     }
 
     private var yDomainValues: [Double] {
@@ -497,19 +527,10 @@ struct StatChart<Entry: StatChartEntry>: View {
 
     /// Explicit scrollable x-domain so short data ranges still occupy the full visible window.
     private var xScaleDomain: ClosedRange<Date> {
-        let windowStart = scrollPositionX
-        let windowEnd = scrollPositionX.addingTimeInterval(activeDomainLength)
-
-        guard let firstEntry = entries.min(by: { $0.date < $1.date }),
-              let lastEntry = entries.max(by: { $0.date < $1.date }) else {
-            return windowStart...windowEnd
-        }
-
-        let dataStart = firstEntry.date
-        let dataEndPadding: TimeInterval = activeDomainLength >= 86_400 ? 86_400 : 0
-        let dataEnd = lastEntry.date.addingTimeInterval(dataEndPadding)
-
-        return min(dataStart, windowStart)...max(dataEnd, windowEnd)
+        if let domain = configuration.dateDomain { return domain }
+        let end = entries.map(\.date).max() ?? .now
+        let start = entries.map(\.date).min() ?? end.addingTimeInterval(-activeDomainLength)
+        return min(start, end.addingTimeInterval(-activeDomainLength))...end
     }
 
     // MARK: Init
@@ -526,7 +547,9 @@ struct StatChart<Entry: StatChartEntry>: View {
 
         let defaultDomain = configuration.periodDomainMapping?[configuration.defaultPeriod]
             ?? configuration.visibleDomainLength
-        if let latest = entries.max(by: { $0.date < $1.date }) {
+        if let start = configuration.initialWindowStart {
+            _scrollPositionX = State(initialValue: start)
+        } else if let latest = entries.max(by: { $0.date < $1.date }) {
             _scrollPositionX = State(
                 initialValue: Self.initialScrollStart(latestDate: latest.date, domain: defaultDomain)
             )
@@ -546,7 +569,9 @@ struct StatChart<Entry: StatChartEntry>: View {
 
         let defaultDomain = configuration.periodDomainMapping?[configuration.defaultPeriod]
             ?? configuration.visibleDomainLength
-        if let latest = entries.max(by: { $0.date < $1.date }) {
+        if let start = configuration.initialWindowStart {
+            _scrollPositionX = State(initialValue: start)
+        } else if let latest = entries.max(by: { $0.date < $1.date }) {
             _scrollPositionX = State(
                 initialValue: Self.initialScrollStart(latestDate: latest.date, domain: defaultDomain)
             )
@@ -571,7 +596,9 @@ struct StatChart<Entry: StatChartEntry>: View {
 
         let defaultDomain = configuration.periodDomainMapping?[configuration.defaultPeriod]
             ?? configuration.visibleDomainLength
-        if let latest = entries.max(by: { $0.date < $1.date }) {
+        if let start = configuration.initialWindowStart {
+            _scrollPositionX = State(initialValue: start)
+        } else if let latest = entries.max(by: { $0.date < $1.date }) {
             _scrollPositionX = State(
                 initialValue: Self.initialScrollStart(latestDate: latest.date, domain: defaultDomain)
             )
@@ -596,7 +623,9 @@ struct StatChart<Entry: StatChartEntry>: View {
 
         let defaultDomain = configuration.periodDomainMapping?[selectedPeriod.wrappedValue]
             ?? configuration.visibleDomainLength
-        if let latest = entries.max(by: { $0.date < $1.date }) {
+        if let start = configuration.initialWindowStart {
+            _scrollPositionX = State(initialValue: start)
+        } else if let latest = entries.max(by: { $0.date < $1.date }) {
             _scrollPositionX = State(
                 initialValue: Self.initialScrollStart(latestDate: latest.date, domain: defaultDomain)
             )
@@ -622,7 +651,9 @@ struct StatChart<Entry: StatChartEntry>: View {
 
         let defaultDomain = configuration.periodDomainMapping?[selectedPeriod.wrappedValue]
             ?? configuration.visibleDomainLength
-        if let latest = entries.max(by: { $0.date < $1.date }) {
+        if let start = configuration.initialWindowStart {
+            _scrollPositionX = State(initialValue: start)
+        } else if let latest = entries.max(by: { $0.date < $1.date }) {
             _scrollPositionX = State(
                 initialValue: Self.initialScrollStart(latestDate: latest.date, domain: defaultDomain)
             )
@@ -635,7 +666,7 @@ struct StatChart<Entry: StatChartEntry>: View {
         VStack(alignment: .leading, spacing: 8) {
             periodPicker
 
-            if !entries.isEmpty {
+            Group {
                 summarySection
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -665,7 +696,9 @@ struct StatChart<Entry: StatChartEntry>: View {
             selectedDate = nil
             activeChipID = nil
 
-            if let latest = entries.max(by: { $0.date < $1.date }) {
+            if let start = configuration.initialWindowStart {
+                scrollPositionX = start
+            } else if let latest = entries.max(by: { $0.date < $1.date }) {
                 let domain = configuration.periodDomainMapping?[newPeriod]
                     ?? configuration.visibleDomainLength
                 scrollPositionX = Self.initialScrollStart(latestDate: latest.date, domain: domain)
@@ -674,6 +707,7 @@ struct StatChart<Entry: StatChartEntry>: View {
             updateExternalVisibleWindow()
         }
         .onChange(of: scrollPositionX) {
+            selectedDate = nil
             updateExternalVisibleWindow()
         }
         .onAppear {
@@ -687,9 +721,13 @@ struct StatChart<Entry: StatChartEntry>: View {
             endDate: scrollPositionX.addingTimeInterval(activeDomainLength),
             period: activeSelectedPeriod
         )
-        if externalVisibleWindow != newWindow {
-            externalVisibleWindow = newWindow
-        }
+        // Charts can report sub-pixel date changes while settling at an edge.
+        // Avoid invalidating the parent and all annotations for that jitter.
+        if let previous = externalVisibleWindow,
+           previous.period == newWindow.period,
+           abs(previous.startDate.timeIntervalSince(newWindow.startDate)) < 0.25,
+           abs(previous.endDate.timeIntervalSince(newWindow.endDate)) < 0.25 { return }
+        externalVisibleWindow = newWindow
     }
 
     private static func initialScrollStart(latestDate: Date, domain: TimeInterval) -> Date {
@@ -727,7 +765,7 @@ private extension StatChart {
             ForEach(configuration.chips) { chip in
                 let isActive = activeChipID == chip.id
 
-                Button {
+                CapsuleSelectableButton(fillColor: configuration.tintColor, isSelected: isActive) {
                     if isActive {
                         activeChipID = nil
                         selectedDate = nil
@@ -762,12 +800,7 @@ private extension StatChart {
                         }
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.large)
-                .tint(isActive ? configuration.tintColor : Color(.secondarySystemGroupedBackground))
-                .foregroundStyle(isActive ? .white : .primary)
-                .animation(.easeInOut(duration: 0.2), value: isActive)
+
             }
         }
     }
@@ -791,8 +824,7 @@ private extension StatChart {
             return entries.summaryValue(for: selectedDate, mode: configuration.summaryMode)
         }
 
-        let summaryEntries = visibleEntries.isEmpty ? entries : visibleEntries
-        return summaryEntries.summaryValue(mode: configuration.summaryMode)
+        return visibleEntries.summaryValue(mode: configuration.summaryMode)
     }
 
     /// Whether a user-driven point selection is active.
@@ -839,7 +871,7 @@ private extension StatChart {
             topLabel: activeChip.map { $0.label.uppercased() }
                 ?? configuration.summaryModeLabel.uppercased(),
             valueText: activeChip.map { chipValueText(for: $0) }
-                ?? configuration.valueFormatter(displayValue),
+                ?? (visibleEntries.isEmpty ? "—" : configuration.valueFormatter(displayValue)),
             unitText: activeChip.map { $0.unitText }
                 ?? configuration.unitLabel,
             bottomText: visibleDateRangeText
@@ -861,7 +893,7 @@ private extension StatChart {
         VStack(alignment: .leading, spacing: 0) {
             Text(topLabel)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
 
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(valueText)
@@ -869,20 +901,22 @@ private extension StatChart {
 
                 Text(unitText.uppercased())
                     .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
 
             Text(bottomText ?? " ")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
         }
     }
 
     /// Formatted date range currently visible in the chart window.
     var visibleDateRangeText: String? {
-        guard !entries.isEmpty else { return nil }
         let end = scrollPositionX.addingTimeInterval(activeDomainLength)
-        return formatDateRange(from: scrollPositionX, to: end)
+        if activeDomainLength < 86_400 {
+            return "\(scrollPositionX.formatted(.dateTime.month(.abbreviated).day())) · \(scrollPositionX.formatted(.dateTime.hour().minute()))–\(end.formatted(.dateTime.hour().minute()))"
+        }
+        return formatDateRange(from: scrollPositionX, to: end.addingTimeInterval(-1))
     }
 }
 
@@ -893,7 +927,7 @@ private extension StatChart {
     var chartContent: some View {
         Chart {
             if let selectedDate {
-                RuleMark(x: .value("Selected", selectedDate, unit: configuration.xAxisDateUnit))
+                RuleMark(x: xValue(for: selectedDate))
                     .foregroundStyle(Color(.systemGray3))
                     .lineStyle(StrokeStyle(lineWidth: statChartSelectionRuleLineWidth))
                     .zIndex(0)
@@ -909,19 +943,26 @@ private extension StatChart {
                 AxisValueLabel {
                     if let doubleValue = value.as(Double.self) {
                         Text(configuration.valueFormatter(doubleValue))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
             }
         }
         .chartXAxis {
-            switch activeSelectedPeriod {
-            case .month:
-                xAxisMarks(values: .stride(by: .day, count: 7))
-            case .sixMonths, .year:
-                xAxisMarks(values: .stride(by: .month))
-            case .oneHour, .twoHours, .day, .week:
-                xAxisMarks(values: .automatic)
+            // Automatic ticks are generated across the entire scrollable history.
+            // At hour scale that creates thousands of offscreen labels and stalls layout.
+            AxisMarks(values: StatChartAxisDates.visibleTicks(
+                start: scrollPositionX, duration: activeDomainLength, period: activeSelectedPeriod
+            )) { value in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel {
+                    if let date = value.as(Date.self) {
+                        Text(statChartXAxisText(for: date, format: activeXAxisDateFormat))
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                    }
+                }
             }
         }
         .chartScrollableAxes(.horizontal)
@@ -929,7 +970,6 @@ private extension StatChart {
         .chartYScale(domain: yScaleDomain)
         .chartXVisibleDomain(length: activeDomainLength)
         .chartScrollPosition(x: $scrollPositionX)
-        .chartScrollTargetBehavior(scrollTargetBehavior)
         .chartXSelection(value: $rawSelectedDate)
         .chartOverlay { chart in
             GeometryReader { geometry in
@@ -945,42 +985,43 @@ private extension StatChart {
                         }
 
                     chartHighlightAnnotationOverlay(chart: chart, geometry: geometry)
+                    reflectionMarkers(chart: chart, geometry: geometry)
+                    if visibleEntries.isEmpty {
+                        Text("No data in this period")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.secondary)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .allowsHitTesting(false)
+                    }
                 }
             }
         }
         .frame(height: configuration.chartHeight)
     }
 
-    private var scrollTargetBehavior: ValueAlignedChartScrollTargetBehavior {
-        switch activeSelectedPeriod {
-        case .oneHour, .twoHours:
-            ValueAlignedChartScrollTargetBehavior.valueAligned(
-                matching: DateComponents(minute: 0),
-                majorAlignment: .matching(DateComponents(hour: 1))
-            )
-        case .day:
-            ValueAlignedChartScrollTargetBehavior.valueAligned(
-                matching: DateComponents(hour: 0),
-                majorAlignment: .matching(DateComponents(day: 1))
-            )
-        case .week, .month, .sixMonths, .year:
-            ValueAlignedChartScrollTargetBehavior.valueAligned(
-                matching: DateComponents(day: 1),
-                majorAlignment: .matching(DateComponents(month: 1))
-            )
-        }
-    }
-
-    private func xAxisMarks(values: AxisMarkValues) -> some AxisContent {
-        AxisMarks(values: values) { value in
-            AxisGridLine()
-            AxisTick()
-            AxisValueLabel {
-                if let date = value.as(Date.self) {
-                    Text(statChartXAxisText(for: date, format: activeXAxisDateFormat))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+    @ViewBuilder
+    private func reflectionMarkers(chart: ChartProxy, geometry: GeometryProxy) -> some View {
+        ForEach(configuration.chips) { chip in
+            if let icon = chip.systemImage, case .focusDate(let date) = chip.overlay,
+               let plotFrame = chart.plotFrame, let x = chart.position(forX: date) {
+                let frame = geometry[plotFrame]
+                Button {
+                    activeChipID = activeChipID == chip.id ? nil : chip.id
+                    selectedDate = nil
+                } label: {
+                    Image(systemName: icon)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(activeChipID == chip.id ? Color.white : Color.accentColor)
+                        .frame(width: 28, height: 28)
+                        .background(activeChipID == chip.id ? Color.accentColor : Color(.secondarySystemGroupedBackground), in: .circle)
+                        .frame(width: 44, height: 44)
+                        .contentShape(.rect)
                 }
+                .accessibilityLabel(Text(verbatim: "\(chip.label), \(chip.valueText)"))
+                .accessibilityIdentifier("analytics.reflection.\(chip.id)")
+                .accessibilityAddTraits(activeChipID == chip.id ? [.isSelected] : [])
+                .position(x: min(max(frame.minX + x, 22), geometry.size.width - 44),
+                          y: frame.maxY - 18)
             }
         }
     }
@@ -1013,7 +1054,9 @@ private extension StatChart {
             ForEach(renderedEntries) { entry in
                 BarMark(
                     x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
-                    y: .value("Value", entry.value)
+                    yStart: .value("Baseline", 0),
+                    yEnd: .value("Value", entry.value),
+                    width: .ratio(0.9)
                 )
                 .cornerRadius(cornerRadius)
                 .foregroundStyle(baseMarkColor)
@@ -1022,30 +1065,29 @@ private extension StatChart {
         case .line(let lineWidth, let showPoints):
             ForEach(renderedEntries) { entry in
                 LineMark(
-                    x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
+                    x: xValue(for: entry.date),
                     y: .value("Value", entry.value)
                 )
                 .lineStyle(StrokeStyle(lineWidth: lineWidth))
                 .foregroundStyle(baseMarkColor)
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(.monotone)
             }
 
             if showPoints {
                 ForEach(renderedEntries) { entry in
-                    PointMark(
-                        x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
-                        y: .value("Value", entry.value)
-                    )
-                    .symbolSize(36)
-                    .foregroundStyle(baseMarkColor)
+                    readingPoint(entry)
                 }
+            } else if let entry = isolatedVisibleEntry {
+                readingPoint(entry)
             }
 
         case .area(let lineWidth, let opacity):
+            let baseline = yScaleDomain.lowerBound
             ForEach(renderedEntries) { entry in
                 AreaMark(
-                    x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
-                    y: .value("Value", entry.value)
+                    x: xValue(for: entry.date),
+                    yStart: .value("Baseline", baseline),
+                    yEnd: .value(configuration.unitLabel, entry.value)
                 )
                 .foregroundStyle(baseMarkColor.opacity(opacity))
                 .interpolationMethod(.catmullRom)
@@ -1053,7 +1095,7 @@ private extension StatChart {
 
             ForEach(renderedEntries) { entry in
                 LineMark(
-                    x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
+                    x: xValue(for: entry.date),
                     y: .value("Value", entry.value)
                 )
                 .lineStyle(StrokeStyle(lineWidth: lineWidth))
@@ -1061,16 +1103,26 @@ private extension StatChart {
                 .interpolationMethod(.catmullRom)
             }
 
+            if let entry = isolatedVisibleEntry {
+                readingPoint(entry)
+            }
+
         case .point(let size):
             ForEach(renderedEntries) { entry in
                 PointMark(
-                    x: .value("Date", entry.date, unit: configuration.xAxisDateUnit),
+                    x: xValue(for: entry.date),
                     y: .value("Value", entry.value)
                 )
                 .symbolSize(size * size)
                 .foregroundStyle(baseMarkColor)
             }
         }
+    }
+
+    private func readingPoint(_ entry: Entry) -> some ChartContent {
+        PointMark(x: xValue(for: entry.date), y: .value("Value", entry.value))
+            .symbolSize(36)
+            .foregroundStyle(baseMarkColor)
     }
 }
 
@@ -1096,7 +1148,7 @@ private extension StatChart {
         if let chip = activeChip {
             switch chip.overlay {
             case .focusDate(let date):
-                RuleMark(x: .value("Focus", date, unit: configuration.xAxisDateUnit))
+                RuleMark(x: .value("Focus", date))
                     .foregroundStyle(configuration.tintColor.opacity(0.6))
                     .lineStyle(StrokeStyle(lineWidth: 2))
                     .zIndex(2)
@@ -1116,7 +1168,7 @@ private extension StatChart {
             case .trendLine(let points):
                 ForEach(points) { pt in
                     LineMark(
-                        x: .value("Date", pt.date, unit: configuration.xAxisDateUnit),
+                        x: xValue(for: pt.date),
                         y: .value("Trend", pt.value)
                     )
                     .lineStyle(StrokeStyle(lineWidth: 2.5))
@@ -1134,7 +1186,7 @@ private extension StatChart {
     private func highlightMarks(for highlights: [StatChartHighlight]) -> some ChartContent {
         ForEach(highlights) { point in
             PointMark(
-                x: .value("Date", point.date, unit: configuration.xAxisDateUnit),
+                x: xValue(for: point.date),
                 y: .value("Value", point.value)
             )
             .symbolSize(64)
@@ -1222,6 +1274,38 @@ private extension StatChart {
     private func clamped(_ value: CGFloat, lower: CGFloat, upper: CGFloat) -> CGFloat {
         guard lower <= upper else { return value }
         return min(max(value, lower), upper)
+    }
+}
+
+/// Calendar-aligned ticks for the viewport, with a small buffer for horizontal scrolling.
+/// The number of labels is independent of how much history has been loaded.
+enum StatChartAxisDates {
+    static func visibleTicks(start: Date, duration: TimeInterval, period: StatChartPeriod,
+                             calendar: Calendar = .current) -> [Date] {
+        let component: Calendar.Component
+        let count: Int
+        let alignment: Calendar.Component
+        switch period {
+        case .oneHour: (component, count, alignment) = (.minute, 15, .hour)
+        case .twoHours: (component, count, alignment) = (.minute, 30, .hour)
+        case .day: (component, count, alignment) = (.hour, 6, .day)
+        case .week: (component, count, alignment) = (.day, 1, .day)
+        case .month: (component, count, alignment) = (.day, 7, .weekOfYear)
+        case .sixMonths: (component, count, alignment) = (.month, 1, .month)
+        case .year: (component, count, alignment) = (.month, 2, .month)
+        }
+        let end = start.addingTimeInterval(duration)
+        var tick = calendar.dateInterval(of: alignment, for: start)?.start ?? start
+        var dates: [Date] = []
+        // Include the tick preceding the viewport and one beyond its trailing edge.
+        while dates.count < 16 {
+            dates.append(tick)
+            if tick > end { break }
+            guard let next = calendar.date(byAdding: component, value: count, to: tick),
+                  next > tick else { break }
+            tick = next
+        }
+        return dates
     }
 }
 

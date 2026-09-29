@@ -98,6 +98,7 @@ protocol HealthKitServiceProtocol {
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
+        startDate: Date?,
         endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     )
@@ -123,6 +124,18 @@ protocol HealthKitServiceProtocol {
         for deviceMode: DeviceMode,
         completion: @escaping @Sendable (HealthPermissionsState) -> Void
     )
+}
+
+extension HealthKitServiceProtocol {
+    func fetchMeasurementData(
+        for period: Period,
+        measurementType: MeasurementType,
+        endDate: Date,
+        completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
+    ) {
+        fetchMeasurementData(for: period, measurementType: measurementType,
+                             startDate: nil, endDate: endDate, completion: completion)
+    }
 }
 
 // MARK: - HealthKitService
@@ -184,9 +197,14 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
     func fetchMeasurementData(
         for period: Period,
         measurementType: MeasurementType,
+        startDate: Date?,
         endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
+        guard healthStore != nil else {
+            completion(.failure(HealthKitError(type: .healthDataUnavailable)))
+            return
+        }
         guard let quantityType = HKQuantityType.quantityType(
             forIdentifier: measurementType == .steps ? .stepCount : .heartRate
         ) else {
@@ -194,7 +212,8 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             return
         }
         
-        let (start, end) = period.window(relativeTo: endDate)
+        let start = startDate ?? period.startDate(relativeTo: endDate)
+        let end = endDate
         let predicate = HKQuery.predicateForSamples(
             withStart: start,
             end: end,
@@ -206,6 +225,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
                 using: quantityType,
                 predicate: predicate,
                 period: period,
+                startDate: start,
                 endDate: endDate,
                 completion: completion
             )
@@ -224,6 +244,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
         using quantityType: HKQuantityType,
         predicate: NSPredicate,
         period: Period,
+        startDate: Date,
         endDate: Date,
         completion: @escaping @Sendable (Result<[HKQuantitySample], HealthKitError>) -> Void
     ) {
@@ -263,9 +284,7 @@ class HealthKitService: HealthKitServiceProtocol, @unchecked Sendable {
             }
             
             var samples: [HKQuantitySample] = []
-            let (start, end) = period.window(relativeTo: endDate)
-            
-            statisticsCollection.enumerateStatistics(from: start, to: end) { statistics, _ in
+            statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                 if let sum = statistics.sumQuantity() {
                     let sample = HKQuantitySample(
                         type: quantityType,

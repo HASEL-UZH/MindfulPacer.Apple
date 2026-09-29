@@ -217,6 +217,8 @@
 		0DFB6E702E9D0FE600606316 /* BackgroundRemindersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB377FF2E8A5F2200398391 /* BackgroundRemindersStore.swift */; };
 		0DFCA1D02C623FAC0000C87C /* EditReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1CF2C623FAC0000C87C /* EditReflectionView.swift */; };
 		0DFCA1D22C623FB40000C87C /* EditReflectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1D12C623FB40000C87C /* EditReflectionViewModel.swift */; };
+		78DE9712EFD64FF6A7C94BEE /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
+		A377829DD06040E0AAC3D6D5 /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -476,6 +478,7 @@
 		A49E039A2F7826AC002A85E9 /* iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4A85D282F79198300762403 /* WatchOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WatchOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4A85D392F79199800762403 /* iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartScale.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -1280,6 +1283,7 @@
 		0DC3FDCD2C2EDC9F00335543 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */,
 				0D9351432D12F8F90028AA61 /* DTOs */,
 				0D9AB0C62C6E093D00BB773F /* Persistence */,
 				0D500FC92C7376A700395AEB /* Message.swift */,
@@ -1803,6 +1807,7 @@
 				0DCE3A842E70317D005FCCCF /* CheckHealthPermissionsUseCase.swift in Sources */,
 				0DA6CB072C37F8C400FE1E61 /* UseCasesContainer.swift in Sources */,
 				0D9351542D12F9DD0028AA61 /* DataContainer.swift in Sources */,
+				A377829DD06040E0AAC3D6D5 /* HeartRateChartScale.swift in Sources */,
 				0D9AB0D42C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DC136B02D4E780100001D08 /* BlogService.swift in Sources */,
 				0DE47A162E4B79BB0052959C /* AppleWatchView.swift in Sources */,
@@ -1931,6 +1936,7 @@
 				0DF5EDAC2E4E6A01005DB9DE /* HeartRateChartView.swift in Sources */,
 				0DE3B1112E5B32C00070C4A2 /* StorageKeys.swift in Sources */,
 				0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */,
+				78DE9712EFD64FF6A7C94BEE /* HeartRateChartScale.swift in Sources */,
 				0D9AB0D32C6E8EA500BB773F /* Reminder.swift in Sources */,
 				0DF5EDAF2E4E6A14005DB9DE /* StepsChartView.swift in Sources */,
 				0DF5EDA62E4DF597005DB9DE /* ReminderCell.swift in Sources */,
