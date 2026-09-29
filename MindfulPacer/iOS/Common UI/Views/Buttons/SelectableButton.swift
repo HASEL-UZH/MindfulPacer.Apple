@@ -104,6 +104,7 @@ struct SelectableButton<Label: View>: View {
             )
         )
         .buttonBorderShape(buttonBorderShape)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -152,6 +153,7 @@ private extension SelectableButton.ButtonShape {
 // MARK: - SelectableBorderedButtonStyle
 
 private struct SelectableBorderedButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
     var shape: SelectableButtonShape
     var backgroundColor: Color
     var selectionFillColor: Color
@@ -174,7 +176,7 @@ private struct SelectableBorderedButtonStyle: ButtonStyle {
         configuration.label
             .foregroundStyle(isSelected ? selectionTextColor : unselectedTextColor)
             .padding(padding)
-            .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
             .background {
                 ZStack {
                     shapeBackground(fillColor)
@@ -184,6 +186,7 @@ private struct SelectableBorderedButtonStyle: ButtonStyle {
                 }
             }
             .contentShape(.rect)
+            .opacity(isEnabled ? 1 : 0.45)
             .scaleEffect(isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.15), value: isPressed)
     }
@@ -258,5 +261,73 @@ private struct SelectableBorderedButtonStyle: ButtonStyle {
             }
         }
         .padding(.horizontal)
+    }
+}
+
+// MARK: - Selection Rows
+
+/// Matches Athleon's onboarding choices: one padded surface and a persistent checkmark slot.
+struct SingleSelectRow<Content: View>: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let isSelected: Bool
+    var tint: Color = .brandPrimary
+    let action: () -> Void
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        SelectableButton(
+            backgroundColor: Color(.quaternarySystemFill),
+            selectionFillColor: tint,
+            selectionTextColor: tint,
+            isSelected: isSelected,
+            action: action
+        ) {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    checkmark.frame(maxWidth: .infinity, alignment: .trailing)
+                    rowContent
+                }
+            } else {
+                HStack(spacing: 12) {
+                    rowContent
+                    checkmark
+                }
+            }
+        }
+    }
+
+    private var rowContent: some View {
+        content()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var checkmark: some View {
+        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+            .font(.title3)
+            .foregroundStyle(isSelected ? tint : Color.secondary)
+            .contentTransition(.symbolEffect(.replace))
+            .accessibilityHidden(true)
+    }
+}
+
+/// Athleon's compact, native-height selection treatment for chart overlays.
+struct CapsuleSelectableButton<Label: View>: View {
+    var fillColor: Color = .brandPrimary
+    var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
+    let isSelected: Bool
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+
+    var body: some View {
+        Button(action: action, label: label)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .tint(isSelected ? fillColor : backgroundColor)
+            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
 }

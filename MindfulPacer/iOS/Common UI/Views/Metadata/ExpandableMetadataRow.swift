@@ -22,7 +22,7 @@ struct ExpandableMetadataRowStyle {
     static let reflections = ExpandableMetadataRowStyle()
 }
 
-struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View, ExpandedContent: View>: View {
+struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View, RowSwipeActions: View, ExpandedContent: View>: View {
     @Binding private var activeID: ID?
 
     private let id: ID
@@ -31,6 +31,8 @@ struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View,
     private let rowContent: (Bool) -> RowContent
     private let rowAccessory: (Bool) -> RowAccessory
     private let expandedContent: () -> ExpandedContent
+    private let rowSwipeActions: () -> RowSwipeActions
+    private let onSwipePresentationChanged: (Bool) -> Void
 
     private var isActive: Bool {
         activeID == id
@@ -41,8 +43,10 @@ struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View,
         activeID: Binding<ID?>,
         style: ExpandableMetadataRowStyle = .reflections,
         expandedContentLeadingInset: CGFloat = 0,
+        onSwipePresentationChanged: @escaping (Bool) -> Void = { _ in },
         @ViewBuilder rowContent: @escaping (Bool) -> RowContent,
         @ViewBuilder rowAccessory: @escaping (Bool) -> RowAccessory,
+        @ViewBuilder rowSwipeActions: @escaping () -> RowSwipeActions,
         @ViewBuilder expandedContent: @escaping () -> ExpandedContent
     ) {
         self.id = id
@@ -52,22 +56,13 @@ struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View,
         self.rowContent = rowContent
         self.rowAccessory = rowAccessory
         self.expandedContent = expandedContent
+        self.rowSwipeActions = rowSwipeActions
+        self.onSwipePresentationChanged = onSwipePresentationChanged
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: isActive ? style.expandedContentSpacing : 0) {
-            HStack(alignment: .top, spacing: 8) {
-                Button {
-                    activateIfNeeded()
-                } label: {
-                    rowContent(isActive)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-
-                rowAccessory(isActive)
-            }
+            headerWithSwipeActions
 
             if isActive {
                 expandedContent()
@@ -91,6 +86,33 @@ struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View,
         .animation(style.animation, value: isActive)
     }
 
+    @ViewBuilder
+    private var headerWithSwipeActions: some View {
+        if isActive || RowSwipeActions.self == EmptyView.self {
+            header
+        } else {
+            header
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    rowSwipeActions()
+                } onPresentationChanged: { onSwipePresentationChanged($0) }
+        }
+    }
+
+    private var header: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Button {
+                activateIfNeeded()
+            } label: {
+                rowContent(isActive)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(.rect)
+            }
+
+            rowAccessory(isActive)
+        }
+        .contentShape(.rect)
+    }
+
     private func activateIfNeeded() {
         guard !isActive else { return }
         withAnimation(style.animation) {
@@ -99,7 +121,7 @@ struct ExpandableMetadataRow<ID: Hashable, RowContent: View, RowAccessory: View,
     }
 }
 
-extension ExpandableMetadataRow where RowAccessory == EmptyView {
+extension ExpandableMetadataRow where RowAccessory == EmptyView, RowSwipeActions == EmptyView {
     init(
         id: ID,
         activeID: Binding<ID?>,
@@ -115,6 +137,8 @@ extension ExpandableMetadataRow where RowAccessory == EmptyView {
             expandedContentLeadingInset: expandedContentLeadingInset,
             rowContent: rowContent
         ) { _ in
+            EmptyView()
+        } rowSwipeActions: {
             EmptyView()
         } expandedContent: {
             expandedContent()
@@ -193,7 +217,6 @@ struct ExpandableMetadataChipButton: View {
                 tint: tint
             )
         }
-        .buttonStyle(.plain)
     }
 }
 

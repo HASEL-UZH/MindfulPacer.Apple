@@ -16,13 +16,18 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
     private let contentSpacing: CGFloat
     private let contentPadding: CGFloat
     private let cornerRadius: CGFloat
+    private let action: (() -> Void)?
+    private let actionAccessibilityIdentifier: String
 
     @Environment(\.backgroundStyle) private var backgroundStyle
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     init(
         contentSpacing: CGFloat = 32,
         contentPadding: CGFloat = 16,
         cornerRadius: CGFloat = 24,
+        action: (() -> Void)? = nil,
+        actionAccessibilityIdentifier: String = "",
         @ViewBuilder content: () -> Content,
         @ViewBuilder label: () -> Label,
         @ViewBuilder accessory: () -> Accessory
@@ -33,12 +38,16 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
         self.contentSpacing = contentSpacing
         self.contentPadding = contentPadding
         self.cornerRadius = cornerRadius
+        self.action = action
+        self.actionAccessibilityIdentifier = actionAccessibilityIdentifier
     }
 
     init(
         contentSpacing: CGFloat = 32,
         contentPadding: CGFloat = 16,
         cornerRadius: CGFloat = 24,
+        action: (() -> Void)? = nil,
+        actionAccessibilityIdentifier: String = "",
         @ViewBuilder content: () -> Content,
         @ViewBuilder label: () -> Label
     ) where Accessory == EmptyView {
@@ -48,17 +57,26 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
         self.contentSpacing = contentSpacing
         self.contentPadding = contentPadding
         self.cornerRadius = cornerRadius
+        self.action = action
+        self.actionAccessibilityIdentifier = actionAccessibilityIdentifier
+    }
+
+    private var headerLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 12))
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: contentSpacing) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                label
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .labelIconToTitleSpacing(4)
-                    .font(.subheadline.weight(.semibold))
-
-                accessory
+            if let action {
+                Button(action: action) {
+                    header.contentShape(.rect)
+                }
+                .buttonStyle(.borderless)
+                .accessibilityIdentifier(actionAccessibilityIdentifier)
+            } else {
+                header
             }
 
             content
@@ -67,13 +85,33 @@ struct LabeledCard<Label: View, Accessory: View, Content: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(contentPadding)
         .background {
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(
-                    backgroundStyle
-                    ?? AnyShapeStyle(Color(.secondarySystemGroupedBackground))
-                )
+            if let action {
+                // Keep the card action behind, rather than around, its content controls.
+                Button(action: action) {
+                    surface.contentShape(.rect(cornerRadius: cornerRadius))
+                }
+                .buttonStyle(.borderless)
+                .accessibilityHidden(true)
+            } else {
+                surface
+            }
         }
         .containerShape(.rect(cornerRadius: cornerRadius, style: .continuous))
+    }
+
+    private var header: some View {
+        headerLayout {
+            label
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .labelIconToTitleSpacing(4)
+                .font(.subheadline.weight(.semibold))
+            accessory
+        }
+    }
+
+    private var surface: some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(backgroundStyle ?? AnyShapeStyle(Color(.secondarySystemGroupedBackground)))
     }
 }
 

@@ -20,6 +20,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
     let headerTitle: String
     let headerMedia: EntryFormSheetHeaderMedia
     let headerTint: Color
+    let usesNavigationStack: Bool
+    let saveTitle: String
     let canSave: Bool
     let onCancel: () -> Void
     let onSave: () -> Void
@@ -33,6 +35,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
         headerSystemImage: String,
         headerTint: Color = .accentColor,
         canSave: Bool = true,
+        usesNavigationStack: Bool = true,
+        saveTitle: String = String(localized: "Save"),
         onCancel: @escaping () -> Void,
         onSave: @escaping () -> Void,
         @ViewBuilder primaryContent: @escaping () -> PrimaryContent,
@@ -45,6 +49,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
             headerMedia: .systemImage(headerSystemImage),
             headerTint: headerTint,
             canSave: canSave,
+            usesNavigationStack: usesNavigationStack,
+            saveTitle: saveTitle,
             onCancel: onCancel,
             onSave: onSave,
             primaryContent: primaryContent,
@@ -59,6 +65,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
         headerImage: Image,
         headerTint: Color = .accentColor,
         canSave: Bool = true,
+        usesNavigationStack: Bool = true,
+        saveTitle: String = String(localized: "Save"),
         onCancel: @escaping () -> Void,
         onSave: @escaping () -> Void,
         @ViewBuilder primaryContent: @escaping () -> PrimaryContent,
@@ -71,6 +79,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
             headerMedia: .image(headerImage),
             headerTint: headerTint,
             canSave: canSave,
+            usesNavigationStack: usesNavigationStack,
+            saveTitle: saveTitle,
             onCancel: onCancel,
             onSave: onSave,
             primaryContent: primaryContent,
@@ -85,6 +95,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
         headerMedia: EntryFormSheetHeaderMedia,
         headerTint: Color = .accentColor,
         canSave: Bool = true,
+        usesNavigationStack: Bool = true,
+        saveTitle: String = String(localized: "Save"),
         onCancel: @escaping () -> Void,
         onSave: @escaping () -> Void,
         @ViewBuilder primaryContent: @escaping () -> PrimaryContent,
@@ -96,6 +108,8 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
         self.headerMedia = headerMedia
         self.headerTint = headerTint
         self.canSave = canSave
+        self.usesNavigationStack = usesNavigationStack
+        self.saveTitle = saveTitle
         self.onCancel = onCancel
         self.onSave = onSave
         self.primaryContent = primaryContent
@@ -104,22 +118,30 @@ struct EntryFormSheet<PrimaryContent: View, Content: View, AdditionalToolbarCont
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    primaryContent()
-                } header: {
-                    header
-                        .textCase(nil)
-                }
-
-                content()
+        Group {
+            if usesNavigationStack {
+                NavigationStack { form }
+            } else {
+                form
             }
-            .listStyle(.insetGrouped)
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { toolbarContent }
         }
+    }
+
+    private var form: some View {
+        List {
+            Section {
+                primaryContent()
+            } header: {
+                header
+                    .textCase(nil)
+            }
+
+            content()
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { toolbarContent }
     }
 }
 
@@ -173,7 +195,7 @@ private extension EntryFormSheet {
         }
 
         ToolbarItem(placement: .confirmationAction) {
-            Button("Save") {
+            Button(saveTitle) {
                 onSave()
             }
             .disabled(!canSave)

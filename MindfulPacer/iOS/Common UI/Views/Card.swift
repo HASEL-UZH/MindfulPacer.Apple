@@ -12,20 +12,22 @@ import SwiftUI
 struct Card<Content: View>: View {
     // MARK: Properties
 
-    var cornerRadius: CGFloat = 16.0
+    var cornerRadius: CGFloat = 24.0
     var backgroundColor: Color = Color(.secondarySystemGroupedBackground)
-    var content: () -> Content
+    var contentPadding: CGFloat = 16
+    @ViewBuilder var content: () -> Content
 
     // MARK: Body
 
     var body: some View {
         content()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .padding(contentPadding)
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundStyle(backgroundColor)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(backgroundColor)
             }
+            .containerShape(.rect(cornerRadius: cornerRadius, style: .continuous))
     }
 }
 
