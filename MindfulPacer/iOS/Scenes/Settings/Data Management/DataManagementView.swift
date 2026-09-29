@@ -52,7 +52,7 @@ struct DataManagementView: View {
                     Label(model.description, systemImage: model.icon).tag(model)
                 }
             } label: {
-                Label("Data Model", systemImage: "tray.full.fill")
+                Label("Data to Export", systemImage: "tray.full.fill")
             }
 
             Picker(selection: $viewModel.selectedExportFileFormat) {
@@ -62,7 +62,7 @@ struct DataManagementView: View {
                         .disabled(!viewModel.selectedExportDataModel.allowedExportFormats.contains(format))
                 }
             } label: {
-                Label("File Type", systemImage: "doc.fill")
+                Label("File Format", systemImage: "doc.fill")
             }
             .onChange(of: viewModel.selectedExportDataModel) { _, newModel in
                 if !newModel.allowedExportFormats.contains(viewModel.selectedExportFileFormat) {
@@ -73,9 +73,9 @@ struct DataManagementView: View {
             Button {
                 viewModel.onExportTapped()
             } label: {
-                Label("Export", systemImage: "square.and.arrow.up.fill")
+                Label("Export Data", systemImage: "square.and.arrow.up.fill")
             }
-            .foregroundStyle(.primary)
+            .foregroundStyle(Color.accentColor)
         } header: {
             Text("Export Data")
         } footer: {
@@ -87,7 +87,7 @@ struct DataManagementView: View {
 
     private var deleteData: some View {
         Section {
-            Button {
+            Button(role: .destructive) {
                 viewModel.presentAlert(.resetDatabaseConfirmation)
             } label: {
                 Label(String(localized: "Erase All Data"), systemImage: "trash")
@@ -118,7 +118,7 @@ struct DataManagementView: View {
             } label: {
                 Label("Seed", systemImage: "plus.circle.fill")
             }
-            .foregroundStyle(.primary)
+            .foregroundStyle(Color.accentColor)
 
             Button(role: .destructive) {
                 viewModel.deleteAllMissedReflections()

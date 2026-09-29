@@ -82,7 +82,6 @@ struct ReturnToAppInfoSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
     }
 }
 

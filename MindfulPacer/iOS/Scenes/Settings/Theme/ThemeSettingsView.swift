@@ -21,26 +21,25 @@ extension SettingsView {
         var body: some View {
             List {
                 Section {
-                    ForEach(Theme.allCases) { theme in
+                    ForEach(Theme.allCases) { option in
                         Button {
-                            self.theme = theme
+                            theme = option
                         } label: {
                             HStack {
                                 SettingsRowLabel(
-                                    title: theme.localized,
-                                    subtitle: theme.description,
-                                    systemImage: theme.settingsIcon
+                                    title: option.localized,
+                                    subtitle: option.description,
+                                    systemImage: option.settingsIcon
                                 )
-
                                 Spacer()
-
-                                if self.theme == theme {
+                                if theme == option {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(Color.accentColor)
+                                        .foregroundStyle(Color.brandPrimary)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(theme == option ? .isSelected : [])
                     }
                 } footer: {
                     Text("System follows your device appearance. Light and Dark override it for MindfulPacer only.")

@@ -58,7 +58,7 @@ extension SettingsView {
         ) -> some View {
             LabeledContent {
                 Text(value)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .textSelection(.enabled)
             } label: {
                 Text(title)
@@ -79,7 +79,7 @@ extension SettingsView {
             } label: {
                 Label("Share System Report", systemImage: "square.and.arrow.up.fill")
             }
-            .foregroundStyle(.primary)
+            .foregroundStyle(Color.accentColor)
         }
     }
 }

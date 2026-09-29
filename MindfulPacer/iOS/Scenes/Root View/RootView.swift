@@ -23,25 +23,22 @@ enum RootSheet: Identifiable {
 
 struct RootView: View {
     @AppStorage(Theme.appStorageKey) private var theme: Theme = .system
-    @State var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
+    @State private var viewModel: RootViewModel = ScenesContainer.shared.rootViewModel()
 
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
-            HomeView { viewModel.onWidgetTapped() }
-                .tabItem { Label("Home", systemImage: "house") }
-                .tag(Tab.home)
-
-            AnalyticsView()
-                .tabItem { Label("Analytics", systemImage: "chart.bar") }
-                .tag(Tab.analytics)
-
-            OutreachView()
-                .tabItem { Label("Outreach", systemImage: "person.2.wave.2.fill") }
-                .tag(Tab.outreach)
-
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(Tab.settings)
+            SwiftUI.Tab("Home", systemImage: "house", value: Tab.home) {
+                HomeView { viewModel.onWidgetTapped() }
+            }
+            SwiftUI.Tab("Analytics", systemImage: "chart.xyaxis.line", value: Tab.analytics) {
+                AnalyticsView()
+            }
+            SwiftUI.Tab("Outreach", systemImage: "person.2.wave.2.fill", value: Tab.outreach) {
+                OutreachView()
+            }
+            SwiftUI.Tab("Settings", systemImage: "gearshape", value: Tab.settings) {
+                SettingsView()
+            }
         }
         .preferredColorScheme(theme.colorScheme)
         .sheet(item: $viewModel.activeSheet, content: sheetContent)
@@ -55,11 +52,9 @@ struct RootView: View {
         switch sheet {
         case .onboardingView:
             OnboardingView()
-                .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
         case .releaseNotesView:
             ReleaseNotesView()
-                .presentationCornerRadius(16)
                 .interactiveDismissDisabled()
         }
     }

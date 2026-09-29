@@ -166,7 +166,6 @@ struct SettingsView: View {
         switch sheet {
         case .onboardingView:
             OnboardingView()
-                .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         case .mailView(let recipient, let subject, let body):
             MailView(
@@ -175,19 +174,15 @@ struct SettingsView: View {
                 subject: subject,
                 body: body
             )
-            .presentationCornerRadius(16)
         case .roadmap:
             RoadmapView()
-                .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         case .systemReportView:
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
         case .releaseNotes:
             ReleaseNotesView()
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
         }
     }
 
@@ -208,7 +203,7 @@ struct SettingsView: View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
             LabeledContent {
                 Text(theme.localized)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             } label: {
                 SettingsRowLabel(
                     title: String(localized: "Theme"),
@@ -217,6 +212,7 @@ struct SettingsView: View {
                 )
             }
         }
+        .accessibilityIdentifier("settings.theme")
     }
 
     // MARK: MindulPacer Expanded
@@ -240,6 +236,7 @@ struct SettingsView: View {
                 systemImage: "iphone.gen3"
             )
         }
+        .accessibilityIdentifier("settings.deviceMode")
     }
 
     // MARK: Algorithms
@@ -262,7 +259,8 @@ struct SettingsView: View {
             SettingsRowLabel(
                 title: String(localized: "Release Notes"),
                 subtitle: String(localized: "See what changed in each version"),
-                systemImage: "doc.text.fill"
+                systemImage: "doc.text.fill",
+                isAction: true
             )
         }
     }
@@ -293,7 +291,8 @@ struct SettingsView: View {
         } label: {
             SettingsRowLabel(
                 title: String(localized: "Contact Us"),
-                systemImage: "envelope.fill"
+                systemImage: "envelope.fill",
+                isAction: true
             )
         }
     }
@@ -306,7 +305,8 @@ struct SettingsView: View {
         } label: {
             SettingsRowLabel(
                 title: String(localized: "More Info"),
-                systemImage: "info.circle.fill"
+                systemImage: "info.circle.fill",
+                isAction: true
             )
         }
     }
@@ -319,7 +319,8 @@ struct SettingsView: View {
         } label: {
             SettingsRowLabel(
                 title: String(localized: "Privacy Policy"),
-                systemImage: "hand.raised.fill"
+                systemImage: "hand.raised.fill",
+                isAction: true
             )
         }
     }
@@ -333,7 +334,8 @@ struct SettingsView: View {
             SettingsRowLabel(
                 title: String(localized: "Onboarding"),
                 subtitle: String(localized: "View the onboarding again"),
-                systemImage: "square.stack.3d.up.fill"
+                systemImage: "square.stack.3d.up.fill",
+                isAction: true
             )
         }
     }
@@ -347,7 +349,8 @@ struct SettingsView: View {
             SettingsRowLabel(
                 title: String(localized: "Roadmap"),
                 subtitle: String(localized: "View upcoming features"),
-                systemImage: "map.fill"
+                systemImage: "map.fill",
+                isAction: true
             )
         }
     }
@@ -361,7 +364,8 @@ struct SettingsView: View {
             SettingsRowLabel(
                 title: String(localized: "Join TestFlight"),
                 subtitle: String(localized: "Help us test new features before release"),
-                systemImage: "airplane.circle.fill"
+                systemImage: "airplane.circle.fill",
+                isAction: true
             )
         }
     }
@@ -407,7 +411,8 @@ struct SettingsView: View {
                             } label: {
                                 institute.logo
                                     .resizable()
-                                    .scaledToFill()
+                                    .scaledToFit()
+                                    .frame(width: 200, height: 80)
                             }
                             .accessibilityLabel(institute.name)
                         }
@@ -440,7 +445,7 @@ struct SettingsView: View {
         } label: {
             Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
                 .font(.footnote)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.accentColor)
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal)
@@ -473,28 +478,40 @@ struct SettingsView: View {
 // MARK: - Settings Row Label
 
 struct SettingsRowLabel: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let title: String
     var subtitle: String?
     var systemImage: String?
     var assetImage: String?
     var tint: Color = .brandPrimary
+    var isAction: Bool = false
 
     var body: some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .foregroundStyle(.primary)
-
-                if let subtitle {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    icon
+                    text
                 }
+            } else {
+                Label { text } icon: { icon }
             }
-        } icon: {
-            icon
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private var text: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .foregroundStyle(isAction ? Color.accentColor : Color.primary)
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @ViewBuilder

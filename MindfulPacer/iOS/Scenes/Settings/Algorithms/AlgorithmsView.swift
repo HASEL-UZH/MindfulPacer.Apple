@@ -160,7 +160,7 @@ private struct BufferTextFieldView: View {
 
                     Text("min")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
                 .frame(maxWidth: 112)
             } label: {
@@ -174,7 +174,7 @@ private struct BufferTextFieldView: View {
             HStack {
                 Text("Allowed: \(formattedTime(allowedRange.lowerBound)) - \(formattedTime(allowedRange.upperBound))")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
 
                 Spacer()
 

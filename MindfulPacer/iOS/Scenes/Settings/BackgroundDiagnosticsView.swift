@@ -163,7 +163,7 @@ struct BackgroundDiagnosticsView: View {
                 } label: {
                     Label("Copy", systemImage: "doc.on.doc.fill")
                 }
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.accentColor)
 
                 Button {
                     if MFMailComposeViewController.canSendMail() {
@@ -175,7 +175,7 @@ struct BackgroundDiagnosticsView: View {
                 } label: {
                     Label("Send via Email", systemImage: "envelope.fill")
                 }
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.accentColor)
             }
         }
         .navigationTitle("BG Diagnostics")
@@ -264,7 +264,7 @@ struct DiagnosticsInfoSheet: View {
                 .font(.headline)
             Text(description)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

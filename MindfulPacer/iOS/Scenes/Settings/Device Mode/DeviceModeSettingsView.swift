@@ -28,35 +28,30 @@ extension SettingsView {
             List {
                 Section {
                     ForEach(DeviceMode.allCases) { mode in
-                        let isSelectable = (mode == .iPhoneOnly) || viewModel.isWatchAppInstalled
+                        let isSelectable = mode == .iPhoneOnly || viewModel.isWatchAppInstalled
 
                         Button {
-                            guard isSelectable else { return }
+                            guard isSelectable, viewModel.deviceMode != mode else { return }
                             deviceModeBinding.wrappedValue = mode
                             viewModel.deviceMode = mode
                             viewModel.presentAlert(.restartApp)
                         } label: {
-                            HStack(alignment: .center) {
+                            HStack {
                                 SettingsRowLabel(
                                     title: mode.localized,
                                     subtitle: mode.description,
                                     systemImage: mode.settingsIcon
                                 )
-                                .opacity(isSelectable ? 1.0 : 0.55)
-
                                 Spacer()
-
                                 if viewModel.deviceMode == mode {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(Color.accentColor)
-                                } else if !isSelectable {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.brandPrimary)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
                         .disabled(!isSelectable)
+                        .accessibilityAddTraits(viewModel.deviceMode == mode ? .isSelected : [])
                     }
                 } header: {
                     Text("Device Selection")
@@ -75,7 +70,7 @@ extension SettingsView {
                         } label: {
                             Label("Open Apple Watch Setup", systemImage: "applewatch")
                         }
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.accentColor)
                     }
                 }
             }
