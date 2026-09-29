@@ -222,6 +222,7 @@
 		C49F1E6DA7E74E2FA63A7C13 /* HomeContextSummaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */; };
 		DFDB8C3CFC694CA3B0EF42A3 /* ReminderHighlightState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */; };
 		FA32EFDFCC9146AE8C02DC1B /* ReminderHighlightState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */; };
+		CA9700000000000000000001 /* RedesignCaptureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9700000000000000000002 /* RedesignCaptureSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -484,6 +485,7 @@
 		A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartScale.swift; sourceTree = "<group>"; };
 		AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContextSummaries.swift; sourceTree = "<group>"; };
 		CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderHighlightState.swift; sourceTree = "<group>"; };
+		CA9700000000000000000002 /* RedesignCaptureSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedesignCaptureSupport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -1324,6 +1326,7 @@
 			children = (
 				0D8C66332C2DA96000853EDE /* iOSApp.swift */,
 				0DE47A122E4B6E4D0052959C /* AppDelegate.swift */,
+				CA9700000000000000000002 /* RedesignCaptureSupport.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -1809,6 +1812,7 @@
 				0D0DE2DA2C32DF1F00C54B0C /* ScenesContainer.swift in Sources */,
 				0DC136A92D4E75C400001D08 /* OutreachView.swift in Sources */,
 				0DE47A132E4B6E4D0052959C /* AppDelegate.swift in Sources */,
+				CA9700000000000000000001 /* RedesignCaptureSupport.swift in Sources */,
 				0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */,
 				0DF93A8C2D56074000121308 /* Calendar+Extensions.swift in Sources */,
 				0DCE3A842E70317D005FCCCF /* CheckHealthPermissionsUseCase.swift in Sources */,

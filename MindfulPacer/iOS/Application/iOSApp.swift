@@ -9,6 +9,12 @@ import SwiftData
 struct IOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+    init() {
+#if DEBUG && targetEnvironment(simulator)
+        RedesignCaptureSupport.configure()
+#endif
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
