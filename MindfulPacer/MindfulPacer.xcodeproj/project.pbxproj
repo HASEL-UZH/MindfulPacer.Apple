@@ -219,6 +219,7 @@
 		0DFCA1D22C623FB40000C87C /* EditReflectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFCA1D12C623FB40000C87C /* EditReflectionViewModel.swift */; };
 		78DE9712EFD64FF6A7C94BEE /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
 		A377829DD06040E0AAC3D6D5 /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
+		C49F1E6DA7E74E2FA63A7C13 /* HomeContextSummaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -479,6 +480,7 @@
 		A4A85D282F79198300762403 /* WatchOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WatchOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4A85D392F79199800762403 /* iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartScale.swift; sourceTree = "<group>"; };
+		AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContextSummaries.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -1217,6 +1219,7 @@
 				0D4E11842C85ECB80023E0A0 /* Reminders List */,
 				0D34C45F2C837F2900928C53 /* Widgets */,
 				0DC2D7EA2C7C7DDA008122CC /* HomeView.swift */,
+				AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */,
 				0DC2D7E82C7C7DD7008122CC /* HomeViewModel.swift */,
 			);
 			path = Home;
@@ -1904,6 +1907,7 @@
 				0D1B26BA2C8CFE050086FD50 /* ReviewsFilterViewModel.swift in Sources */,
 				0D0507152E58784800C5123A /* ThresholdInfoSheet.swift in Sources */,
 				0DC2D7EB2C7C7DDA008122CC /* HomeView.swift in Sources */,
+				C49F1E6DA7E74E2FA63A7C13 /* HomeContextSummaries.swift in Sources */,
 				0D4E11862C85ECC80023E0A0 /* RemindersListView.swift in Sources */,
 				0DA6CB322C39581400FE1E61 /* ConnectivityService.swift in Sources */,
 				0DD3FDAD2C8A3ED100859A1C /* Card.swift in Sources */,

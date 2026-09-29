@@ -45,7 +45,6 @@ struct ReminderTypeInfoSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
     }
 
     private func reminderTypeCard(

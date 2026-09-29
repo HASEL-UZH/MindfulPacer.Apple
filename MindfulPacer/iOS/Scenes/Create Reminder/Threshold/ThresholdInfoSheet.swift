@@ -39,7 +39,6 @@ struct ThresholdInfoSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
     }
 }
 

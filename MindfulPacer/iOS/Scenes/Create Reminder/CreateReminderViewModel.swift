@@ -112,7 +112,7 @@ class CreateReminderViewModel {
 
     var selectedMeasurementType: MeasurementType? {
         didSet {
-            validateThreshold()
+            guard selectedMeasurementType != oldValue else { return }
             resetSelectedFields()
         }
     }
@@ -171,12 +171,12 @@ class CreateReminderViewModel {
     }
 
     func saveReminder(_ reminder: Reminder?) {
-        guard let reminder else { return }
+        guard let reminder,
+              let threshold,
+              let interval = selectedInterval else { return }
         
-        reminder.measurementType = selectedMeasurementType.unsafelyUnwrapped
-        reminder.reminderType = selectedReminderType.unsafelyUnwrapped
-        reminder.threshold = threshold.unsafelyUnwrapped
-        reminder.interval = selectedInterval.unsafelyUnwrapped
+        reminder.threshold = threshold
+        reminder.interval = interval
 
         do {
             try modelContext.save()

@@ -21,7 +21,11 @@ extension CreateReminderView {
         var body: some View {
             List {
                 Section {
-                    measurementTypeSelectionList
+                    VStack(spacing: 12) {
+                        measurementTypeSelectionList
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
                 } header: {
                     ReminderCreationListHero(
                         title: "Choose the Measurement Type",
@@ -31,11 +35,11 @@ extension CreateReminderView {
                 } footer: {
                     Text("Select for which measurement type you want to receive reminders to do a reflection.")
                 }
-                .listRowBackground(Color(.quaternarySystemFill))
+                .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
-            .safeAreaInset(edge: .bottom) {
+            .safeAreaBar(edge: .bottom) {
                 if viewModel.showActionButton {
                     ReminderCreationActionBar(
                         title: viewModel.actionButtonTitle,
@@ -48,7 +52,7 @@ extension CreateReminderView {
             .toolbar {
                 if viewModel.mode == .create {
                     ToolbarItem(placement: .destructiveAction) {
-                        CloseButton()
+                        Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                     }
                 }
             }

@@ -55,9 +55,6 @@ struct CreateReminderView: View {
             Group {
                 rootContent
             }
-            .toolbar {
-                toolbarContent
-            }
             .onViewFirstAppear {
                 viewModel.configureMode(with: reminder)
             }
@@ -87,7 +84,7 @@ struct CreateReminderView: View {
         case .create:
             intro
         case .edit:
-            SummaryView(viewModel: viewModel)
+            SummaryView(viewModel: viewModel, reminder: reminder)
         }
     }
 
@@ -132,30 +129,7 @@ struct CreateReminderView: View {
         case .interval:
             IntervalView(viewModel: viewModel)
         case .summary:
-            SummaryView(viewModel: viewModel)
-        }
-    }
-
-    // MARK: Edit Mode Toolbar
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        Group {
-            if viewModel.mode == .edit {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        viewModel.saveReminder(reminder)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .fontWeight(.semibold)
-                    .disabled(viewModel.isSaveButtonDisabled)
-                }
-            }
+            SummaryView(viewModel: viewModel, reminder: reminder)
         }
     }
 
@@ -174,41 +148,37 @@ struct CreateReminderView: View {
     // MARK: Intro
 
     private var intro: some View {
-        VStack {
-            VStack(spacing: 24) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
                 ReminderCreationHeroIcon(
-                    systemImage: "exclamationmark.applewatch",
-                    tint: Color("BrandPrimary"),
-                    size: 128
+                    systemImage: "bell.badge.fill",
+                    tint: .brandPrimary,
+                    size: 80
                 )
-                .padding(.bottom)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
 
                 Text("Create Reminder")
-                    .font(.title2.weight(.semibold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.largeTitle.bold())
 
-                Label {
+                LabeledCard(contentSpacing: 12) {
                     Text("This allows you to add a new Reminder which can be triggered on your Apple Watch or iPhone.")
-                } icon: {
-                    Image(systemName: "chart.xyaxis.line")
-                        .resizable()
-                        .foregroundStyle(Color("BrandPrimary"))
-                        .scaledToFit()
-                        .frame(width: 32, height: 32)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                } label: {
+                    Label("Reminders", systemImage: "bell.fill")
+                        .foregroundStyle(.brandPrimary)
                 }
-                .labelIconToTitleSpacing(16)
             }
-            .padding(.top, 32)
-            .padding(.horizontal)
-            .padding(.horizontal)
-
-            Spacer()
-
-            actionButton
+            .frame(maxWidth: 680)
+            .frame(maxWidth: .infinity)
+            .padding()
         }
+        .background(Color(.systemGroupedBackground))
+        .safeAreaBar(edge: .bottom) { actionButton }
         .toolbar {
             ToolbarItem(placement: .destructiveAction) {
-                CloseButton()
+                Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
             }
         }
     }
@@ -269,20 +239,7 @@ struct ReminderCreationSelectionRow<Content: View>: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                content()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Image(systemName: "checkmark")
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(tint)
-                    .opacity(isSelected ? 1 : 0)
-                    .contentTransition(.symbolEffect(.replace))
-            }
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
+        SingleSelectRow(isSelected: isSelected, tint: tint, action: action, content: content)
     }
 }
 
@@ -314,7 +271,7 @@ struct ReminderCreationListHero: View {
 
             Text(title)
                 .font(.title2.weight(.semibold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.bottom)
@@ -333,12 +290,12 @@ struct ReminderCreationOptionLabel: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.body)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.primary)
 
                 if let subtitle {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
             }
         } icon: {
@@ -361,10 +318,10 @@ struct ReminderCreationActionBar: View {
             isDisabled: isDisabled,
             action: action
         )
-        .padding(.horizontal)
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
+        .frame(maxWidth: 600)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -374,27 +331,8 @@ struct ReminderCreationActionButton: View {
     let action: () -> Void
 
     var body: some View {
-        Group {
-            if #available(iOS 26.0, *) {
-                button
-                    .buttonStyle(.glassProminent)
-            } else {
-                button
-                    .buttonStyle(.borderedProminent)
-            }
-        }
-    }
-
-    private var button: some View {
-        Button(action: action) {
-            Text(title)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-        }
-        .controlSize(.large)
-        .buttonBorderShape(.capsule)
-        .tint(Color("BrandPrimary"))
-        .disabled(isDisabled)
+        PrimaryButton(title: title, action: action)
+            .disabled(isDisabled)
     }
 }
 
@@ -417,13 +355,13 @@ struct ReminderCreationInfoBlock: View {
 
             Text(text)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color(.secondarySystemGroupedBackground))
         }
     }

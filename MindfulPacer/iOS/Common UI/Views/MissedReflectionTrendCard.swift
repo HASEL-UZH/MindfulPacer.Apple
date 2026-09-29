@@ -7,6 +7,47 @@
 
 import Charts
 import SwiftUI
+import UIKit
+
+extension EnvironmentValues {
+    @Entry var missedReflectionSelectedChart: Binding<UUID?>? = nil
+}
+
+struct MissedReflectionChartFramesKey: PreferenceKey {
+    static let defaultValue: [UUID: CGRect] = [:]
+    static let coordinateSpace = "missedReflectionCharts"
+
+    static func reduce(value: inout [UUID: CGRect], nextValue: () -> [UUID: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
+    }
+}
+
+struct MissedReflectionOutsideTapGesture: UIGestureRecognizerRepresentable {
+    let chartFrames: [CGRect]
+    var onTapAway: () -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator { Coordinator() }
+
+    func makeUIGestureRecognizer(context: Context) -> UITapGestureRecognizer {
+        let recognizer = UITapGestureRecognizer()
+        recognizer.cancelsTouchesInView = false
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UITapGestureRecognizer, context: Context) {
+        guard recognizer.state == .ended else { return }
+        let location = context.converter.location(in: .named(MissedReflectionChartFramesKey.coordinateSpace))
+        if !chartFrames.contains(where: { $0.contains(location) }) { onTapAway() }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            true
+        }
+    }
+}
 
 // MARK: - MissedReflectionTrendCard
 
@@ -119,7 +160,7 @@ struct MissedReflectionTrendCard: View {
         } accessory: {
             accessory
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(data.accessibilityLabel)
     }
 
@@ -143,7 +184,7 @@ struct MissedReflectionTrendCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(data.accessibilityLabel)
     }
 
@@ -303,7 +344,9 @@ extension MissedReflectionTrendCard {
                 triggerWindowStart: triggerWindowStart,
                 interval: reflection.interval
             )
-            let yDomain = Self.makeReflectionYDomain(samples: samples, threshold: Double(threshold))
+            let yDomain = measurementType == .heartRate
+                ? HeartRateChartScale.domain(values: rawSamples.map(\.value), thresholds: [Double(threshold)])
+                : Self.makeReflectionYDomain(samples: samples, threshold: Double(threshold))
             let clampedTriggerDate = min(max(triggerDate, xDomain.lowerBound), xDomain.upperBound)
             let clampedThreshold = min(max(Double(threshold), yDomain.lowerBound), yDomain.upperBound)
             let triggerSample = samples.min { lhs, rhs in
@@ -354,14 +397,14 @@ extension MissedReflectionTrendCard {
                 ),
                 currentSamples: currentSamples,
                 comparisonSamples: [],
-                valueRules: [
+                valueRules: yDomain.contains(Double(threshold)) ? [
                     .init(
-                        value: clampedThreshold,
+                        value: Double(threshold),
                         label: String(localized: "Threshold"),
                         color: reminderType.color.opacity(0.72),
                         lineStyle: .init(lineWidth: 1.5, lineCap: .round, dash: [5, 5])
                     )
-                ],
+                ] : [],
                 shadedRegions: shadedRegions,
                 areaFills: [],
                 markerDate: clampedTriggerDate,
@@ -903,6 +946,8 @@ private struct MissedReflectionTrendChart: View {
     let data: MissedReflectionTrendCard.Data
     @Binding var selectedSample: MissedReflectionTrendCard.Sample?
     @State private var plotFrame: CGRect = .zero
+    @State private var selectionID = UUID()
+    @Environment(\.missedReflectionSelectedChart) private var selectedChart
 
     private var chartHeight: CGFloat {
         if data.layout.usesNativeXAxis {
@@ -1051,13 +1096,29 @@ private struct MissedReflectionTrendChart: View {
                         Color.clear
                             .contentShape(Rectangle())
                             .preference(key: MissedReflectionTrendPlotFrameKey.self, value: frame)
-                            .gesture(selectionGesture(proxy: proxy, plotFrame: frame))
+                            .preference(key: MissedReflectionChartFramesKey.self,
+                                        value: selectedChart == nil ? [:] : [
+                                            selectionID: geometry.frame(in: .named(MissedReflectionChartFramesKey.coordinateSpace))
+                                        ])
+                            .simultaneousGesture(SpatialTapGesture().onEnded { value in
+                                updateSelection(at: value.location, proxy: proxy, plotFrame: frame, togglesSelection: true)
+                            })
+                            .gesture(MissedReflectionInspectionGesture { location in
+                                updateSelection(at: location, proxy: proxy, plotFrame: frame)
+                            })
                     }
                 }
                 .onPreferenceChange(MissedReflectionTrendPlotFrameKey.self) { frame in
-                    plotFrame = frame
+                    if plotFrame != frame { plotFrame = frame }
+                }
+                .onChange(of: selectedChart?.wrappedValue) { _, activeID in
+                    if activeID != selectionID { selectedSample = nil }
                 }
                 .frame(height: chartHeight)
+                .accessibilityIdentifier("missedReflection.chart")
+                .accessibilityValue(selectedSample.map {
+                    "\($0.date.formatted(.dateTime.hour().minute())), \($0.valueText)"
+                } ?? "")
             } else {
                 Text(data.emptyChartText ?? "No chart data is available.")
                     .font(.footnote)
@@ -1077,30 +1138,11 @@ private struct MissedReflectionTrendChart: View {
         }
     }
 
-    private func selectionGesture(
-        proxy: ChartProxy,
-        plotFrame: CGRect
-    ) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.22)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
-            .onChanged { value in
-                guard case .second(true, let dragValue?) = value else { return }
-
-                updateSelection(
-                    at: dragValue.location,
-                    proxy: proxy,
-                    plotFrame: plotFrame
-                )
-            }
-            .onEnded { _ in
-                selectedSample = nil
-            }
-    }
-
     private func updateSelection(
         at location: CGPoint,
         proxy: ChartProxy,
-        plotFrame: CGRect
+        plotFrame: CGRect,
+        togglesSelection: Bool = false
     ) {
         guard plotFrame.width > 0 else { return }
 
@@ -1109,7 +1151,103 @@ private struct MissedReflectionTrendChart: View {
               let selectedDate = proxy.value(atX: x, as: Date.self),
               let nearestSample = data.nearestCurrentSample(to: selectedDate) else { return }
 
-        selectedSample = nearestSample
+        let newSample = togglesSelection && selectedSample?.date == nearestSample.date ? nil : nearestSample
+        if selectedSample != newSample { selectedSample = newSample }
+        let activeID = newSample == nil ? nil : selectionID
+        if selectedChart?.wrappedValue != activeID { selectedChart?.wrappedValue = activeID }
+    }
+}
+
+/// A quick vertical drag scrolls. A hold or horizontal scrub owns the entire
+/// remaining touch sequence, including vertical movement and direction changes.
+private struct MissedReflectionInspectionGesture: UIGestureRecognizerRepresentable {
+    var onChanged: (CGPoint) -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator { Coordinator() }
+
+    func makeUIGestureRecognizer(context: Context) -> ChartInspectionRecognizer {
+        let recognizer = ChartInspectionRecognizer()
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: ChartInspectionRecognizer, context: Context) {
+        if recognizer.state == .began || recognizer.state == .changed || recognizer.state == .ended {
+            onChanged(context.converter.localLocation)
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldBeRequiredToFailBy other: UIGestureRecognizer) -> Bool {
+            // Ancestor scroll and interactive-pop pans wait for the short decision
+            // window. Once inspection begins they cannot take over this touch.
+            guard other is UIPanGestureRecognizer,
+                  let view = gestureRecognizer.view, let otherView = other.view else { return false }
+            return view.isDescendant(of: otherView)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+            false
+        }
+    }
+}
+
+private final class ChartInspectionRecognizer: UIGestureRecognizer {
+    private var initialPoint: CGPoint = .zero
+    private var holdTimer: Timer?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard touches.count == 1, let touch = touches.first,
+              state == .possible, holdTimer == nil else {
+            holdTimer?.invalidate()
+            state = state == .began || state == .changed ? .cancelled : .failed
+            return
+        }
+        // Keep a deliberate swipe from the screen edge available for navigation.
+        guard touch.location(in: view?.window).x > 24 else {
+            state = .failed
+            return
+        }
+        initialPoint = touch.location(in: view)
+        let timer = Timer(timeInterval: 0.3, repeats: false) { [weak self] _ in
+            guard let self, self.state == .possible else { return }
+            self.state = .began
+        }
+        holdTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard let touch = touches.first else { return }
+        if state == .began || state == .changed {
+            state = .changed
+            return
+        }
+        guard state == .possible else { return }
+        let point = touch.location(in: view)
+        let dx = abs(point.x - initialPoint.x)
+        let dy = abs(point.y - initialPoint.y)
+        guard max(dx, dy) >= 8 else { return }
+        holdTimer?.invalidate()
+        state = dx > dy ? .began : .failed
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        holdTimer?.invalidate()
+        state = state == .began || state == .changed ? .ended : .failed
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+        holdTimer?.invalidate()
+        state = .cancelled
+    }
+
+    override func reset() {
+        holdTimer?.invalidate()
+        holdTimer = nil
+        super.reset()
     }
 }
 

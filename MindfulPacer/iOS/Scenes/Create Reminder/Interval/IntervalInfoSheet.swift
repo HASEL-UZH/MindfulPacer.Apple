@@ -39,7 +39,6 @@ struct IntervalInfoSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
     }
 }
 

@@ -18,10 +18,16 @@ enum EditReflectionNavigationDestination: Hashable {
 
 enum EditReflectionSheet: Identifiable {
     case symptomValueView(Symptom)
+    case activity
+    case subactivity(Activity)
+    case mood
     
     var id: Int {
         switch self {
         case .symptomValueView: 0
+        case .activity: 1
+        case .subactivity: 2
+        case .mood: 3
         }
     }
 }
@@ -43,10 +49,10 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-    @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
     @FocusState private var focusedField: FocusField?
 
-    @Query(sort: \Activity.name) private var activities: [Activity]
     
     @AppStorage(ModeOfUse.appStorageKey, store: DefaultsStore.shared)
     private var modeOfUseRaw: String = ModeOfUse.essentials.rawValue
@@ -109,6 +115,30 @@ struct EditReflectionView: View {
     @ViewBuilder
     private func sheetContent(for sheet: EditReflectionSheet) -> some View {
         switch sheet {
+        case .activity:
+            NavigationStack {
+                ActivityView(viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        case .subactivity(let activity):
+            NavigationStack {
+                SubactivityView(activity: activity, viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        case .mood:
+            NavigationStack {
+                MoodView(viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         case .symptomValueView(let symptom):
             Group {
                 switch symptom {
@@ -128,7 +158,7 @@ struct EditReflectionView: View {
                     SymptomValueView(symptom: viewModel.depressionOrAnxietyBinding)
                 }
             }
-            .presentationDetents([.medium])
+            .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
     }
@@ -155,15 +185,7 @@ struct EditReflectionView: View {
 
     @ViewBuilder
     private var primaryRows: some View {
-        formRow(title: "Date", systemImage: "calendar") {
-            DatePicker(
-                "Date",
-                selection: $viewModel.date,
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .labelsHidden()
-            .datePickerStyle(.compact)
-        }
+        dateRow
 
         activityRow
 
@@ -178,89 +200,84 @@ struct EditReflectionView: View {
         wellBeingRow
     }
 
-    @ViewBuilder
-    private var activityRow: some View {
-        formRow(title: "Activity", systemImage: "rectangle.grid.2x2") {
-            Menu {
-                Button("Uncategorized", systemImage: "questionmark") {
-                    viewModel.selectedActivity = nil
-                }
-
-                ForEach(activities) { activity in
-                    Button(activity.name, systemImage: activity.icon) {
-                        viewModel.selectedActivity = activity
-                    }
-                }
-            } label: {
-                rowValue(
-                    viewModel.selectedActivity?.name ?? String(localized: "Select"),
-                    isRequiredMissing: viewModel.selectedActivity == nil
-                )
+    private var dateRow: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                dateLabel.fixedSize()
+                Spacer(minLength: 0)
+                datePicker.fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                dateLabel
+                datePicker
             }
         }
+    }
+
+    private var dateLabel: some View {
+        Label("Date", systemImage: "calendar")
+            .labelStyle(.titleAndIcon)
+            .font(.body)
+            .foregroundStyle(Color.primary)
+    }
+
+    private var datePicker: some View {
+        DatePicker("Date", selection: $viewModel.date, displayedComponents: [.date, .hourAndMinute])
+            .labelsHidden()
+            .datePickerStyle(.compact)
+    }
+
+    private var activityRow: some View {
+        Button {
+            viewModel.presentSheet(.activity)
+        } label: {
+            formRow(title: "Activity", systemImage: "rectangle.grid.2x2") {
+                rowValue(viewModel.selectedActivity?.name ?? String(localized: "Select"),
+                         isRequiredMissing: viewModel.selectedActivity == nil)
+            }
+            .contentShape(.rect)
+        }
+        .accessibilityIdentifier("reflection.activity")
     }
 
     @ViewBuilder
     private var subactivityRow: some View {
         if let activity = viewModel.selectedActivity {
-            formRow(title: "Subactivity", systemImage: "rectangle.grid.3x3") {
-                Menu {
-                    Button("None", systemImage: "minus.circle") {
-                        viewModel.selectedSubactivity = nil
-                    }
-
-                    ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
-                        Button(subactivity.name, systemImage: subactivity.icon) {
-                            viewModel.selectedSubactivity = subactivity
-                        }
-                    }
-                } label: {
-                    rowValue(
-                        viewModel.selectedSubactivity?.name ?? String(localized: "None")
-                    )
+            Button {
+                viewModel.presentSheet(.subactivity(activity))
+            } label: {
+                formRow(title: "Subactivity", systemImage: "rectangle.grid.3x3") {
+                    rowValue(viewModel.selectedSubactivity?.name ?? String(localized: "None"))
                 }
+                .contentShape(.rect)
             }
+            .accessibilityIdentifier("reflection.subactivity")
         }
     }
 
     private var moodRow: some View {
-        formRow(title: "Mood", systemImage: "face.smiling") {
-            Menu {
-                Button("None", systemImage: "minus.circle") {
-                    viewModel.selectedMood = nil
-                }
-
-                ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
-                    Button("\(mood.emoji) \(mood.text)") {
-                        viewModel.selectedMood = mood
-                    }
-                }
-            } label: {
-                rowValue(
-                    viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set")
-                )
+        Button {
+            viewModel.presentSheet(.mood)
+        } label: {
+            formRow(title: "Mood", systemImage: "face.smiling") {
+                rowValue(viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set"))
             }
+            .contentShape(.rect)
         }
+        .accessibilityIdentifier("reflection.mood")
     }
 
     private var wellBeingRow: some View {
-        formRow(title: viewModel.wellBeing.displayName, systemImage: viewModel.wellBeing.icon) {
-            Menu {
-                Button("Not Set", systemImage: "minus.circle") {
-                    viewModel.wellBeing.setValue(nil)
-                }
-
-                ForEach(0 ..< viewModel.wellBeing.numOptions, id: \.self) { value in
-                    Button(viewModel.wellBeing.description(for: value), systemImage: "\(value).circle") {
-                        viewModel.wellBeing.setValue(value)
-                    }
-                }
-            } label: {
-                rowValue(
-                    viewModel.wellBeing.description
-                )
+        Button {
+            viewModel.presentSymptomValueSheet(for: viewModel.wellBeing)
+        } label: {
+            formRow(title: viewModel.wellBeing.displayName, systemImage: viewModel.wellBeing.icon, singleLine: true) {
+                Text(viewModel.wellBeing.description)
+                    .foregroundStyle(viewModel.wellBeing.value == nil ? Color.secondary : viewModel.wellBeing.color)
             }
+            .contentShape(.rect)
         }
+        .accessibilityIdentifier("reflection.wellbeing")
     }
 
     // MARK: Secondary Sections
@@ -306,14 +323,14 @@ struct EditReflectionView: View {
                 Label(symptom.displayName, systemImage: symptom.icon)
                     .font(.body)
                     .foregroundStyle(Color.primary)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Spacer()
 
                 Text(symptom.description)
                     .font(.body)
-                    .foregroundStyle(symptom.value == nil ? Color.secondary : Color.accentColor)
-                    .lineLimit(1)
+                    .foregroundStyle(symptom.value == nil ? Color.secondary : symptom.color)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
@@ -338,7 +355,7 @@ struct EditReflectionView: View {
         } else if reflection != nil {
             Section("Reminder") {
                 Text("This reflection was created manually.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
         }
     }
@@ -348,18 +365,30 @@ struct EditReflectionView: View {
     private func formRow<Field: View>(
         title: String,
         systemImage: String,
+        singleLine: Bool = false,
         @ViewBuilder field: () -> Field
     ) -> some View {
-        HStack(spacing: 12) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
             Label(title, systemImage: systemImage)
                 .font(.body)
-                .foregroundStyle(.primary)
-                .lineLimit(1)
+                .foregroundStyle(Color.primary)
+                .lineLimit(singleLine && !dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+                .minimumScaleFactor(singleLine ? 0.85 : 1)
+                .layoutPriority(singleLine ? 1 : 0)
+                .fixedSize(horizontal: false, vertical: true)
 
-            Spacer(minLength: 12)
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer(minLength: 12)
+            }
 
             field()
-                .frame(maxWidth: 230, alignment: .trailing)
+                .lineLimit(singleLine && !dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+                .fixedSize(horizontal: singleLine && !dynamicTypeSize.isAccessibilitySize, vertical: true)
+                .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : (singleLine ? nil : 230),
+                       alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing)
         }
     }
 
@@ -368,10 +397,9 @@ struct EditReflectionView: View {
         isRequiredMissing: Bool = false
     ) -> some View {
         Text(title)
-            .lineLimit(1)
-            .truncationMode(.middle)
-        .font(.body)
-        .foregroundStyle(isRequiredMissing ? Color.red : Color.accentColor)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            .font(.body)
+            .foregroundStyle(isRequiredMissing ? Color.red : Color.accentColor)
     }
 
     private var editableSymptoms: [Symptom] {
@@ -469,8 +497,6 @@ struct EditReflectionView: View {
 // MARK: - Preview
 
 #Preview {
-    let viewModel = ScenesContainer.shared.editReflectionViewModel()
-    
-    return EditReflectionView(viewModel: viewModel) {}
+    EditReflectionView()
         .tint(Color("BrandPrimary"))
 }

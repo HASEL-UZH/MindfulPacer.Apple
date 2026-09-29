@@ -37,6 +37,7 @@ extension HomeView {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Reflections")
+            .navigationBarTitleDisplayMode(.large)
             .navigationSubtitle(navigationSubtitleText)
             .alert("Delete Reflection", isPresented: isDeleteConfirmationPresented) {
                 Button("Delete", role: .destructive) {
@@ -94,6 +95,7 @@ extension HomeView {
                         .padding(.vertical, 12)
                     }
                 }
+                .swipeActionsContainer()
                 .background(Color(.systemGroupedBackground))
             }
         }
@@ -173,54 +175,49 @@ extension HomeView {
             }
         }
 
-        @ViewBuilder
         private func reflectionRow(_ reflection: Reflection) -> some View {
-            let metadataRow = ExpandableMetadataRow(
+            ExpandableMetadataRow(
                 id: reflection.id,
                 activeID: $activeReflectionID,
-                expandedContentLeadingInset: 44
+                expandedContentLeadingInset: 36,
+                onSwipePresentationChanged: { isPresented in
+                    if isPresented { clearActiveReflection() }
+                }
             ) { isActive in
                 reflectionRowContent(reflection, isActive: isActive)
             } rowAccessory: { isActive in
                 reflectionRowAccessory(reflection, isActive: isActive)
+            } rowSwipeActions: {
+                Button(role: .destructive) {
+                    presentDeleteConfirmation(for: reflection)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .accessibilityLabel("Delete")
+                .accessibilityIdentifier("reflections.delete")
             } expandedContent: {
                 reflectionQuickActions(reflection)
             }
-
-            if activeReflectionID != reflection.id {
-                metadataRow
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            presentDeleteConfirmation(for: reflection)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    } onPresentationChanged: { isPresented in
-                        guard isPresented else { return }
-                        clearActiveReflection()
-                    }
-            } else {
-                metadataRow
-            }
+            .accessibilityIdentifier("reflections.row.\(reflection.id)")
         }
 
         private func reflectionRowContent(_ reflection: Reflection, isActive: Bool) -> some View {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: reflectionIconName(reflection))
                     .symbolVariant(.fill)
-                    .font(.title2.weight(.semibold))
+                    .font(.body.weight(.medium))
                     .foregroundStyle(isActive ? Color("BrandPrimary") : .secondary)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 24, height: 24)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(reflectionTitle(reflection))
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.primary)
                         .lineLimit(1)
 
                     Text(reflectionSubtitle(reflection))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                         .lineLimit(2)
                 }
             }
@@ -239,7 +236,6 @@ extension HomeView {
                         .frame(width: 32, height: 32)
                         .contentShape(.circle)
                 }
-                .buttonStyle(.plain)
                 .accessibilityLabel("Edit Reflection")
                 .padding(.top, 4)
             }

@@ -15,6 +15,7 @@ extension EditReflectionView {
         // MARK: Properties
 
         @Environment(\.dismiss) private var dismiss
+        @ScaledMetric(relativeTo: .headline) private var valueBadgeSize: CGFloat = 28
         @Binding var symptom: Symptom
         @State private var isPresentingInfoSheet = false
 
@@ -42,18 +43,18 @@ extension EditReflectionView {
 private extension EditReflectionView.SymptomValueView {
 
     var content: some View {
-        VStack {
-            HStack(alignment: .top, spacing: 12) {
-                ForEach(0 ..< symptom.numOptions, id: \.self) { index in
+        ScrollView {
+            VStack(spacing: 12) {
+                ForEach(0..<symptom.numOptions, id: \.self) { index in
                     symptomButton(index)
                 }
+                Text("Tap the selected value again to clear it.")
+                    .font(.footnote)
+                    .foregroundStyle(Color.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal)
-            .padding(.top, 24)
-
-            Spacer(minLength: 0)
+            .padding(16)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -71,8 +72,7 @@ private extension EditReflectionView.SymptomValueView {
             Button {
                 isPresentingInfoSheet = true
             } label: {
-                Image(systemName: "info")
-                    .fontWeight(.semibold)
+                Label("About This Scale", systemImage: "info.circle")
             }
         }
     }
@@ -86,39 +86,28 @@ private extension EditReflectionView.SymptomValueView {
         let isSelected = symptom.value == index
         let tint = symptom.color(for: index)
 
-        return Button {
+        return SingleSelectRow(isSelected: isSelected, tint: tint) {
             if isSelected {
                 symptom.setValue(nil)
             } else {
                 symptom.setValue(index)
             }
             dismiss()
-        } label: {
-            VStack(spacing: 10) {
+        } content: {
+            HStack(spacing: 12) {
                 Text("\(index)")
-                    .font(.headline)
-                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-                    .frame(width: 56, height: 56)
-                    .background {
-                        Circle()
-                            .foregroundStyle(tint.opacity(isSelected ? 0.22 : 0.12))
-                    }
-                    .overlay {
-                        Circle().strokeBorder(
-                            tint.opacity(isSelected ? 1.0 : 0.35),
-                            lineWidth: isSelected ? 3 : 1
-                        )
-                    }
+                    .font(.headline.monospacedDigit())
+                    .foregroundStyle(Color.primary)
+                    .frame(width: valueBadgeSize, height: valueBadgeSize)
+                    .background(tint.opacity(0.16), in: .circle)
 
                 Text(symptom.description(for: index))
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                    .foregroundStyle(Color.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(width: 64)
+            .contentShape(.rect)
         }
-        .buttonStyle(.plain)
     }
 }
 
@@ -143,14 +132,18 @@ private struct SymptomInfoView: View {
 private extension SymptomInfoView {
 
     var content: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            scaleHeader
-            scaleRow
-            Divider().opacity(0.25)
-            explanation
-            Spacer(minLength: 0)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Card {
+                    VStack(spacing: 16) {
+                        scaleHeader
+                        scaleRow
+                    }
+                }
+                explanation
+            }
+            .padding()
         }
-        .padding()
         .background(Color(.systemGroupedBackground))
     }
 
@@ -223,8 +216,7 @@ private extension SymptomInfoView {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
-                    .fontWeight(.semibold)
+                Label("Close", systemImage: "xmark")
             }
         }
     }

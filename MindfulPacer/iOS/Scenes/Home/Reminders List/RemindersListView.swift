@@ -32,6 +32,7 @@ struct RemindersListView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Reminders")
+        .navigationBarTitleDisplayMode(.large)
         .navigationSubtitle(navigationSubtitleText)
         .alert("Delete Reminder", isPresented: isDeleteConfirmationPresented) {
             Button("Delete", role: .destructive) {
@@ -87,6 +88,7 @@ struct RemindersListView: View {
                     .padding(.vertical, 12)
                 }
             }
+            .swipeActionsContainer()
             .background(Color(.systemGroupedBackground))
         }
     }
@@ -163,54 +165,49 @@ struct RemindersListView: View {
         .padding(.bottom, isLast ? 0 : 12)
     }
 
-    @ViewBuilder
     private func reminderRow(_ reminder: Reminder) -> some View {
-        let metadataRow = ExpandableMetadataRow(
+        ExpandableMetadataRow(
             id: reminder.id,
             activeID: $activeReminderID,
-            expandedContentLeadingInset: 44
+            expandedContentLeadingInset: 36,
+            onSwipePresentationChanged: { isPresented in
+                if isPresented { clearActiveReminder() }
+            }
         ) { isActive in
             reminderRowContent(reminder, isActive: isActive)
         } rowAccessory: { isActive in
             reminderRowAccessory(reminder, isActive: isActive)
+        } rowSwipeActions: {
+            Button(role: .destructive) {
+                presentDeleteConfirmation(for: reminder)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .accessibilityLabel("Delete")
+            .accessibilityIdentifier("reminders.delete")
         } expandedContent: {
             reminderQuickActions(reminder)
         }
-
-        if activeReminderID != reminder.id {
-            metadataRow
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
-                        presentDeleteConfirmation(for: reminder)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                } onPresentationChanged: { isPresented in
-                    guard isPresented else { return }
-                    clearActiveReminder()
-                }
-        } else {
-            metadataRow
-        }
+        .accessibilityIdentifier("reminders.row.\(reminder.id)")
     }
 
     private func reminderRowContent(_ reminder: Reminder, isActive: Bool) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: reminderIconName(for: reminder.measurementType))
                 .symbolVariant(.fill)
-                .font(.title3.weight(.semibold))
+                .font(.body.weight(.medium))
                 .foregroundStyle(reminder.measurementType.color)
-                .frame(width: 32, height: 32)
+                .frame(width: 24, height: 24)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(reminder.measurementType.localized)
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
                 Text(reminder.triggerSummary)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .lineLimit(2)
             }
         }
@@ -229,7 +226,6 @@ struct RemindersListView: View {
                     .frame(width: 32, height: 32)
                     .contentShape(.circle)
             }
-            .buttonStyle(.plain)
             .accessibilityLabel("Edit Reminder")
             .padding(.top, 4)
         }
@@ -237,35 +233,19 @@ struct RemindersListView: View {
 
     private func reminderQuickActions(_ reminder: Reminder) -> some View {
         ExpandableMetadataScroll {
-            ExpandableMetadataMenuChip(
+            ExpandableMetadataChip(
                 title: reminder.measurementType.localized,
                 systemImage: reminder.measurementType.icon,
                 isActive: true,
                 tint: reminder.measurementType.color
-            ) {
-                Section {
-                    ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                        Button(measurementType.localized, systemImage: measurementType.icon) {
-                            viewModel.updateReminder(reminder, measurementType: measurementType)
-                        }
-                    }
-                }
-            }
+            )
 
-            ExpandableMetadataMenuChip(
+            ExpandableMetadataChip(
                 title: reminder.reminderType.localized,
                 systemImage: reminder.reminderType.icon,
                 isActive: true,
                 tint: reminder.reminderType.color
-            ) {
-                Section {
-                    ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
-                        Button(reminderType.localized, systemImage: reminderType.icon) {
-                            viewModel.updateReminder(reminder, reminderType: reminderType)
-                        }
-                    }
-                }
-            }
+            )
 
             ExpandableMetadataMenuChip(
                 title: reminder.interval.localized,
@@ -371,7 +351,7 @@ private struct ReminderMeasurementSectionHeader: View {
 
                 Text(reminderCountText)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
 
             Spacer(minLength: 12)
@@ -379,11 +359,10 @@ private struct ReminderMeasurementSectionHeader: View {
             Button(action: onToggleCollapsed) {
                 Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .frame(width: 32, height: 32)
                     .contentShape(.rect)
             }
-            .buttonStyle(.plain)
             .accessibilityLabel(isCollapsed ? "Expand \(measurementType.localized)" : "Collapse \(measurementType.localized)")
         }
         .padding(.top, 8)
@@ -425,7 +404,7 @@ private struct ReminderThresholdEditorSheet: View {
 
                         Text(reminder.thresholdUnits)
                             .font(.body.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 } footer: {
                     Text(footerText)

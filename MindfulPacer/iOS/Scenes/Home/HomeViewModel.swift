@@ -58,13 +58,25 @@ class HomeViewModel {
 
     var missedPageSize: Int = 10
     var missedVisibleCount: Int = 10
+    var missedMeasurementFilter: Reminder.MeasurementType? {
+        didSet {
+            if oldValue != missedMeasurementFilter { resetMissedPagination() }
+        }
+    }
+
+    var filteredMissedReflections: [Reflection] {
+        guard let missedMeasurementFilter else { return missedReflections }
+        return missedReflections.filter {
+            ($0.measurementType ?? $0.triggerSamples.first?.type) == missedMeasurementFilter
+        }
+    }
     
     var displayedMissedReflections: [Reflection] {
-        Array(missedReflections.prefix(min(missedVisibleCount, missedReflections.count)))
+        Array(filteredMissedReflections.prefix(missedVisibleCount))
     }
     
     var canLoadMoreMissed: Bool {
-        missedVisibleCount < missedReflections.count
+        missedVisibleCount < filteredMissedReflections.count
     }
     
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
@@ -319,29 +331,6 @@ class HomeViewModel {
 
     func updateReminder(
         _ reminder: Reminder,
-        measurementType: MeasurementType
-    ) {
-        reminder.measurementType = measurementType
-
-        let validIntervals = validIntervals(for: measurementType)
-        if !validIntervals.contains(reminder.interval), let defaultInterval = validIntervals.first {
-            reminder.interval = defaultInterval
-        }
-
-        reminder.threshold = clampedThreshold(reminder.threshold, for: measurementType)
-        saveReminderChanges(reminder)
-    }
-
-    func updateReminder(
-        _ reminder: Reminder,
-        reminderType: Reminder.ReminderType
-    ) {
-        reminder.reminderType = reminderType
-        saveReminderChanges(reminder)
-    }
-
-    func updateReminder(
-        _ reminder: Reminder,
         interval: Reminder.Interval
     ) {
         reminder.interval = interval
@@ -406,18 +395,18 @@ class HomeViewModel {
     }
     
     func resetMissedPagination() {
-        missedVisibleCount = min(missedPageSize, missedReflections.count)
+        missedVisibleCount = min(missedPageSize, filteredMissedReflections.count)
     }
     
     @MainActor
     func loadMoreMissed() {
         guard canLoadMoreMissed else { return }
-        missedVisibleCount = min(missedVisibleCount + missedPageSize, missedReflections.count)
+        missedVisibleCount = min(missedVisibleCount + missedPageSize, filteredMissedReflections.count)
     }
     
     func clampMissedPaginationAfterMutation() {
-        missedVisibleCount = min(missedVisibleCount, missedReflections.count)
-        if missedVisibleCount == 0 && !missedReflections.isEmpty {
+        missedVisibleCount = min(missedVisibleCount, filteredMissedReflections.count)
+        if missedVisibleCount == 0 && !filteredMissedReflections.isEmpty {
             resetMissedPagination()
         }
     }
@@ -509,15 +498,6 @@ class HomeViewModel {
             fetchMissedReflections(reminders: reminders)
         } catch {
             print("DEBUG: Could not save reminder changes: \(error.localizedDescription)")
-        }
-    }
-
-    private func validIntervals(for measurementType: MeasurementType) -> [Reminder.Interval] {
-        switch measurementType {
-        case .heartRate:
-            Reminder.Interval.heartRateIntervals
-        case .steps:
-            Reminder.Interval.stepsIntervals
         }
     }
 

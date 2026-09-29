@@ -15,14 +15,41 @@ extension HomeView {
         // MARK: Properties
         
         @Bindable var viewModel: HomeViewModel
+        @State private var selectedChartID: UUID?
+        @State private var chartFrames: [UUID: CGRect] = [:]
         
         // MARK: Body
         
         var body: some View {
-            if viewModel.missedReflections.isEmpty {
-                emptyState
-            } else {
-                missedReflectionsList
+            Group {
+                if viewModel.filteredMissedReflections.isEmpty {
+                    emptyState
+                } else {
+                    missedReflectionsList
+                        .id(viewModel.missedMeasurementFilter)
+                }
+            }
+            .navigationTitle("Missed Reflections")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Measurement Type", selection: $viewModel.missedMeasurementFilter) {
+                            Text("All").tag(Optional<Reminder.MeasurementType>.none)
+                            ForEach(Reminder.MeasurementType.allCases, id: \.self) { measurement in
+                                Label(measurement.localized, systemImage: measurement.icon)
+                                    .tag(Optional(measurement))
+                            }
+                        }
+                    } label: {
+                        Label("Filter", systemImage: viewModel.missedMeasurementFilter == nil
+                              ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill")
+                    }
+                    .accessibilityIdentifier("missedReflections.filter")
+                    .accessibilityLabel("\(String(localized: "Filter")): \(viewModel.missedMeasurementFilter?.localized ?? String(localized: "All"))")
+                }
+            }
+            .onChange(of: viewModel.missedMeasurementFilter) {
+                selectedChartID = nil
             }
         }
         
@@ -73,6 +100,7 @@ extension HomeView {
                         MissedReflectionHealthCard(reflection: reflection) {
                             actionButtons(for: reflection)
                         }
+                        .accessibilityIdentifier("missedReflection.card.\(reflection.measurementType?.rawValue ?? "unknown")")
                         .padding(.horizontal)
                     }
 
@@ -82,12 +110,18 @@ extension HomeView {
                     }
 
                     if !viewModel.displayedMissedReflections.isEmpty {
-                        Text("\(viewModel.displayedMissedReflections.count) of \(viewModel.missedReflections.count)")
+                        Text("\(viewModel.displayedMissedReflections.count) of \(viewModel.filteredMissedReflections.count)")
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                             .padding(.bottom, 8)
                     }
                 }
+                .contentShape(.rect)
+                .gesture(MissedReflectionOutsideTapGesture(chartFrames: Array(chartFrames.values)) {
+                    selectedChartID = nil
+                })
+                // Chart positions stay fixed in content coordinates while the viewport scrolls.
+                .coordinateSpace(.named(MissedReflectionChartFramesKey.coordinateSpace))
                 
                 if viewModel.canLoadMoreMissed && !viewModel.isFetchingMissedReflections {
                     HStack {
@@ -100,14 +134,16 @@ extension HomeView {
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(Color("BrandPrimary"))
                         }
-                        .buttonStyle(.plain)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.bottom)
                 }
             }
+            .environment(\.missedReflectionSelectedChart, $selectedChartID)
+            .onPreferenceChange(MissedReflectionChartFramesKey.self) { frames in
+                if chartFrames != frames { chartFrames = frames }
+            }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Missed Reflections")
         }
 
         // MARK: Empty State
@@ -116,9 +152,16 @@ extension HomeView {
             ContentUnavailableView {
                 Label("No Missed Reflections", systemImage: "square.stack.fill")
             } description: {
-                Text("You do not have any missed reflections.")
+                if viewModel.missedMeasurementFilter == nil {
+                    Text("You do not have any missed reflections.")
+                } else {
+                    Text("No missed reflections match this filter.")
+                }
+            } actions: {
+                if viewModel.missedMeasurementFilter != nil {
+                    Button("Show All") { viewModel.missedMeasurementFilter = nil }
+                }
             }
-            .navigationTitle("Missed Reflections")
         }
     }
 }
@@ -146,11 +189,12 @@ private struct MissedReflectionHealthCard<Actions: View>: View {
 
 // MARK: - MissedReflectionHealthChartData
 
-private struct MissedReflectionHealthChartData {
+struct MissedReflectionHealthChartData {
     let reflection: Reflection
     let rawSamples: [MeasurementSample]
     let samples: [MissedReflectionHealthSample]
     let triggerWindowStart: Date?
+    let valueRange: ClosedRange<Double>
 
     private var measurementType: Reminder.MeasurementType? {
         reflection.measurementType ?? rawSamples.first?.type
@@ -333,8 +377,8 @@ private struct MissedReflectionHealthChartData {
         return lowerBound...upperBound
     }
 
-    var valueRange: ClosedRange<Double> {
-        let values = samples.map(\.value) + (hasThreshold ? [threshold] : [])
+    private static func makeValueRange(samples: [MissedReflectionHealthSample], threshold: Double?) -> ClosedRange<Double> {
+        let values = samples.map(\.value) + (threshold.map { [$0] } ?? [])
         let minValue = values.min() ?? 0
         let maxValue = values.max() ?? 1
         let span = max(1, maxValue - minValue)
@@ -352,9 +396,11 @@ private struct MissedReflectionHealthChartData {
     init(reflection: Reflection) {
         self.reflection = reflection
         let sorted = reflection.triggerSamples.sorted { $0.date < $1.date }
+        let samples = Self.chartSeries(from: sorted, reflection: reflection)
         self.rawSamples = sorted
-        self.samples = Self.chartSeries(from: sorted, reflection: reflection)
+        self.samples = samples
         self.triggerWindowStart = Self.triggerWindowStart(for: reflection)
+        self.valueRange = Self.makeValueRange(samples: samples, threshold: reflection.threshold.map(Double.init))
     }
 
     private var axisTimeStyleShowsSeconds: Bool {
@@ -415,18 +461,17 @@ private struct MissedReflectionHealthChartData {
     ) -> [MeasurementSample] {
         guard window > 0 else { return data }
         var output: [MeasurementSample] = []
-        var queue: [(Date, Double)] = []
+        var firstIncludedIndex = 0
         var sum: Double = 0
         output.reserveCapacity(data.count)
 
-        for sample in data {
+        for (index, sample) in data.enumerated() {
             sum += sample.value
-            queue.append((sample.date, sample.value))
             let cutoff = sample.date.addingTimeInterval(-window)
 
-            while let first = queue.first, first.0 < cutoff {
-                sum -= first.1
-                queue.removeFirst()
+            while firstIncludedIndex < index && data[firstIncludedIndex].date < cutoff {
+                sum -= data[firstIncludedIndex].value
+                firstIncludedIndex += 1
             }
 
             output.append(.init(type: sample.type, value: sum, date: sample.date))
@@ -467,8 +512,7 @@ private struct MissedReflectionHealthChartData {
     }
 }
 
-private struct MissedReflectionHealthSample: Identifiable {
-    let id = UUID()
+struct MissedReflectionHealthSample {
     let date: Date
     let value: Double
 }

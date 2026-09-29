@@ -44,7 +44,7 @@ extension CreateReminderView {
             .scrollContentBackground(.hidden)
             .navigationTitle("")
             .scrollDismissesKeyboard(.interactively)
-            .safeAreaInset(edge: .bottom) {
+            .safeAreaBar(edge: .bottom) {
                 if viewModel.showActionButton {
                     ReminderCreationActionBar(
                         title: viewModel.actionButtonTitle,
@@ -64,7 +64,7 @@ extension CreateReminderView {
                                 Image(systemName: "checkmark")
                             }
                         } else {
-                            CloseButton()
+                            Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                         }
                     }
                 }

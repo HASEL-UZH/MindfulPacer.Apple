@@ -41,7 +41,7 @@ extension HomeView {
         let timestamp: Date?
 
         var body: some View {
-            LabeledCard {
+            LabeledCard(contentSpacing: 10) {
                 metricContent
             } label: {
                 Label {
@@ -50,19 +50,11 @@ extension HomeView {
                     Image(systemName: systemImage)
                 }
                 .foregroundStyle(tint)
-                .lineLimit(1)
-                .minimumScaleFactor(0.72)
             } accessory: {
-                HStack(spacing: 4) {
-                    Text(timestampText)
-                        .font(.footnote)
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-
-                    Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Color(.systemGray3))
-                }
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
             }
         }
 
@@ -73,23 +65,24 @@ extension HomeView {
 
         private var metricContent: some View {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Latest")
-                    .font(.callout.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
                     Text(value ?? "--")
                         .font(.title.weight(.semibold))
                         .monospacedDigit()
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
 
                     Text(unit)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
+
+                Text(timestamp == nil ? String(localized: "No recent data") : timestampText)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 }

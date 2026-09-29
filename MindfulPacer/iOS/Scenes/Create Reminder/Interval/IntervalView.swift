@@ -21,7 +21,11 @@ extension CreateReminderView {
         var body: some View {
             List {
                 Section {
-                    intervalSelectionList
+                    VStack(spacing: 12) {
+                        intervalSelectionList
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
                 } header: {
                     ReminderCreationListHero(
                         title: "Choose the Interval",
@@ -31,11 +35,11 @@ extension CreateReminderView {
                 } footer: {
                     description
                 }
-                .listRowBackground(Color(.quaternarySystemFill))
+                .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("")
-            .safeAreaInset(edge: .bottom) {
+            .safeAreaBar(edge: .bottom) {
                 if viewModel.showActionButton {
                     ReminderCreationActionBar(
                         title: viewModel.actionButtonTitle,
@@ -48,7 +52,7 @@ extension CreateReminderView {
             .toolbar {
                 if viewModel.mode == .create {
                     ToolbarItem(placement: .destructiveAction) {
-                        CloseButton()
+                        Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                     }
                 }
             }

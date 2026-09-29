@@ -158,7 +158,7 @@ private extension ReflectionsFilterView {
             if viewModel.activitiesWithSubactivities.isEmpty {
                 Text("No subactivities available")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .filterControlBackground()
                     .padding(.horizontal)
@@ -271,7 +271,6 @@ private extension ReflectionsFilterView {
             } label: {
                 subactivityDisclosureLabel(for: activity, isExpanded: isExpanded)
             }
-            .buttonStyle(.plain)
             .accessibilityAddTraits(.isButton)
             .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
 
@@ -305,14 +304,14 @@ private extension ReflectionsFilterView {
 
             Text(subactivitySelectionSubtitle(for: activity))
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
 
             Image(systemName: "chevron.down")
                 .font(.footnote.weight(.bold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
                 .rotationEffect(.degrees(isExpanded ? 0 : -90))
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(Color.primary)
         .contentShape(.rect)
         .padding(.vertical, 2)
     }
@@ -350,7 +349,7 @@ private extension ReflectionsFilterView {
             if isEmpty {
                 Text(emptyTitle)
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .filterControlBackground()
                     .padding(.horizontal)
