@@ -1,98 +1,51 @@
-//
-//  StepsChartView.swift
-//  WatchOS
-//
-//  Created by Grigor Dochev on 14.08.2025.
-//
-
 import SwiftUI
 import Charts
 
 struct StepsChartView: View {
-    @Bindable var viewModel: HomeViewModel
-    @State private var showInfo: Bool = false
-    
+    let viewModel: HomeViewModel
+
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Label("Steps", systemImage: "figure.walk")
-                    .foregroundColor(.teal)
-                    .font(.headline)
-                Button {
-                    showInfo.toggle()
-                } label: {
-                    Image(systemName: "info.circle.fill")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                .alert("Step Count Info", isPresented: $showInfo) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("This chart displays step data from the last hour.")
-                }
-            }
-            
-            if viewModel.hasStepsData {
-                Chart {
-                    ForEach(viewModel.hourlyStepData, id: \.date) { dataPoint in
-                        LineMark(
-                            x: .value("Time", dataPoint.date),
-                            y: .value("Steps", dataPoint.steps)
-                        )
-                        .foregroundStyle(.teal)
-                    }
-                    
-                    
-                    ForEach(viewModel.stepsThresholdRules) { rule in
-                        if case .steps(let threshold) = rule.ruleType {
-                            RuleMark(y: .value("Threshold", threshold))
-                                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
-                                .foregroundStyle(rule.reminderType.color)
-                                .annotation(position: .top, alignment: .leading) {
-                                    Text("\(Int(threshold))")
-                                        .font(.caption2)
-                                        .foregroundColor(rule.reminderType.color)
-                                        .padding(.leading, 4)
-                                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 8) {
+                if viewModel.hasStepsData {
+                    WatchChartSummary(label: "TOTAL · LAST HOUR", value: Int(viewModel.hourlyStepData.last?.steps ?? 0),
+                                      unit: "steps", color: .cyan)
+                    Chart {
+                        ForEach(viewModel.hourlyStepData, id: \.date) { sample in
+                            LineMark(x: .value("Time", sample.date), y: .value("Steps", sample.steps))
+                                .foregroundStyle(.cyan)
+                                .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                            if viewModel.hourlyStepData.count == 1 {
+                                PointMark(x: .value("Time", sample.date), y: .value("Steps", sample.steps))
+                                    .foregroundStyle(.cyan)
+                                    .symbolSize(24)
+                            }
                         }
                     }
-                }
-                .chartYScale(domain: viewModel.stepsChartYDomain)
-                .chartXAxis {
-                    AxisMarks(values: .automatic(desiredCount: 2)) { value in
-                        AxisGridLine()
-                        AxisValueLabel(format: .dateTime.hour().minute())
+                    .chartYScale(domain: viewModel.stepsChartYDomain)
+                    .chartXScale(domain: viewModel.stepsChartDateRange)
+                    .watchChartAxes(in: viewModel.stepsChartDateRange)
+                    .accessibilityLabel("Cumulative steps during the last hour")
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Today").foregroundStyle(.secondary)
+                        Spacer(minLength: 4)
+                        Text("\(viewModel.todaysSteps.formatted()) steps").monospacedDigit()
                     }
+                    .font(.caption2)
+                } else {
+                    let state = viewModel.emptyState(for: .steps)
+                    WatchEmptyState(title: state.title, symbol: state.symbol, message: state.subtitle)
                 }
-                
-                HStack {
-                    let totalSteps = viewModel.hourlyStepData.last?.steps ?? 0
-                    Text("\(totalSteps.toInt())")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                    +
-                    Text(" total steps")
-                        .font(.footnote)
-                        .foregroundStyle(.teal)
-                    
-                    Spacer()
-                }
-            } else {
-                let state = viewModel.emptyState(for: .steps)
-                ContentUnavailableView(
-                    String(localized: state.title),
-                    systemImage: state.symbol,
-                    description: Text(state.subtitle)
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
+            .padding(.horizontal, 10)
+            .padding(.bottom, 4)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding()
+        .accessibilityIdentifier("watch.stepsChart")
     }
 }
 
 #Preview {
-    StepsChartView(viewModel: .mock)
+    NavigationStack {
+        StepsChartView(viewModel: .mock).navigationTitle("Steps")
+    }
 }

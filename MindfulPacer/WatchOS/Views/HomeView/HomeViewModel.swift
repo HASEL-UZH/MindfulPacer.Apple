@@ -35,18 +35,21 @@ extension AlertState {
 class HomeViewModel {
     var statusMessage: StatusMessage = .notMonitoring
     var heartRate: Double = 0
+    var widgetHighlights = ReminderHighlightState()
+
+    var heartRateHighlight: Reminder.ReminderType? {
+        widgetHighlights.severity(for: .heartRate, at: Date())
+    }
+
+    var stepsHighlight: Reminder.ReminderType? {
+        widgetHighlights.severity(for: .steps, at: Date())
+    }
     var isMonitoring: Bool = false
-    var isShowingActiveRules = false
-    var isShowingAppInfoSheet = false
     var todaysSteps: Int = 0
     var activeRules: [AlertRule] = []
     var selectedTab: HomePage = .main
     var batteryLevel: Float = WKInterfaceDevice.current().batteryLevel
     
-    var showAppInfo: Bool = false
-    var showBatteryInfo: Bool = false
-    var showStatusInfo: Bool = false
-    var showMissedReflectionsInfo: Bool = false
     
     var alertState: AlertState = .none
 
@@ -61,6 +64,7 @@ class HomeViewModel {
     var showActivitiesUnavailableAlert: Bool = false
     
     private let modelContext: ModelContext
+    private var usesLiveServices = true
     
     enum ChartMetric { case heartRate, steps }
 
@@ -70,7 +74,7 @@ class HomeViewModel {
         let symbol: String
     }
 
-    var hasHeartRateData: Bool { isMonitoring && !heartRateSamples.isEmpty }
+    var hasHeartRateData: Bool { !heartRateSamples.isEmpty }
     var hasStepsData: Bool { !hourlyStepData.isEmpty }
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
@@ -82,23 +86,19 @@ class HomeViewModel {
             )
         }
 
+        if isManuallyPaused {
+            return ChartEmptyState(title: "Monitoring Paused", subtitle: "Resume monitoring from Controls to collect new readings.", symbol: "pause.circle.fill")
+        }
+
         switch metric {
         case .heartRate:
             return ChartEmptyState(
-                title: "Not enough heart rate samples yet",
-                subtitle: "Keep the app running for a moment. We’ll show the last hour as soon as we have enough data.",
+                title: "No Heart Rate Yet",
+                subtitle: "Wear your Watch snugly. New readings will appear here while monitoring is active.",
                 symbol: "waveform.path.ecg"
             )
 
         case .steps:
-            if isManuallyPaused {
-                return ChartEmptyState(
-                    title: "Monitoring Paused",
-                    subtitle: "Resume monitoring to continue collecting step data.",
-                    symbol: "pause.circle.fill"
-                )
-            }
-
             return ChartEmptyState(
                 title: "No Recent Steps",
                 subtitle: "No step data recorded for the last hour.",
@@ -121,14 +121,6 @@ class HomeViewModel {
         }
     }
 
-    var stepsThresholdRules: [AlertRule] {
-        let allowed: [Reminder.Interval] = [.thirtyMinutes, .oneHour]
-        return activeRules.filter { rule in
-            allowed.contains(rule.interval) &&
-            (rule.measurementType == .steps)
-        }
-    }
-    
     private var heartRateDisplayedThresholds: [Double] {
         heartRateThresholdRules.compactMap {
             if case .heartRate(let t) = $0.ruleType { return t }
@@ -136,13 +128,6 @@ class HomeViewModel {
         }
     }
 
-    private var stepsDisplayedThresholds: [Double] {
-        stepsThresholdRules.compactMap {
-            if case .steps(let t) = $0.ruleType { return t }
-            return nil
-        }
-    }
-    
     var minHeartRate: Int {
         (heartRateSamples.min(by: { $0.value < $1.value })?.value ?? 0).toInt()
     }
@@ -170,40 +155,26 @@ class HomeViewModel {
     }
     
     var heartRateChartYDomain: ClosedRange<Double> {
-        let dataMin = heartRateSamples.map(\.value).min() ?? 60.0
-        let dataMax = heartRateSamples.map(\.value).max() ?? 100.0
-
-        let thrMin = heartRateDisplayedThresholds.min()
-        let thrMax = heartRateDisplayedThresholds.max()
-
-        let overallMin = min(dataMin, thrMin ?? dataMin)
-        let overallMax = max(dataMax, thrMax ?? dataMax)
-
-        guard overallMax > overallMin else {
-            return paddedDomain(min: overallMin - 1, max: overallMax + 1)
-        }
-        return paddedDomain(min: overallMin, max: overallMax)
+        HeartRateChartScale.domain(values: heartRateSamples.map(\.value),
+                                   thresholds: heartRateDisplayedThresholds)
     }
     
+    // This series is cumulative over the displayed hour, so a zero baseline is meaningful.
+    // Rolling reminder thresholds use different windows and are not plotted on this series.
     var stepsChartYDomain: ClosedRange<Double> {
-        let dataValues = hourlyStepData.map(\.steps)
-        let dataMin = dataValues.min() ?? 0
-        let dataMax = dataValues.max() ?? max(500, dataMin)
-
-        let thrMin = stepsDisplayedThresholds.min()
-        let thrMax = stepsDisplayedThresholds.max()
-
-        var overallMin = min(dataMin, thrMin ?? dataMin)
-        let overallMax = max(dataMax, thrMax ?? dataMax)
-
-        overallMin = max(0, overallMin)
-
-        guard overallMax > overallMin else {
-            return paddedDomain(min: overallMin, max: overallMax + 1)
-        }
-        return paddedDomain(min: overallMin, max: overallMax)
+        0...max(10, (hourlyStepData.map(\.steps).max() ?? 0) * 1.1)
     }
-    
+
+    var heartRateChartDateRange: ClosedRange<Date> {
+        let end = heartRateSamples.last?.date ?? Date()
+        return end.addingTimeInterval(-3600)...end
+    }
+
+    var stepsChartDateRange: ClosedRange<Date> {
+        let end = hourlyStepData.last?.date ?? Date()
+        return end.addingTimeInterval(-3600)...end
+    }
+
     private var refreshTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
     
@@ -219,6 +190,10 @@ class HomeViewModel {
     private init(isForPreview: Bool) {
         let previewContext = ModelContainer.preview.mainContext
         self.modelContext = previewContext
+        self.usesLiveServices = false
+        self.todaysSteps = 2840
+        self.batteryLevel = 0.82
+        self.missedReflectionsCount = 3
         
         self.statusMessage = .monitoring
         self.isMonitoring = true
@@ -233,7 +208,7 @@ class HomeViewModel {
             let timeInterval = Double(i) * -60
             let date = now.addingTimeInterval(timeInterval)
             let sineValue = sin(Double(i) * 0.2)
-            let heartRateValue = 75.0 + (sineValue * 15.0) + Double.random(in: -2...2)
+            let heartRateValue = 75.0 + (sineValue * 15.0) + 2 * sin(Double(i) * 1.7)
             samples.append((value: heartRateValue, date: date))
         }
         self.heartRateSamples = samples.reversed()
@@ -242,10 +217,18 @@ class HomeViewModel {
         for i in 0..<12 {
             let timeInterval = Double(i) * -300
             let date = now.addingTimeInterval(timeInterval)
-            let steps = Double.random(in: 50...300)
+            let steps = Double(12 - i) * 45
             stepData.append((date: date, steps: steps))
         }
         self.hourlyStepData = stepData.reversed()
+        self.activeRules = Reminder.ReminderType.allCases.enumerated().flatMap { index, severity in
+            [AlertRule(id: UUID(), measurementType: .heartRate, reminderType: severity,
+                       ruleType: .heartRate(threshold: Double(90 + index * 10)), duration: 60,
+                       alertMessage: "Above \(90 + index * 10) BPM for 1 min", interval: .oneMinute),
+             AlertRule(id: UUID(), measurementType: .steps, reminderType: severity,
+                       ruleType: .steps(threshold: Double(500 + index * 250)), duration: 1800,
+                       alertMessage: "Over \(500 + index * 250) steps in 30 min", interval: .thirtyMinutes)]
+        }
     }
     
     static var mock: HomeViewModel {
@@ -253,6 +236,9 @@ class HomeViewModel {
     }
     
     private func setupSubscriptions() {
+        Services.shared.monitorService.$widgetHighlights
+            .sink { [weak self] highlights in self?.widgetHighlights = highlights }
+            .store(in: &cancellables)
         Services.shared.monitorService.$statusMessage
             .sink { [weak self] newStatus in self?.statusMessage = newStatus }
             .store(in: &cancellables)
@@ -304,7 +290,15 @@ class HomeViewModel {
         }
     }
     
+    func refreshHighlights() {
+        guard usesLiveServices else { return }
+        Services.shared.monitorService.refreshWidgetHighlights()
+    }
+
     func onAppear() {
+        guard usesLiveServices else { return }
+        refreshHighlights()
+        heartRateSamples = Services.shared.monitorService.recentHeartRateSamples
         Services.shared.systemDelegate.configure()
         
         let reminders = fetchReminders()
@@ -358,6 +352,12 @@ class HomeViewModel {
     }
     
     func togglePauseResume() {
+        guard usesLiveServices else {
+            isManuallyPaused.toggle()
+            isMonitoring = !isManuallyPaused
+            statusMessage = isManuallyPaused ? .paused : .monitoring
+            return
+        }
         if isManuallyPaused {
             Services.shared.monitorService.resumeMonitoring()
         } else {
@@ -366,9 +366,10 @@ class HomeViewModel {
     }
     
     func didSelectTab(_ tab: HomePage) {
+        guard usesLiveServices else { return }
         switch tab {
         case .heartRateChart:
-            break
+            heartRateSamples = Services.shared.monitorService.recentHeartRateSamples
         case .stepsChart:
             Task { await fetchChartData() }
         default:
@@ -414,7 +415,7 @@ class HomeViewModel {
     func handleAlertAction(shouldAddDetails: Bool, alertID: UUID) {
         guard case .showing(let rule, _) = alertState else { return }
         
-        muteDayStepsIfNeeded(for: rule)
+        if usesLiveServices { muteDayStepsIfNeeded(for: rule) }
         defer { alertState = .none }
         
         if shouldAddDetails {
@@ -425,6 +426,7 @@ class HomeViewModel {
             return
         }
         
+        guard usesLiveServices else { return }
         Services.shared.systemDelegate.createAndSendReflection(
             reminderID: rule.id,
             alertID: alertID,
@@ -434,7 +436,7 @@ class HomeViewModel {
     }
     
     func dismissAlertOverlay() {
-        if case .showing(let rule, _) = alertState {
+        if usesLiveServices, case .showing(let rule, _) = alertState {
             muteDayStepsIfNeeded(for: rule)
         }
         alertState = .none
@@ -470,49 +472,18 @@ class HomeViewModel {
         batteryLevel = WKInterfaceDevice.current().batteryLevel
     }
     
-    var batteryImageName: String {
-        switch batteryLevel {
-        case 0.75...: return "battery.100percent"
-        case 0.5..<0.75: return "battery.75percent"
-        case 0.25..<0.5: return "battery.50percent"
-        case 0.01..<0.25: return "battery.25percent"
-        default: return "battery.0percent"
-        }
-    }
-    
-    var batteryTintColor: Color {
-        switch batteryLevel {
-        case ..<0.2: return .red
-        case ..<0.5: return .yellow
-        default: return .green
-        }
-    }
-    
     private func fetchMissedReflections() {
         do {
             let descriptor = FetchDescriptor<Reflection>(
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
             let allReflections = try modelContext.fetch(descriptor)
-            let missedReflections = allReflections.filter { $0.isMissedReflection }
+            let missedReflections = allReflections.filter { $0.isMissedReflection && !$0.isRejected }
             missedReflectionsCount = missedReflections.count
         } catch {
             print("DEBUG: Could not fetch missed reflections: \(error.localizedDescription)")
             missedReflectionsCount = 0
         }
-    }
-    
-    private func paddedDomain(
-        min minValue: Double,
-        max maxValue: Double,
-        padFraction: Double = 0.25,
-        minSpan: Double = 10
-    ) -> ClosedRange<Double> {
-        let span = maxValue - minValue
-        let pad = Swift.max(span * padFraction, minSpan * 0.1)
-        let lo = minValue - pad
-        let hi = maxValue + pad
-        return lo...hi
     }
     
     private func muteDayStepsIfNeeded(for rule: AlertRule) {

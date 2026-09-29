@@ -1,81 +1,110 @@
-//
-//  HomeView.swift
-//  WatchOS
-//
-//  Created by Grigor Dochev on 14.08.2025.
-//
-
 import SwiftUI
 import SwiftData
 
-private struct DismissSheetActionKey: EnvironmentKey {
-    static let defaultValue: @Sendable () -> Void = {}
-}
-
 extension EnvironmentValues {
-    var dismissSheet: @Sendable () -> Void {
-        get { self[DismissSheetActionKey.self] }
-        set { self[DismissSheetActionKey.self] = newValue }
-    }
+    @Entry var dismissSheet: @Sendable () -> Void = {}
 }
 
-enum HomePage {
-    case main, heartRateChart, stepsChart, logs
+enum HomePage: Hashable {
+    case main, heartRateChart, stepsChart
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .main: "MindfulPacer"
+        case .heartRateChart: "Heart Rate"
+        case .stepsChart: "Steps"
+        }
+    }
 }
 
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showsControls = false
 
     var body: some View {
-        TabView(selection: $viewModel.selectedTab) {
-            mainStatusPage.tag(HomePage.main)
+        ZStack {
+            NavigationStack {
+                TabView(selection: $viewModel.selectedTab) {
+                    overview.tag(HomePage.main)
+                    HeartRateChartView(viewModel: viewModel).tag(HomePage.heartRateChart)
+                    StepsChartView(viewModel: viewModel).tag(HomePage.stepsChart)
+                }
+                .tabViewStyle(.verticalPage)
+                .navigationTitle(viewModel.selectedTab.title)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Controls", systemImage: "slider.horizontal.3") {
+                            showsControls = true
+                        }
+                        .accessibilityIdentifier("watch.controls")
+                    }
+                }
+            }
+            .allowsHitTesting(viewModel.alertState == .none)
+            .accessibilityHidden(viewModel.alertState != .none)
 
-            Group {
-                if viewModel.selectedTab == .heartRateChart {
-                    HeartRateChartView(viewModel: viewModel)
-                } else {
-                    ChartPlaceholderView(title: "Heart Rate", systemImage: "heart.fill")
-                }
-            }
-            .tag(HomePage.heartRateChart)
-
-            Group {
-                if viewModel.selectedTab == .stepsChart {
-                    StepsChartView(viewModel: viewModel)
-                } else {
-                    ChartPlaceholderView(title: "Steps", systemImage: "figure.walk")
-                }
-            }
-            .tag(HomePage.stepsChart)
-        }
-        .tabViewStyle(.carousel)
-        .alert("Warning", isPresented: $viewModel.showActivitiesUnavailableAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("There was an issue loading activities to self-report. Please restart the app and try again.")
-        }
-        .onAppear {
-            viewModel.onAppear()
-        }
-        .onChange(of: viewModel.selectedTab) { _, newTab in
-            viewModel.didSelectTab(newTab)
-        }
-        .sheet(item: $navigationManager.pendingActivitySelection) { selectionInfo in
-            SelectActivityView(
-                reminderID: selectionInfo.reminderID,
-                alertID: selectionInfo.id
-            )
-            .environment(\.dismissSheet) {
-                Task { @MainActor in
-                    navigationManager.pendingActivitySelection = nil
-                }
-            }
-        }
-        .overlay {
             if case .showing(let rule, let alertID) = viewModel.alertState {
                 notificationOverlay(for: rule, with: alertID)
             }
+        }
+        .sheet(isPresented: $showsControls) {
+            WatchControlsView(viewModel: viewModel)
+        }
+        .sheet(item: $navigationManager.pendingActivitySelection) { selection in
+            SelectActivityView(reminderID: selection.reminderID, alertID: selection.id)
+                .environment(\.dismissSheet) {
+                    Task { @MainActor in navigationManager.pendingActivitySelection = nil }
+                }
+        }
+        .onChange(of: viewModel.alertState) { _, state in
+            if state != .none { showsControls = false }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { viewModel.refreshHighlights() }
+        }
+        .onAppear { viewModel.onAppear() }
+        .onChange(of: viewModel.selectedTab) { _, page in viewModel.didSelectTab(page) }
+        .alert("Activities Unavailable", isPresented: $viewModel.showActivitiesUnavailableAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Open MindfulPacer on your iPhone to sync your activities, then try again.")
+        }
+    }
+
+    private var overview: some View {
+        ScrollView {
+            VStack(spacing: 8) {
+                Button { viewModel.selectedTab = .heartRateChart } label: {
+                    WatchMetricLabel(title: "Heart Rate", symbol: "heart.fill",
+                                     value: viewModel.isMonitoring && viewModel.heartRate > 0
+                                        ? Int(viewModel.heartRate).formatted() : "–",
+                                     unit: "BPM", color: .pink, highlight: viewModel.heartRateHighlight)
+                }
+                .tint(viewModel.heartRateHighlight?.color ?? Color.gray)
+                .accessibilityIdentifier("watch.heartRate")
+
+                Button { viewModel.selectedTab = .stepsChart } label: {
+                    WatchMetricLabel(title: "Steps", symbol: "figure.walk",
+                                     value: viewModel.todaysSteps.formatted(), unit: "steps",
+                                     color: .cyan, highlight: viewModel.stepsHighlight)
+                }
+                .tint(viewModel.stepsHighlight?.color ?? Color.gray)
+                .accessibilityIdentifier("watch.steps")
+
+                Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
+                    .font(.caption2)
+                    .foregroundStyle(viewModel.statusMessage.color)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 2)
+                    .accessibilityIdentifier("watch.status")
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .buttonBorderShape(.roundedRectangle(radius: 20))
+            .padding(.horizontal, 8)
+            .padding(.bottom, 4)
         }
     }
 
@@ -90,7 +119,7 @@ struct HomeView: View {
                         Text("Reminder to Reflect")
                             .font(.body.weight(.bold))
                             .layoutPriority(1)
-                        
+
                         if #available(watchOS 26.0, *) {
                             Label {
                                 Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
@@ -101,7 +130,7 @@ struct HomeView: View {
                                     .foregroundStyle(rule.measurementType.color)
                             }
                             .labelIconToTitleSpacing(0)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                         } else {
                             Label {
                                 Text(rule.measurementType.localized + " " + rule.alertMessage.lowercased())
@@ -111,10 +140,10 @@ struct HomeView: View {
                                 Image(systemName: rule.measurementType.icon)
                                     .foregroundStyle(rule.measurementType.color)
                             }
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                         }
                     }
-                    
+
                     VStack {
                         Button {
                             viewModel.handleAlertAction(shouldAddDetails: true, alertID: alertID)
@@ -122,22 +151,25 @@ struct HomeView: View {
                             Text("Accept & Add Details")
                                 .fontWeight(.semibold)
                         }
-                        
+                        .accessibilityIdentifier("watch.alert.details")
+
                         Button {
                             viewModel.handleAlertAction(shouldAddDetails: false, alertID: alertID)
                         } label: {
                             Text("Accept & Add Details Later")
                         }
-                        
+                        .accessibilityIdentifier("watch.alert.later")
+
                         Button {
                             viewModel.dismissAlertOverlay()
                         } label: {
                             Text("Delete")
                         }
+                        .accessibilityIdentifier("watch.alert.dismiss")
                     }
                     .buttonStyle(.bordered)
                     .tint(rule.reminderType.color)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
 
                     Spacer()
                 }
@@ -146,239 +178,162 @@ struct HomeView: View {
         }
         .transition(.opacity.animation(.easeInOut))
     }
-    
-    private var mainStatusPage: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Button {
-                    viewModel.selectedTab = .heartRateChart
-                } label: {
-                    currentHeartRateWidget
+}
+
+private struct WatchMetricLabel: View {
+    let title: LocalizedStringKey
+    let symbol: String
+    let value: String
+    let unit: LocalizedStringKey
+    let color: Color
+    let highlight: Reminder.ReminderType?
+
+    var body: some View {
+        HStack(spacing: 7) {
+            Image(systemName: symbol)
+                .font(.body)
+                .foregroundStyle(highlight?.color ?? color)
+                .frame(width: 20)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title).font(.caption2).foregroundStyle(.secondary)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(value)
+                        .font(.system(.title3, design: .rounded, weight: .semibold))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text(unit).font(.caption2).foregroundStyle(.secondary).lineLimit(1).fixedSize()
                 }
-                .buttonStyle(.plain)
-                
-                Button {
-                    viewModel.selectedTab = .stepsChart
-                } label: {
-                    currentStepsWidget
-                }
-                .buttonStyle(.plain)
             }
-            
-            VStack {
-                HStack {
+            Spacer(minLength: 0)
+            if let highlight {
+                Image(systemName: highlight.icon)
+                    .foregroundStyle(highlight.color)
+                    .font(.caption2)
+                    .accessibilityLabel(highlight.localized)
+            }
+        }
+        .foregroundStyle(Color.primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct WatchControlsView: View {
+    @Bindable var viewModel: HomeViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
+                        .foregroundStyle(viewModel.statusMessage.color)
                     Button {
                         viewModel.togglePauseResume()
                     } label: {
-                        Icon(name: viewModel.isManuallyPaused ? "play" : "pause",
-                             color: viewModel.isManuallyPaused ? .green : .yellow,
-                             background: true)
+                        Label(LocalizedStringKey(viewModel.isManuallyPaused ? "Resume Monitoring" : "Pause Monitoring"),
+                              systemImage: viewModel.isManuallyPaused ? "play.fill" : "pause.fill")
                     }
-                    .buttonStyle(.borderless)
+                    .tint(viewModel.isManuallyPaused ? .green : .yellow)
                     .disabled(!viewModel.isMonitoring && !viewModel.isManuallyPaused)
-
-                    Spacer(); Divider(); Spacer()
-                    
-                    Button {
-                        viewModel.showBatteryInfo.toggle()
+                    .accessibilityIdentifier("watch.pauseResume")
+                } footer: {
+                    Text(viewModel.statusMessage.description)
+                }
+                Section {
+                    NavigationLink {
+                        WatchRemindersView(rules: viewModel.activeRules)
                     } label: {
-                        BatteryBarView(level: Double(viewModel.batteryLevel))
+                        Label("Reminders", systemImage: "bell.badge")
                     }
-                    .buttonStyle(.borderless)
-                    .alert("Battery Info", isPresented: $viewModel.showBatteryInfo) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text("""
-                        Percentage: \(viewModel.batteryLevel >= 0 ? "\(Int(viewModel.batteryLevel * 100))%" : "Unknown")
-                        ⚠️ Note: Using the app in foreground mode significantly decreases battery life.
-                        """)
-                    }
-                    
-                    Spacer(); Divider(); Spacer()
-
-                    if viewModel.missedReflectionsCount == 0 {
-                        Button { viewModel.showAppInfo.toggle() } label: {
-                            Icon(image: "MindfulPacer Icon", background: true)
+                    .accessibilityIdentifier("watch.reminders")
+                    NavigationLink {
+                        List {
+                            WatchEmptyState(title: "Continue on iPhone", symbol: "iphone",
+                                            message: "Open MindfulPacer on your iPhone to review your missed reflections.")
+                            LabeledContent("Missed Reflections", value: viewModel.missedReflectionsCount.formatted())
                         }
-                        .buttonStyle(.borderless)
-                        .alert("App Info", isPresented: $viewModel.showAppInfo) {
-                            Button("OK", role: .cancel) {}
-                        } message: {
-                            Text("""
-                            App Version: \(AppInfoService.appVersion)
-                            Build Number: \(AppInfoService.buildNumber)
-                            """)
-                        }
-                    } else {
-                        Button { viewModel.showMissedReflectionsInfo.toggle() } label: {
-                            Icon(name: "\(viewModel.missedReflectionsCount).circle.fill", color: .red, background: true)
-                        }
-                        .buttonStyle(.borderless)
-                        .alert("Missed Reflections", isPresented: $viewModel.showMissedReflectionsInfo) {
-                            Button("OK", role: .cancel) {}
-                        } message: {
-                            Text("You have missed reflection(s). Open the MindfulPacer app on your iPhone to view more details.")
+                        .navigationTitle("Reflections")
+                    } label: {
+                        LabeledContent {
+                            Text(viewModel.missedReflectionsCount, format: .number)
+                                .foregroundStyle(viewModel.missedReflectionsCount > 0 ? Color.orange : .secondary)
+                        } label: {
+                            Label("Missed", systemImage: "book.closed")
                         }
                     }
+                    .accessibilityIdentifier("watch.missed")
                 }
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 16).foregroundStyle(.primary.opacity(0.1))
+                Section {
+                    NavigationLink {
+                        List {
+                            LabeledContent("Battery", value: viewModel.batteryLevel >= 0
+                                           ? "\(Int(viewModel.batteryLevel * 100))%" : "–")
+                            Text("Keeping the app in the foreground uses more battery. Monitoring can continue when you lower your wrist.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                            LabeledContent("Version", value: AppInfoService.appVersion)
+                            LabeledContent("Build", value: AppInfoService.buildNumber)
+                        }
+                        .navigationTitle("About")
+                    } label: {
+                        Label("About", systemImage: "info.circle")
+                    }
+                    .accessibilityIdentifier("watch.about")
                 }
-
-                Button { viewModel.showStatusInfo.toggle() } label: {
-                    Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
-                        .foregroundStyle(viewModel.statusMessage.color)
-                        .font(.footnote)
+            }
+            .navigationTitle("Controls")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done", systemImage: "xmark") { dismiss() }
                 }
-                .alert("Status Info", isPresented: $viewModel.showStatusInfo) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("""
-                    \(viewModel.statusMessage.localized)
-                    \(viewModel.statusMessage.description)
-                    """)
-                }
-                .buttonStyle(.borderless)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-    }
-
-    private var currentHeartRateWidget: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Icon(name: "heart.fill", color: .pink, background: true)
-            VStack(alignment: .leading) {
-                if viewModel.isMonitoring {
-                    Text(viewModel.isMonitoring ? "\(Int(viewModel.heartRate))" : "--")
-                        .font(.system(.title3, weight: .bold))
-                        .foregroundStyle(Color.primary)
-                } else {
-                    Text("--").font(.system(.title3, weight: .bold))
-                }
-                Text("bpm").font(.system(.footnote)).foregroundStyle(Color.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background { RoundedRectangle(cornerRadius: 16).fill(Color.primary.opacity(0.1)) }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
-    }
-
-    private var currentStepsWidget: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Icon(name: "figure.walk", color: .teal, background: true)
-            VStack(alignment: .leading) {
-                Text(viewModel.todaysSteps, format: .number)
-                    .font(.system(.title3, weight: .bold))
-                    .foregroundStyle(Color.primary)
-                Text("steps").font(.system(.footnote)).foregroundStyle(Color.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .padding()
-        .background { RoundedRectangle(cornerRadius: 16).fill(Color.primary.opacity(0.1)) }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.alertState)
     }
 }
 
-struct BatteryBarView: View {
-    let level: Double
-    private let minFill: CGFloat = 0.02
-
-    private var clampedLevel: Double {
-        guard level >= 0 else { return -1 }
-        return min(max(level, 0), 1)
-    }
-
-    private var tint: Color {
-        guard clampedLevel >= 0 else { return .secondary }
-        switch clampedLevel {
-        case ..<0.2: return .red
-        case ..<0.5: return .yellow
-        default: return .green
-        }
-    }
-
-    /// Visible bar proportions (kept smaller to avoid looking oversized inside the square)
-    private var barWidthRatio: CGFloat { 0.72 }
-    private var barHeightRatio: CGFloat { 0.35 }
-    private var capWidthRatio: CGFloat { 0.06 }
-
-    private var displayText: String {
-        clampedLevel < 0 ? "--%" : "\(Int(clampedLevel * 100))%"
-    }
+struct WatchRemindersView: View {
+    let rules: [AlertRule]
 
     var body: some View {
-        ZStack {
-            GeometryReader { geo in
-                let container = min(geo.size.width, geo.size.height)
-                let barW = container * barWidthRatio
-                let barH = container * barHeightRatio
-                let capW = container * capWidthRatio
-                let cornerR = barH * 0.4
-
-                RoundedRectangle(cornerRadius: cornerR, style: .continuous)
-                    .fill(.primary.opacity(0.12))
-                    .frame(width: barW, height: barH)
-                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
-
-                if clampedLevel >= 0 {
-                    let inset: CGFloat = barH * 0.15
-                    let fillAvailable = barW - inset * 2
-                    let fillW = max(fillAvailable * CGFloat(max(minFill, clampedLevel)), cornerR)
-
-                    RoundedRectangle(cornerRadius: cornerR * 0.75, style: .continuous)
-                        .fill(tint)
-                        .frame(width: fillW, height: barH - inset * 2)
-                        .position(
-                            x: geo.size.width / 2 - (barW - fillW) / 2 + inset,
-                            y: geo.size.height / 2
-                        )
-                        .animation(.easeInOut(duration: 0.3), value: clampedLevel)
+        List {
+            if rules.isEmpty {
+                WatchEmptyState(title: "No Reminders", symbol: "bell.badge",
+                                message: "Create a reminder in MindfulPacer on your iPhone. It will appear here after syncing.")
+            } else {
+                Section {
+                    ForEach(rules) { rule in ReminderCell(rule: rule) }
+                } footer: {
+                    Text("Manage your reminders on iPhone.")
                 }
-
-                RoundedRectangle(cornerRadius: cornerR * 0.4, style: .continuous)
-                    .fill(.primary.opacity(0.25))
-                    .frame(width: capW, height: barH * 0.6)
-                    .position(
-                        x: geo.size.width / 2 + barW / 2 + capW / 2 - 1,
-                        y: geo.size.height / 2
-                    )
             }
         }
-        .frame(width: 24, height: 24)
-        .padding(4)
-        .background {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .foregroundStyle(tint.opacity(0.1))
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(tint.opacity(0.1), lineWidth: 1.5)
-            }
-        }
+        .navigationTitle("Reminders")
     }
 }
 
-private struct ChartPlaceholderView: View {
-    let title: String
-    let systemImage: String
+struct WatchEmptyState: View {
+    let title: LocalizedStringResource
+    let symbol: String
+    let message: LocalizedStringResource
 
     var body: some View {
         VStack(spacing: 8) {
-            Label(title, systemImage: systemImage)
-                .font(.headline)
-            Text("Open to view")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            Image(systemName: symbol)
+                .font(.title2)
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+            Text(title).font(.headline)
+            Text(message).font(.footnote).foregroundStyle(.secondary)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .padding()
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
     }
 }
 
 #Preview {
     HomeView(viewModel: .mock)
-        .environmentObject(Services.shared.navigationManager)
+        .environmentObject(NavigationManager())
 }
