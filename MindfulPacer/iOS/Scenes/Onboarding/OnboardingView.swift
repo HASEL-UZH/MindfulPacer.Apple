@@ -23,7 +23,7 @@ enum OnboardingNavigationDestination: Hashable {
 // MARK: - OnboardingView
 
 struct OnboardingView: View {
-    
+
     // MARK: Properties
 
     @Environment(\.dismiss) private var dismiss
@@ -34,7 +34,7 @@ struct OnboardingView: View {
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack {
-                Color(.systemGroupedBackground)
+                Color(.systemBackground)
                     .ignoresSafeArea()
 
                 KeyFeaturesView(viewModel: viewModel)
@@ -48,9 +48,7 @@ struct OnboardingView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            actionButton
-        }
+        .onViewFirstAppear { viewModel.onViewFirstAppear() }
     }
 
     // MARK: Navigation Destination
@@ -77,50 +75,23 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: Action Button
+}
 
-    private var actionButton: some View {
-        VStack(spacing: 16) {
-            if viewModel.showAcceptTermsButton {
-                acceptTermsButton
-            }
+extension OnboardingView {
+    struct ActionBar: View {
+        @Bindable var viewModel: OnboardingViewModel
 
+        var body: some View {
             PrimaryButton(title: viewModel.actionButtonTitle) {
                 viewModel.actionButtonTapped()
             }
             .disabled(viewModel.isActionButtonDisabled)
+            .frame(maxWidth: 600)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background(.bar)
         }
-        .padding([.horizontal, .top])
-        .background(.ultraThinMaterial)
-        .overlay(alignment: .top) {
-            Divider()
-        }
-        .onGeometryChange(for: CGRect.self) { proxy in
-            proxy.frame(in: .global)
-        } action: { newValue in
-            viewModel.actionButtonHeight = newValue.height
-        }
-    }
-
-    // MARK: Accept Terms Button
-
-    private var acceptTermsButton: some View {
-        HStack(spacing: 8) {
-            Button {
-                withAnimation {
-                    viewModel.didAcceptTerms.toggle()
-                }
-            } label: {
-                Image(systemName: viewModel.didAcceptTerms ? "checkmark.circle.fill" : "circle")
-                    .font(.title3.weight(.semibold))
-            }
-            .contentTransition(.symbolEffect(.replace))
-            .foregroundStyle(Color("BrandPrimary"))
-
-            Text("I Understand and Accept")
-                .fontWeight(.semibold)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -128,35 +99,50 @@ struct OnboardingView: View {
 
 extension OnboardingView {
     struct OnboardingPage<Content: View>: View {
-        
+
         // MARK: Properties
 
         @Bindable var viewModel: OnboardingViewModel
         var title: String
+        var systemImage: String = "sparkles"
+        var symbolTint: Color = .brandPrimary
         var showSkipButton: Bool = true
-        var content: () -> Content
+        @ViewBuilder var content: () -> Content
 
         // MARK: Body
 
         var body: some View {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 28) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 64, weight: .regular))
+                        .foregroundStyle(symbolTint.gradient)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                        .accessibilityHidden(true)
+
                     Text(title)
                         .font(.largeTitle.bold())
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     content()
 
-                    Spacer()
                 }
-                .padding(.horizontal)
+                .frame(maxWidth: 600)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                ActionBar(viewModel: viewModel)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .safeAreaPadding(.bottom, viewModel.actionButtonHeight)
             .background {
-                Color(.systemGroupedBackground)
+                Color(.systemBackground)
                     .ignoresSafeArea()
             }
+            .navigationBarTitleDisplayMode(.inline)
+            .scrollEdgeEffectStyle(.soft, for: .bottom)
             .toolbar {
                 if showSkipButton {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -176,4 +162,75 @@ extension OnboardingView {
 #Preview {
     OnboardingView()
         .tint(Color("BrandPrimary"))
+}
+
+// MARK: - Onboarding Details
+
+extension OnboardingView {
+    /// Secondary setup instructions stay available without dominating the step.
+    struct SetupDetail<Content: View, Footer: View>: View {
+        let label: IconLabel
+        var description: Text?
+        @ViewBuilder var content: () -> Content
+        @ViewBuilder var footer: () -> Footer
+
+        @State private var isExpanded = false
+
+        var body: some View {
+            LabeledCard(contentSpacing: 12) {
+                description?
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if isExpanded {
+                    VStack(alignment: .leading, spacing: 16) {
+                        content()
+                        footer()
+                    }
+                    .foregroundStyle(Color.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            } label: {
+                Button {
+                    withAnimation(.snappy) { isExpanded.toggle() }
+                } label: {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        label.frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                    }
+                    .contentShape(.rect)
+                }
+                .accessibilityValue(isExpanded ? String(localized: "Details expanded") : String(localized: "Details collapsed"))
+            }
+            .backgroundStyle(Color(.secondarySystemBackground))
+        }
+    }
+
+    struct ChoiceRow: View {
+        let title: String
+        let description: String
+        let isSelected: Bool
+        let action: () -> Void
+
+        var body: some View {
+            SingleSelectRow(isSelected: isSelected, action: action) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title).font(.headline).foregroundStyle(isSelected ? Color.brandPrimary : Color.primary)
+                    Text(description).font(.subheadline).foregroundStyle(Color.secondary)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+}
+
+extension OnboardingView.SetupDetail where Footer == EmptyView {
+    init(label: IconLabel, description: Text? = nil, @ViewBuilder content: @escaping () -> Content) {
+        self.label = label
+        self.description = description
+        self.content = content
+        self.footer = { EmptyView() }
+    }
 }

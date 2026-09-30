@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - ReflectionsListView
 
@@ -15,21 +16,15 @@ extension HomeView {
         // MARK: - Properties
 
         @Bindable var viewModel: HomeViewModel
+        @State private var activeReflectionID: UUID?
+        @State private var reflectionPendingDeletion: Reflection?
+
+        @Query(sort: \Activity.name) private var activities: [Activity]
 
         // MARK: Body
         
         var body: some View {
-            VStack(spacing: 16) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        reviewFilterDateRangeSummary
-                        if viewModel.reviewFilter.activeFilterCount != 0 {
-                            reviewFilterSortingSummary
-                        }
-                    }
-                    .safeAreaPadding(.horizontal)
-                }
-                
+            Group {
                 if viewModel.reflections.isEmpty {
                     reviewsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
@@ -37,24 +32,32 @@ extension HomeView {
                     filteredReflectionsEmptyState
                         .frame(maxHeight: .infinity, alignment: .center)
                 } else {
-                    RoundedList {
-                        ForEach(viewModel.filteredReflections, id: \.id) { reflection in
-                            ReflectionCell(reflection: reflection) {
-                                viewModel.presentSheet(.editReflectionView(reflection))
-                            }
-                        }
-                    }
+                    reflectionsList
                 }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Reflections")
+            .navigationBarTitleDisplayMode(.large)
+            .navigationSubtitle(navigationSubtitleText)
+            .alert("Delete Reflection", isPresented: isDeleteConfirmationPresented) {
+                Button("Delete", role: .destructive) {
+                    deletePendingReflection()
+                }
+
+                Button("Cancel", role: .cancel) {
+                    reflectionPendingDeletion = nil
+                }
+            } message: {
+                Text("Are you sure you want to delete this reflection? This action cannot be undone.")
+            }
             .toolbar {
                 if !viewModel.reflections.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             viewModel.presentSheet(.reviewsFilterView)
                         } label: {
-                            Label("Filter Reflections", systemImage: "line.3.horizontal.decrease.circle.fill")
+                            Label("Filter Reflections", systemImage: filterButtonSystemImage)
+                                .foregroundStyle(hasActiveFilters ? Color("BrandPrimary") : .primary)
                         }
                     }
                 }
@@ -63,10 +66,73 @@ extension HomeView {
                     Button {
                         viewModel.presentSheet(.editReflectionView(nil))
                     } label: {
-                        Label("New Reflection", systemImage: "plus.circle.fill")
+                        Label("New Reflection", systemImage: "plus")
                     }
                 }
             }
+        }
+
+        private var reflectionsList: some View {
+            GeometryReader { proxy in
+                ScrollView {
+                    ZStack(alignment: .top) {
+                        Color.clear
+                            .contentShape(.rect)
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: proxy.size.height)
+                            .onTapGesture {
+                                clearActiveReflection()
+                            }
+
+                        LazyVStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(viewModel.filteredReflections, id: \.id) { reflection in
+                                    reflectionRow(reflection)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                    }
+                }
+                .swipeActionsContainer()
+                .background(Color(.systemGroupedBackground))
+            }
+        }
+
+        private var navigationSubtitleText: String {
+            let total = viewModel.reflections.count
+            let filtered = viewModel.filteredReflections.count
+
+            if total == 0 {
+                return String(localized: "0 reflections")
+            }
+
+            if filtered == total {
+                return String(localized: "\(total) reflections")
+            }
+
+            return String(localized: "\(filtered) of \(total) reflections")
+        }
+
+        private var isDeleteConfirmationPresented: Binding<Bool> {
+            Binding {
+                reflectionPendingDeletion != nil
+            } set: { isPresented in
+                if !isPresented {
+                    reflectionPendingDeletion = nil
+                }
+            }
+        }
+
+        // MARK: Filter Button State
+
+        private var hasActiveFilters: Bool {
+            viewModel.reviewFilter.activeFilterCount != 0
+        }
+
+        private var filterButtonSystemImage: String {
+            hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease"
         }
         
         // MARK: Reflections Empty State
@@ -108,125 +174,215 @@ extension HomeView {
                 }
             }
         }
-        
-        // MARK: Reflection Filter Date Range Summary
-        
-        private var reviewFilterDateRangeSummary: some View {
-            Button {
-                viewModel.presentSheet(.reviewsFilterView)
-            } label: {
-                HStack(spacing: 4) {
-                    Icon(name: "calendar")
 
-                    Text(viewModel.filterDateRangeSummary)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.accent)
-                    
+        private func reflectionRow(_ reflection: Reflection) -> some View {
+            ExpandableMetadataRow(
+                id: reflection.id,
+                activeID: $activeReflectionID,
+                expandedContentLeadingInset: 36,
+                onSwipePresentationChanged: { isPresented in
+                    if isPresented { clearActiveReflection() }
                 }
-                .layoutPriority(1)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background {
-                    Capsule()
-                        .foregroundStyle(Color("BrandPrimary").opacity(0.1))
-                }
-            }
-        }
-        
-        // MARK: Reflection Filter Sorting Summary
-
-        private var reviewFilterSortingSummary: some View {
-            HStack(spacing: 8) {
-                activityFilterSummary
-                subactivityFilterSummary
-                moodFilterSummary
-                crashFilterSummary
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-
-        // MARK: Activity Filter Summary
-
-        private var activityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedActivities) { activity in
-                filterItem(
-                    icon: activity.icon,
-                    label: activity.name,
-                    removeAction: { viewModel.toggleFilterActivity(activity) }
-                )
-            }
-        }
-
-        // MARK: Subactivity Filter Summary
-
-        private var subactivityFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedSubactivities, id: \.id) { subactivity in
-                filterItem(
-                    icon: subactivity.icon,
-                    label: subactivity.name,
-                    removeAction: { viewModel.toggleFilterSubactivity(subactivity) }
-                )
-            }
-        }
-
-        // MARK: Mood Filter Summary
-
-        private var moodFilterSummary: some View {
-            ForEach(viewModel.reviewFilter.selectedMoods, id: \.text) { mood in
-                filterItem(
-                    emoji: mood.emoji,
-                    removeAction: { viewModel.toggleFilterMood(mood) }
-                )
-            }
-        }
-
-        // MARK: Crash Filter Summary
-
-        @ViewBuilder
-        private var crashFilterSummary: some View {
-            if viewModel.reviewFilter.triggeredCrash {
-                filterItem(
-                    icon: "pill",
-                    label: "Triggered Crash",
-                    removeAction: { viewModel.toggleTriggeredCrash() }
-                )
-            }
-        }
-
-        // MARK: Filter Item
-
-        @ViewBuilder
-        private func filterItem(
-            icon: String? = nil,
-            emoji: String? = nil,
-            label: String? = nil,
-            removeAction: @escaping () -> Void
-        ) -> some View {
-            HStack(spacing: 4) {
-                if let icon = icon {
-                    Icon(name: icon)
-                }
-                if let emoji = emoji {
-                    Text(emoji)
-                        .frame(width: 24, height: 24)
-                }
-                if let label = label {
-                    Text(label)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.accent)
-                }
-                Button {
-                    removeAction()
+            ) { isActive in
+                reflectionRowContent(reflection, isActive: isActive)
+            } rowAccessory: { isActive in
+                reflectionRowAccessory(reflection, isActive: isActive)
+            } rowSwipeActions: {
+                Button(role: .destructive) {
+                    presentDeleteConfirmation(for: reflection)
                 } label: {
-                    Icon(name: "xmark.circle", renderingMode: .hierarchical)
+                    Label("Delete", systemImage: "trash")
+                }
+                .accessibilityLabel("Delete")
+                .accessibilityIdentifier("reflections.delete")
+            } expandedContent: {
+                reflectionQuickActions(reflection)
+            }
+            .accessibilityIdentifier("reflections.row.\(reflection.id)")
+        }
+
+        private func reflectionRowContent(_ reflection: Reflection, isActive: Bool) -> some View {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: reflectionIconName(reflection))
+                    .symbolVariant(.fill)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(isActive ? Color("BrandPrimary") : .secondary)
+                    .frame(width: 24, height: 24)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(reflectionTitle(reflection))
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(Color.primary)
+                        .lineLimit(1)
+
+                    Text(reflectionSubtitle(reflection))
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                        .lineLimit(2)
                 }
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .background {
-                Capsule()
-                    .foregroundStyle(Color("BrandPrimary").opacity(0.1))
+            .padding(.vertical, 4)
+        }
+
+        @ViewBuilder
+        private func reflectionRowAccessory(_ reflection: Reflection, isActive: Bool) -> some View {
+            if isActive {
+                Button {
+                    viewModel.presentSheet(.editReflectionView(reflection))
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(Color("BrandPrimary"))
+                        .frame(width: 32, height: 32)
+                        .contentShape(.circle)
+                }
+                .accessibilityLabel("Edit Reflection")
+                .padding(.top, 4)
             }
+        }
+
+        private func reflectionQuickActions(_ reflection: Reflection) -> some View {
+            ExpandableMetadataScroll {
+                ExpandableMetadataMenuChip(
+                    title: reflection.activity?.name ?? String(localized: "Activity"),
+                    systemImage: reflection.activity?.icon ?? "rectangle.grid.2x2",
+                    isActive: reflection.activity != nil
+                ) {
+                    Section {
+                        ForEach(activities) { activity in
+                            Button(activity.name, systemImage: activity.icon) {
+                                viewModel.updateReflection(reflection, activity: activity)
+                            }
+                        }
+                    }
+
+                    Section {
+                        Button("Uncategorized", systemImage: "questionmark") {
+                            viewModel.updateReflection(reflection, activity: nil)
+                        }
+                    }
+                }
+
+                if let activity = reflection.activity {
+                    ExpandableMetadataMenuChip(
+                        title: reflection.subactivity?.name ?? String(localized: "Subactivity"),
+                        systemImage: reflection.subactivity?.icon ?? "rectangle.grid.3x3",
+                        isActive: reflection.subactivity != nil
+                    ) {
+                        Section {
+                            ForEach((activity.subactivities ?? []).sorted { $0.name < $1.name }) { subactivity in
+                                Button(subactivity.name, systemImage: subactivity.icon) {
+                                    viewModel.updateReflection(reflection, subactivity: subactivity)
+                                }
+                            }
+                        }
+
+                        Section {
+                            Button("None", systemImage: "minus.circle") {
+                                viewModel.updateReflection(reflection, subactivity: nil)
+                            }
+                        }
+                    }
+                }
+
+                ExpandableMetadataMenuChip(
+                    title: reflection.mood?.emoji ?? String(localized: "Mood"),
+                    systemImage: "face.smiling",
+                    isActive: reflection.mood != nil
+                ) {
+                    Section {
+                        ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
+                            Button("\(mood.emoji) \(mood.text)") {
+                                viewModel.updateReflection(reflection, mood: mood)
+                            }
+                        }
+                    }
+
+                    Section {
+                        Button("None", systemImage: "minus.circle") {
+                            viewModel.updateReflection(reflection, mood: nil)
+                        }
+                    }
+                }
+
+                let wellBeing = Symptom.wellBeing(reflection.wellBeing)
+                ExpandableMetadataMenuChip(
+                    title: wellBeing.description,
+                    systemImage: wellBeing.icon,
+                    isActive: reflection.wellBeing != nil,
+                    tint: wellBeing.color
+                ) {
+                    Section {
+                        ForEach(0 ..< wellBeing.numOptions, id: \.self) { value in
+                            Button(wellBeing.description(for: value), systemImage: "\(value).circle") {
+                                viewModel.updateReflection(reflection, wellBeing: value)
+                            }
+                        }
+                    }
+
+                    Section {
+                        Button("Not Set", systemImage: "minus.circle") {
+                            viewModel.updateReflection(reflection, wellBeing: nil)
+                        }
+                    }
+                }
+
+                ExpandableMetadataChipButton(
+                    title: "Crash",
+                    systemImage: "exclamationmark.triangle.fill",
+                    isActive: reflection.didTriggerCrash,
+                    tint: .orange
+                ) {
+                    viewModel.toggleReflectionCrash(reflection)
+                }
+
+            }
+        }
+
+        private func clearActiveReflection() {
+            withAnimation(.snappy(duration: 0.24)) {
+                activeReflectionID = nil
+            }
+        }
+
+        private func presentDeleteConfirmation(for reflection: Reflection) {
+            clearActiveReflection()
+            reflectionPendingDeletion = reflection
+        }
+
+        private func deletePendingReflection() {
+            guard let reflection = reflectionPendingDeletion else { return }
+            reflectionPendingDeletion = nil
+            activeReflectionID = nil
+            viewModel.deleteReflection(reflection)
+        }
+
+        private func reflectionIconName(_ reflection: Reflection) -> String {
+            reflection.subactivity?.icon ?? reflection.activity?.icon ?? "book.closed.fill"
+        }
+
+        private func reflectionTitle(_ reflection: Reflection) -> String {
+            reflection.subactivity?.name ?? reflection.activity?.name ?? String(localized: "Uncategorized")
+        }
+
+        private func reflectionSubtitle(_ reflection: Reflection) -> String {
+            var parts: [String] = [
+                reflection.date.formatted(.dateTime.day().month().hour().minute())
+            ]
+
+            if let mood = reflection.mood {
+                parts.append("\(mood.emoji) \(mood.text)")
+            }
+
+            if let wellBeing = reflection.wellBeing {
+                parts.append(Symptom.wellBeing(wellBeing).description)
+            }
+
+            if reflection.didTriggerCrash {
+                parts.append(String(localized: "Crash"))
+            }
+
+            return parts.joined(separator: " - ")
         }
     }
 }

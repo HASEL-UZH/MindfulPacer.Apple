@@ -57,7 +57,7 @@ struct SimpleEntry: TimelineEntry {
 
 struct MindfulPacerStatusEntryView : View {
     var entry: Provider.Entry
-    @Environment(\.widgetFamily) var family
+    @Environment(\.widgetFamily) private var family
 
     private var iconName: String {
         switch entry.state {
@@ -88,40 +88,46 @@ struct MindfulPacerStatusEntryView : View {
         switch family {
         case .accessoryCircular:
             Image(systemName: iconName)
-                .font(.headline)
-                .widgetLabel { Text(labelText) }
+                .font(.title2.weight(.semibold))
+                .symbolRenderingMode(.hierarchical)
+                .widgetLabel { Text(LocalizedStringKey(labelText)) }
                 .widgetAccentable()
-                .foregroundColor(color)
+                .foregroundStyle(color)
                 
         case .accessoryRectangular:
-            HStack {
+            HStack(spacing: 8) {
                 Image(systemName: iconName)
                     .foregroundStyle(color)
                     .symbolRenderingMode(.hierarchical)
-                    .font(.largeTitle.bold())
+                    .font(.title2.weight(.semibold))
+                    .widgetAccentable()
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text("MindfulPacer")
-                        .bold()
-                        .widgetAccentable()
-                    Text(labelText)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundColor(color)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(LocalizedStringKey(labelText))
+                        .font(.headline)
+                        .foregroundStyle(color)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
-                Spacer()
             }
-            .padding(.leading, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
 
         case .accessoryCorner:
             Image(systemName: iconName)
                 .foregroundStyle(color)
                 .symbolRenderingMode(.hierarchical)
+                .widgetAccentable()
+                .widgetLabel { Text(LocalizedStringKey(labelText)) }
 
         case .accessoryInline:
-            Label(labelText, systemImage: iconName)
+            Label(LocalizedStringKey(labelText), systemImage: iconName)
             
         @unknown default:
-            Label(labelText, systemImage: iconName)
+            Label(LocalizedStringKey(labelText), systemImage: iconName)
         }
     }
 }

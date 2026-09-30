@@ -1,64 +1,53 @@
-//
-//  EmptyView.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 19.09.2024.
-//
-
 import SwiftUI
-
-// MARK: - EmptyStateView
 
 struct EmptyStateView: View {
     var image: String
     var title: String
     var description: String
+    var isCompact = false
     var buttonTitle: String?
     var buttonAction: (() -> Void)?
 
     var body: some View {
-        ContentUnavailableView {
-            Image(systemName: image)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 32, height: 32)
-                .symbolVariant(.fill)
-                .padding(.bottom, 8)
-
-            Text(title)
-                .font(.callout.bold())
-
-            Text(description)
-                .font(.footnote)
-            
-            if let buttonTitle,
-               let buttonAction {
-                Button {
-                    buttonAction()
-                } label: {
-                    Text(buttonTitle)
-                        .foregroundStyle(.white)
-                        .font(.footnote.weight(.semibold))
+        if isCompact {
+            VStack(spacing: 8) {
+                Image(systemName: image)
+                    .font(.title2)
+                    .symbolVariant(.fill)
+                    .accessibilityHidden(true)
+                Text(title)
+                    .font(.callout.weight(.semibold))
+                Text(description)
+                    .font(.footnote)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let buttonTitle, let buttonAction {
+                    Button(buttonTitle, action: buttonAction)
+                        .buttonStyle(.borderedProminent)
+                        .buttonBorderShape(.capsule)
+                        .tint(.brandPrimary)
                 }
-                .tint(Color("BrandPrimary"))
-                .buttonBorderShape(.capsule)
-                .buttonStyle(.borderedProminent)
-                .padding(.top)
+            }
+            .foregroundStyle(Color.secondary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        } else {
+            standardContent
+        }
+    }
+
+    private var standardContent: some View {
+        ContentUnavailableView {
+            Label(title, systemImage: image)
+        } description: {
+            Text(description)
+        } actions: {
+            if let buttonTitle, let buttonAction {
+                Button(buttonTitle, action: buttonAction)
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .tint(.brandPrimary)
             }
         }
-        .foregroundStyle(.secondary)
-    }
-}
-
-// MARK: - Preview
-
-#Preview {
-    EmptyStateView(
-        image: "book.pages",
-        title: "No Reflections",
-        description: "Tap the + button to create a reflection.",
-        buttonTitle: "Create Reflection"
-    ) {
-        
     }
 }

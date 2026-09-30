@@ -24,31 +24,48 @@ extension CreateReminderView {
         @Bindable var viewModel: CreateReminderViewModel
         @FocusState private var isThresholdFocused: Bool
         
-        let onFocusChange: (Bool) -> Void
-        
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
+            Form {
+                Section {
                     thresholdInput
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Set the Threshold",
+                        systemImage: viewModel.selectedMeasurementType?.icon ?? "chart.line.flattrend.xyaxis",
+                        tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                    )
+                } footer: {
                     description
-                    Spacer()
                 }
-                .padding(.horizontal)
+                .listRowBackground(Color(.quaternarySystemFill))
             }
-            .navigationTitle("Threshold")
-            .toolbar {
-                ToolbarItem(placement: .keyboard) {
-                    hideKeyboardButton
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
+            .scrollDismissesKeyboard(.interactively)
+            .safeAreaBar(edge: .bottom) {
+                if viewModel.showActionButton {
+                    ReminderCreationActionBar(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
                 }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+            }
+            .toolbar {
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        if isThresholdFocused {
+                            Button {
+                                isThresholdFocused = false
+                            } label: {
+                                Image(systemName: "checkmark")
+                            }
+                        } else {
+                            Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
+                        }
                     }
                 }
             }
@@ -59,22 +76,15 @@ extension CreateReminderView {
         private var thresholdInput: some View {
             HStack(alignment: .lastTextBaseline) {
                 TextField("0", value: $viewModel.threshold, format: .number)
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(Color("BrandPrimary"))
+                    .font(.title.weight(.semibold))
+                    .foregroundStyle(viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary"))
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
                     .focused($isThresholdFocused)
-                    .onChange(of: isThresholdFocused) { _, newValue in
-                        onFocusChange(newValue)
-                    }
 
-                Text(viewModel.selectedMeasurementType!.units)
+                Text(viewModel.thresholdUnitText)
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(.secondary)
-            }
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
             }
         }
 
@@ -83,29 +93,14 @@ extension CreateReminderView {
         private var description: some View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Set a threshold that triggers a reminder when reached for a specified interval.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                
+
                 Button("Learn More") {
                     viewModel.presentSheet(.heartRateThresholdInfo)
                 }
                 .font(.subheadline.weight(.semibold))
             }
-            .padding(.horizontal)
         }
 
-        // MARK: Hide Keyboard Button
-
-        private var hideKeyboardButton: some View {
-            Button {
-                isThresholdFocused = false
-                print("Hide keyboard button tapped")
-            } label: {
-                Image(systemName: "keyboard.chevron.compact.down.fill")
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
     }
 }
 
@@ -115,9 +110,7 @@ extension CreateReminderView {
     let viewModel = ScenesContainer.shared.createReminderViewModel()
 
     NavigationStack {
-        CreateReminderView.ThresholdView(viewModel: viewModel) { isFocused in
-            print("Preview: TextField focus changed to \(isFocused)")
-        }
+        CreateReminderView.ThresholdView(viewModel: viewModel)
     }
     .tint(Color("BrandPrimary"))
 }

@@ -19,37 +19,47 @@ extension SettingsView {
         // MARK: Body
         
         var body: some View {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(Theme.allCases) { theme in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 16),
-                            isSelected: self.theme == theme
-                        ) {
-                            self.theme = theme
+            List {
+                Section {
+                    ForEach(Theme.allCases) { option in
+                        Button {
+                            theme = option
                         } label: {
                             HStack {
-                                IconLabel(
-                                    icon: theme.icon,
-                                    title: theme.localized,
-                                    description: theme.description,
-                                    labelColor: self.theme == theme ? .brandPrimary : .primary,
-                                    descriptionTextColor: self.theme == theme ? .brandPrimary : .primary.opacity(0.7),
-                                    background: true
+                                SettingsRowLabel(
+                                    title: option.localized,
+                                    subtitle: option.description,
+                                    systemImage: option.settingsIcon
                                 )
-                                .font(.subheadline.weight(.semibold))
                                 Spacer()
-                                if self.theme == theme {
-                                    Image(systemName: "checkmark.circle.fill")
+                                if theme == option {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(Color.brandPrimary)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
+                        .accessibilityAddTraits(theme == option ? .isSelected : [])
                     }
+                } footer: {
+                    Text("System follows your device appearance. Light and Dark override it for MindfulPacer only.")
                 }
-                .padding(.horizontal)
             }
             .navigationTitle("Theme")
-            .background(Color(.systemGroupedBackground))
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+private extension Theme {
+    var settingsIcon: String {
+        switch self {
+        case .system:
+            "circle.lefthalf.filled.righthalf.striped.horizontal.inverse"
+        case .light:
+            "sun.max.fill"
+        case .dark:
+            "moon.fill"
         }
     }
 }

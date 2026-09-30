@@ -34,17 +34,19 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Connect to Your Apple Watch"
+                title: "Connect to Your Apple Watch",
+                systemImage: "applewatch"
             ) {
-                VStack(spacing: 16) {
+                Text("When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you.")
+                    .foregroundStyle(Color.secondary)
+                VStack(spacing: 12) {
                     if Bundle.main.isTestFlight {
-                        IconLabelGroupBox(
+                        SetupDetail(
                             label:
                                 IconLabel(
                                     icon: "applewatch",
                                     title: "Installing with TestFlight",
-                                    labelColor: Color("BrandPrimary"),
-                                    background: true
+                                    labelColor: Color.primary
                                 ),
                             description:
                                 Text("Because you installed via TestFlight, the Watch app may not auto-install MindfulPacer.")
@@ -72,15 +74,13 @@ extension OnboardingView {
                                 )
                             }
                         }
-                        .iconLabelGroupBoxStyle(.divider)
                     } else {
-                        IconLabelGroupBox(
+                        SetupDetail(
                             label:
                                 IconLabel(
                                     icon: "arrow.down.applewatch",
                                     title: String(localized: "Installing on Apple Watch"),
-                                    labelColor: Color("BrandPrimary"),
-                                    background: true
+                                    labelColor: Color.primary
                                 ),
                             description:
                                 Text("Can't find MindfulPacer on your Apple Watch?")
@@ -114,15 +114,13 @@ extension OnboardingView {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .iconLabelGroupBoxStyle(.divider)
                     }
                     
-                    IconLabelGroupBox(
+                    SetupDetail(
                         label: IconLabel(
                             icon: "square.on.square.intersection.dashed",
                             title: "Add to Your Watch Face",
-                            labelColor: Color("BrandPrimary"),
-                            background: true
+                            labelColor: Color.primary
                         ),
                         description: Text("See your monitoring status at a glance with a Complication.")
                             .font(.subheadline)
@@ -159,14 +157,12 @@ extension OnboardingView {
                             )
                         }
                     }
-                    .iconLabelGroupBoxStyle(.divider)
                     
-                    IconLabelGroupBox(
+                    SetupDetail(
                         label: IconLabel(
                             icon: "arrow.turn.up.forward.iphone",
                             title: "Stay in the App",
-                            labelColor: Color("BrandPrimary"),
-                            background: true
+                            labelColor: Color.primary
                         ),
                         description: Text("Choose to keep MindfulPacer open during a session.")
                             .font(.subheadline)
@@ -201,10 +197,8 @@ extension OnboardingView {
                                 .font(.subheadline.weight(.semibold))
                         }
                     }
-                    .iconLabelGroupBoxStyle(.divider)
                     .sheet(isPresented: $showReturnToAppInfoSheet) {
                         ReturnToAppInfoSheet()
-                            .presentationCornerRadius(16)
                             .presentationDragIndicator(.visible)
                     }
                 }

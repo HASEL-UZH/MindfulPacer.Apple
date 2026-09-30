@@ -19,22 +19,40 @@ extension CreateReminderView {
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
-                    intervalSelectionList
+            List {
+                Section {
+                    VStack(spacing: 12) {
+                        intervalSelectionList
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Interval",
+                        systemImage: viewModel.selectedInterval?.icon ?? "timer",
+                        tint: Color("BrandPrimary")
+                    )
+                } footer: {
                     description
-                    Spacer()
                 }
-                .padding(.horizontal)
+                .listRowBackground(Color.clear)
             }
-            .navigationTitle("Interval")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
+            .safeAreaBar(edge: .bottom) {
+                if viewModel.showActionButton {
+                    ReminderCreationActionBar(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                     }
                 }
             }
@@ -48,26 +66,21 @@ extension CreateReminderView {
                 InfoBox(text: "Select a measurement type to see the available intervals.")
             } else {
                 ForEach(viewModel.validIntervals, id: \.self) { interval in
-                    SelectableButton(
-                        shape: .roundedRectangle(cornerRadius: 16),
-                        isSelected: viewModel.selectedInterval == interval
+                    ReminderCreationSelectionRow(
+                        isSelected: viewModel.selectedInterval == interval,
+                        tint: Color("BrandPrimary")
                     ) {
                         viewModel.toggleSelection(
                             interval,
                             selectedItem: &viewModel.selectedInterval
                         )
                     } label: {
-                        HStack {
-                            IconLabel(
-                                icon: interval.icon,
-                                title: interval.localized,
-                                labelColor: viewModel.selectedInterval == interval ? Color("BrandPrimary") : .primary
-                            )
-                            Spacer()
-                            if viewModel.selectedInterval == interval {
-                                Image(systemName: "checkmark.circle.fill")
-                            }
-                        }
+                        ReminderCreationOptionLabel(
+                            title: interval.localized,
+                            subtitle: nil,
+                            systemImage: interval.icon,
+                            tint: Color("BrandPrimary")
+                        )
                     }
                 }
             }
@@ -78,16 +91,12 @@ extension CreateReminderView {
         private var description: some View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Duration during which the heart rate has to be greater than or equal to the threshold (threshold selected on previous page) in order for the Reminder to be triggered.")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                
+
                 Button("Learn More") {
                     viewModel.presentSheet(.intervalInfo)
                 }
                 .font(.subheadline.weight(.semibold))
             }
-            .padding(.horizontal)
         }
     }
 }

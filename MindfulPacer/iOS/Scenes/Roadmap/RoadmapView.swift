@@ -1,105 +1,67 @@
-//
-//  RoadmapView.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 18.12.2024.
-//
-
 import SwiftUI
 
-// MARK: - RoadmapView
-
 struct RoadmapView: View {
-    
-    // MARK: Properties
-    
     @State private var viewModel: RoadmapViewModel = ScenesContainer.shared.roadMapViewModel()
-    
-    // MARK: Body
-    
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(viewModel.roadmapItems) { roadmapItem in
-                        roadmapItemCell(roadmapItem: roadmapItem)
+            List {
+                if viewModel.roadmapItems.isEmpty {
+                    Section {
+                        if viewModel.isFetchingRoadmap {
+                            ProgressView("Loading Roadmap")
+                        } else {
+                            Text(viewModel.fetchErrorMessage == nil
+                                 ? String(localized: "No Updates Yet") : String(localized: "Unable to Load Roadmap"))
+                            Text(viewModel.fetchErrorMessage == nil
+                                 ? String(localized: "Check back soon for upcoming features.")
+                                 : String(localized: "Check your connection and try again."))
+                                .foregroundStyle(Color.secondary)
+                            Button("Try Again", action: viewModel.onViewAppear)
+                        }
                     }
-                    
-                    Spacer()
                 }
-                .padding(.horizontal)
+                Section {
+                    ForEach(viewModel.roadmapItems) { item in
+                        roadmapItemCell(item)
+                    }
+                } header: {
+                    Text("Follow what’s next for MindfulPacer.")
+                }
             }
-            .frame(maxWidth: .infinity)
-            .background(Color(.systemGroupedBackground))
             .navigationTitle("Roadmap")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    CloseButton()
-                }
+                ToolbarItem(placement: .confirmationAction) { CloseButton() }
             }
-            .overlay {
-                if viewModel.isFetchingRoadmap {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(Color("BrandPrimary"))
-                }
-            }
-            .overlay {
-                if !viewModel.isInternetConnected {
-                    noInternetConnectionState
-                }
-            }
-            .onAppear {
-                viewModel.onViewAppear()
-            }
+            .onViewFirstAppear { viewModel.onViewAppear() }
         }
     }
-    
-    // MARK: No Internet Connection State
-    
-    var noInternetConnectionState: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            ContentUnavailableView {
-                Label("No Internet Connection", systemImage: "wifi.slash")
-            } description: {
-                Text("You are not connected to the internet. Please check your connection and try again.")
+
+    private func roadmapItemCell(_ item: RoadmapItem) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            IconLabel(
+                icon: item.platform.icon,
+                image: item.platform.image,
+                title: item.platform.rawValue,
+                labelColor: item.platform.color
+            )
+            .font(.subheadline)
+
+            Text(item.description)
+                .font(.headline)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !item.comment.isEmpty {
+                Text(item.comment)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
+
+            Text(item.status.rawValue.capitalized)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(item.status.color)
         }
-    }
-    
-    // MARK: Roadmap Item Cell
-    
-    @ViewBuilder
-    func roadmapItemCell(roadmapItem: RoadmapItem) -> some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: roadmapItem.platform.icon,
-                image: roadmapItem.platform.image,
-                title: roadmapItem.platform.rawValue,
-                labelColor: roadmapItem.platform.color,
-                background: true
-            ),
-            description:
-                Text(roadmapItem.comment)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        ) {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(roadmapItem.description)
-                IconLabel(
-                    title: roadmapItem.status.rawValue.capitalized,
-                    labelColor: roadmapItem.status.color
-                )
-                .font(.footnote).fontWeight(.semibold)
-                .iconLabelStyle(.pill)
-            }
-        }
-        .iconLabelGroupBoxStyle(.divider)
     }
 }
 
-// MARK: - Preview
-
-#Preview {
-    RoadmapView()
-}
+#Preview { RoadmapView() }

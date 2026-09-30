@@ -7,234 +7,166 @@
 
 import SwiftUI
 
-// MARK: - SummaryView
-
 extension CreateReminderView {
+    /// The same editor is used at the end of creation and when opening an existing reminder.
     struct SummaryView: View {
-        
-        // MARK: Properties
-        
         @Bindable var viewModel: CreateReminderViewModel
-        
-        // MARK: Body
-        
+        var reminder: Reminder?
+        @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+        @State private var activeField: Field?
+
+        private enum Field: String, Identifiable {
+            case measurement, strength, threshold, interval
+            var id: String { rawValue }
+            var title: String {
+                switch self {
+                case .measurement: String(localized: "Measurement Type")
+                case .strength: String(localized: "Reminder Type")
+                case .threshold: String(localized: "Threshold")
+                case .interval: String(localized: "Interval")
+                }
+            }
+        }
+
         var body: some View {
-            GeometryReader { proxy in
-                ZStack(alignment: .top) {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                    
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            measurementType
-                            reminderType
-                            threshold
-                            interval
-                            
-                            if viewModel.mode == .edit {
-                                deleteButton
-                            }
+            EntryFormSheet(
+                title: viewModel.summaryViewTitle,
+                headerTitle: viewModel.mode == .create ? String(localized: "Review Reminder") : String(localized: "Reminder"),
+                headerSystemImage: viewModel.selectedMeasurementType?.icon ?? "bell.fill",
+                headerTint: viewModel.selectedMeasurementType?.color ?? .accentColor,
+                canSave: !viewModel.isSaveButtonDisabled,
+                usesNavigationStack: false,
+                saveTitle: viewModel.mode == .create ? String(localized: "Create") : String(localized: "Save"),
+                onCancel: { viewModel.shouldDismiss = true },
+                onSave: {
+                    if viewModel.mode == .create { viewModel.actionButtonTapped() }
+                    else { viewModel.saveReminder(reminder) }
+                }
+            ) {
+                editorRow(.measurement, icon: "ruler", value: viewModel.selectedMeasurementType?.localized)
+                editorRow(.strength, icon: "alarm", value: viewModel.selectedReminderType?.localized,
+                          tint: viewModel.selectedReminderType?.color ?? .accentColor)
+                editorRow(.threshold, icon: "chart.line.flattrend.xyaxis",
+                          value: viewModel.threshold.map { "\($0.formatted()) \(viewModel.thresholdUnitText)" })
+                editorRow(.interval, icon: "timer", value: viewModel.selectedInterval?.localized)
+            } content: {
+                if viewModel.mode == .edit {
+                    Section {
+                        Button(role: .destructive) {
+                            viewModel.presentAlert(.deleteConfirmation)
+                        } label: {
+                            Label("Delete Reminder", systemImage: "trash.fill")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity)
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom, viewModel.mode == .create ? proxy.safeAreaInsets.bottom + 48 : 0)
+                        .tint(.red)
                     }
                 }
-                .navigationTitle(viewModel.summaryViewTitle)
-                .toolbar {
-                    if viewModel.mode == .create {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Cancel") {
-                                viewModel.dismissView()
-                            }
-                        }
-                    }
-                }
+            } additionalToolbarContent: {
+                ToolbarItemGroup(placement: .secondaryAction) { }
+            }
+            .navigationBarBackButtonHidden()
+            .sheet(item: $activeField) { field in
+                fieldEditor(field)
             }
         }
-        
-        // MARK: Summary Widget
-        
+
         @ViewBuilder
-        private func summaryWidget<Content: View>(
-            icon: String,
-            title: String,
-            destination: CreateReminderNavigationDestination?,
-            @ViewBuilder label: @escaping () -> Content
-        ) -> some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: icon,
-                    title: title,
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-            ) {
-                label()
-            } accessoryIndicator: {
-                if let destination {
-                    Button {
-                        viewModel.navigationPath.append(destination)
-                    } label: {
-                        Icon(name: "pencil.circle", variant: .fill)
-                    }
+        private func editorRow(_ field: Field, icon: String, value: String?, tint: Color = .accentColor) -> some View {
+            if viewModel.mode == .edit && (field == .measurement || field == .strength) {
+                rowContent(field, icon: icon, value: value, tint: field == .measurement ? .secondary : tint)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("reminder.editor.\(field.rawValue)")
+            } else {
+                Button { activeField = field } label: {
+                    rowContent(field, icon: icon, value: value, tint: tint)
                 }
+                .accessibilityIdentifier("reminder.editor.\(field.rawValue)")
             }
         }
-        
-        // MARK: Measurement Type
-        
-        private var measurementType: some View {
-            summaryWidget(
-                icon: "ruler",
-                title: String(localized: "Measurement Type"),
-                destination: viewModel.mode == .create ? .measurementType : nil
-            ) {
-                if let measurementType = viewModel.selectedMeasurementType {
-                    Text(measurementType.localized)
-                } else {
-                    Text("No Measurement Type Selected")
-                        .foregroundStyle(.red)
-                }
+
+        private func rowContent(_ field: Field, icon: String, value: String?, tint: Color) -> some View {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+                : AnyLayout(HStackLayout(spacing: 12))
+            return layout {
+                Label(field.title, systemImage: icon).foregroundStyle(Color.primary)
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+                Text(value ?? String(localized: "Select"))
+                    .foregroundStyle(value == nil ? Color.red : tint)
+                    .multilineTextAlignment(dynamicTypeSize.isAccessibilitySize ? .leading : .trailing)
             }
+            .font(.body)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(.rect)
         }
-        
-        // MARK: Reminder Type
-        
-        private var reminderType: some View {
-            summaryWidget(
-                icon: "alarm",
-                title: String(localized: "Reminder Type"),
-                destination: .reminderType
-            ) {
-                if let reminderType = viewModel.selectedReminderType {
-                    Text(reminderType.localized)
-                } else {
-                    Text("No Reminder Type Selected")
-                        .foregroundStyle(.red)
-                }
-            }
-        }
-        
-        // MARK: Threshold
-        
-        private var threshold: some View {
-            summaryWidget(
-                icon: "chart.line.flattrend.xyaxis",
-                title: String(localized: "Threshold"),
-                destination: .threshold
-            ) {
-                if let threshold = viewModel.threshold {
-                    HStack(alignment: .bottom, spacing: 4) {
-                        Text("\(threshold)")
-                        Text(viewModel.thresholdUnitText)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Text("No Threshold Set")
-                        .foregroundStyle(.red)
-                }
-            }
-        }
-        
-        // MARK: Interval
-        
-        private var interval: some View {
-            summaryWidget(
-                icon: "timer",
-                title: String(localized: "Interval"),
-                destination: .interval
-            ) {
-                if let interval = viewModel.selectedInterval {
-                    Text(interval.localized)
-                } else {
-                    Text("No Interval Selected")
-                        .foregroundStyle(.red)
-                }
-            }
-        }
-        
-        // MARK: Notification Preview
-        
-        private var notificationPreview: some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: "eye",
-                    title: String(localized: "Preview Notification"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                description:
-                    Text("See how the notification will look.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            ) {
-                VStack(spacing: 16) {
-                    HStack(spacing: 16) {
-                        Image("MindfulPacer Icon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 32, height: 32)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Reminder Triggered")
-                                .font(.subheadline.weight(.semibold))
-                            
-                            Text(viewModel.notificationPreviewBodyText)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+
+        private func fieldEditor(_ field: Field) -> some View {
+            NavigationStack {
+                Group {
+                    if field == .threshold {
+                        Form {
+                            HStack {
+                                TextField("Threshold", value: $viewModel.threshold, format: .number)
+                                    .keyboardType(.numberPad)
+                                    .accessibilityIdentifier("reminder.threshold.input")
+                                Text(viewModel.thresholdUnitText).foregroundStyle(Color.secondary)
+                            }
                         }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(.thinMaterial)
+                    } else {
+                        ScrollView {
+                            VStack(spacing: 12) { choices(for: field) }
+                                .padding(16)
+                        }
+                        .background(Color(.systemGroupedBackground))
                     }
                 }
-            } footer: {
-                notificationPreviewButton
+                .navigationTitle(field.title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { activeField = nil }
+                    }
+                }
             }
-            .iconLabelGroupBoxStyle(.divider)
+            .presentationDetents(field == .threshold ? [.medium] : [.medium, .large])
+            .presentationDragIndicator(.visible)
         }
-        
-        // MARK: Notification Preview Button
-        
-        private var notificationPreviewButton: some View {
-            Button {
-                viewModel.sendNotificationToWatch()
-            } label: {
-                IconLabel(
-                    icon: "bell.badge",
-                    title: String(localized: "Test on Apple Watch"),
-                    labelColor: viewModel.isActionButtonDisabled ? Color.secondary : Color("BrandPrimary")
-                )
-                .font(.subheadline.weight(.semibold))
-            }
-            .disabled(viewModel.isActionButtonDisabled)
-        }
-        
-        // MARK: Delete Button
-        
-        private var deleteButton: some View {
-            PrimaryButton(
-                title: String(localized: "Delete Reminder"),
-                icon: "trash",
-                color: .red
-            ) {
-                viewModel.presentAlert(.deleteConfirmation)
+
+        @ViewBuilder
+        private func choices(for field: Field) -> some View {
+            switch field {
+            case .measurement:
+                ForEach(MeasurementType.allCases, id: \.self) { measurement in
+                    SingleSelectRow(isSelected: viewModel.selectedMeasurementType == measurement) {
+                        viewModel.selectedMeasurementType = measurement
+                        activeField = nil
+                    } content: {
+                        Label(measurement.localized, systemImage: measurement.icon)
+                    }
+                }
+            case .strength:
+                ForEach(Reminder.ReminderType.allCases, id: \.self) { strength in
+                    SingleSelectRow(isSelected: viewModel.selectedReminderType == strength, tint: strength.color) {
+                        viewModel.selectedReminderType = strength
+                        activeField = nil
+                    } content: {
+                        Label(strength.localized, systemImage: strength.icon)
+                    }
+                }
+            case .interval:
+                ForEach(viewModel.validIntervals, id: \.self) { interval in
+                    SingleSelectRow(isSelected: viewModel.selectedInterval == interval) {
+                        viewModel.selectedInterval = interval
+                        activeField = nil
+                    } content: {
+                        Label(interval.localized, systemImage: interval.icon)
+                    }
+                }
+            case .threshold:
+                EmptyView()
             }
         }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    let viewModel = ScenesContainer.shared.createReminderViewModel()
-    
-    NavigationStack {
-        CreateReminderView.SummaryView(viewModel: viewModel)
-    }
-    .tint(Color("BrandPrimary"))
 }

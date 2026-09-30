@@ -1,100 +1,83 @@
-//
-//  ReflectionsWidget.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 31.08.2024.
-//
-
 import SwiftUI
-
-// MARK: - ReflectionsWidget
 
 extension HomeView {
     struct ReflectionsWidget: View {
-        
-        // MARK: Properties
-
         @Bindable var viewModel: HomeViewModel
 
-        // MARK: Body
+        let onOpenList: () -> Void
 
         var body: some View {
-            NavigationLink(value: HomeNavigationDestination.reviewsList) {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "book.pages.fill",
-                        title: String(localized: "My Reflections"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    ),
-                    description:
-                        Text("Summary of your most recent reflections.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-                    if viewModel.reflections.isEmpty {
-                        EmptyStateView(
-                            image: "book.pages",
-                            title: "No Reflections",
-                            description: String(localized: "Tap the + button to create a reflection.")
-                        )
-                    } else {
-                        recentReflectionsSummary
+            LabeledCard(
+                contentSpacing: 12,
+                action: onOpenList,
+                actionAccessibilityIdentifier: "home.reflections.showAll"
+            ) {
+                if viewModel.reflections.isEmpty {
+                    Button(action: onOpenList) {
+                        EmptyStateView(image: "book.pages", title: String(localized: "No Reflections"),
+                                       description: String(localized: "Record how you feel with a reflection."),
+                                       isCompact: true)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(.rect)
                     }
-                } accessoryIndicator: {
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                } footer: {
-                    createReflectionButton
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(viewModel.recentReflections) { reflection in
+                            if reflection.id != viewModel.recentReflections.first?.id {
+                                Divider().padding(.leading, 36)
+                            }
+                            Button {
+                                viewModel.presentSheet(.editReflectionView(reflection))
+                            } label: {
+                                historyRow(reflection)
+                            }
+                            .accessibilityIdentifier("home.reflection.\(reflection.id)")
+                        }
+                    }
                 }
-            }
-            .foregroundStyle(.primary)
-        }
-
-        // MARK: Create Reflection Button
-        
-        private var createReflectionButton: some View {
-            Button {
-                viewModel.presentSheet(.editReflectionView(nil))
             } label: {
-                IconLabel(
-                    icon: "plus.circle",
-                    title: String(localized: "Create Reflection"),
-                    labelColor: Color("BrandPrimary")
-                )
-                .font(.subheadline.weight(.semibold))
+                Label("My Reflections", systemImage: "book.pages.fill")
+                    .foregroundStyle(Color.accentColor)
+            } accessory: {
+                HStack(spacing: 4) {
+                    Text("Show All")
+                    Image(systemName: "chevron.right")
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.accentColor)
             }
         }
-        
-        // MARK: Recent Reflections Summary
-        
-        private var recentReflectionsSummary: some View {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(viewModel.recentReflections, id: \.id) { reflection in
-                    ReflectionCell(
-                        reflection: reflection,
-                        backgroundColor: Color(.tertiarySystemGroupedBackground)
-                    ) {
-                        viewModel.presentSheet(.editReflectionView(reflection))
-                    }
-                    if reflection != viewModel.recentReflections.last {
-                        Divider()
+
+        private func historyRow(_ reflection: Reflection) -> some View {
+            HStack(spacing: 12) {
+                Image(systemName: reflection.subactivity?.icon ?? reflection.activity?.icon ?? "book.closed")
+                    .font(.body)
+                    .foregroundStyle(Color.accentColor)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(reflection.subactivity?.name ?? reflection.activity?.name ?? String(localized: "Uncategorized"))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.primary)
+                    Text(reflection.date, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        .font(.caption).foregroundStyle(Color.secondary)
+                    if reflection.didTriggerCrash {
+                        Label("Crash", systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption).foregroundStyle(.red)
+                    } else if let wellBeing = reflection.wellBeing {
+                        Text(Symptom.wellBeing(wellBeing).description)
+                            .font(.caption).foregroundStyle(Symptom.wellBeing(wellBeing).color)
+                    } else if let mood = reflection.mood {
+                        Text("\(mood.emoji) \(mood.text)")
+                            .font(.caption).foregroundStyle(Color.secondary)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
             }
-            .cornerRadius(16)
+            .frame(minHeight: 44)
+            .padding(.top, reflection.id == viewModel.recentReflections.first?.id ? 0 : 8)
+            .padding(.bottom, reflection.id == viewModel.recentReflections.last?.id ? 0 : 8)
+            .contentShape(.rect)
         }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    let viewModel = ScenesContainer.shared.homeViewModel()
-
-    ScrollView {
-        HomeView.ReflectionsWidget(viewModel: viewModel)
-            .padding()
-    }
-    .background(Color(.systemGroupedBackground))
 }

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Charts
+import SwiftData
 
 // MARK: - Presentation Enums
 
@@ -18,10 +18,16 @@ enum EditReflectionNavigationDestination: Hashable {
 
 enum EditReflectionSheet: Identifiable {
     case symptomValueView(Symptom)
+    case activity
+    case subactivity(Activity)
+    case mood
     
     var id: Int {
         switch self {
         case .symptomValueView: 0
+        case .activity: 1
+        case .subactivity: 2
+        case .mood: 3
         }
     }
 }
@@ -43,7 +49,10 @@ struct EditReflectionView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) private var dismiss
-    @State var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var viewModel: EditReflectionViewModel = ScenesContainer.shared.editReflectionViewModel()
+    @FocusState private var focusedField: FocusField?
+
     
     @AppStorage(ModeOfUse.appStorageKey, store: DefaultsStore.shared)
     private var modeOfUseRaw: String = ModeOfUse.essentials.rawValue
@@ -54,97 +63,39 @@ struct EditReflectionView: View {
     
     var reflection: Reflection?
     var onReflectionCreation: (() -> Void)?
+
+    private enum FocusField: Hashable {
+        case additionalInformation
+    }
     
     // MARK: Body
     
     var body: some View {
-        NavigationStack(path: $viewModel.navigationPath) {
-            GeometryReader { proxy in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        date
-                        
-                        VStack(spacing: 0) {
-                            activity
-                            if viewModel.selectedActivity.isNotNil {
-                                Divider()
-                                subactivity
-                            }
-                        }
-                        
-                        if modeOfUse == .expanded {
-                            mood
-                        }
-                        
-                        wellBeing
-                        
-                        if modeOfUse == .expanded {
-                            symptoms(width: proxy.size.width / 2)
-                            triggerCrash
-                            additionalInformation
-                        }
-                        
-                        if !viewModel.isReflectionDeleted {
-                            reminder
-                        }
-                        
-                        if viewModel.mode == .edit {
-                            deleteButton
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .safeAreaPadding(.bottom)
-            }
-            .foregroundStyle(Color.primary)
-            .scrollContentBackground(.hidden)
-            .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-            }
-            .navigationTitle(viewModel.navigationTitle)
-            .safeAreaInset(edge: .bottom) {
-                if viewModel.mode == .create {
-                    createButton
-                }
-            }
-            .scrollDismissesKeyboard(.interactively)
-            .toolbar {
-                ToolbarItem(placement: .keyboard) {
-                    hideKeyboardButton
-                }
-                
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    if viewModel.mode == .edit {
-                        Button("Save") {
-                            viewModel.saveReflection(reflection)
-                            dismiss()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .fontWeight(.semibold)
-                        .disabled(viewModel.isSaveButtonDisabled)
-                    }
-                }
-            }
-            .onViewFirstAppear {
-                viewModel.onViewFirstAppear()
-                viewModel.configureMode(with: reflection)
-            }
-            .alert(item: $viewModel.activeAlert) { alert in
-                alertContent(for: alert)
-            }
-            .sheet(item: $viewModel.activeSheet) { sheet in
-                sheetContent(for: sheet)
-            }
-            .navigationDestination(for: EditReflectionNavigationDestination.self) { destination in
-                navigationDestination(for: destination)
-            }
+        EntryFormSheet(
+            title: viewModel.navigationTitle,
+            headerTitle: reflectionHeaderTitle,
+            headerSystemImage: reflectionHeaderSystemImage,
+            headerTint: reflectionHeaderTint,
+            canSave: canSave,
+            onCancel: { dismiss() },
+            onSave: { saveOrDismissKeyboard() }
+        ) {
+            primaryRows
+        } content: {
+            secondarySections
+        } additionalToolbarContent: {
+            keyboardToolbarContent
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .onViewFirstAppear {
+            viewModel.onViewFirstAppear()
+            viewModel.configureMode(with: reflection)
+        }
+        .alert(item: $viewModel.activeAlert) { alert in
+            alertContent(for: alert)
+        }
+        .sheet(item: $viewModel.activeSheet) { sheet in
+            sheetContent(for: sheet)
         }
     }
     
@@ -164,6 +115,30 @@ struct EditReflectionView: View {
     @ViewBuilder
     private func sheetContent(for sheet: EditReflectionSheet) -> some View {
         switch sheet {
+        case .activity:
+            NavigationStack {
+                ActivityView(viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        case .subactivity(let activity):
+            NavigationStack {
+                SubactivityView(activity: activity, viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        case .mood:
+            NavigationStack {
+                MoodView(viewModel: viewModel)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { CloseButton() } }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         case .symptomValueView(let symptom):
             Group {
                 switch symptom {
@@ -183,370 +158,315 @@ struct EditReflectionView: View {
                     SymptomValueView(symptom: viewModel.depressionOrAnxietyBinding)
                 }
             }
-            .presentationDetents([.height(220)])
+            .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
-            .presentationCornerRadius(16)
         }
     }
-    
-    // MARK: Navigation Destination
-    
+
+    // MARK: Header
+
+    private var reflectionHeaderTitle: String {
+        viewModel.selectedSubactivity?.name ??
+        viewModel.selectedActivity?.name ??
+        String(localized: "Reflection")
+    }
+
+    private var reflectionHeaderSystemImage: String {
+        viewModel.selectedSubactivity?.icon ??
+        viewModel.selectedActivity?.icon ??
+        "book.closed.fill"
+    }
+
+    private var reflectionHeaderTint: Color {
+        viewModel.selectedActivity == nil ? .secondary : Color("BrandPrimary")
+    }
+
+    // MARK: Primary Rows
+
     @ViewBuilder
-    private func navigationDestination(for destination: EditReflectionNavigationDestination) -> some View {
-        switch destination {
-        case .activity:
-            ActivityView(viewModel: viewModel)
-        case .subactivity(let activity):
-            SubactivityView(
-                activity: activity.unsafelyUnwrapped,
-                viewModel: viewModel
-            )
-        case .mood:
-            MoodView(viewModel: viewModel)
+    private var primaryRows: some View {
+        dateRow
+
+        activityRow
+
+        if viewModel.selectedActivity != nil {
+            subactivityRow
         }
+
+        if modeOfUse == .expanded {
+            moodRow
+        }
+
+        wellBeingRow
     }
-    
-    // MARK: Date
-    
-    private var date: some View {
-        Card {
-            DatePicker(selection: $viewModel.date) {
-                IconLabel(
-                    icon: "calendar",
-                    title: String(localized: "Date"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
+
+    private var dateRow: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                dateLabel.fixedSize()
+                Spacer(minLength: 0)
+                datePicker.fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                dateLabel
+                datePicker
             }
         }
     }
-    
-    // MARK: Activity
-    
-    private var activity: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.activity) {
-            HStack {
-                IconLabel(
-                    icon: "rectangle.grid.2x2.fill",
-                    title: String(localized: "Activity"),
-                    labelColor: viewModel.selectedActivity.isNil ? Color.red : Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-                
-                Spacer(minLength: 16)
-                
-                HStack(spacing: 4) {
-                    if let activity = viewModel.selectedActivity {
-                        Text(activity.name)
-                            .foregroundStyle(Color(.systemGray2))
-                            .fixedSize(horizontal: true, vertical: false)
-                    } else {
-                        Label("Uncategorized", systemImage: "questionmark")
-                            .foregroundStyle(Color.red)
-                            .fixedSize(horizontal: true, vertical: false)
-                    }
-                    
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-            .padding()
-            .background {
-                if viewModel.selectedActivity.isNil {
-                    RoundedRectangle(cornerRadius: 16)
-                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                } else {
-                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 16, topTrailing: 16))
-                        .foregroundStyle(Color(.secondarySystemGroupedBackground))
-                }
-            }
-        }
+
+    private var dateLabel: some View {
+        Label("Date", systemImage: "calendar")
+            .labelStyle(.titleAndIcon)
+            .font(.body)
+            .foregroundStyle(Color.primary)
     }
-    
-    // MARK: Subactivity
-    
-    private var subactivity: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.subactivity(viewModel.selectedActivity)) {
-            HStack {
-                IconLabel(
-                    icon: "rectangle.grid.3x3.fill",
-                    title: String(localized: "Subactivity"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-                
-                Spacer(minLength: 16)
-                
-                HStack(spacing: 4) {
-                    if let subactivity = viewModel.selectedSubactivity {
-                        Text(subactivity.name)
-                            .foregroundStyle(Color(.systemGray2))
-                            .fixedSize(horizontal: true, vertical: false)
-                    }
-                    
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-            .padding()
-            .background {
-                UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 16, bottomTrailing: 16))
-                    .foregroundStyle(Color(.secondarySystemGroupedBackground))
-            }
-        }
+
+    private var datePicker: some View {
+        DatePicker("Date", selection: $viewModel.date, displayedComponents: [.date, .hourAndMinute])
+            .labelsHidden()
+            .datePickerStyle(.compact)
     }
-    
-    // MARK: Mood
-    
-    private var mood: some View {
-        NavigationLink(value: EditReflectionNavigationDestination.mood) {
-            Card {
-                HStack {
-                    IconLabel(
-                        icon: "face.smiling.fill",
-                        title: String(localized: "Mood"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .layoutPriority(1)
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 4) {
-                        if let mood = viewModel.selectedMood {
-                            Text(mood.emoji)
-                                .frame(width: 24, height: 24)
-                        }
-                        
-                        Icon(name: "chevron.right", color: Color(.systemGray2))
-                            .font(.subheadline.weight(.semibold))
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: Well Being
-    
-    private var wellBeing: some View {
+
+    private var activityRow: some View {
         Button {
-            viewModel.presentSymptomValueSheet(for: .wellBeing(nil))
+            viewModel.presentSheet(.activity)
         } label: {
-            Card {
-                HStack {
-                    IconLabel(
-                        icon: viewModel.wellBeing.icon,
-                        title: viewModel.wellBeing.displayName,
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    
-                    Spacer()
-                    
-                    Text(viewModel.wellBeing.description)
-                        .foregroundColor(viewModel.wellBeing.description == "Not Set" ? Color(.systemGray2) : viewModel.wellBeing.color)
+            formRow(title: "Activity", systemImage: "rectangle.grid.2x2") {
+                rowValue(viewModel.selectedActivity?.name ?? String(localized: "Select"),
+                         isRequiredMissing: viewModel.selectedActivity == nil)
+            }
+            .contentShape(.rect)
+        }
+        .accessibilityIdentifier("reflection.activity")
+    }
+
+    @ViewBuilder
+    private var subactivityRow: some View {
+        if let activity = viewModel.selectedActivity {
+            Button {
+                viewModel.presentSheet(.subactivity(activity))
+            } label: {
+                formRow(title: "Subactivity", systemImage: "rectangle.grid.3x3") {
+                    rowValue(viewModel.selectedSubactivity?.name ?? String(localized: "None"))
+                }
+                .contentShape(.rect)
+            }
+            .accessibilityIdentifier("reflection.subactivity")
+        }
+    }
+
+    private var moodRow: some View {
+        Button {
+            viewModel.presentSheet(.mood)
+        } label: {
+            formRow(title: "Mood", systemImage: "face.smiling") {
+                rowValue(viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set"))
+            }
+            .contentShape(.rect)
+        }
+        .accessibilityIdentifier("reflection.mood")
+    }
+
+    private var wellBeingRow: some View {
+        Button {
+            viewModel.presentSymptomValueSheet(for: viewModel.wellBeing)
+        } label: {
+            formRow(title: viewModel.wellBeing.displayName, systemImage: viewModel.wellBeing.icon, singleLine: true) {
+                Text(viewModel.wellBeing.description)
+                    .foregroundStyle(viewModel.wellBeing.value == nil ? Color.secondary : viewModel.wellBeing.color)
+            }
+            .contentShape(.rect)
+        }
+        .accessibilityIdentifier("reflection.wellbeing")
+    }
+
+    // MARK: Secondary Sections
+
+    @ViewBuilder
+    private var secondarySections: some View {
+        if modeOfUse == .expanded {
+            Section("Symptoms") {
+                ForEach(editableSymptoms, id: \.displayName) { symptom in
+                    symptomRow(symptom)
                 }
             }
-        }
-    }
-    
-    // MARK: Symptoms
-    
-    @ViewBuilder private func symptoms(width: CGFloat) -> some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(spacing: 16), count: 2),
-            spacing: 16
-        ) {
-            Group {
-                symptomCard(for: viewModel.fatigue)
-                symptomCard(for: viewModel.shortnessOfBreath)
-                symptomCard(for: viewModel.sleepDisorder)
-                symptomCard(for: viewModel.cognitiveImpairment)
-                symptomCard(for: viewModel.physicalPain)
-                symptomCard(for: viewModel.depressionOrAnxiety)
+
+            Section {
+                Toggle(isOn: $viewModel.didTriggerCrash) {
+                    Label("Triggered Crash", systemImage: "exclamationmark.triangle.fill")
+                        .font(.body)
+                }
+                .tint(.accentColor)
+
+                TextField("Additional Information", text: $viewModel.additionalInformation, axis: .vertical)
+                    .focused($focusedField, equals: .additionalInformation)
+                    .lineLimit(3...8)
             }
-            .frame(maxWidth: width)
+        }
+
+        if !viewModel.isReflectionDeleted {
+            reminderSection
+        }
+
+        if viewModel.mode == .edit {
+            Section {
+                deleteButton
+            }
         }
     }
-    
-    // MARK: Symptom Card
-    
-    @ViewBuilder private func symptomCard(for symptom: Symptom) -> some View {
+
+    private func symptomRow(_ symptom: Symptom) -> some View {
         Button {
             viewModel.presentSymptomValueSheet(for: symptom)
         } label: {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: symptom.icon,
-                    title: symptom.displayName,
-                    labelColor: Color("BrandPrimary"),
-                    background: true,
-                    axis: .vertical,
-                    truncationMode: symptom.truncationMode
-                )
-            ) {
+            HStack(spacing: 12) {
+                Label(symptom.displayName, systemImage: symptom.icon)
+                    .font(.body)
+                    .foregroundStyle(Color.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer()
+
                 Text(symptom.description)
-                    .foregroundColor(symptom.description == "Not Set" ? Color(.systemGray2) : symptom.color)
+                    .font(.body)
+                    .foregroundStyle(symptom.value == nil ? Color.secondary : symptom.color)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(.rect)
         }
     }
-    
-    // MARK: Trigger Crash
-    
-    private var triggerCrash: some View {
-        Card {
-            Toggle(isOn: $viewModel.didTriggerCrash) {
-                IconLabel(
-                    icon: "exclamationmark.triangle.fill",
-                    title: String(localized: "Did this trigger a crash?"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .layoutPriority(1)
-            }
-            .tint(.accentColor)
-        }
-    }
-    
-    // MARK: Additional Information
-    
-    private var additionalInformation: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "pencil.line",
-                title: String(localized: "Additional Information"),
-                labelColor: Color("BrandPrimary"),
-                background: true
-            )
-        ) {
-            TextField("You can write anything here", text: $viewModel.additionalInformation, axis: .vertical)
-        }
-    }
-    
-    // MARK: - Reminder
-    
+
     @ViewBuilder
-    private var reminder: some View {
-        VStack(spacing: 16) {
-            if let reflection {
-                if let reminderMeasurementType = reflection.measurementType,
-                   let reminderType = reflection.reminderType {
-                    IconLabelGroupBox(
-                        label: IconLabel(
-                            icon: "alarm",
-                            title: String(localized: "Reminder"),
-                            labelColor: Color("BrandPrimary"),
-                            background: true
-                        ),
-                        description:
-                            Text("View the data that triggered this reminder.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    ) {
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            HStack(spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    IconLabel(
-                                        icon: reminderMeasurementType.icon,
-                                        title: reminderMeasurementType.rawValue,
-                                        labelColor: reminderMeasurementType == .heartRate ? .pink : .teal
-                                    )
-                                    .font(.subheadline.weight(.semibold))
-                                    
-                                    Text(reflection.reminderTriggerSummary)
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                Icon(
-                                    name: "alarm",
-                                    color: reminderType.color,
-                                    background: true
-                                )
-                            }
-                            .foregroundStyle(Color.primary)
-                        }
-                    } footer: {
-                        TriggerDataChartView(reflection: reflection)
-                            .frame(height: 250)
-                    }
-                    .iconLabelGroupBoxStyle(.divider)
-                } else {
-                    Card(backgroundColor: Color(.tertiarySystemFill)) {
-                        IconLabel(
-                            icon: "person",
-                            title: String(localized: "Manually Created Reflection"),
-                            labelColor: .secondary,
-                            background: true
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .layoutPriority(1)
-                    }
-                }
+    private var reminderSection: some View {
+        if let reflection,
+           let trendData = MissedReflectionTrendCard.Data(
+               reflection: reflection,
+               subtitle: String(localized: "Triggered on \(reflection.date.formatted(.dateTime.month().day().hour().minute()))"),
+               layout: .compact,
+               chartHeight: 176
+           ) {
+            Section("Reminder") {
+                MissedReflectionTrendCard(
+                    data: trendData,
+                    presentationStyle: .listSection
+                )
+            }
+        } else if reflection != nil {
+            Section("Reminder") {
+                Text("This reflection was created manually.")
+                    .foregroundStyle(Color.secondary)
             }
         }
     }
-    
-    // MARK: Create Button
-    
-    private var createButton: some View {
-        PrimaryButton(title: String(localized: "Create")) {
+
+    // MARK: Row Helpers
+
+    private func formRow<Field: View>(
+        title: String,
+        systemImage: String,
+        singleLine: Bool = false,
+        @ViewBuilder field: () -> Field
+    ) -> some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
+            Label(title, systemImage: systemImage)
+                .font(.body)
+                .foregroundStyle(Color.primary)
+                .lineLimit(singleLine && !dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+                .minimumScaleFactor(singleLine ? 0.85 : 1)
+                .layoutPriority(singleLine ? 1 : 0)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer(minLength: 12)
+            }
+
+            field()
+                .lineLimit(singleLine && !dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+                .fixedSize(horizontal: singleLine && !dynamicTypeSize.isAccessibilitySize, vertical: true)
+                .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : (singleLine ? nil : 230),
+                       alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing)
+        }
+    }
+
+    private func rowValue(
+        _ title: String,
+        isRequiredMissing: Bool = false
+    ) -> some View {
+        Text(title)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            .font(.body)
+            .foregroundStyle(isRequiredMissing ? Color.red : Color.accentColor)
+    }
+
+    private var editableSymptoms: [Symptom] {
+        [
+            viewModel.fatigue,
+            viewModel.shortnessOfBreath,
+            viewModel.sleepDisorder,
+            viewModel.cognitiveImpairment,
+            viewModel.physicalPain,
+            viewModel.depressionOrAnxiety
+        ]
+    }
+
+    // MARK: Save
+
+    private var canSave: Bool {
+        switch viewModel.mode {
+        case .create:
+            !viewModel.isActionButtonDisabled
+        case .edit:
+            !viewModel.isSaveButtonDisabled
+        }
+    }
+
+    private func saveOrDismissKeyboard() {
+        if focusedField != nil {
+            focusedField = nil
+            return
+        }
+
+        switch viewModel.mode {
+        case .create:
             viewModel.createReflection()
             onReflectionCreation?()
             dismiss()
-        }
-        .padding([.horizontal, .top])
-        .background(.ultraThinMaterial)
-        .disabled(viewModel.isActionButtonDisabled)
-        .overlay(alignment: .top) {
-            Divider()
+
+        case .edit:
+            viewModel.saveReflection(reflection)
+            dismiss()
         }
     }
     
     // MARK: Delete Button
     
     private var deleteButton: some View {
-        PrimaryButton(
-            title: String(localized: "Delete Reflection"),
-            icon: "trash",
-            color: .red
-        ) {
+        Button(role: .destructive) {
             viewModel.presentAlert(.deleteConfirmation)
-        }
-    }
-    
-    // MARK: Hide Keyboard Button
-    
-    private var hideKeyboardButton: some View {
-        Button {
-            hideKeyboard()
         } label: {
-            Image(systemName: "keyboard.chevron.compact.down.fill")
+            Label("Delete Reflection", systemImage: "trash.fill")
+                .fontWeight(.semibold)
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity, alignment: .trailing)
+        .tint(.red)
+    }
+
+    // MARK: Toolbar Content
+
+    @ToolbarContentBuilder
+    private var keyboardToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+
+            Button("Done") {
+                focusedField = nil
+            }
+        }
     }
     
     // MARK: Reflection Deletion Confirmation Alert
@@ -574,316 +494,9 @@ struct EditReflectionView: View {
     }
 }
 
-// MARK: - TriggerDataChartView
-
-struct TriggerDataChartView: View {
-    let reflection: Reflection
-    @State private var selectedDate: Date?
-
-    @State private var cachedSamples: [MeasurementSample] = []
-    @State private var series: [MeasurementSample] = []
-    @State private var downsampled: [MeasurementSample] = []
-    @State private var yDomain: ClosedRange<Double> = 0...1
-    @State private var xAxisValues: [Date] = []
-    @State private var windowStart: Date?
-    @State private var windowEnd: Date?
-    @State private var chartColor: Color = .teal
-    @State private var yLabel: String = "Value"
-    @State private var isReady = false
-
-    private let maxDataPoints = 200
-
-    var body: some View {
-        Group {
-            if !isReady {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if downsampled.isEmpty {
-                Text("No trigger data was saved for this reflection.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .frame(height: 150)
-            } else {
-                Chart {
-                    if let start = windowStart, let end = windowEnd, let interval = reflection.interval, interval != .oneDay {
-                        RectangleMark(
-                            xStart: .value("Start", start),
-                            xEnd: .value("End", end)
-                        )
-                        .foregroundStyle(chartColor.opacity(0.1))
-                    }
-
-                    ForEach(downsampled, id: \.date) { s in
-                        LineMark(
-                            x: .value("Time", s.date),
-                            y: .value(yLabel, s.value)
-                        )
-                        .foregroundStyle(chartColor)
-                        .interpolationMethod(.catmullRom)
-                    }
-
-                    if let threshold = reflection.threshold {
-                        RuleMark(y: .value("Goal", threshold))
-                            .foregroundStyle(reflection.reminderType?.color ?? .primary)
-                            .lineStyle(.init(lineWidth: 1, dash: [5]))
-                            .annotation(position: .top, alignment: .leading) {
-                                Text("\(threshold)")
-                                    .font(.caption2)
-                                    .foregroundColor(reflection.reminderType?.color ?? .primary)
-                            }
-                    }
-                }
-                .chartYScale(domain: yDomain)
-                .chartXAxis {
-                    AxisMarks(values: xAxisValues) { _ in
-                        AxisGridLine()
-                        AxisValueLabel(format: xAxisFormatStyle, collisionResolution: .greedy)
-                    }
-                }
-                .chartOverlay { proxy in
-                    GeometryReader { geo in
-                        if let selectedDate {
-                            let xPos = proxy.position(forX: selectedDate) ?? 0
-                            Rectangle()
-                                .fill(chartColor.opacity(0.3))
-                                .frame(width: 2, height: geo.size.height)
-                                .position(x: xPos, y: geo.size.height / 2)
-
-                            if let s = nearestSample(to: selectedDate) {
-                                valuePopover(for: s)
-                                    .position(x: xPos, y: geo.size.height / 2 - 40)
-                            }
-                        }
-                    }
-                }
-                .chartXSelection(value: $selectedDate)
-            }
-        }
-        .task(id: reflection.id) {
-            await buildCachesAsync()
-        }
-    }
-
-    // MARK: - Build caches (off main thread)
-
-    private func buildCachesAsync() async {
-        // Capture immutable inputs before going off-thread.
-        let triggerData = reflection.triggerData
-        let interval = reflection.interval
-        let threshold = reflection.threshold
-
-        // Do the expensive work (decode, sort, rolling sums, downsample) off-main.
-        let result: ChartCacheResult? = await Task.detached(priority: .userInitiated) {
-            let samples = Self.decodeSamplesStatic(from: triggerData)
-            guard !samples.isEmpty else { return nil as ChartCacheResult? }
-
-            let sorted = samples.sorted { $0.date < $1.date }
-            let isSteps = samples.first?.type == .steps
-            let isOneDay = (interval == .oneDay)
-            let windowSeconds = interval?.timeInterval ?? 0
-
-            let s: [MeasurementSample]
-            if isSteps {
-                if isOneDay {
-                    s = Self.runningTotalSeriesStatic(sorted)
-                } else {
-                    s = Self.rollingSumSeriesStatic(sorted, window: windowSeconds)
-                }
-            } else {
-                s = sorted
-            }
-
-            let ds = Self.downsampleStatic(s, to: 200)
-            let xAxis = Self.makeXAxisValuesStatic(for: s)
-            let window = Self.makeTriggerWindowStatic(for: s, interval: interval)
-            let yDom = Self.makeYDomainStatic(for: s, threshold: threshold)
-            let color: Color = (samples.first?.type == .heartRate) ? .pink : .teal
-            let label = (samples.first?.type == .steps)
-                ? (isOneDay ? "Steps (running total)" : "Steps (rolling sum)")
-                : "BPM"
-
-            return ChartCacheResult(
-                samples: samples, series: s, downsampled: ds,
-                yDomain: yDom, xAxisValues: xAxis,
-                windowStart: window.0, windowEnd: window.1,
-                chartColor: color, yLabel: label
-            )
-        }.value
-
-        // Apply the results on the main thread.
-        guard let result else {
-            isReady = true
-            return
-        }
-
-        cachedSamples = result.samples
-        series = result.series
-        downsampled = result.downsampled
-        yDomain = result.yDomain
-        xAxisValues = result.xAxisValues
-        windowStart = result.windowStart
-        windowEnd = result.windowEnd
-        chartColor = result.chartColor
-        yLabel = result.yLabel
-        isReady = true
-    }
-
-    /// Intermediate struct to shuttle computed results back to the main thread.
-    private struct ChartCacheResult: Sendable {
-        let samples: [MeasurementSample]
-        let series: [MeasurementSample]
-        let downsampled: [MeasurementSample]
-        let yDomain: ClosedRange<Double>
-        let xAxisValues: [Date]
-        let windowStart: Date?
-        let windowEnd: Date?
-        let chartColor: Color
-        let yLabel: String
-    }
-
-    // MARK: - Helpers (static for off-main-thread use)
-
-    nonisolated private static func decodeSamplesStatic(from data: Data?) -> [MeasurementSample] {
-        guard let data else { return [] }
-        do { return try JSONDecoder().decode([MeasurementSample].self, from: data) }
-        catch {
-            print("DEBUGY: Error decoding triggerData: \(error)")
-            return []
-        }
-    }
-
-    nonisolated private static func rollingSumSeriesStatic(_ data: [MeasurementSample], window: TimeInterval) -> [MeasurementSample] {
-        guard window > 0 else { return data }
-        var out: [MeasurementSample] = []
-        var q: [(Date, Double)] = []
-        var sum: Double = 0
-        out.reserveCapacity(data.count)
-
-        for s in data {
-            sum += s.value
-            q.append((s.date, s.value))
-            let cutoff = s.date.addingTimeInterval(-window)
-            while let first = q.first, first.0 < cutoff {
-                sum -= first.1
-                q.removeFirst()
-            }
-            out.append(.init(type: s.type, value: sum, date: s.date))
-        }
-        return out
-    }
-
-    nonisolated private static func runningTotalSeriesStatic(_ data: [MeasurementSample]) -> [MeasurementSample] {
-        var out: [MeasurementSample] = []
-        out.reserveCapacity(data.count)
-        var total: Double = 0
-        for s in data {
-            total += s.value
-            out.append(.init(type: s.type, value: total, date: s.date))
-        }
-        return out
-    }
-
-    nonisolated private static func downsampleStatic(_ data: [MeasurementSample], to maxPoints: Int) -> [MeasurementSample] {
-        guard data.count > maxPoints else { return data }
-        var out: [MeasurementSample] = []
-        out.reserveCapacity(maxPoints)
-        let bucketSize = Double(data.count) / Double(maxPoints)
-        for i in 0..<maxPoints {
-            let start = Int(Double(i) * bucketSize)
-            let end   = min(Int(Double(i + 1) * bucketSize), data.count)
-            if start < end {
-                if let pick = data[start..<end].max(by: { $0.value < $1.value }) {
-                    out.append(pick)
-                }
-            }
-        }
-        return out
-    }
-
-    nonisolated private static func makeYAxisRangeStatic(for values: [Double], threshold: Double?) -> ClosedRange<Double> {
-        let minY = values.min() ?? 0
-        let maxY = values.max() ?? 1
-        let t = threshold ?? maxY
-        let overallMin = min(minY, t)
-        let overallMax = max(maxY, t)
-        let padding = max(5, (overallMax - overallMin) * 0.1)
-        return (overallMin - padding)...(overallMax + padding)
-    }
-
-    nonisolated private static func makeYDomainStatic(for series: [MeasurementSample], threshold: Int?) -> ClosedRange<Double> {
-        makeYAxisRangeStatic(for: series.map { $0.value }, threshold: threshold.map(Double.init))
-    }
-
-    nonisolated private static func makeXAxisValuesStatic(for series: [MeasurementSample]) -> [Date] {
-        guard let first = series.first?.date, let last = series.last?.date, first < last else { return [] }
-        let mid = first.addingTimeInterval(last.timeIntervalSince(first) / 2)
-        return [first, mid, last]
-    }
-
-    nonisolated private static func makeTriggerWindowStatic(for series: [MeasurementSample], interval: Reminder.Interval?) -> (Date?, Date?) {
-        guard let end = series.last?.date, let seconds = interval?.timeInterval else { return (nil, nil) }
-        return (end.addingTimeInterval(-seconds), end)
-    }
-
-    private var xAxisFormatStyle: Date.FormatStyle {
-        guard let interval = reflection.interval else { return .dateTime.hour().minute().second() }
-        switch interval {
-        case .immediately, .oneMinute, .twoMinutes: return .dateTime.hour().minute().second()
-        case .fiveMinutes, .tenMinutes,
-             .fifteenMinutes, .thirtyMinutes,
-             .oneHour, .twoHours: return .dateTime.hour().minute()
-        case .fourHours, .oneDay: return .dateTime.hour()
-        }
-    }
-
-    private func nearestSample(to date: Date) -> MeasurementSample? {
-        guard !series.isEmpty else { return nil }
-        return series.min { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }
-    }
-
-    // MARK: - Popover
-
-    @ViewBuilder
-    private func valuePopover(for sample: MeasurementSample) -> some View {
-        let isSteps = (cachedSamples.first?.type == .steps)
-        let isOneDay = (reflection.interval == .oneDay)
-
-        VStack(alignment: .leading, spacing: 2) {
-            Text(sample.date.formatted(.dateTime.hour().minute().second()))
-                .font(.caption)
-                .foregroundColor(chartColor)
-
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text("\(Int(sample.value))")
-                    .font(.body.weight(.bold))
-                Text(isSteps ? (isOneDay ? "steps total" : "steps in window") : "bpm")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(8)
-        .background {
-            RoundedRectangle(cornerRadius: 8).fill(Material.thick)
-        }
-    }
-}
-
-// MARK: - Array+Ext
-
-fileprivate extension Array {
-    subscript(safe range: Range<Index>) -> ArraySlice<Element>? {
-        if range.startIndex >= self.startIndex && range.endIndex <= self.endIndex {
-            return self[range]
-        }
-        return nil
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
-    let viewModel = ScenesContainer.shared.editReflectionViewModel()
-    
-    return EditReflectionView(viewModel: viewModel) {}
+    EditReflectionView()
         .tint(Color("BrandPrimary"))
 }

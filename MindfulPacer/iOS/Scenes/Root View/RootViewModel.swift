@@ -80,7 +80,7 @@ enum DeviceMode: String, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .iPhoneOnly:
-            String(localized: "Use MindfulPacer with just yourcha iPhone. You can log reflections and activities manually without a paired Apple Watch.")
+            String(localized: "Use MindfulPacer with just your iPhone. You can log reflections and activities manually without a paired Apple Watch.")
         case .iPhoneAndWatch:
             String(localized: "Pair MindfulPacer with your Apple Watch to automatically collect health data, reminders, and activity tracking alongside your reflections.")
         }

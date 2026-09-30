@@ -1,86 +1,42 @@
-//
-//  PrimaryButton.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 14.08.2024.
-//
-
 import SwiftUI
 
-// MARK: - PrimaryButton
-
+/// Shared call to action for onboarding and information screens.
 struct PrimaryButton: View {
-    // MARK: Properties
-
-    @Environment(\.isEnabled) private var isEnabled: Bool
-
     var title: String
     var icon: String?
     var color: Color = Color("BrandPrimary")
     var action: () -> Void
 
-    // MARK: Body
-
     var body: some View {
         if #available(iOS 26.0, *) {
-            Button {
-                action()
-            } label: {
-                if let icon {
-                    IconLabel(
-                        icon: icon,
-                        title: title,
-                        labelColor: isEnabled ? .white : Color(.systemGray2)
-                    )
-                    .frame(height: 40)
-                    .frame(maxWidth: .infinity)
-                    .fontWeight(.semibold)
-                } else {
-                    Text(title)
-                        .frame(height: 40)
-                        .frame(maxWidth: .infinity)
-                        .fontWeight(.semibold)
-                }
-            }
-            .tint(color)
-            .buttonStyle(.glassProminent)
-            .buttonBorderShape(.roundedRectangle(radius: 16))
+            button.buttonStyle(.glassProminent)
         } else {
-            Button {
-                action()
-            } label: {
+            button.buttonStyle(.borderedProminent)
+        }
+    }
+
+    private var button: some View {
+        Button(action: action) {
+            Group {
                 if let icon {
-                    IconLabel(
-                        icon: icon,
-                        title: title,
-                        labelColor: isEnabled ? .white : Color(.systemGray2)
-                    )
-                    .frame(height: 40)
-                    .frame(maxWidth: .infinity)
-                    .fontWeight(.semibold)
+                    Label(title, systemImage: icon)
                 } else {
                     Text(title)
-                        .frame(height: 40)
-                        .frame(maxWidth: .infinity)
-                        .fontWeight(.semibold)
                 }
             }
-            .tint(color)
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.roundedRectangle(radius: 16))
+            .font(.body.weight(.semibold))
+            .frame(maxWidth: .infinity)
         }
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
+        .tint(color)
     }
 }
 
-// MARK: - Preview
-
 #Preview {
-    VStack(spacing: 32) {
-        PrimaryButton(title: "Delete", icon: "trash", color: .red) {}
-
-        PrimaryButton(title: "Done", icon: "checkmark") {}
-
-        PrimaryButton(title: "Continue") {}
-            .disabled(true)
+    VStack(spacing: 24) {
+        PrimaryButton(title: "Continue", icon: "arrow.right") {}
+        PrimaryButton(title: "Continue") {}.disabled(true)
     }
+    .padding()
 }

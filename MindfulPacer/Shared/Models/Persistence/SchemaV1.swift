@@ -35,7 +35,7 @@ extension ModelContainer {
     @MainActor
     static let preview: ModelContainer = {
         let schema = Schema(CurrentScheme.models)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
@@ -49,6 +49,12 @@ extension ModelContainer {
 @MainActor
 extension ModelContainer {
     static let prod: ModelContainer = {
+#if DEBUG && os(iOS) && targetEnvironment(simulator)
+        if RedesignCaptureSupport.isEnabled { return RedesignCaptureSupport.container }
+#endif
+#if DEBUG && os(watchOS) && targetEnvironment(simulator)
+        if WatchDesignPreview.isEnabled { return WatchDesignPreview.container }
+#endif
         let schema = Schema(CurrentScheme.models)
 
         let config = ModelConfiguration(

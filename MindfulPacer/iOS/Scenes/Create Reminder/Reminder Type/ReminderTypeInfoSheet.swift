@@ -13,81 +13,60 @@ struct ReminderTypeInfoSheet: View {
             title: String(localized: "Reminder Type Information"),
             info: String(localized: "You can choose between three different Reminder types.")
         ) {
-            IconLabelGroupBox(
-                label:
-                    IconLabel(
-                        icon: "alarm",
-                        title: String(localized: "Reminder Types"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    )
-            ) {
+            VStack(alignment: .leading, spacing: 16) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 16) {
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            VStack(alignment: .center, spacing: 16) {
-                                IconLabel(
-                                    icon: "circle",
-                                    title: "Light Reminder",
-                                    labelColor: .yellow,
-                                    background: true
-                                )
-                                .font(.subheadline.weight(.semibold))
-                                
-                                Image(.lightReminder)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 256)
-                            }
-                        }
-                        
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            VStack(alignment: .center, spacing: 16) {
-                                IconLabel(
-                                    icon: "circle",
-                                    title: "Medium Reminder",
-                                    labelColor: .orange,
-                                    background: true
-                                )
-                                .font(.subheadline.weight(.semibold))
-                                
-                                Image(.mediumReminder)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 256)
-                            }
-                        }
-                        
-                        Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                            VStack(alignment: .center, spacing: 16) {
-                                IconLabel(
-                                    icon: "circle",
-                                    title: "Strong Reminder",
-                                    labelColor: .red,
-                                    background: true
-                                )
-                                .font(.subheadline.weight(.semibold))
-                                
-                                Image(.strongReminder)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 256)
-                            }
-                        }
+                        reminderTypeCard(
+                            title: "Light Reminder",
+                            color: .yellow,
+                            image: Image(.lightReminder)
+                        )
+
+                        reminderTypeCard(
+                            title: "Medium Reminder",
+                            color: .orange,
+                            image: Image(.mediumReminder)
+                        )
+
+                        reminderTypeCard(
+                            title: "Strong Reminder",
+                            color: .red,
+                            image: Image(.strongReminder)
+                        )
                     }
                     .scrollTargetLayout()
                 }
                 .scrollTargetBehavior(.viewAligned)
-            } footer: {
+
                 Label("The strength and duration of the vibration varies by reminder type.", systemImage: "applewatch.radiowaves.left.and.right")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-            .iconLabelGroupBoxStyle(.divider)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
+    }
+
+    private func reminderTypeCard(
+        title: String,
+        color: Color,
+        image: Image
+    ) -> some View {
+        VStack(alignment: .center, spacing: 16) {
+            Label(title, systemImage: "circle")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(color)
+
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(height: 256)
+        }
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.tertiarySystemGroupedBackground))
+        }
     }
 }
 

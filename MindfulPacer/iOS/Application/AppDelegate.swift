@@ -27,6 +27,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
+#if DEBUG && targetEnvironment(simulator)
+        if RedesignCaptureSupport.isEnabled { return true }
+#endif
         UNUserNotificationCenter.current().delegate = notificationDelegate
         
         if DeviceMode.current() == .iPhoneOnly {

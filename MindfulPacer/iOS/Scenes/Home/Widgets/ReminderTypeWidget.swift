@@ -15,25 +15,18 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            IconLabelGroupBox(
-                label:
-                    IconLabel(
-                        icon: "chart.line.uptrend.xyaxis",
-                        title: "Threshold Exceeded",
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    ),
-                description:
+            LabeledCard {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Summary of number of Reminders triggered, by Reminder type.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            ) {
-                HStack(spacing: 16) {
-                    ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
-                        HStack(spacing: 16) {
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 16) {
+                        ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
                             HStack(alignment: .lastTextBaseline, spacing: 4) {
                                 Text("0")
                                     .font(.title.weight(.semibold))
+                                    .monospacedDigit()
 
                                 Text(reminderType.rawValue.lowercased())
                                     .foregroundStyle(reminderType.color)
@@ -41,6 +34,9 @@ extension HomeView {
                         }
                     }
                 }
+            } label: {
+                Label("Threshold Exceeded", systemImage: "chart.line.uptrend.xyaxis")
+                    .foregroundStyle(Color("BrandPrimary"))
             }
         }
     }

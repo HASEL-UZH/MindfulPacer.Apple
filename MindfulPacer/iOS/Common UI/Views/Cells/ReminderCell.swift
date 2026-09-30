@@ -62,7 +62,7 @@ struct ReminderCell: View {
 // MARK: - Preview
 
 #Preview {
-    RoundedList {
+    List {
         ReminderCell(reminder: Reminder()) {}
     }
 }

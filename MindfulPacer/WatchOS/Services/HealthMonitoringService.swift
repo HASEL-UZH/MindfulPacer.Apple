@@ -115,6 +115,17 @@ public struct AlertRule: Identifiable, Sendable, Equatable {
     var notificationSent: Bool = false
 }
 
+extension AlertRule {
+    var highlightRule: ReminderHighlightState.Rule {
+        let threshold: Double
+        switch ruleType {
+        case .heartRate(let value), .steps(let value): threshold = value
+        }
+        return .init(id: id, measurement: measurementType, severity: reminderType,
+                     threshold: threshold, interval: interval)
+    }
+}
+
 // MARK: - Service
 
 @MainActor
@@ -135,6 +146,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private var runtimeByRuleID: [UUID: RuleRuntimeState] = [:]
     
+    @Published private(set) var widgetHighlights = ReminderHighlightState()
+    private var highlightExpirationTimer: Timer?
+
     @Published var heartRate: Double = 0
     @Published var isSessionActive = false
     @Published var statusMessage: StatusMessage = .notMonitoring
@@ -163,6 +177,10 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     override init() {
         super.init()
+        #if DEBUG && targetEnvironment(simulator)
+        // Capture fixtures must not react to CloudKit events by starting a workout.
+        if WatchDesignPreview.isEnabled { return }
+        #endif
         _ = AppGroupPaths.prepareApplicationSupport()
         monitoringIntent = loadMonitoringIntent()
         isManuallyPaused = (monitoringIntent == .paused)
@@ -184,6 +202,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     private func setMonitoringIntent(_ intent: MonitoringIntent) {
         monitoringIntent = intent
+        if intent != .active { clearWidgetHighlights() }
         sharedUserDefaults?.set(intent.rawValue, forKey: monitoringIntentKey)
         isMonitoringEnabled = (intent != .stopped)
         isManuallyPaused = (intent == .paused)
@@ -254,6 +273,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
         if next != activeRules {
             activeRules = next
+            widgetHighlights.retainRules(next.map(\.highlightRule))
+            refreshWidgetHighlights()
         }
 
         return !next.isEmpty
@@ -393,6 +414,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         stopStepsTimer()
         stopComplicationHeartbeat()
         isSessionActive = false
+        clearWidgetHighlights()
         heartRate = 0
         if shouldClearManualPause {
             isManuallyPaused = false
@@ -457,6 +479,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 self.workoutBuilder = nil
             }
             self.isSessionActive = false
+            self.clearWidgetHighlights()
             self.heartRate = 0
             self.statusMessage = .paused
             self.isCheckingRecoveredWorkoutSession = false
@@ -648,6 +671,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - Heart rate processing
 
     private func processHeartRate(_ newHeartRate: Double) {
+        guard isSessionActive, !isManuallyPaused else { return }
+        widgetHighlights.updateHeartRate(newHeartRate)
         heartRate = newHeartRate
         let now = Date()
         recentHeartRateSamples.append((value: newHeartRate, date: now))
@@ -774,6 +799,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                         }
 
                         let series = await self.buildStepSeries(for: r, windowEnd: now)
+                        // A query can finish after monitoring stops or the reminder changes.
+                        guard self.isSessionActive, !self.isManuallyPaused,
+                              self.activeRules.contains(where: { self.rulesConfigEqual(lhs: $0, rhs: r) }) else { return }
                         self.sendNotification(for: r, stepsSeries: series)
 
                         state.notificationSent = true
@@ -797,6 +825,28 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
     }
 
+    // MARK: - Widget highlights
+
+    func refreshWidgetHighlights() {
+        widgetHighlights.expireSteps(at: Date())
+        highlightExpirationTimer?.invalidate()
+        highlightExpirationTimer = nil
+        guard let expiration = widgetHighlights.nextExpiration else { return }
+        let timer = Timer(fire: expiration, interval: 0, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.refreshWidgetHighlights()
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        highlightExpirationTimer = timer
+    }
+
+    private func clearWidgetHighlights() {
+        highlightExpirationTimer?.invalidate()
+        highlightExpirationTimer = nil
+        widgetHighlights = ReminderHighlightState()
+    }
+
     // MARK: - Notifications
 
     private func sendNotification(
@@ -804,6 +854,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         stepsSeries: [MeasurementSample]? = nil,
         withData heartRateData: [(value: Double, date: Date)] = []
     ) {
+        widgetHighlights.recordTrigger(for: rule.highlightRule, at: Date())
+        refreshWidgetHighlights()
         let alertID = UUID()
 
         var samples: [MeasurementSample] = []

@@ -16,56 +16,45 @@ extension AnalyticsView {
         
         @Environment(\.dismiss) private var dismiss
         @Bindable var viewModel: AnalyticsViewModel
+        @State private var selectedDate: Date
+
+        init(viewModel: AnalyticsViewModel) {
+            self.viewModel = viewModel
+            _selectedDate = State(initialValue: viewModel.selectedDateForPeriod)
+        }
         
         // MARK: Body
         
         var body: some View {
             NavigationStack {
-                VStack(alignment: .leading, spacing: 16) {
-                    IconLabelGroupBox(
-                        label:
-                            IconLabel(
-                                icon: "calendar",
-                                title: String(localized: "Date Selection"),
-                                labelColor: .brandPrimary,
-                                background: true
-                            ),
-                        description:
-                            Text("Select the date for which to view reflections.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    ) {
+                List {
+                    Section {
                         DatePicker(
-                            "",
-                            selection: $viewModel.selectedDateForPeriod,
+                            "Selected Date",
+                            selection: $selectedDate,
                             in: Date.distantPast...Date(),
                             displayedComponents: .date
                         )
                         .labelsHidden()
                         .datePickerStyle(.graphical)
+                    } header: {
+                        Text("Date Selection")
                     } footer: {
-                        HStack {
-                            Button {
-                                viewModel.onTodayTapped()
-                                dismiss()
-                            } label: {
-                                IconLabel(
-                                    icon: "calendar",
-                                    title: String(localized: "Today"),
-                                    labelColor: .brandPrimary
-                                )
-                                .font(.subheadline.weight(.semibold))
-                            }
-                            
-                            Spacer()
-                        }
+                        Text("Select the date for which to view health data and reflections.")
                     }
-                    .iconLabelGroupBoxStyle(.divider)
-                    
-                    Spacer()
+
+                    Section {
+                        Button {
+                            viewModel.onTodayTapped()
+                            dismiss()
+                        } label: {
+                            Label("Today", systemImage: "calendar")
+                        }
+                        .foregroundStyle(Color.accentColor)
+                    }
                 }
-                .padding()
-                .background(Color(.systemGroupedBackground))
+                .navigationTitle("Date")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button(role: .cancel) {
@@ -77,13 +66,12 @@ extension AnalyticsView {
                     
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
+                            viewModel.selectedDateForPeriod = selectedDate
                             viewModel.onSelectedDateForPeriodChanged()
                             dismiss()
                         } label: {
                             Text("Done")
-                                .fontWeight(.semibold)
                         }
-                        .buttonStyle(.borderedProminent)
                     }
                 }
             }
