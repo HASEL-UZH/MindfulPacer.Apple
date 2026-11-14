@@ -293,11 +293,12 @@ class HomeViewModel {
     func refreshHighlights() {
         guard usesLiveServices else { return }
         Services.shared.monitorService.refreshWidgetHighlights()
+        Task { await fetchTodaysSteps() }
     }
 
     func onAppear() {
         guard usesLiveServices else { return }
-        refreshHighlights()
+        Services.shared.monitorService.refreshWidgetHighlights()
         heartRateSamples = Services.shared.monitorService.recentHeartRateSamples
         Services.shared.systemDelegate.configure()
         
@@ -366,9 +367,11 @@ class HomeViewModel {
         self.hourlyStepData = await Services.shared.monitorService.fetchHourlyStepData()
     }
     
+    /// The step count and the steps highlight are refreshed together, so they cannot disagree.
     func fetchTodaysSteps() async {
         let steps = await Services.shared.monitorService.fetchTodaysSteps()
         self.todaysSteps = Int(steps)
+        await Services.shared.monitorService.refreshStepHighlights()
     }
     
     private func triggerInAppAlert(for rule: AlertRule) {
