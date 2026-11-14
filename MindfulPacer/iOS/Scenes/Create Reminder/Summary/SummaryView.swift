@@ -74,8 +74,8 @@ extension CreateReminderView {
 
         @ViewBuilder
         private func editorRow(_ field: Field, icon: String, value: String?, tint: Color = .accentColor) -> some View {
-            if viewModel.mode == .edit && (field == .measurement || field == .strength) {
-                rowContent(field, icon: icon, value: value, tint: field == .measurement ? .secondary : tint)
+            if viewModel.mode == .edit && field == .measurement {
+                rowContent(field, icon: icon, value: value, tint: .secondary)
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("reminder.editor.\(field.rawValue)")
             } else {
