@@ -204,6 +204,9 @@ struct HomeView: View {
                 switch context {
                 case .today:
                     homeHeadline("How are you feeling?", "Take a moment to reflect on your day.")
+                    if !viewModel.missedReflections.isEmpty {
+                        missedReflectionsWidget
+                    }
                     createReflectionCard
                     healthPermissionsWidget
                     watchConnectionNotice
@@ -213,8 +216,8 @@ struct HomeView: View {
                 case .reflections:
                     HomeReflectionHistoryView(reflections: viewModel.reflections)
                     homeHeadline("Your days, in perspective.", "Notice how you feel, one reflection at a time.")
-                    ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                     missedReflectionsWidget
+                    ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                 case .reminders:
                     HomeReminderOverviewView(reminders: reminders)
                     homeHeadline("A gentle nudge to pause.", "Make space for reflection with reminders that fit your day.")
@@ -421,7 +424,9 @@ struct HomeView: View {
                             .monospacedDigit()
                             .foregroundStyle(.red)
 
-                        Text(viewModel.missedReflections.count == 1 ? "reflection needs review" : "reflections need review")
+                        Text(viewModel.missedReflections.count == 1
+                             ? String(localized: "reflection needs review")
+                             : String(localized: "reflections need review"))
                             .font(.subheadline)
                             .foregroundStyle(Color.secondary)
                     }
@@ -545,7 +550,7 @@ struct HomeView: View {
 
     // MARK: Shared Home Components
 
-    private func navigationAccessory(_ title: String) -> some View {
+    private func navigationAccessory(_ title: LocalizedStringKey) -> some View {
         HStack(spacing: 6) {
             Text(title)
             Image(systemName: "chevron.right")
