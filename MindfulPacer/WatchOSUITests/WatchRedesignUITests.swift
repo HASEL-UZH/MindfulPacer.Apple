@@ -113,6 +113,23 @@ final class WatchRedesignUITests: XCTestCase {
         start.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)))
     }
 
+    /// The steps row says "today" instead of repeating "steps", and drops it to make room for the highlight dot.
+    @MainActor
+    func testStepsRowShowsTodayUnlessHighlighted() {
+        let home = launch()
+        let steps = home.buttons["watch.steps"].firstMatch
+        XCTAssertTrue(steps.waitForExistence(timeout: 10))
+        XCTAssertTrue(steps.label.localizedCaseInsensitiveContains("today"), steps.label)
+        XCTAssertEqual(steps.label.components(separatedBy: "teps").count, 2, "\"Steps\" must appear once: \(steps.label)")
+        shot(home, "50-steps-today")
+
+        let highlighted = launch("highlight-strong")
+        let highlightedSteps = highlighted.buttons["watch.steps"].firstMatch
+        XCTAssertTrue(highlightedSteps.waitForExistence(timeout: 10))
+        XCTAssertFalse(highlightedSteps.label.localizedCaseInsensitiveContains("today"), highlightedSteps.label)
+        shot(highlighted, "51-steps-highlighted")
+    }
+
     @MainActor
     func testStatusOpensControls() {
         for scenario in ["home", "paused", "no-reminders"] {

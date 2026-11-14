@@ -98,8 +98,9 @@ struct HomeView: View {
 
                 Button { viewModel.selectedTab = .stepsChart } label: {
                     WatchMetricLabel(title: "Steps", symbol: "figure.walk",
-                                     value: viewModel.todaysSteps.formatted(), unit: "steps",
-                                     color: .cyan, highlight: viewModel.stepsHighlight)
+                                     value: viewModel.todaysSteps.formatted(), unit: "today",
+                                     color: .cyan, highlight: viewModel.stepsHighlight,
+                                     hidesUnitWhenHighlighted: true)
                 }
                 .tint(viewModel.stepsHighlight?.color ?? Color.gray)
                 .accessibilityIdentifier("watch.steps")
@@ -273,6 +274,10 @@ private struct WatchMetricLabel: View {
     let unit: LocalizedStringKey
     let color: Color
     let highlight: Reminder.ReminderType?
+    /// A long value needs the unit's space once the highlight dot is shown.
+    var hidesUnitWhenHighlighted = false
+
+    private var showsUnit: Bool { !(hidesUnitWhenHighlighted && highlight != nil) }
 
     var body: some View {
         HStack(spacing: 7) {
@@ -286,16 +291,20 @@ private struct WatchMetricLabel: View {
                 Text(title).font(.caption2).foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(value)
-                        .font(.system(.title3, design: .rounded, weight: .semibold))
-                        .monospacedDigit()
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                    Text(unit).font(.caption2).foregroundStyle(.secondary).lineLimit(1).fixedSize()
+                if showsUnit {
+                    // The value is never cut off: when it does not fit next to the unit it first gets
+                    // smaller, and then the unit is dropped.
+                    ViewThatFits(in: .horizontal) {
+                        valueRow(.title3, showsUnit: true).fixedSize()
+                        valueRow(.body, showsUnit: true).fixedSize()
+                        valueRow(.footnote, showsUnit: true).fixedSize()
+                        valueRow(.title3, showsUnit: false)
+                    }
+                } else {
+                    valueRow(.title3, showsUnit: false)
                 }
             }
-            Spacer(minLength: 0)
+            .frame(maxWidth: .infinity, alignment: .leading)
             if let highlight {
                 Image(systemName: highlight.icon)
                     .foregroundStyle(highlight.color)
@@ -310,6 +319,19 @@ private struct WatchMetricLabel: View {
         .foregroundStyle(Color.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
+    }
+
+    private func valueRow(_ style: Font.TextStyle, showsUnit: Bool) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            Text(value)
+                .font(.system(style, design: .rounded, weight: .semibold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            if showsUnit {
+                Text(unit).font(.caption2).foregroundStyle(.secondary).lineLimit(1).fixedSize()
+            }
+        }
     }
 }
 
