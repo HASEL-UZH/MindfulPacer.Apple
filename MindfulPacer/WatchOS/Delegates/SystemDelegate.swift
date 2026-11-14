@@ -271,7 +271,7 @@ class SystemDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate
             switch messageCommand {
             case .remindersUpdated:
                 Task { @MainActor in
-                    Services.shared.monitorService.statusMessage = .syncing
+                    Services.shared.monitorService.remindersChangedOnPhone()
                 }
             case .ping:
                 replyHandler(["ack": "pong"])

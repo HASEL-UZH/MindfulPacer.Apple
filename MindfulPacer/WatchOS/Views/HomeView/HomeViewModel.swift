@@ -301,9 +301,6 @@ class HomeViewModel {
         heartRateSamples = Services.shared.monitorService.recentHeartRateSamples
         Services.shared.systemDelegate.configure()
         
-        let reminders = fetchReminders()
-        Services.shared.monitorService.configure(reminders: reminders)
-        
         Task {
             let isAuthorized = try await Services.shared.monitorService.requestAuthorization()
             guard isAuthorized else {
@@ -319,32 +316,6 @@ class HomeViewModel {
         device.isBatteryMonitoringEnabled = true
         updateBattery()
         fetchMissedReflections()
-    }
-    
-    private func fetchReminders() -> [Reminder] {
-        do {
-            let descriptor = FetchDescriptor<Reminder>(sortBy: [SortDescriptor(\.threshold, order: .reverse)])
-            let reminders = try modelContext.fetch(descriptor)
-            
-            let groupedReminders = Dictionary(grouping: reminders) { $0.measurementType }
-            
-            let sortedKeys = groupedReminders.keys.sorted { lhs, rhs in
-                if lhs == .heartRate {
-                    return true
-                } else if rhs == .heartRate {
-                    return false
-                } else {
-                    return lhs.rawValue < rhs.rawValue
-                }
-            }
-            
-            return sortedKeys.flatMap { key in
-                groupedReminders[key]?.sorted(by: { $0.threshold > $1.threshold }) ?? []
-            }
-        } catch {
-            print("DEBUG: Could not fetch Reminders: \(error.localizedDescription)")
-            return []
-        }
     }
     
     func requestCreateReflectionOnPhone() {
