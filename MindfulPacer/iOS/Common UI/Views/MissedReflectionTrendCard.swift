@@ -344,8 +344,13 @@ extension MissedReflectionTrendCard {
                 triggerWindowStart: triggerWindowStart,
                 interval: reflection.interval
             )
+            // The threshold explains why the reminder fired, so it stays in view even below the readings.
             let yDomain = measurementType == .heartRate
-                ? HeartRateChartScale.domain(values: rawSamples.map(\.value), thresholds: [Double(threshold)])
+                ? HeartRateChartScale.domain(
+                    values: rawSamples.map(\.value),
+                    thresholds: [Double(threshold)],
+                    includesLowThresholds: true
+                )
                 : Self.makeReflectionYDomain(samples: samples, threshold: Double(threshold))
             let clampedTriggerDate = min(max(triggerDate, xDomain.lowerBound), xDomain.upperBound)
             let clampedThreshold = min(max(Double(threshold), yDomain.lowerBound), yDomain.upperBound)
@@ -397,14 +402,14 @@ extension MissedReflectionTrendCard {
                 ),
                 currentSamples: currentSamples,
                 comparisonSamples: [],
-                valueRules: yDomain.contains(Double(threshold)) ? [
+                valueRules: [
                     .init(
                         value: Double(threshold),
                         label: String(localized: "Threshold"),
                         color: reminderType.color.opacity(0.72),
                         lineStyle: .init(lineWidth: 1.5, lineCap: .round, dash: [5, 5])
                     )
-                ] : [],
+                ],
                 shadedRegions: shadedRegions,
                 areaFills: [],
                 markerDate: clampedTriggerDate,
