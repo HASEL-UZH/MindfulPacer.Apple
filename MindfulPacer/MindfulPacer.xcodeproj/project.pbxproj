@@ -28,7 +28,6 @@
 		0D1D71EE2D1455C200D5201E /* NetworkMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */; };
 		0D3006C32C937461008F11C7 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C22C937461008F11C7 /* AnalyticsView.swift */; };
 		0D3006C52C937469008F11C7 /* AnalyticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */; };
-		0D3A71042F8F000000A71042 /* StatChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3A71032F8F000000A71042 /* StatChart.swift */; };
 		0D3006C82C943444008F11C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C72C943444008F11C7 /* SettingsView.swift */; };
 		0D3006CA2C943463008F11C7 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006C92C943463008F11C7 /* SettingsViewModel.swift */; };
 		0D3006D62C99803D008F11C7 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3006D52C99803D008F11C7 /* Array+Extensions.swift */; };
@@ -47,6 +46,7 @@
 		0D352C802E476E470039055F /* WatchUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C7F2E476E470039055F /* WatchUpdateService.swift */; };
 		0D352C822E4891560039055F /* SystemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D352C812E4891560039055F /* SystemDelegate.swift */; };
 		0D36471F2D53862C000F85EF /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 0D36471E2D53862C000F85EF /* SwiftSoup */; };
+		0D3A71042F8F000000A71042 /* StatChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3A71032F8F000000A71042 /* StatChart.swift */; };
 		0D3B2A0B2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D3B2A0C2D1452BD00BDF3C9 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */; };
 		0D42EE282F59B19400E3E102 /* Array+ReflectionFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D42EE272F59B19400E3E102 /* Array+ReflectionFiltering.swift */; };
@@ -220,9 +220,9 @@
 		78DE9712EFD64FF6A7C94BEE /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
 		A377829DD06040E0AAC3D6D5 /* HeartRateChartScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */; };
 		C49F1E6DA7E74E2FA63A7C13 /* HomeContextSummaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */; };
+		CA9700000000000000000001 /* RedesignCaptureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9700000000000000000002 /* RedesignCaptureSupport.swift */; };
 		DFDB8C3CFC694CA3B0EF42A3 /* ReminderHighlightState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */; };
 		FA32EFDFCC9146AE8C02DC1B /* ReminderHighlightState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */; };
-		CA9700000000000000000001 /* RedesignCaptureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9700000000000000000002 /* RedesignCaptureSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -315,7 +315,6 @@
 		0D1D71ED2D1455C200D5201E /* NetworkMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorService.swift; sourceTree = "<group>"; };
 		0D3006C22C937461008F11C7 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		0D3006C42C937469008F11C7 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
-		0D3A71032F8F000000A71042 /* StatChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatChart.swift; sourceTree = "<group>"; };
 		0D3006C72C943444008F11C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0D3006C92C943463008F11C7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		0D3006D52C99803D008F11C7 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
@@ -330,6 +329,7 @@
 		0D352C6B2E474E0F0039055F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0D352C7F2E476E470039055F /* WatchUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchUpdateService.swift; sourceTree = "<group>"; };
 		0D352C812E4891560039055F /* SystemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDelegate.swift; sourceTree = "<group>"; };
+		0D3A71032F8F000000A71042 /* StatChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatChart.swift; sourceTree = "<group>"; };
 		0D3B2A0A2D1452BD00BDF3C9 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0D42EE272F59B19400E3E102 /* Array+ReflectionFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+ReflectionFiltering.swift"; sourceTree = "<group>"; };
 		0D456AB52C7D0F2B0014CD81 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
@@ -484,8 +484,8 @@
 		A4A85D392F79199800762403 /* iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7573D0BBCD34DCB80B6DC73 /* HeartRateChartScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateChartScale.swift; sourceTree = "<group>"; };
 		AA99B2530BA84E33A3210FC3 /* HomeContextSummaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContextSummaries.swift; sourceTree = "<group>"; };
-		CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderHighlightState.swift; sourceTree = "<group>"; };
 		CA9700000000000000000002 /* RedesignCaptureSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedesignCaptureSupport.swift; sourceTree = "<group>"; };
+		CE0EAD0F9BD649A88E093E9B /* ReminderHighlightState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderHighlightState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -714,6 +714,14 @@
 				0DE3B1132E5B32F80070C4A2 /* BufferManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		0D3A71022F8F000000A71042 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				0D3A71032F8F000000A71042 /* StatChart.swift */,
+			);
+			path = Charts;
 			sourceTree = "<group>";
 		};
 		0D456ABB2C808F9B0014CD81 /* Reflections List */ = {
@@ -1351,14 +1359,6 @@
 				0D0507182E587BF100C5123A /* CroppedIPhoneImage.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		0D3A71022F8F000000A71042 /* Charts */ = {
-			isa = PBXGroup;
-			children = (
-				0D3A71032F8F000000A71042 /* StatChart.swift */,
-			);
-			path = Charts;
 			sourceTree = "<group>";
 		};
 		0DC3FDD32C2EDCDC00335543 /* View Modifiers */ = {
@@ -2189,7 +2189,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2208,7 +2208,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2230,7 +2230,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2245,7 +2245,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -2363,7 +2363,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.prod.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2382,7 +2382,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2404,7 +2404,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.prod.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2419,7 +2419,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -2594,7 +2594,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2613,7 +2613,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2636,7 +2636,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2655,7 +2655,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2677,7 +2677,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2692,7 +2692,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -2711,7 +2711,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchOS/WatchOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchOS/Preview Content\"";
 				DEVELOPMENT_TEAM = BM2PRG8CMX;
 				ENABLE_PREVIEWS = YES;
@@ -2726,7 +2726,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MindfulPacer.Apple.iOS.WatchOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
