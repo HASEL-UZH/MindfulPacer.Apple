@@ -3,6 +3,8 @@ import SwiftData
 
 extension EnvironmentValues {
     @Entry var dismissSheet: @Sendable () -> Void = {}
+    /// True on a page that has to scroll because its content cannot fit, for example with large text.
+    @Entry var watchPageScrolls: Bool = false
 }
 
 enum HomePage: Hashable {
@@ -83,8 +85,8 @@ struct HomeView: View {
     }
 
     private var overview: some View {
-        ScrollView {
-            VStack(spacing: 8) {
+        WatchPage(bottomReach: 1) {
+            VStack(spacing: 6) {
                 Button { viewModel.selectedTab = .heartRateChart } label: {
                     WatchMetricLabel(title: "Heart Rate", symbol: "heart.fill",
                                      value: viewModel.isMonitoring && viewModel.heartRate > 0
@@ -107,7 +109,9 @@ struct HomeView: View {
                     Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
                         .font(.caption2)
                         .foregroundStyle(viewModel.statusMessage.color)
-                        .multilineTextAlignment(.center)
+                        // One line, so a longer status cannot make the page taller than the screen.
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 4)
                         .contentShape(.rect)
@@ -120,7 +124,6 @@ struct HomeView: View {
             .controlSize(.small)
             .buttonBorderShape(.roundedRectangle(radius: 20))
             .padding(.horizontal, 8)
-            .padding(.bottom, 4)
         }
     }
 
@@ -232,6 +235,37 @@ struct HomeView: View {
     }
 }
 
+/// One page of the vertical pager. The content is laid out without a scroll view whenever it fits, so the
+/// Digital Crown and a swipe always turn the page. A page that scrolls has to reach its end before the
+/// pager moves, which made paging unreliable when the content was only slightly too tall.
+/// A scroll view is still used when the content cannot fit, for example with large text.
+struct WatchPage<Content: View>: View {
+    /// The share of the bottom safe area that a page without a scroll view may use. That area is on
+    /// screen, but the rounded corners narrow it, so only centered content should reach all the way down.
+    private let bottomReach: CGFloat
+    private let content: Content
+    @State private var bottomInset: CGFloat = 0
+
+    init(bottomReach: CGFloat = 0.6, @ViewBuilder content: () -> Content) {
+        self.bottomReach = bottomReach
+        self.content = content()
+    }
+
+    var body: some View {
+        ViewThatFits(in: .vertical) {
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                // A scroll view shows its content down to the edge of the screen. Without one, the page
+                // ends at the safe area, which is shorter than the pages on every Watch size.
+                .padding(.bottom, -bottomInset * bottomReach)
+            ScrollView {
+                content.environment(\.watchPageScrolls, true)
+            }
+        }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { bottomInset = $0 }
+    }
+}
+
 private struct WatchMetricLabel: View {
     let title: LocalizedStringKey
     let symbol: String
@@ -248,7 +282,10 @@ private struct WatchMetricLabel: View {
                 .frame(width: 20)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 0) {
+                // One line, so the row keeps its height and the page keeps fitting the screen.
                 Text(title).font(.caption2).foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(value)
                         .font(.system(.title3, design: .rounded, weight: .semibold))
