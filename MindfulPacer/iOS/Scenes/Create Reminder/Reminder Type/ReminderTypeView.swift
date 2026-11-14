@@ -16,34 +16,43 @@ extension CreateReminderView {
         
         @Bindable var viewModel: CreateReminderViewModel
         
-        @AppStorage(DeviceMode.appStorageKey, store: DefaultsStore.shared)
-        private var deviceModeRaw: String = DeviceMode.iPhoneAndWatch.rawValue
-        
-        private var deviceMode: DeviceMode {
-            DeviceMode(rawValue: deviceModeRaw) ?? .iPhoneAndWatch
-        }
-        
         // MARK: Body
         
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
-                    reminderTypeSelectionList
-                    if deviceMode == .iPhoneAndWatch {
-                        description
+            List {
+                Section {
+                    VStack(spacing: 12) {
+                        reminderTypeSelectionList
                     }
-                    Spacer()
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Reminder Type",
+                        systemImage: viewModel.selectedReminderType?.icon ?? "applewatch.radiowaves.left.and.right",
+                        tint: viewModel.selectedReminderType?.color ?? Color("BrandPrimary")
+                    )
+                } footer: {
+                    description
                 }
-                .padding(.horizontal)
+                .listRowBackground(Color.clear)
             }
-            .navigationTitle("Reminder Type")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
+            .safeAreaBar(edge: .bottom) {
+                if viewModel.showActionButton {
+                    ReminderCreationActionBar(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                     }
                 }
             }
@@ -54,46 +63,37 @@ extension CreateReminderView {
         @ViewBuilder
         private var reminderTypeSelectionList: some View {
             ForEach(Reminder.ReminderType.allCases, id: \.self) { reminderType in
-                SelectableButton(
-                    shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedReminderType == reminderType
+                ReminderCreationSelectionRow(
+                    isSelected: viewModel.selectedReminderType == reminderType,
+                    tint: reminderType.color
                 ) {
                     viewModel.toggleSelection(
                         reminderType,
                         selectedItem: &viewModel.selectedReminderType
                     )
                 } label: {
-                    HStack(spacing: 16) {
-                        if deviceMode == .iPhoneAndWatch {
-                            reminderType.image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 128)
-                        }
-                        
-                        IconLabel(
-                            icon: "circle.fill",
-                            title: reminderType.localized,
-                            titleColor: viewModel.selectedReminderType == reminderType ? Color("BrandPrimary") : Color.primary,
-                            iconColor: viewModel.selectedReminderType == reminderType ? Color("BrandPrimary") : reminderType.color
-                        )
-                        Spacer()
-                        if viewModel.selectedReminderType == reminderType {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }
+                    ReminderCreationOptionLabel(
+                        title: reminderType.localized,
+                        subtitle: nil,
+                        systemImage: reminderType.icon,
+                        tint: reminderType.color
+                    )
                 }
             }
         }
         
         // MARK: Description
         
+        @ViewBuilder
         private var description: some View {
-            Label("The strength and duration of the vibration varies by reminder type.", systemImage: "applewatch.radiowaves.left.and.right")
-                .font(.footnote)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("The strength and duration of the vibration varies by reminder type.")
+
+                Button("Learn More") {
+                    viewModel.presentSheet(.reminderTypeInfo)
+                }
+                .font(.subheadline.weight(.semibold))
+            }
         }
     }
 }

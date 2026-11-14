@@ -64,7 +64,7 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
-            RoundedList {
+            List {
 
                 Section {
                     mindfulPacerExpanded
@@ -72,13 +72,15 @@ struct SettingsView: View {
 //                    appleWatch
                     viewOnboarding
                 } header: {
-                    sectionHeader(title: String(localized: "General"))
+                    Text("General")
+                } footer: {
+                    Text("Expanded mode unlocks fine-grained self-reports for fatigue, shortness of breath, pains, and other factors.")
                 }
 
                 Section {
                     themeSettings
                 } header: {
-                    sectionHeader(title: String(localized: "Appearance"))
+                    Text("Appearance")
                 }
 
                 Section {
@@ -87,7 +89,7 @@ struct SettingsView: View {
                         algorithms
                     }
                 } header: {
-                    sectionHeader(title: String(localized: "Data"))
+                    Text("Data")
                 }
 
                 Section {
@@ -97,9 +99,14 @@ struct SettingsView: View {
                     joinTestFlight
                     moreInfo
                     privacyPolicy
-                    disclaimer
                 } header: {
-                    sectionHeader(title: String(localized: "About"))
+                    Text("About")
+                }
+
+                Section {
+                    disclaimer
+                } footer: {
+                    Text(disclaimerDescription)
                 }
 
                 Section {
@@ -107,7 +114,6 @@ struct SettingsView: View {
                 }
 
                 appVersion
-                    .padding(.bottom)
             }
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
@@ -160,7 +166,6 @@ struct SettingsView: View {
         switch sheet {
         case .onboardingView:
             OnboardingView()
-                .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         case .mailView(let recipient, let subject, let body):
             MailView(
@@ -169,19 +174,15 @@ struct SettingsView: View {
                 subject: subject,
                 body: body
             )
-            .presentationCornerRadius(16)
         case .roadmap:
             RoadmapView()
-                .presentationCornerRadius(16)
                 .presentationDragIndicator(.visible)
         case .systemReportView:
             SystemReportView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
         case .releaseNotes:
             ReleaseNotesView()
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(16)
         }
     }
 
@@ -196,85 +197,55 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: Section Header
-
-    @ViewBuilder
-    private func sectionHeader(title: String) -> some View {
-        Text(title)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-    }
-
     // MARK: Theme
 
     private var themeSettings: some View {
         NavigationLink(value: SettingsNavigationDestination.theme) {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "circle.lefthalf.striped.horizontal.inverse",
+            LabeledContent {
+                Text(theme.localized)
+                    .foregroundStyle(Color.secondary)
+            } label: {
+                SettingsRowLabel(
                     title: String(localized: "Theme"),
-                    description: String(localized: "Change the app theme"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorText: theme.rawValue,
-                accessoryIndicatorIcon: "chevron.right"
-            )
+                    subtitle: String(localized: "Change the app theme"),
+                    systemImage: "circle.lefthalf.filled.righthalf.striped.horizontal.inverse"
+                )
+            }
         }
+        .accessibilityIdentifier("settings.theme")
     }
 
     // MARK: MindulPacer Expanded
 
     private var mindfulPacerExpanded: some View {
-        DisclosureGroup {
-            Text(String(localized: "Access all app features, ability to provide fine-grained self-reports on Fatigue, Shortness of Breath, Pains, and other factors"))
-                .font(.subheadline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top)
-        } label: {
-            Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
-                IconLabel(
-                    image: "MindfulPacer Expanded Icon",
-                    title: String(localized: "MindfulPacer Expanded"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                )
-                .font(.subheadline.weight(.semibold))
-            }
+        Toggle(isOn: $viewModel.isExpandedModeOfUseOn) {
+            SettingsRowLabel(
+                title: String(localized: "MindfulPacer Expanded"),
+                subtitle: String(localized: "Access all app features, including fine-grained self-reports for fatigue, shortness of breath, pains, and other factors."),
+                assetImage: "MindfulPacer Expanded Icon"
+            )
         }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
-        .tint(Color.brandPrimary)
     }
 
     // MARK: Device Mode
 
     private var deviceModeSetting: some View {
         NavigationLink(value: SettingsNavigationDestination.deviceMode) {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "iphone.motion",
-                    title: String(localized: "Device Mode"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "chevron.right"
+            SettingsRowLabel(
+                title: String(localized: "Device Mode"),
+                systemImage: "iphone.gen3"
             )
         }
+        .accessibilityIdentifier("settings.deviceMode")
     }
 
     // MARK: Algorithms
 
     private var algorithms: some View {
         NavigationLink(value: SettingsNavigationDestination.algorithms) {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "slider.horizontal.below.square.filled.and.square",
-                    title: String(localized: "Algorithms"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "chevron.right"
+            SettingsRowLabel(
+                title: String(localized: "Algorithms"),
+                systemImage: "slider.horizontal.below.square.filled.and.square"
             )
         }
     }
@@ -285,15 +256,11 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.releaseNotes)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "doc.text.fill",
-                    title: String(localized: "Release Notes"),
-                    description: String(localized: "See what changed in each version"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "arrow.up.forward.square"
+            SettingsRowLabel(
+                title: String(localized: "Release Notes"),
+                subtitle: String(localized: "See what changed in each version"),
+                systemImage: "doc.text.fill",
+                isAction: true
             )
         }
     }
@@ -302,15 +269,10 @@ struct SettingsView: View {
 
     private var dataManagement: some View {
         NavigationLink(value: SettingsNavigationDestination.dataManagement) {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "externaldrive",
-                    title: String(localized: "Manage Data"),
-                    description: String(localized: "Export or delete your data"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "chevron.right"
+            SettingsRowLabel(
+                title: String(localized: "Manage Data"),
+                subtitle: String(localized: "Export or delete your data"),
+                systemImage: "externaldrive.fill"
             )
         }
     }
@@ -327,14 +289,10 @@ struct SettingsView: View {
                 )
             )
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "envelope",
-                    title: String(localized: "Contact Us"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "arrow.up.forward.square"
+            SettingsRowLabel(
+                title: String(localized: "Contact Us"),
+                systemImage: "envelope.fill",
+                isAction: true
             )
         }
     }
@@ -345,14 +303,10 @@ struct SettingsView: View {
         Button {
             openURL(viewModel.landingPageURL)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "info",
-                    title: String(localized: "More Info"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "link"
+            SettingsRowLabel(
+                title: String(localized: "More Info"),
+                systemImage: "info.circle.fill",
+                isAction: true
             )
         }
     }
@@ -363,14 +317,10 @@ struct SettingsView: View {
         Button {
             openURL(viewModel.privacyPolicyURL)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "hand.raised",
-                    title: String(localized: "Privacy Policy"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "link"
+            SettingsRowLabel(
+                title: String(localized: "Privacy Policy"),
+                systemImage: "hand.raised.fill",
+                isAction: true
             )
         }
     }
@@ -381,15 +331,11 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.onboardingView)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "square.stack",
-                    title: String(localized: "Onboarding"),
-                    description: String(localized: "View the onboarding again"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "arrow.up.forward.square"
+            SettingsRowLabel(
+                title: String(localized: "Onboarding"),
+                subtitle: String(localized: "View the onboarding again"),
+                systemImage: "square.stack.3d.up.fill",
+                isAction: true
             )
         }
     }
@@ -400,15 +346,11 @@ struct SettingsView: View {
         Button {
             viewModel.presentSheet(.roadmap)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "map",
-                    title: String(localized: "Roadmap"),
-                    description: String(localized: "View upcoming features"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "arrow.up.forward.square"
+            SettingsRowLabel(
+                title: String(localized: "Roadmap"),
+                subtitle: String(localized: "View upcoming features"),
+                systemImage: "map.fill",
+                isAction: true
             )
         }
     }
@@ -419,15 +361,11 @@ struct SettingsView: View {
         Button {
             openURL(URL(string: "https://mindfulpacer.ch/apple-testflight")!)
         } label: {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "airplane",
-                    title: String(localized: "Join TestFlight"),
-                    description: String(localized: "Help us test new features before release"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "link"
+            SettingsRowLabel(
+                title: String(localized: "Join TestFlight"),
+                subtitle: String(localized: "Help us test new features before release"),
+                systemImage: "airplane.circle.fill",
+                isAction: true
             )
         }
     }
@@ -435,19 +373,19 @@ struct SettingsView: View {
     // MARK: Disclaimer
 
     private var disclaimer: some View {
-        RoundedListCell(
-            label: IconLabel(
-                icon: "exclamationmark.triangle",
-                title: String(localized: "Disclaimer"),
-                description: String(localized: """
-                    MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.
-
-                    MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
-                    """),
-                labelColor: .yellow,
-                background: true
-            )
+        SettingsRowLabel(
+            title: String(localized: "Disclaimer"),
+            systemImage: "exclamationmark.triangle.fill",
+            tint: .yellow
         )
+    }
+
+    private var disclaimerDescription: String {
+        String(localized: """
+            MindfulPacer is a spin-off project from the University of Zurich, developed by the Human Aspects of Software Engineering Lab.
+
+            MindfulPacer is not a medical product and does not offer medical services such as diagnosis, cure, relief, prevention, or treatment of any disease or medical condition. MindfulPacer is not a substitute for treatment by medical professionals. You should always consult a doctor before making medical decisions.
+            """)
     }
 
     // MARK: Logos
@@ -455,11 +393,9 @@ struct SettingsView: View {
     private var logos: some View {
         VStack(spacing: 16) {
             HStack {
-                IconLabel(
-                    icon: "building.columns",
-                    title: String(localized: "Supported By"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
+                Label(
+                    String(localized: "Supported By"),
+                    systemImage: "building.columns"
                 )
                 .font(.subheadline.weight(.semibold))
 
@@ -475,8 +411,10 @@ struct SettingsView: View {
                             } label: {
                                 institute.logo
                                     .resizable()
-                                    .scaledToFill()
+                                    .scaledToFit()
+                                    .frame(width: 200, height: 80)
                             }
+                            .accessibilityLabel(institute.name)
                         }
                     }
                     .frame(maxWidth: 256)
@@ -486,22 +424,15 @@ struct SettingsView: View {
             }
             .scrollTargetBehavior(.viewAligned)
         }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
     }
 
     // MARK: Apple Watch
 
     private var appleWatch: some View {
         NavigationLink(value: SettingsNavigationDestination.appleWatch) {
-            RoundedListCell(
-                label: IconLabel(
-                    icon: "applewatch",
-                    title: String(localized: "Apple Watch"),
-                    labelColor: Color("BrandPrimary"),
-                    background: true
-                ),
-                accessoryIndicatorIcon: "chevron.right"
+            SettingsRowLabel(
+                title: String(localized: "Apple Watch"),
+                systemImage: "applewatch"
             )
         }
     }
@@ -514,7 +445,7 @@ struct SettingsView: View {
         } label: {
             Label("MindfulPacer Version \(viewModel.appVersion)", systemImage: "iphone.gen3")
                 .font(.footnote)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.accentColor)
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal)
@@ -541,6 +472,59 @@ struct SettingsView: View {
             message: Text("Please restart the app to see the changes take effect."),
             dismissButton: .default(Text("OK"))
         )
+    }
+}
+
+// MARK: - Settings Row Label
+
+struct SettingsRowLabel: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let title: String
+    var subtitle: String?
+    var systemImage: String?
+    var assetImage: String?
+    var tint: Color = .brandPrimary
+    var isAction: Bool = false
+
+    var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    icon
+                    text
+                }
+            } else {
+                Label { text } icon: { icon }
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var text: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .foregroundStyle(isAction ? Color.accentColor : Color.primary)
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @ViewBuilder
+    private var icon: some View {
+        if let assetImage {
+            Image(assetImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+        } else if let systemImage {
+            Image(systemName: systemImage)
+                .foregroundStyle(tint)
+        }
     }
 }
 

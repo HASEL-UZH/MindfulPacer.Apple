@@ -16,68 +16,51 @@ struct AlgorithmsView: View {
     @State private var resetToken: Int = 0
 
     var body: some View {
-        RoundedList {
-            VStack(spacing: 16) {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "timer",
-                        title: String(localized: "Reminder Buffers"),
-                        labelColor: .brandPrimary,
-                        background: true
-                    ),
-                    description: Text("The buffer sets the minimum time between repeated notifications for the same reminder.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-
-                    Picker(selection: $selectedMeasurementType) {
-                        Text("Heart Rate").tag(Reminder.MeasurementType.heartRate)
-                        Text("Steps").tag(Reminder.MeasurementType.steps)
-                    } label: {
-                        Text(selectedMeasurementType.localized)
-                    }
-                    .pickerStyle(.segmented)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(
-                                selectedMeasurementType == .heartRate
-                                ? Reminder.Interval.heartRateIntervals
-                                : Reminder.Interval.stepsIntervals,
-                                id: \.self
-                            ) { interval in
-                                Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                                    BufferTextFieldView(
-                                        interval: interval,
-                                        type: selectedMeasurementType,
-                                        viewModel: viewModel,
-                                        resetToken: resetToken
-                                    )
-                                }
-                            }
-                        }
-                        .scrollTargetLayout()
-                    }
-                    .scrollTargetBehavior(.viewAligned)
-
-                } footer: {
-                    Button {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        viewModel.resetBuffersToDefaults()
-                        resetToken &+= 1
-                    } label: {
-                        IconLabel(
-                            icon: "arrow.clockwise",
-                            title: String(localized: "Reset to Defaults"),
-                            labelColor: .red
-                        )
-                        .font(.subheadline.weight(.semibold))
-                    }
+        List {
+            Section {
+                Picker(selection: $selectedMeasurementType) {
+                    Text("Heart Rate").tag(Reminder.MeasurementType.heartRate)
+                    Text("Steps").tag(Reminder.MeasurementType.steps)
+                } label: {
+                    Label("Measurement", systemImage: selectedMeasurementType.icon)
                 }
-                .iconLabelGroupBoxStyle(.divider)
+                .pickerStyle(.segmented)
+            } footer: {
+                Text("Buffers set the minimum time between repeated notifications for the same reminder.")
+            }
+
+            Section {
+                ForEach(intervals, id: \.self) { interval in
+                    BufferTextFieldView(
+                        interval: interval,
+                        type: selectedMeasurementType,
+                        viewModel: viewModel,
+                        resetToken: resetToken
+                    )
+                }
+            } header: {
+                Text(selectedMeasurementType.localized)
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    viewModel.resetBuffersToDefaults()
+                    resetToken &+= 1
+                } label: {
+                    Label(String(localized: "Reset to Defaults"), systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
         .navigationTitle("Algorithms")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var intervals: [Reminder.Interval] {
+        selectedMeasurementType == .heartRate
+        ? Reminder.Interval.heartRateIntervals
+        : Reminder.Interval.stepsIntervals
     }
 }
 
@@ -164,32 +147,36 @@ private struct BufferTextFieldView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            IconLabel(
-                icon: interval.icon,
-                title: interval.localized,
-                description: "Default: \(formattedTime(defaultSeconds))"
-            )
-            .font(.subheadline.weight(.semibold))
+        VStack(alignment: .leading, spacing: 8) {
+            LabeledContent {
+                HStack(spacing: 8) {
+                    TextField("Minutes", text: $textMinutes)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .focused($isFocused)
+                        .onChange(of: textMinutes) { _, _ in
+                            validateCurrentText()
+                        }
 
-            HStack(spacing: 8) {
-                TextField("Minutes", text: $textMinutes)
-                    .keyboardType(.decimalPad)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($isFocused)
-                    .onChange(of: textMinutes) { _, _ in
-                        validateCurrentText()
-                    }
-
-                Text("min")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    Text("min")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                }
+                .frame(maxWidth: 112)
+            } label: {
+                SettingsRowLabel(
+                    title: interval.localized,
+                    subtitle: "Default: \(formattedTime(defaultSeconds))",
+                    systemImage: interval.icon
+                )
             }
 
-            HStack(spacing: 8) {
-                Text("Allowed: \(formattedTime(allowedRange.lowerBound)) – \(formattedTime(allowedRange.upperBound))")
+            HStack {
+                Text("Allowed: \(formattedTime(allowedRange.lowerBound)) - \(formattedTime(allowedRange.upperBound))")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
+
+                Spacer()
 
                 if isOutOfRange {
                     Text("Out of range")
@@ -197,8 +184,8 @@ private struct BufferTextFieldView: View {
                         .foregroundStyle(.red)
                 }
             }
+            .padding(.leading, 32)
         }
-        .frame(minWidth: 256)
         .onAppear {
             refreshFromModel()
         }

@@ -19,51 +19,70 @@ extension HomeView {
         // MARK: Body
 
         var body: some View {
-            IconLabelGroupBox(
-                label: IconLabel(
-                    icon: "heart.fill",
-                    title: String(localized: "Heart Rate"),
-                    labelColor: .pink,
-                    background: true
-                )
-            ) {
-                heartRateSummary
-                    .foregroundStyle(Color.primary)
+            HealthMetricCard(
+                title: String(localized: "Heart Rate"),
+                systemImage: "heart.fill",
+                tint: .pink,
+                value: viewModel.currentHeartRate.map { String(Int($0.heartRate)) },
+                unit: "BPM",
+                timestamp: viewModel.currentHeartRate?.timestamp
+            )
+        }
+    }
+
+    // MARK: - Health Metric Card
+
+    struct HealthMetricCard: View {
+        let title: String
+        let systemImage: String
+        let tint: Color
+        let value: String?
+        let unit: String
+        let timestamp: Date?
+
+        var body: some View {
+            LabeledCard(contentSpacing: 10) {
+                metricContent
+            } label: {
+                Label {
+                    Text(title)
+                } icon: {
+                    Image(systemName: systemImage)
+                }
+                .foregroundStyle(tint)
+            } accessory: {
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
             }
         }
-        
-        // MARK: Heart Rate Summary
 
-        @ViewBuilder
-        private var heartRateSummary: some View {
-            if let currentHeartRate = viewModel.currentHeartRate {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text("\(Int(currentHeartRate.heartRate))")
-                            .font(.title.weight(.semibold))
-                            .lineLimit(1)
-                        Text("bpm")
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    Text("**Updated:** \(currentHeartRate.timestamp.formatted(.dateTime.hour().minute()))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+        private var timestampText: String {
+            guard let timestamp else { return "--" }
+            return timestamp.formatted(.dateTime.hour().minute())
+        }
+
+        private var metricContent: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .lastTextBaseline, spacing: 2) {
+                    Text(value ?? "--")
+                        .font(.title.weight(.semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+
+                    Text(unit)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.secondary)
                 }
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .center, spacing: 4) {
-                        Text("--")
-                            .font(.title.weight(.semibold))
-                        Text("bpm")
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    Text("No data")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+
+                Text(timestamp == nil ? String(localized: "No recent data") : timestampText)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 }

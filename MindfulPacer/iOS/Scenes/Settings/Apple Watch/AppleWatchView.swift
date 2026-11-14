@@ -20,74 +20,43 @@ extension SettingsView {
         // MARK: Body
         
         var body: some View {
-            if viewModel.isWatchAppInstalled {
-                RoundedList {
+            List {
+                if viewModel.isWatchAppInstalled {
                     Section {
-                        IconLabelGroupBox(
-                            label: IconLabel(
-                                icon: "antenna.radiowaves.left.and.right",
-                                title: String(localized: "Connection"),
-                                labelColor: Color("BrandPrimary"),
-                                background: true
-                            ),
-                            description: Text(String(localized: "Live status of the connection to your Apple Watch."))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        ) {
-                            VStack(spacing: 16) {
-                                HStack {
-                                    Text("Connection Status")
-                                    Spacer()
-                                    IconLabel(
-                                        icon: viewModel.watchConnectionStatus.symbolName,
-                                        title: viewModel.watchConnectionStatus.description,
-                                        labelColor: viewModel.watchConnectionStatus.color
-                                    )
-                                    .font(.subheadline.weight(.semibold))
-                                }
-                                
-                                HStack {
-                                    Text("Connection Speed")
-                                    Spacer()
-                                    IconLabel(
-                                        icon: viewModel.watchConnectionSpeed.symbolName,
-                                        title: viewModel.watchConnectionSpeed.description,
-                                        labelColor: viewModel.watchConnectionSpeed.color
-                                    )
-                                    .font(.subheadline.weight(.semibold))
-                                }
-                            }
+                        LabeledContent("Connection Status") {
+                            Label(viewModel.watchConnectionStatus.description,
+                                  systemImage: viewModel.watchConnectionStatus.symbolName)
+                                .foregroundStyle(viewModel.watchConnectionStatus.color)
                         }
-                        .iconLabelGroupBoxStyle(.divider)
+                        LabeledContent("Connection Speed") {
+                            Label(viewModel.watchConnectionSpeed.description,
+                                  systemImage: viewModel.watchConnectionSpeed.symbolName)
+                                .foregroundStyle(viewModel.watchConnectionSpeed.color)
+                        }
+                    } header: {
+                        Text("Connection")
+                    } footer: {
+                        Text("Live status of the connection to your Apple Watch.")
                     }
-                    .frame(maxWidth: .infinity)
-                }
-                .navigationTitle("Apple Watch")
-                .onAppear {
-                    ConnectivityService.shared.startPinging()
-                }
-                .onDisappear {
-                    ConnectivityService.shared.stopPinging()
-                }
-            } else {
-                ContentUnavailableView {
-                    Label("App Not Installed", systemImage: "exclamationmark.applewatch")
-                } description: {
-                    Text("The Apple Watch app needs to be installed. Please install it from the Watch app on your iPhone.")
-                } actions: {
-                    Button {
-                        openURL(viewModel.appleWatchInstallationHelp)
-                    } label: {
-                        Text("How to Install")
+                } else {
+                    Section {
+                        Label("App Not Installed", systemImage: "exclamationmark.applewatch")
+                            .foregroundStyle(Color.primary)
+                        Button("How to Install") {
+                            openURL(viewModel.appleWatchInstallationHelp)
+                        }
+                    } footer: {
+                        Text("The Apple Watch app needs to be installed. Please install it from the Watch app on your iPhone.")
                     }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
                 }
-                .navigationTitle("Apple Watch")
-                .background {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                }
+            }
+            .navigationTitle("Apple Watch")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                if viewModel.isWatchAppInstalled { ConnectivityService.shared.startPinging() }
+            }
+            .onDisappear {
+                ConnectivityService.shared.stopPinging()
             }
         }
     }

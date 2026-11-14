@@ -19,22 +19,40 @@ extension CreateReminderView {
         // MARK: Body
 
         var body: some View {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
-                    measurementTypeSelectionList
-                    descriptionText
-                    Spacer()
+            List {
+                Section {
+                    VStack(spacing: 12) {
+                        measurementTypeSelectionList
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                } header: {
+                    ReminderCreationListHero(
+                        title: "Choose the Measurement Type",
+                        systemImage: viewModel.selectedMeasurementType?.icon ?? "waveform.path.ecg.text.clipboard",
+                        tint: viewModel.selectedMeasurementType?.color ?? Color("BrandPrimary")
+                    )
+                } footer: {
+                    Text("Select for which measurement type you want to receive reminders to do a reflection.")
                 }
-                .padding(.horizontal)
+                .listRowBackground(Color.clear)
             }
-            .navigationTitle("Measurement Type")
+            .scrollContentBackground(.hidden)
+            .navigationTitle("")
+            .safeAreaBar(edge: .bottom) {
+                if viewModel.showActionButton {
+                    ReminderCreationActionBar(
+                        title: viewModel.actionButtonTitle,
+                        isDisabled: viewModel.isActionButtonDisabled
+                    ) {
+                        viewModel.actionButtonTapped()
+                    }
+                }
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") {
-                        viewModel.dismissView()
+                if viewModel.mode == .create {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button("Close", systemImage: "xmark") { viewModel.shouldDismiss = true }
                     }
                 }
             }
@@ -45,38 +63,23 @@ extension CreateReminderView {
         @ViewBuilder
         private var measurementTypeSelectionList: some View {
             ForEach(MeasurementType.allCases, id: \.self) { measurementType in
-                SelectableButton(
-                    shape: .roundedRectangle(cornerRadius: 16),
-                    isSelected: viewModel.selectedMeasurementType == measurementType
+                ReminderCreationSelectionRow(
+                    isSelected: viewModel.selectedMeasurementType == measurementType,
+                    tint: measurementType.color
                 ) {
                     viewModel.toggleSelection(
                         measurementType,
                         selectedItem: &viewModel.selectedMeasurementType
                     )
                 } label: {
-                    HStack {
-                        IconLabel(
-                            icon: measurementType.icon,
-                            title: measurementType.localized,
-                            labelColor: viewModel.selectedMeasurementType == measurementType ? Color("BrandPrimary") : Color.primary
-                        )
-                        Spacer()
-                        if viewModel.selectedMeasurementType == measurementType {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }
+                    ReminderCreationOptionLabel(
+                        title: measurementType.localized,
+                        subtitle: measurementType.units,
+                        systemImage: measurementType.icon,
+                        tint: measurementType.color
+                    )
                 }
             }
-        }
-
-        // MARK: Description Text
-
-        private var descriptionText: some View {
-            Text("Select for which measurement type you want to receive reminders to do a reflection.")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
         }
     }
 }

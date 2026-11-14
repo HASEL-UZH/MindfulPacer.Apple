@@ -82,7 +82,6 @@ class OnboardingViewModel {
     var navigationPath: [OnboardingNavigationDestination] = []
     
     var shouldDismiss: Bool = false
-    var actionButtonHeight: CGFloat = 0.0
     var selectedModeOfUse: ModeOfUse? = .expanded
     var selectedDeviceMode: DeviceMode?
     var selectedAppleWatchComplicationTyoe: AppleWatchComplicationType = .rectangular

@@ -20,9 +20,7 @@ struct CloseButton: View {
         Button {
             dismiss()
         } label: {
-            Image(systemName: "xmark")
-                .symbolRenderingMode(.hierarchical)
-                .foregroundColor(.secondary)
+            Label("Close", systemImage: "xmark")
         }
     }
 }

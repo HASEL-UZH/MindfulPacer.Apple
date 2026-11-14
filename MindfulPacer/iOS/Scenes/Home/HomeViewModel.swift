@@ -58,13 +58,25 @@ class HomeViewModel {
 
     var missedPageSize: Int = 10
     var missedVisibleCount: Int = 10
+    var missedMeasurementFilter: Reminder.MeasurementType? {
+        didSet {
+            if oldValue != missedMeasurementFilter { resetMissedPagination() }
+        }
+    }
+
+    var filteredMissedReflections: [Reflection] {
+        guard let missedMeasurementFilter else { return missedReflections }
+        return missedReflections.filter {
+            ($0.measurementType ?? $0.triggerSamples.first?.type) == missedMeasurementFilter
+        }
+    }
     
     var displayedMissedReflections: [Reflection] {
-        Array(missedReflections.prefix(min(missedVisibleCount, missedReflections.count)))
+        Array(filteredMissedReflections.prefix(missedVisibleCount))
     }
     
     var canLoadMoreMissed: Bool {
-        missedVisibleCount < missedReflections.count
+        missedVisibleCount < filteredMissedReflections.count
     }
     
     var stepData: [(startDate: Date, endDate: Date, stepCount: Double)] = []
@@ -72,10 +84,6 @@ class HomeViewModel {
     
     var currentSteps: (stepCount: Double, timestamp: Date)?
     var currentHeartRate: (heartRate: Double, timestamp: Date)?
-    
-    var filterDateRangeSummary: String {
-        reviewFilter.fromDate.formatted(.dateTime.day().month()) + " - " + reviewFilter.toDate.formatted(.dateTime.day().month())
-    }
     
     var filterButtonTitle: String {
         let (filter, _) = filterAndSortingPublisher.value
@@ -282,6 +290,95 @@ class HomeViewModel {
             reviewFilter.triggeredCrash.toggle()
         }
     }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        activity: Activity?
+    ) {
+        reflection.activity = activity
+        reflection.subactivity = nil
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        subactivity: Subactivity?
+    ) {
+        reflection.subactivity = subactivity
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        mood: Mood?
+    ) {
+        reflection.mood = mood
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReflection(
+        _ reflection: Reflection,
+        wellBeing: Int?
+    ) {
+        reflection.wellBeing = wellBeing
+        saveReflectionChanges(reflection)
+    }
+
+    func toggleReflectionCrash(_ reflection: Reflection) {
+        reflection.didTriggerCrash.toggle()
+        saveReflectionChanges(reflection)
+    }
+
+    func updateReminder(
+        _ reminder: Reminder,
+        interval: Reminder.Interval
+    ) {
+        reminder.interval = interval
+        saveReminderChanges(reminder)
+    }
+
+    func updateReminder(
+        _ reminder: Reminder,
+        threshold: Int
+    ) {
+        reminder.threshold = clampedThreshold(threshold, for: reminder.measurementType)
+        saveReminderChanges(reminder)
+    }
+
+    func deleteReflection(_ reflection: Reflection) {
+        let reflectionID = reflection.id
+
+        modelContext.delete(reflection)
+
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.remove(id: reflectionID)
+            reflections.removeAll { $0.id == reflectionID }
+            filteredReflections.removeAll { $0.id == reflectionID }
+            missedReflections.removeAll { $0.id == reflectionID }
+            clampMissedPaginationAfterMutation()
+            fetchReflections()
+        } catch {
+            print("DEBUG: Could not delete reflection: \(error.localizedDescription)")
+            fetchReflections()
+        }
+    }
+
+    func deleteReminder(_ reminder: Reminder) {
+        let reminderID = reminder.id
+
+        modelContext.delete(reminder)
+
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.remove(id: reminderID)
+            WatchUpdateService.shared.notifyWatchOfReminderChange()
+            reminders.removeAll { $0.id == reminderID }
+            fetchMissedReflections(reminders: reminders)
+        } catch {
+            print("DEBUG: Could not delete reminder: \(error.localizedDescription)")
+        }
+    }
     
     // MARK: - Presentation
     
@@ -298,18 +395,18 @@ class HomeViewModel {
     }
     
     func resetMissedPagination() {
-        missedVisibleCount = min(missedPageSize, missedReflections.count)
+        missedVisibleCount = min(missedPageSize, filteredMissedReflections.count)
     }
     
     @MainActor
     func loadMoreMissed() {
         guard canLoadMoreMissed else { return }
-        missedVisibleCount = min(missedVisibleCount + missedPageSize, missedReflections.count)
+        missedVisibleCount = min(missedVisibleCount + missedPageSize, filteredMissedReflections.count)
     }
     
     func clampMissedPaginationAfterMutation() {
-        missedVisibleCount = min(missedVisibleCount, missedReflections.count)
-        if missedVisibleCount == 0 && !missedReflections.isEmpty {
+        missedVisibleCount = min(missedVisibleCount, filteredMissedReflections.count)
+        if missedVisibleCount == 0 && !filteredMissedReflections.isEmpty {
             resetMissedPagination()
         }
     }
@@ -381,6 +478,36 @@ class HomeViewModel {
     private func updateFilter(_ updateBlock: () -> Void) {
         updateBlock()
         filterAndSortingPublisher.send((reviewFilter, reviewSorting))
+    }
+
+    private func saveReflectionChanges(_ reflection: Reflection) {
+        do {
+            try modelContext.save()
+            BackgroundReflectionsStore.shared.upsert(.init(from: reflection))
+            fetchReflections()
+        } catch {
+            print("DEBUG: Could not save reflection changes: \(error.localizedDescription)")
+        }
+    }
+
+    private func saveReminderChanges(_ reminder: Reminder) {
+        do {
+            try modelContext.save()
+            BackgroundRemindersStore.shared.upsert(BackgroundReminderConfig(from: reminder))
+            WatchUpdateService.shared.notifyWatchOfReminderChange()
+            fetchMissedReflections(reminders: reminders)
+        } catch {
+            print("DEBUG: Could not save reminder changes: \(error.localizedDescription)")
+        }
+    }
+
+    private func clampedThreshold(_ threshold: Int, for measurementType: MeasurementType) -> Int {
+        switch measurementType {
+        case .heartRate:
+            min(max(threshold, 0), 250)
+        case .steps:
+            min(max(threshold, 0), 100_000)
+        }
     }
     
     private func fetchCurrentSteps() {

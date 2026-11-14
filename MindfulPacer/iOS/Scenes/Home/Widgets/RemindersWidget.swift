@@ -1,100 +1,79 @@
-//
-//  RemindersWidget.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 31.08.2024.
-//
-
 import SwiftUI
-
-// MARK: - RemindersWidget
 
 extension HomeView {
     struct RemindersWidget: View {
-        
-        // MARK: Properties
-
         @Bindable var viewModel: HomeViewModel
 
-        // MARK: Body
-        
+        let onOpenList: () -> Void
+
         var body: some View {
-            NavigationLink(value: HomeNavigationDestination.remindersList) {
-                IconLabelGroupBox(
-                    label: IconLabel(
-                        icon: "bell.badge.fill",
-                        title: String(localized: "Reminders"),
-                        labelColor: Color("BrandPrimary"),
-                        background: true
-                    ),
-                    description:
-                        Text("Summary of your Reminders.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                ) {
-                    if viewModel.reminders.isEmpty {
-                        EmptyStateView(
-                            image: "bell.badge.slash",
-                            title: String(localized: "No Reminders"),
-                            description: String(localized: "Tap the + button to create a reminder.")
-                        )
-                    } else {
-                        recentRemindersSummary
+            LabeledCard(
+                contentSpacing: 12,
+                action: onOpenList,
+                actionAccessibilityIdentifier: "home.reminders.showAll"
+            ) {
+                if viewModel.reminders.isEmpty {
+                    Button(action: onOpenList) {
+                        EmptyStateView(image: "bell.badge.slash", title: String(localized: "No Reminders"),
+                                       description: String(localized: "Create a reminder to make time for reflection."),
+                                       isCompact: true)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(.rect)
                     }
-                } accessoryIndicator: {
-                    Icon(name: "chevron.right", color: Color(.systemGray2))
-                        .font(.subheadline.weight(.semibold))
-                } footer: {
-                    createReminderButton
-                }
-            }
-            .foregroundStyle(.primary)
-        }
-
-        // MARK: Recent Reminders Summary
-        
-        private var recentRemindersSummary: some View {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(viewModel.recentReminders, id: \.self) { reminder in
-                    ReminderCell(
-                        reminder: reminder,
-                        backgroundColor: Color(.tertiarySystemGroupedBackground)
-                    ) {
-                        viewModel.presentSheet(.createReminderView(reminder))
-                    }
-                    if viewModel.recentReminders.last != reminder {
-                        Divider()
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(viewModel.recentReminders) { reminder in
+                            if reminder.id != viewModel.recentReminders.first?.id {
+                                Divider().padding(.leading, 36)
+                            }
+                            Button {
+                                viewModel.presentSheet(.createReminderView(reminder))
+                            } label: {
+                                reminderRow(reminder)
+                            }
+                            .accessibilityIdentifier("home.reminder.\(reminder.id)")
+                        }
                     }
                 }
-            }
-            .cornerRadius(16)
-        }
-
-        // MARK: Create Reminder Button
-        
-        private var createReminderButton: some View {
-            Button {
-                viewModel.presentSheet(.createReminderView(nil))
             } label: {
-                IconLabel(
-                    icon: "plus.circle",
-                    title: String(localized: "Create Reminder"),
-                    labelColor: Color("BrandPrimary")
-                )
-                .font(.subheadline.weight(.semibold))
+                Label("Reminders", systemImage: "bell.badge.fill")
+                    .foregroundStyle(Color.accentColor)
+            } accessory: {
+                HStack(spacing: 4) {
+                    Text("Show All")
+                    Image(systemName: "chevron.right")
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.accentColor)
             }
         }
+
+        private func reminderRow(_ reminder: Reminder) -> some View {
+            HStack(spacing: 12) {
+                Image(systemName: reminder.measurementType.icon)
+                    .font(.body)
+                    .foregroundStyle(reminder.measurementType.color)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(reminder.measurementType.localized)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.primary)
+                    Text(reminder.triggerSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                        .monospacedDigit()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                Image(systemName: reminder.reminderType.icon)
+                    .font(.body)
+                    .foregroundStyle(reminder.reminderType.color)
+                    .accessibilityLabel(reminder.reminderType.localized)
+            }
+            .frame(minHeight: 44)
+            .padding(.top, reminder.id == viewModel.recentReminders.first?.id ? 0 : 8)
+            .padding(.bottom, reminder.id == viewModel.recentReminders.last?.id ? 0 : 8)
+            .contentShape(.rect)
+        }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    let viewModel: HomeViewModel = ScenesContainer.shared.homeViewModel()
-
-    ScrollView {
-        HomeView.RemindersWidget(viewModel: viewModel)
-            .padding()
-    }
-    .background(Color(.systemGroupedBackground))
 }

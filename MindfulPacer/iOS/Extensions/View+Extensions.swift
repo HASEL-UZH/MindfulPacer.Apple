@@ -8,6 +8,23 @@
 import SwiftUI
 
 extension View {
+
+    // MARK: - Unit
+
+    func unit(
+        _ text: String,
+        font: Font? = nil,
+        foregroundStyle: Color? = nil,
+        spacing: CGFloat = 4
+    ) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: spacing) {
+            self
+
+            Text(text)
+                .font(font ?? .subheadline)
+                .foregroundStyle(foregroundStyle ?? .secondary)
+        }
+    }
     
     // MARK: - Keyboard
     

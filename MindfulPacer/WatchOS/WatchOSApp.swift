@@ -13,6 +13,9 @@ import WatchKit
 
 final class WatchApplicationDelegate: NSObject, WKApplicationDelegate {
     func handleActiveWorkoutRecovery() {
+        #if DEBUG && targetEnvironment(simulator)
+        if WatchDesignPreview.isEnabled { return }
+        #endif
         Task { @MainActor in
             Services.shared.monitorService.handleActiveWorkoutRecovery()
         }
@@ -27,6 +30,9 @@ struct WatchOSApp: App {
     private let systemDelegate = Services.shared.systemDelegate
 
     init() {
+        #if DEBUG && targetEnvironment(simulator)
+        if WatchDesignPreview.isEnabled { return }
+        #endif
         Services.shared.configure()
         
         UNUserNotificationCenter.current().delegate = systemDelegate

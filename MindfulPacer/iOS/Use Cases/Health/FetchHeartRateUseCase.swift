@@ -14,6 +14,9 @@ protocol FetchHeartRateUseCase {
         endDate: Date,
         completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void
     )
+    func executeHistory(for period: Period, startDate: Date, endDate: Date,
+                        completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void)
+
 }
 
 // MARK: - Use Case Implementation
@@ -30,7 +33,13 @@ final class DefaultFetchHeartRateUseCase: FetchHeartRateUseCase {
         endDate: Date,
         completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void
     ) {
-        healthKitService.fetchMeasurementData(for: period, measurementType: .heartRate, endDate: endDate) { result in
+        executeHistory(for: period, startDate: period.startDate(relativeTo: endDate),
+                       endDate: endDate, completion: completion)
+    }
+
+    func executeHistory(for period: Period, startDate: Date, endDate: Date,
+                        completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void) {
+        healthKitService.fetchMeasurementData(for: period, measurementType: .heartRate, startDate: startDate, endDate: endDate) { result in
             switch result {
             case .success(let samples):
                 let chartData = samples.map { sample in

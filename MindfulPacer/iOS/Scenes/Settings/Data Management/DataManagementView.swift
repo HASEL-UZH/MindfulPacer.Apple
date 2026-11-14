@@ -19,17 +19,15 @@ struct DataManagementView: View {
     // MARK: Body
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                exportData
-                deleteData
+        List {
+            exportData
+            deleteData
 
-                #if DEBUG
-                debugMissedReflections
-                #endif
-            }
+            #if DEBUG
+            debugMissedReflections
+            #endif
         }
-        .background(Color(.systemGroupedBackground))
+        .pickerStyle(.navigationLink)
         .fileExporter(
             isPresented: $viewModel.isExporting,
             document: viewModel.exportURL.map { ExportDocument(fileURL: $0) },
@@ -41,145 +39,97 @@ struct DataManagementView: View {
             case .failure(let error): print("Export failed: \(error.localizedDescription)")
             }
         }
-        .alert(String(localized: "Delete All Data?"), isPresented: $viewModel.isShowingDeleteAllDataAlert) {
-            Button(String(localized: "Cancel"), role: .cancel) {}
-            Button(String(localized: "Delete"), role: .destructive) {
-                viewModel.confirmDeleteAllUserData()
-            }
-        } message: {
-            Text(String(localized: "This will permanently remove your reflections, reminders, cached health data, and settings from this device. This action cannot be undone."))
-        }
         .navigationTitle(String(localized: "Manage Data"))
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: Export Data
     
     private var exportData: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "tray.and.arrow.up.fill",
-                title: String(localized: "Export Data"),
-                labelColor: .brandPrimary,
-                background: true
-            )
-        ) {
-            VStack(spacing: 16) {
-                HStack {
-                    Text("Data Model")
-                    
-                    Spacer()
-                    
-                    Picker(selection: $viewModel.selectedExportDataModel) {
-                        ForEach(ExportDataModel.allCases) { model in
-                            Label(model.description, systemImage: model.icon).tag(model)
-                        }
-                    } label: { Text("Label") }
+        Section {
+            Picker(selection: $viewModel.selectedExportDataModel) {
+                ForEach(ExportDataModel.allCases) { model in
+                    Label(model.description, systemImage: model.icon).tag(model)
                 }
-                
-                HStack {
-                    Text("File Type")
-                    
-                    Spacer()
-                    
-                    Picker(selection: $viewModel.selectedExportFileFormat) {
-                        ForEach(ExportFileFormat.allCases) { format in
-                            Text(format.description)
-                                .tag(format)
-                                .disabled(!viewModel.selectedExportDataModel.allowedExportFormats.contains(format))
-                        }
-                    } label: { EmptyView() }
-                        .onChange(of: viewModel.selectedExportDataModel) { _, newModel in
-                            if !newModel.allowedExportFormats.contains(viewModel.selectedExportFileFormat) {
-                                viewModel.selectedExportFileFormat = newModel.allowedExportFormats.first ?? .csv
-                            }
-                        }
+            } label: {
+                Label("Data to Export", systemImage: "tray.full.fill")
+            }
+
+            Picker(selection: $viewModel.selectedExportFileFormat) {
+                ForEach(ExportFileFormat.allCases) { format in
+                    Text(format.description)
+                        .tag(format)
+                        .disabled(!viewModel.selectedExportDataModel.allowedExportFormats.contains(format))
+                }
+            } label: {
+                Label("File Format", systemImage: "doc.fill")
+            }
+            .onChange(of: viewModel.selectedExportDataModel) { _, newModel in
+                if !newModel.allowedExportFormats.contains(viewModel.selectedExportFileFormat) {
+                    viewModel.selectedExportFileFormat = newModel.allowedExportFormats.first ?? .csv
                 }
             }
-        } footer: {
+
             Button {
                 viewModel.onExportTapped()
             } label: {
-                IconLabel(title: "Export", labelColor: .brandPrimary)
-                    .font(.subheadline.weight(.semibold))
+                Label("Export Data", systemImage: "square.and.arrow.up.fill")
             }
+            .foregroundStyle(Color.accentColor)
+        } header: {
+            Text("Export Data")
+        } footer: {
+            Text("Exports are created locally and shared through the system file picker.")
         }
-        .iconLabelGroupBoxStyle(.divider)
-        .padding(.horizontal)
     }
     
     // MARK: Delete Data
 
     private var deleteData: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "trash",
-                title: "Delete Data",
-                labelColor: .red,
-                background: true
-            )
-        ) {
-            Card(backgroundColor: Color(.tertiarySystemGroupedBackground)) {
-                IconLabel(
-                    icon: "exclamationmark.triangle",
-                    title: String(localized: "Note"),
-                    description: String(localized: "You can delete all data in this app and start from fresh."),
-                    iconColor: .yellow
-                )
-            }
-        } footer: {
-            Button {
+        Section {
+            Button(role: .destructive) {
                 viewModel.presentAlert(.resetDatabaseConfirmation)
             } label: {
-                IconLabel(title: String(localized: "Erase all Data"), labelColor: .red)
-                    .font(.subheadline.weight(.semibold))
+                Label(String(localized: "Erase All Data"), systemImage: "trash")
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .foregroundStyle(.red)
+        } header: {
+            Text("Delete Data")
+        } footer: {
+            Text("This permanently deletes reflections, reminders, cached health data, and settings from this device and iCloud. This action cannot be undone.")
         }
-        .padding(.horizontal)
     }
 
     // MARK: Debug Missed Reflections
 
     #if DEBUG
     private var debugMissedReflections: some View {
-        IconLabelGroupBox(
-            label: IconLabel(
-                icon: "ladybug.fill",
-                title: "Debug: Missed Reflections",
-                labelColor: .purple,
-                background: true
+        Section {
+            Stepper(
+                "Count: \(viewModel.seedMissedReflectionsCount)",
+                value: $viewModel.seedMissedReflectionsCount,
+                in: 5...100,
+                step: 5
             )
-        ) {
-            VStack(alignment: .leading, spacing: 12) {
-                Stepper("Count: \(viewModel.seedMissedReflectionsCount)",
-                        value: $viewModel.seedMissedReflectionsCount,
-                        in: 5...100,
-                        step: 5)
 
-                Text("Inserts mock missed reflections with realistic trigger data (HR & steps, mixed severity).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            Button {
+                viewModel.seedMockMissedReflections()
+            } label: {
+                Label("Seed", systemImage: "plus.circle.fill")
             }
+            .foregroundStyle(Color.accentColor)
+
+            Button(role: .destructive) {
+                viewModel.deleteAllMissedReflections()
+            } label: {
+                Label("Delete Missed", systemImage: "trash.circle.fill")
+            }
+        } header: {
+            Text("Debug: Missed Reflections")
         } footer: {
-            HStack(spacing: 16) {
-                Button {
-                    viewModel.seedMockMissedReflections()
-                } label: {
-                    Label("Seed", systemImage: "plus.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.purple)
-                }
-
-                Button {
-                    viewModel.deleteAllMissedReflections()
-                } label: {
-                    Label("Delete Missed", systemImage: "trash.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.red)
-                }
-            }
-            .buttonStyle(.borderless)
+            Text("Inserts mock missed reflections with realistic trigger data for local testing.")
         }
-        .padding(.horizontal)
     }
     #endif
 }

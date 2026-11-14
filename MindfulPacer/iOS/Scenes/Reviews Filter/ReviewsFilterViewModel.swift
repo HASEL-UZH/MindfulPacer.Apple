@@ -38,9 +38,23 @@ struct ReflectionFilter: Equatable {
     }
 }
 
-enum ReflectionSorting {
+enum ReflectionSorting: CaseIterable, Hashable {
     case dateAscending
     case dateDescending
+
+    var title: String {
+        switch self {
+        case .dateAscending: return String(localized: "Oldest First")
+        case .dateDescending: return String(localized: "Newest First")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .dateAscending: return "arrow.up"
+        case .dateDescending: return "arrow.down"
+        }
+    }
     
     var comparator: (Reflection, Reflection) -> Bool {
         switch self {
@@ -94,6 +108,9 @@ class ReflectionsFilterViewModel {
     var subactivities: [Subactivity] {
         activities.flatMap { $0.subactivities ?? [] }
     }
+    var activitiesWithSubactivities: [Activity] {
+        activities.filter { !($0.subactivities ?? []).isEmpty }
+    }
     var reviewFilter = ReflectionFilter()
     var reviewSorting = ReflectionSorting.dateDescending
     
@@ -111,6 +128,60 @@ class ReflectionsFilterViewModel {
     
     var selectedFilterMoodsSummary: String {
         reviewFilter.selectedMoods.map { $0.text }.joined(separator: ", ")
+    }
+
+    var hasActiveFilters: Bool {
+        reviewFilter.activeFilterCount > 0 ||
+        !isDefaultDateRange ||
+        reviewSorting != .dateDescending
+    }
+
+    var navigationSubtitle: String {
+        activeControlCount == 0
+            ? String(localized: "Default date range")
+            : String(localized: "\(activeControlCount) active")
+    }
+
+    var dateRangeSummary: String {
+        reviewFilter.fromDate.formatted(.dateTime.day().month().year()) + " - " +
+        reviewFilter.toDate.formatted(.dateTime.day().month().year())
+    }
+
+    var activitiesSubtitle: String {
+        selectionSubtitle(reviewFilter.selectedActivities.count)
+    }
+
+    var subactivitiesSubtitle: String {
+        selectionSubtitle(reviewFilter.selectedSubactivities.count)
+    }
+
+    var moodsSubtitle: String {
+        selectionSubtitle(reviewFilter.selectedMoods.count)
+    }
+
+    var crashSubtitle: String {
+        reviewFilter.triggeredCrash ? String(localized: "Triggered only") : String(localized: "All")
+    }
+
+    var sortingSubtitle: String {
+        reviewSorting.title
+    }
+
+    func selectedSubactivityCount(for activity: Activity) -> Int {
+        let subactivityIDs = Set((activity.subactivities ?? []).map(\.id))
+        return reviewFilter.selectedSubactivities.filter { subactivityIDs.contains($0.id) }.count
+    }
+
+    private var isDefaultDateRange: Bool {
+        let defaultFilter = ReflectionFilter()
+        return Calendar.current.isDate(reviewFilter.fromDate, inSameDayAs: defaultFilter.fromDate) &&
+        Calendar.current.isDate(reviewFilter.toDate, inSameDayAs: defaultFilter.toDate)
+    }
+
+    private var activeControlCount: Int {
+        reviewFilter.activeFilterCount +
+        (isDefaultDateRange ? 0 : 1) +
+        (reviewSorting == .dateDescending ? 0 : 1)
     }
     
     // MARK: - Private Properties
@@ -198,6 +269,10 @@ class ReflectionsFilterViewModel {
         } else {
             list.append(item)
         }
+    }
+
+    private func selectionSubtitle(_ count: Int) -> String {
+        count == 0 ? String(localized: "All") : String(localized: "\(count) selected")
     }
     
     private func updateFromDate(_ fromDate: Date) {

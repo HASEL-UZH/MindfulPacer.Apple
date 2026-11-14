@@ -50,10 +50,11 @@ struct ReminderCell: View {
             Spacer()
 
             Icon(
-                name: "alarm",
+                name: reminder.reminderType.icon,
                 color: reminder.reminderType.color,
-                background: true
+                background: false
             )
+            .accessibilityLabel(reminder.reminderType.localized)
         }
         .foregroundStyle(Color.primary)
     }
@@ -62,7 +63,7 @@ struct ReminderCell: View {
 // MARK: - Preview
 
 #Preview {
-    RoundedList {
+    List {
         ReminderCell(reminder: Reminder()) {}
     }
 }

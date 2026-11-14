@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1370" viewBox="0 0 1600 1370" role="img" aria-labelledby="title description">
+<title id="title">MindfulPacer intended application architecture</title>
+<desc id="description">Views use ViewModels, which invoke Use Cases. Use Cases call Repository or Service contracts. Repositories access persistence and may call Services; Services adapt platform APIs. A dashed path permits simple Use Cases to access injected persistence directly. Side panels describe application composition, shared models and pure rules, and constrained read-only presentation queries.</desc>
+<!-- Editable vector source. Coordinates and text are shared between light and dark variants. -->
+<defs><marker id="normal-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="#849BB1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="optional-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="#F3C477" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g font-family="-apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, sans-serif">
+<rect width="1600" height="1370" fill="#101A26"/>
+<text x="64" y="65" font-size="18" font-weight="700" fill="#51D8B4" text-anchor="start" letter-spacing="2">MINDFULPACER  /  ENGINEERING</text>
+<text x="64" y="125" font-size="46" font-weight="700" fill="#ECF2F8" text-anchor="start">Application architecture</text>
+<text x="64" y="166" font-size="23" font-weight="400" fill="#B1C2D3" text-anchor="start">Intended standard · MVVM + explicit application and infrastructure boundaries</text>
+<path d="M 1090 218 V 1226" stroke="#35495D" stroke-width="1.5"/>
+<path d="M 490 308 H 647" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="570" y="287" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="middle">actions</text>
+<path d="M 845 376 V 477" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="865" y="435" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="start">invoke</text>
+<path d="M 760 616 V 710 H 450 V 787" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="490" y="691" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="middle">data access</text>
+<path d="M 930 616 V 787" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="910" y="692" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="end">platform</text>
+<text x="910" y="716" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="end">operation</text>
+<path d="M 490 858 H 647" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="570" y="839" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="middle">as needed</text>
+<path d="M 305 926 V 1087" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="325" y="1010" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="start">read / write</text>
+<path d="M 845 926 V 1087" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="865" y="1010" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="start">adapt</text>
+<path d="M 650 548 H 72 V 1158 H 117" fill="none" stroke="#F3C477" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="9 8" marker-end="url(#optional-arrow)"/>
+<rect x="112" y="583" width="420" height="75" rx="0" fill="#101A26" stroke="#101A26"/>
+<text x="120" y="608" font-size="17" font-weight="700" fill="#F3C477" text-anchor="start" letter-spacing="1">DIRECT PERSISTENCE</text>
+<text x="120" y="640" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Simple use case + injected context</text>
+<text x="120" y="220" font-size="17" font-weight="700" fill="#87B9FF" text-anchor="start">01</text>
+<text x="156" y="220" font-size="17" font-weight="650" fill="#B1C2D3" text-anchor="start" letter-spacing="1.5">PRESENTATION</text>
+<g id="views">
+<rect x="120" y="240" width="370" height="136" rx="20" fill="#1B324C" stroke="#35495D"/>
+<rect x="120" y="266" width="4" height="84" rx="2" fill="#87B9FF"/>
+<text x="146" y="282" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Views</text>
+<text x="146" y="318" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Render observable state</text>
+<text x="146" y="346" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Layout · interaction · accessibility</text>
+</g>
+<g id="view-models">
+<rect x="650" y="240" width="390" height="136" rx="20" fill="#1B324C" stroke="#35495D"/>
+<rect x="650" y="266" width="4" height="84" rx="2" fill="#87B9FF"/>
+<text x="676" y="282" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">ViewModels</text>
+<text x="676" y="318" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Own screen and draft state</text>
+<text x="676" y="346" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Translate intent into operations</text>
+</g>
+<text x="650" y="459" font-size="17" font-weight="700" fill="#51D8B4" text-anchor="start">02</text>
+<text x="686" y="459" font-size="17" font-weight="650" fill="#B1C2D3" text-anchor="start" letter-spacing="1.5">APPLICATION</text>
+<g id="use-cases">
+<rect x="650" y="480" width="390" height="136" rx="20" fill="#163A38" stroke="#35495D"/>
+<rect x="650" y="506" width="4" height="84" rx="2" fill="#51D8B4"/>
+<text x="676" y="522" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Use Cases</text>
+<text x="676" y="558" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Apply application rules</text>
+<text x="676" y="586" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Coordinate operations and effects</text>
+</g>
+<text x="120" y="770" font-size="17" font-weight="700" fill="#C3ADFF" text-anchor="start">03</text>
+<text x="156" y="770" font-size="17" font-weight="650" fill="#B1C2D3" text-anchor="start" letter-spacing="1.5">INFRASTRUCTURE</text>
+<g id="repositories">
+<rect x="120" y="790" width="370" height="136" rx="20" fill="#302D47" stroke="#35495D"/>
+<rect x="120" y="816" width="4" height="84" rx="2" fill="#C3ADFF"/>
+<text x="146" y="832" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Repositories</text>
+<text x="146" y="868" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Own data-access behavior</text>
+<text x="146" y="896" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Queries · caching · mapping</text>
+</g>
+<g id="services">
+<rect x="650" y="790" width="390" height="136" rx="20" fill="#302D47" stroke="#35495D"/>
+<rect x="650" y="816" width="4" height="84" rx="2" fill="#C3ADFF"/>
+<text x="676" y="832" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Services</text>
+<text x="676" y="868" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Own integration mechanics</text>
+<text x="676" y="896" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">SDK sessions · requests · events</text>
+</g>
+<text x="120" y="1070" font-size="17" font-weight="700" fill="#B1C2D3" text-anchor="start">04</text>
+<text x="156" y="1070" font-size="17" font-weight="650" fill="#B1C2D3" text-anchor="start" letter-spacing="1.5">SYSTEMS</text>
+<g id="persistence">
+<rect x="120" y="1090" width="370" height="136" rx="20" fill="#1B324C" stroke="#35495D"/>
+<rect x="120" y="1116" width="4" height="84" rx="2" fill="#87B9FF"/>
+<text x="146" y="1132" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Persistence</text>
+<text x="146" y="1168" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">SwiftData · local stores</text>
+<text x="146" y="1196" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Context and transaction ownership</text>
+</g>
+<g id="platform-apis">
+<rect x="650" y="1090" width="390" height="136" rx="20" fill="#1B324C" stroke="#35495D"/>
+<rect x="650" y="1116" width="4" height="84" rx="2" fill="#87B9FF"/>
+<text x="676" y="1132" font-size="28" font-weight="650" fill="#ECF2F8" text-anchor="start">Platform &amp; External APIs</text>
+<text x="676" y="1168" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">HealthKit · WatchConnectivity</text>
+<text x="676" y="1196" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Notifications · network endpoints</text>
+</g>
+<rect x="1130" y="240" width="406" height="354" rx="20" fill="#192A3B" stroke="#35495D"/>
+<text x="1158" y="277" font-size="17" font-weight="700" fill="#51D8B4" text-anchor="start" letter-spacing="1.5">COMPOSITION</text>
+<text x="1158" y="320" font-size="26" font-weight="650" fill="#ECF2F8" text-anchor="start">Application + Factory</text>
+<text x="1158" y="360" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Builds and injects collaborators.</text>
+<text x="1158" y="389" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Owns their lifetimes.</text>
+<text x="1158" y="440" font-size="22" font-weight="500" fill="#ECF2F8" text-anchor="start">ScenesContainer</text>
+<text x="1158" y="472" font-size="22" font-weight="500" fill="#ECF2F8" text-anchor="start">UseCasesContainer</text>
+<text x="1158" y="504" font-size="22" font-weight="500" fill="#ECF2F8" text-anchor="start">DataContainer</text>
+<text x="1158" y="558" font-size="19" font-weight="400" fill="#B1C2D3" text-anchor="start">No feature-level service lookup.</text>
+<rect x="1130" y="634" width="406" height="290" rx="20" fill="#192A3B" stroke="#35495D"/>
+<text x="1158" y="671" font-size="17" font-weight="700" fill="#51D8B4" text-anchor="start" letter-spacing="1.5">SHARED TYPES</text>
+<text x="1158" y="714" font-size="26" font-weight="650" fill="#ECF2F8" text-anchor="start">Models + pure rules</text>
+<text x="1158" y="757" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Explicit values and decisions</text>
+<text x="1158" y="789" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">No hidden effects in pure rules</text>
+<text x="1158" y="821" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">SwiftData models may be shared</text>
+<text x="1158" y="853" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">DTOs stay at integration edges</text>
+<rect x="1130" y="964" width="406" height="262" rx="20" fill="#192A3B" stroke="#35495D"/>
+<text x="1158" y="1001" font-size="17" font-weight="700" fill="#F3C477" text-anchor="start" letter-spacing="1">LIMITED READ EXCEPTION</text>
+<text x="1158" y="1044" font-size="25" font-weight="650" fill="#ECF2F8" text-anchor="start">Local presentation reads</text>
+<text x="1158" y="1084" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">View: read-only @Query</text>
+<text x="1158" y="1116" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">ViewModel: injected context</text>
+<text x="1158" y="1148" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">Simple local projections only.</text>
+<text x="1158" y="1180" font-size="21" font-weight="400" fill="#B1C2D3" text-anchor="start">All writes go through Use Cases.</text>
+<path d="M 64 1270 H 1536" stroke="#35495D" stroke-width="1.5"/>
+<path d="M 66 1310 H 123" fill="none" stroke="#849BB1" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#normal-arrow)"/>
+<text x="140" y="1317" font-size="20" font-weight="400" fill="#B1C2D3" text-anchor="start">Principal use through contracts¹</text>
+<path d="M 520 1310 H 577" fill="none" stroke="#F3C477" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="9 8" marker-end="url(#optional-arrow)"/>
+<text x="594" y="1317" font-size="20" font-weight="400" fill="#B1C2D3" text-anchor="start">Permitted direct path</text>
+<text x="64" y="1350" font-size="18" font-weight="400" fill="#B1C2D3" text-anchor="start">¹ Application / infrastructure boundaries use injected contracts. Results flow back; dependencies do not.</text>
+</g>
+</svg>

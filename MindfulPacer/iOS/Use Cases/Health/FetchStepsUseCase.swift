@@ -11,6 +11,9 @@ import HealthKit
 protocol FetchStepsUseCase {
     func execute(for period: Period, endDate: Date, completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void)
     func executeBucketed(for period: Period, endDate: Date, completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void)
+    func executeHistory(for period: Period, startDate: Date, endDate: Date,
+                        completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void)
+
 }
 
 // MARK: - Use Case Implementation
@@ -67,4 +70,18 @@ final class DefaultFetchStepsUseCase: FetchStepsUseCase {
             }
         }
     }
+    /// Keep raw totals so Analytics can accumulate steps from each visible window's start.
+    func executeHistory(for period: Period, startDate: Date, endDate: Date,
+                        completion: @escaping @Sendable (Result<[ChartDataItem], HealthKitError>) -> Void) {
+        healthKitService.fetchMeasurementData(for: period == .week ? .week : .oneHour, measurementType: .steps,
+                                             startDate: startDate, endDate: endDate) { result in
+            completion(result.map { samples in
+                samples.map { sample in
+                    ChartDataItem(startDate: sample.startDate, endDate: min(sample.endDate, endDate),
+                                  value: sample.quantity.doubleValue(for: .count()))
+                }
+            })
+        }
+    }
+
 }

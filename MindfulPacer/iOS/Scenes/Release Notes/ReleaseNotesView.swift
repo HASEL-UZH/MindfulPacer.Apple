@@ -1,22 +1,8 @@
-//
-//  ReleaseNotesView.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 26.08.2025.
-//
-
 import SwiftUI
 
-// MARK: - ReleaseNotesView
-
 struct ReleaseNotesView: View {
-
-    // MARK: Properties
-
     @Environment(\.dismiss) private var dismiss
-    @State var viewModel: ReleaseNotesViewModel = ScenesContainer.shared.releaseNotesViewModel()
-
-    // MARK: Body
+    @State private var viewModel: ReleaseNotesViewModel = ScenesContainer.shared.releaseNotesViewModel()
 
     var body: some View {
         NavigationStack {
@@ -24,30 +10,19 @@ struct ReleaseNotesView: View {
                 ForEach(viewModel.releaseNotes) { release in
                     Section {
                         ForEach(Array(release.notes.enumerated()), id: \.offset) { _, note in
-                            HStack(alignment: .top, spacing: 10) {
-                                Circle()
-                                    .fill(Color.brandPrimary)
-                                    .frame(width: 6, height: 6)
-                                    .padding(.top, 6)
-
-                                Text(note)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
+                            Text(note)
+                                .foregroundStyle(Color.primary)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     } header: {
                         Text("Version \(release.version)")
-                            .font(.title3.bold())
-                            .foregroundStyle(Color.primary)
-                            .textCase(nil)
                     }
                 }
             }
-            .navigationTitle(String(localized: "Release Notes"))
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("Release Notes")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(String(localized: "Done")) {
+                    Button("Done") {
                         viewModel.markWhatsNewSeen()
                         dismiss()
                     }
@@ -58,8 +33,4 @@ struct ReleaseNotesView: View {
     }
 }
 
-// MARK: - Preview
-
-#Preview {
-    ReleaseNotesView()
-}
+#Preview { ReleaseNotesView() }

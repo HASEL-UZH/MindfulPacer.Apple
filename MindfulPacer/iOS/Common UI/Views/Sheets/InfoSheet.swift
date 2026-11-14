@@ -21,28 +21,21 @@ struct InfoSheet<Content: View>: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
                     if let info {
-                        InfoBox(text: info)
-                            .padding(.horizontal)
+                        Text(info)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    
-                    ViewThatFits {
-                        content
-                            .padding(.horizontal)
-                        ScrollView {
-                            content
-                                .padding(.horizontal)
-                        }
-                    }
-                    
-                    Spacer()
+                    content
                 }
+                .frame(maxWidth: 680, alignment: .leading)
+                .frame(maxWidth: .infinity)
+                .padding()
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

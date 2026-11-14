@@ -54,7 +54,6 @@ struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                 configuration.label
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
                     .layoutPriority(1)
 
                 if let accessoryIndicator = configuration.accessoryIndicator {
@@ -77,7 +76,7 @@ struct PlainIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
     }
@@ -93,7 +92,6 @@ struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
                     configuration.label
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
                         .layoutPriority(1)
 
                     if let accessoryIndicator = configuration.accessoryIndicator {
@@ -123,7 +121,7 @@ struct DividerIconLabelGroupBoxStyle: IconLabelGroupBoxStyle {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
     }

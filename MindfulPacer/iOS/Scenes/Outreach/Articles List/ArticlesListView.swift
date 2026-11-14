@@ -1,58 +1,38 @@
-//
-//  ArticlesListView.swift
-//  iOS
-//
-//  Created by Grigor Dochev on 03.02.2025.
-//
-
 import SwiftUI
 
-// MARK: - ArticlesListView
-
 struct ArticlesListView: View {
-    
-    // MARK: Properties
-    
-    @Environment(\.openURL) private var openURL
     @Bindable var viewModel: OutreachViewModel
-    
-    // MARK: Body
-    
+
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 16) {
                 if viewModel.isFetchingArticles {
-                    ForEach(0 ..< 5) { _ in
-                        BlogArticleCell(article: BlogArticle.mockArticle, cardColor: Color(.secondarySystemGroupedBackground))
+                    ForEach(0..<3) { _ in
+                        BlogArticleCell(article: .mockArticle)
                             .redacted(reason: .placeholder)
+                            .disabled(true)
+                            .accessibilityHidden(true)
                     }
+                } else if viewModel.blogArticles.isEmpty {
+                    EmptyStateView(
+                        image: "newspaper",
+                        title: viewModel.fetchErrorMessage == nil
+                            ? String(localized: "No Articles Yet") : String(localized: "Unable to Load Articles"),
+                        description: String(localized: "Check back for news and research from MindfulPacer."),
+                        buttonTitle: String(localized: "Try Again"),
+                        buttonAction: viewModel.onViewFirstAppear
+                    )
                 } else {
                     ForEach(viewModel.blogArticles) { article in
-                        Button {
-                            openURL(article.link)
-                        } label: {
-                            BlogArticleCell(
-                                article: article,
-                                cardColor: Color(.secondarySystemGroupedBackground)
-                            )
-                        }
+                        BlogArticleCell(article: article)
                     }
                 }
             }
-            .padding([.horizontal, .bottom])
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
+            .padding()
         }
         .navigationTitle("Articles")
-        .background {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-        }
+        .background(Color(.systemGroupedBackground))
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    let viewModel: OutreachViewModel = ScenesContainer.shared.outreachViewModel()
-    
-    ArticlesListView(viewModel: viewModel)
 }

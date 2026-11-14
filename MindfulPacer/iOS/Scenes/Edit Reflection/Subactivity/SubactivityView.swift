@@ -15,53 +15,48 @@ extension EditReflectionView {
         // MARK: Properties
 
         var activity: Activity
+        @Environment(\.dismiss) private var dismiss
         @Bindable var viewModel: EditReflectionViewModel
         
         // MARK: Body
         
         var body: some View {
-            if activity.subactivities!.isEmpty {
+            if (activity.subactivities ?? []).isEmpty {
                 ContentUnavailableView {
                     Label("No Subactivities", systemImage: "exclamationmark.circle.fill")
                 } description: {
                     Text("There are no subactivities for this activity.")
                 }
-                .navigationTitle(viewModel.selectedActivity.unsafelyUnwrapped.name)
+                .navigationTitle(activity.name)
                 .background {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()
                 }
             } else {
                 ScrollView {
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(spacing: 16), count: 2),
-                        spacing: 16
-                    ) {
-                        ForEach(activity.subactivities!) { subactivity in
-                            SelectableButton(
-                                shape: .roundedRectangle(cornerRadius: 16),
+                    LazyVStack(spacing: 12) {
+                        ForEach(activity.subactivities ?? []) { subactivity in
+                            SingleSelectRow(
                                 isSelected: viewModel.selectedSubactivity == subactivity
                             ) {
-                                viewModel.toggleSelection(subactivity, selectedItem: &viewModel.selectedSubactivity)
-                            } label: {
-                                VStack(spacing: 16) {
-                                    Image(systemName: subactivity.icon)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .symbolVariant(.fill)
-                                        .frame(width: 32, height: 32)
+                                viewModel.selectedSubactivity = viewModel.selectedSubactivity == subactivity ? nil : subactivity
+                                dismiss()
+                            } content: {
+                                Label {
                                     Text(subactivity.name)
-                                        .font(.subheadline)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.75)
-                                        .truncationMode(.middle)
+                                        .font(.body)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                } icon: {
+                                    Image(systemName: subactivity.icon)
+                                        .symbolVariant(.fill)
+                                        .frame(width: 24)
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(16)
                 }
-                .navigationTitle(viewModel.selectedActivity.unsafelyUnwrapped.name)
+                .navigationTitle(activity.name)
                 .background {
                     Color(.systemGroupedBackground)
                         .ignoresSafeArea()

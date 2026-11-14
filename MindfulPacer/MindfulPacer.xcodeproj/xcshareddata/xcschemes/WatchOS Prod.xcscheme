@@ -106,7 +106,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0DBA37372C32087300209681"
             BuildableName = "WatchOS.app"
-            BlueprintName = "WatchOS"
             ReferencedContainer = "container:MindfulPacer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -123,7 +122,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0DBA37372C32087300209681"
             BuildableName = "WatchOS.app"
-            BlueprintName = "WatchOS"
             ReferencedContainer = "container:MindfulPacer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

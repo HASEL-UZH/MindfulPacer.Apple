@@ -14,32 +14,28 @@ extension EditReflectionView {
         
         // MARK: Properties
 
+        @Environment(\.dismiss) private var dismiss
         @Bindable var viewModel: EditReflectionViewModel
 
         // MARK: Body
 
         var body: some View {
             ScrollView {
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(spacing: 16), count: 5),
-                    spacing: 16
-                ) {
+                LazyVStack(spacing: 12) {
                     ForEach(DefaultMoodData.moods, id: \.emoji) { mood in
-                        SelectableButton(
-                            shape: .roundedRectangle(cornerRadius: 12),
-                            isSelected: viewModel.selectedMood == mood
-                        ) {
-                            viewModel.toggleSelection(mood, selectedItem: &viewModel.selectedMood)
-                        } label: {
-                            Text(mood.emoji)
-                                .font(.title)
+                        SingleSelectRow(isSelected: viewModel.selectedMood == mood) {
+                            viewModel.selectedMood = viewModel.selectedMood == mood ? nil : mood
+                            dismiss()
+                        } content: {
+                            HStack(spacing: 12) {
+                                Text(mood.emoji).frame(width: 24)
+                                Text(mood.text).font(.body)
+                            }
                         }
-                        .contextMenu {
-                            Text(mood.text)
-                        }
+                        .accessibilityLabel(mood.text)
                     }
                 }
-                .padding(.horizontal)
+                .padding(16)
             }
             .navigationTitle("Mood")
             .background {
