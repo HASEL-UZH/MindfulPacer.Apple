@@ -115,10 +115,13 @@ struct AnalyticsView: View {
     private func chartSection(height: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Picker("Measurement Type", selection: $viewModel.selectedMeasurementType) {
-                Text("Heart Rate").tag(MeasurementType.heartRate)
-                Text("Steps").tag(MeasurementType.steps)
+                Label("Heart Rate", systemImage: MeasurementType.heartRate.icon)
+                    .tag(MeasurementType.heartRate)
+                Label("Steps", systemImage: MeasurementType.steps.icon)
+                    .tag(MeasurementType.steps)
             }
             .pickerStyle(.segmented)
+            .labelStyle(.titleAndIcon)
 
             StatChart(
                 entries: viewModel.statChartData,
