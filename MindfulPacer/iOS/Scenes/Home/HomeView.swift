@@ -214,13 +214,13 @@ struct HomeView: View {
                     ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                     RemindersWidget(viewModel: viewModel) { navigationPath.append(.remindersList) }
                 case .reflections:
-                    HomeReflectionHistoryView(reflections: viewModel.reflections)
                     homeHeadline("Your days, in perspective.", "Notice how you feel, one reflection at a time.")
                     missedReflectionsWidget
+                    HomeReflectionHistoryView(reflections: viewModel.reflections)
                     ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                 case .reminders:
-                    HomeReminderOverviewView(reminders: reminders)
                     homeHeadline("A gentle nudge to pause.", "Make space for reflection with reminders that fit your day.")
+                    HomeReminderOverviewView(reminders: reminders)
                     RemindersWidget(viewModel: viewModel) { navigationPath.append(.remindersList) }
                 }
             }
