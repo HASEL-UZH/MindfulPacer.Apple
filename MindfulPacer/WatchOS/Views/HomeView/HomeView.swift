@@ -32,7 +32,13 @@ struct HomeView: View {
                     StepsChartView(viewModel: viewModel).tag(HomePage.stepsChart)
                 }
                 .tabViewStyle(.verticalPage)
-                .navigationTitle(viewModel.selectedTab.title)
+                .navigationTitle {
+                    if viewModel.selectedTab == .main {
+                        batteryWidget
+                    } else {
+                        Text(viewModel.selectedTab.title)
+                    }
+                }
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Controls", systemImage: "slider.horizontal.3") {
@@ -105,6 +111,42 @@ struct HomeView: View {
             .buttonBorderShape(.roundedRectangle(radius: 20))
             .padding(.horizontal, 8)
             .padding(.bottom, 4)
+        }
+    }
+
+    private var batteryWidget: some View {
+        Label {
+            Text(viewModel.batteryLevel >= 0 ? "\(Int(viewModel.batteryLevel * 100))%" : "–")
+                .monospacedDigit()
+                .foregroundStyle(Color.secondary)
+        } icon: {
+            Image(systemName: batterySymbol)
+                .foregroundStyle(batteryColor)
+        }
+        .font(.caption2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Battery")
+        .accessibilityValue(viewModel.batteryLevel >= 0
+                            ? "\(Int(viewModel.batteryLevel * 100))%" : String(localized: "Unavailable"))
+        .accessibilityIdentifier("watch.battery")
+    }
+
+    private var batterySymbol: String {
+        switch viewModel.batteryLevel {
+        case ..<0.1: "battery.0percent"
+        case ..<0.35: "battery.25percent"
+        case ..<0.6: "battery.50percent"
+        case ..<0.85: "battery.75percent"
+        default: "battery.100percent"
+        }
+    }
+
+    private var batteryColor: Color {
+        switch viewModel.batteryLevel {
+        case ..<0: .secondary
+        case ..<0.2: .red
+        case ..<0.5: .yellow
+        default: .green
         }
     }
 
@@ -213,6 +255,10 @@ private struct WatchMetricLabel: View {
                     .font(.caption2)
                     .accessibilityLabel(highlight.localized)
             }
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(Color.secondary)
+                .accessibilityHidden(true)
         }
         .foregroundStyle(Color.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
