@@ -53,7 +53,7 @@ struct ReminderTypeInfoSheet: View {
         image: Image
     ) -> some View {
         VStack(alignment: .center, spacing: 16) {
-            Label(title, systemImage: "circle")
+            Label(title, systemImage: "circle.fill")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(color)
 

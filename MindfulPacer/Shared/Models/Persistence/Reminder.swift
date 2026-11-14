@@ -138,14 +138,8 @@ extension Reminder {
             }
         }
         
-        var icon: String {
-            switch self {
-            case .light: "sun.min"
-            case .medium: "hand.tap"
-            case .strong: "lightbulb"
-            }
-        }
-        
+        var icon: String { "circle.fill" }
+
         var description: String {
             switch self {
             case .light:

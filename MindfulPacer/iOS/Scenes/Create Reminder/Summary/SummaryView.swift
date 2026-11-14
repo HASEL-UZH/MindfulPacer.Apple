@@ -44,7 +44,7 @@ extension CreateReminderView {
                 }
             ) {
                 editorRow(.measurement, icon: "ruler", value: viewModel.selectedMeasurementType?.localized)
-                editorRow(.strength, icon: "alarm", value: viewModel.selectedReminderType?.localized,
+                editorRow(.strength, icon: viewModel.selectedReminderType?.icon ?? "circle", value: viewModel.selectedReminderType?.localized,
                           tint: viewModel.selectedReminderType?.color ?? .accentColor)
                 editorRow(.threshold, icon: "chart.line.flattrend.xyaxis",
                           value: viewModel.threshold.map { "\($0.formatted()) \(viewModel.thresholdUnitText)" })
@@ -91,7 +91,12 @@ extension CreateReminderView {
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
                 : AnyLayout(HStackLayout(spacing: 12))
             return layout {
-                Label(field.title, systemImage: icon).foregroundStyle(Color.primary)
+                Label {
+                    Text(field.title).foregroundStyle(Color.primary)
+                } icon: {
+                    Image(systemName: icon)
+                        .foregroundStyle(field == .strength ? tint : Color.primary)
+                }
                 if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
                 Text(value ?? String(localized: "Select"))
                     .foregroundStyle(value == nil ? Color.red : tint)
@@ -152,7 +157,11 @@ extension CreateReminderView {
                         viewModel.selectedReminderType = strength
                         activeField = nil
                     } content: {
-                        Label(strength.localized, systemImage: strength.icon)
+                        Label {
+                            Text(strength.localized)
+                        } icon: {
+                            Image(systemName: strength.icon).foregroundStyle(strength.color)
+                        }
                     }
                 }
             case .interval:

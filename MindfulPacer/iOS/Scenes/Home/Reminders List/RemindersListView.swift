@@ -210,6 +210,12 @@ struct RemindersListView: View {
                     .foregroundStyle(Color.secondary)
                     .lineLimit(2)
             }
+
+            Spacer(minLength: 8)
+            Image(systemName: reminder.reminderType.icon)
+                .foregroundStyle(reminder.reminderType.color)
+                .font(.body)
+                .accessibilityLabel(reminder.reminderType.localized)
         }
         .padding(.vertical, 4)
     }
