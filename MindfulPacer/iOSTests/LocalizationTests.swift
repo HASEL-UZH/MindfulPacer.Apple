@@ -190,13 +190,14 @@ struct LocalizationCompletenessTests {
         "2 Minutes", "5 Minutes", "30 Minutes",
         "Absent", "App Info", "Apple Health Integration",
         "Apple Watch", "Apple Watch Support", "Articles", "Build",
-        "Community", "Date", "Fatigue", "Gaming", "General", "Home",
+        "Circular", "Community", "Crash", "Date", "Details", "Diagnostics",
+        "Fatigue", "Filter", "Focus", "Gaming", "General", "Home",
         "Label", "Long Covid Kids Schweiz",
         "Meditation", "Meetings", "Mild", "MindfulPacer",
         "MindfulPacer ", "MindfulPacer Version %@", "Minutes",
         "Networking", "Normal", "Note", "Onboarding", "Outreach",
-        "Relaxation", "Roadmap", "Start", "Status Info",
-        "Stretching", "Version", "Yoga",
+        "Rectangular", "Relaxation", "Roadmap", "Start", "Status Info",
+        "Stretching", "System", "Total", "Trend", "Version", "Version %@", "Yoga",
         "iPhone + Apple Watch",
     ]
 
