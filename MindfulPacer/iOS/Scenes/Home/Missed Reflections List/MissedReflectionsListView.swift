@@ -15,6 +15,7 @@ extension HomeView {
         // MARK: Properties
         
         @Bindable var viewModel: HomeViewModel
+        @Environment(\.dynamicTypeSize) private var dynamicTypeSize
         @State private var selectedChartID: UUID?
         @State private var chartFrames: [UUID: CGRect] = [:]
         
@@ -55,40 +56,43 @@ extension HomeView {
         
         // MARK: Action Buttons
         
-        @ViewBuilder
         private func actionButtons(for reflection: Reflection) -> some View {
-            HStack(spacing: 16) {
-                Spacer()
-                
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(spacing: 12))
+                : AnyLayout(HStackLayout(spacing: 12))
+            return layout {
                 Button {
                     withAnimation {
                         viewModel.rejectMissedReflection(reflection: reflection)
                     }
                 } label: {
-                    Label("Reject", systemImage: "xmark.circle.fill")
+                    actionLabel("Reject", systemImage: "xmark.circle.fill")
                         .foregroundStyle(.red)
-                        .fontWeight(.semibold)
                 }
                 .buttonBorderShape(.capsule)
                 .buttonStyle(.bordered)
                 .tint(Color(.secondarySystemFill))
-                                
+
                 Button {
                     withAnimation {
                         viewModel.acceptMissedReflection(reflection: reflection)
                     }
                 } label: {
-                    Label("Accept", systemImage: "checkmark.circle.fill")
+                    actionLabel("Accept", systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.white)
-                        .fontWeight(.semibold)
                 }
                 .buttonBorderShape(.capsule)
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
-                
-                Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: .center)
+        }
+
+        private func actionLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
+            Label(title, systemImage: systemImage)
+                .fontWeight(.semibold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
         }
         
         // MARK: Missed Reflections List

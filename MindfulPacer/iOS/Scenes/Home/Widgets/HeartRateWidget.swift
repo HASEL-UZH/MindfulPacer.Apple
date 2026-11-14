@@ -43,9 +43,12 @@ extension HomeView {
         var body: some View {
             LabeledCard(contentSpacing: 10) {
                 metricContent
+                    .frame(maxHeight: .infinity, alignment: .topLeading)
             } label: {
                 Label {
                     Text(title)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 } icon: {
                     Image(systemName: systemImage)
                 }
@@ -76,6 +79,8 @@ extension HomeView {
                     Text(unit)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Color.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
 
                 Text(timestamp == nil ? String(localized: "No recent data") : timestampText)

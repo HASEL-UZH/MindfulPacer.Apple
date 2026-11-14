@@ -444,7 +444,8 @@ struct HomeView: View {
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {
-        let layout = dynamicTypeSize >= .xxxLarge
+        let isStacked = dynamicTypeSize >= .xxxLarge
+        let layout = isStacked
             ? AnyLayout(VStackLayout(spacing: 12))
             : AnyLayout(HStackLayout(alignment: .top, spacing: 12))
         return layout {
@@ -460,6 +461,8 @@ struct HomeView: View {
                 HeartRateWidget(viewModel: viewModel)
             }
         }
+        // Side by side, a definite row height lets both cards stretch to the taller one.
+        .fixedSize(horizontal: false, vertical: !isStacked)
     }
     
     // MARK: Navigation Destination
