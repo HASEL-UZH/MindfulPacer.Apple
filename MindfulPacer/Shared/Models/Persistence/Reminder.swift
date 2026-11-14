@@ -45,10 +45,10 @@ extension SchemaV1 {
         var triggerSummary: String {
             switch measurementType {
             case .heartRate:
-                let timeString = interval.timeInterval < 60 ? "\(Int(interval.timeInterval)) sec" : "\(Int(interval.timeInterval / 60)) min"
+                let timeString = abbreviatedDuration(interval.timeInterval, in: interval.timeInterval < 60 ? .seconds : .minutes)
                 return String(localized: "Above \(threshold) bpm for \(timeString)")
             case .steps:
-                let timeString = interval.timeInterval < 3600 ? "\(Int(interval.timeInterval / 60)) min" : "\(Int(interval.timeInterval / 3600)) hr"
+                let timeString = abbreviatedDuration(interval.timeInterval, in: interval.timeInterval < 3600 ? .minutes : .hours)
                 return String(localized: "Above \(threshold) steps within \(timeString)")
             }
         }
@@ -62,6 +62,11 @@ extension SchemaV1 {
             }
         }
     }
+}
+
+/// A duration in one unit, abbreviated in the user's language: "5 min" and "24 hr" in English.
+private func abbreviatedDuration(_ seconds: TimeInterval, in unit: Duration.UnitsFormatStyle.Unit) -> String {
+    Duration.seconds(seconds).formatted(.units(allowed: [unit], width: .abbreviated))
 }
 
 // MARK: - Measurement Type

@@ -34,7 +34,7 @@ extension OnboardingView {
         var body: some View {
             OnboardingPage(
                 viewModel: viewModel,
-                title: "Connect to Your Apple Watch",
+                title: String(localized: "Connect to Your Apple Watch"),
                 systemImage: "applewatch"
             ) {
                 Text("When pairing MindfulPacer with your Apple Watch, you can visualize your biometric data (including heart rate and steps) and receive reminders on your watch to reflect at times defined by you.")
@@ -45,7 +45,7 @@ extension OnboardingView {
                             label:
                                 IconLabel(
                                     icon: "applewatch",
-                                    title: "Installing with TestFlight",
+                                    title: String(localized: "Installing with TestFlight"),
                                     labelColor: Color.primary
                                 ),
                             description:
@@ -119,7 +119,7 @@ extension OnboardingView {
                     SetupDetail(
                         label: IconLabel(
                             icon: "square.on.square.intersection.dashed",
-                            title: "Add to Your Watch Face",
+                            title: String(localized: "Add to Your Watch Face"),
                             labelColor: Color.primary
                         ),
                         description: Text("See your monitoring status at a glance with a Complication.")
@@ -132,11 +132,11 @@ extension OnboardingView {
                                 VStack(alignment: .leading, spacing: 16) {
                                     Picker(selection: $viewModel.selectedAppleWatchComplicationTyoe) {
                                         ForEach(AppleWatchComplicationType.allCases, id: \.rawValue) { complicationType in
-                                            Label(complicationType.rawValue.capitalized, systemImage: complicationType.icon)
+                                            Label(complicationType.localized, systemImage: complicationType.icon)
                                                 .tag(complicationType)
                                         }
                                     } label: {
-                                        Label(viewModel.selectedAppleWatchComplicationTyoe.rawValue, systemImage: viewModel.selectedAppleWatchComplicationTyoe.icon)
+                                        Label(viewModel.selectedAppleWatchComplicationTyoe.localized, systemImage: viewModel.selectedAppleWatchComplicationTyoe.icon)
                                     }
                                     .pickerStyle(.segmented)
                                     .tint(.accent)
@@ -161,7 +161,7 @@ extension OnboardingView {
                     SetupDetail(
                         label: IconLabel(
                             icon: "arrow.turn.up.forward.iphone",
-                            title: "Stay in the App",
+                            title: String(localized: "Stay in the App"),
                             labelColor: Color.primary
                         ),
                         description: Text("Choose to keep MindfulPacer open during a session.")

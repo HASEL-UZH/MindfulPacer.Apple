@@ -54,7 +54,7 @@ extension SettingsView {
         
         @ViewBuilder
         func infoCell(
-            title: String,
+            title: LocalizedStringKey,
             value: String
         ) -> some View {
             LabeledContent {

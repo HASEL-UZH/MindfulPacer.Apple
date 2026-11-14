@@ -24,7 +24,7 @@ extension HomeView {
                 systemImage: "heart.fill",
                 tint: .pink,
                 value: viewModel.currentHeartRate.map { String(Int($0.heartRate)) },
-                unit: "BPM",
+                unit: String(localized: "BPM"),
                 timestamp: viewModel.currentHeartRate?.timestamp
             )
         }

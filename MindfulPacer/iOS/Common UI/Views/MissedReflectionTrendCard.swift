@@ -386,7 +386,7 @@ extension MissedReflectionTrendCard {
             self.init(
                 title: measurementType.localized,
                 systemImage: measurementType.icon,
-                headline: reflection.reminderTriggerSummary,
+                headline: reflection.localizedReminderTriggerSummary,
                 subtitle: subtitle,
                 currentSummary: .init(
                     label: String(localized: "At trigger"),
@@ -888,6 +888,27 @@ extension MissedReflectionTrendCard {
     }
 }
 
+// MARK: - Reflection Trigger Summary
+
+extension Reflection {
+    /// The stored summary embeds the English interval name, so the interval is written out
+    /// by the system formatter in the user's language instead.
+    var localizedReminderTriggerSummary: String {
+        guard let measurementType, let threshold, let interval, interval.timeInterval > 0 else {
+            return reminderTriggerSummary
+        }
+
+        let duration = Duration.seconds(interval.timeInterval)
+            .formatted(.units(allowed: [.days, .hours, .minutes], width: .wide))
+        switch measurementType {
+        case .heartRate:
+            return String(localized: "Above \(threshold) bpm for \(duration)")
+        case .steps:
+            return String(localized: "Above \(threshold) steps within the window of \(duration)")
+        }
+    }
+}
+
 // MARK: - MissedReflectionTrendSummaryRow
 
 private struct MissedReflectionTrendSummaryRow: View {
@@ -1125,7 +1146,7 @@ private struct MissedReflectionTrendChart: View {
                     "\($0.date.formatted(.dateTime.hour().minute())), \($0.valueText)"
                 } ?? "")
             } else {
-                Text(data.emptyChartText ?? "No chart data is available.")
+                Text(data.emptyChartText ?? String(localized: "No chart data is available."))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: chartHeight, alignment: .center)

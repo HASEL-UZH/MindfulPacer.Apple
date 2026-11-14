@@ -15,7 +15,16 @@ enum AppleWatchComplicationType: String, CaseIterable {
     case circular
     case corner
     case inline
-    
+
+    var localized: String {
+        switch self {
+        case .rectangular: String(localized: "Rectangular")
+        case .circular: String(localized: "Circular")
+        case .corner: String(localized: "Corner")
+        case .inline: String(localized: "Inline")
+        }
+    }
+
     var icon: String {
         switch self {
         case .circular: "circle.fill"

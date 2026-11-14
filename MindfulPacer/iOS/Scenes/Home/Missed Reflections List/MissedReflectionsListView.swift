@@ -204,7 +204,7 @@ struct MissedReflectionHealthChartData {
         MissedReflectionTrendCard.Data(
             title: measurementTitle,
             systemImage: measurementIcon,
-            headline: reflection.reminderTriggerSummary,
+            headline: reflection.localizedReminderTriggerSummary,
             subtitle: triggeredText,
             currentSummary: .init(
                 label: String(localized: "At trigger"),

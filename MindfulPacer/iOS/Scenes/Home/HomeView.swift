@@ -518,8 +518,8 @@ struct HomeView: View {
         switch toast {
         case .successfullyCreatedReflection:
             Toast(
-                title: "Successfully Created Reflection",
-                message: "Your reflection has been saved"
+                title: String(localized: "Successfully Created Reflection"),
+                message: String(localized: "Your reflection has been saved")
             )
             .toastStyle(.success)
         }

@@ -33,7 +33,15 @@ enum Theme: String, CaseIterable, Identifiable {
     }
     
     var localized: String {
-        NSLocalizedString(rawValue, comment: "Theme setting option")
+        switch self {
+        case .system:
+            String(localized: "System", comment: "Theme setting option")
+        case .light:
+            // "Light" on its own is the reminder strength, which translates differently.
+            String(localized: "Theme.Light", defaultValue: "Light", comment: "Theme setting option: light appearance")
+        case .dark:
+            String(localized: "Dark", comment: "Theme setting option")
+        }
     }
     
     var description: String {
