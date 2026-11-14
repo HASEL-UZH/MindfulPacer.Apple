@@ -75,6 +75,19 @@ final class WatchRedesignUITests: XCTestCase {
     }
 
     @MainActor
+    func testStatusOpensControls() {
+        for scenario in ["home", "paused", "no-reminders"] {
+            let app = launch(scenario)
+            let status = app.buttons["watch.status"].firstMatch
+            XCTAssertTrue(status.waitForExistence(timeout: 10))
+            status.tap()
+            XCTAssertTrue(app.buttons["watch.pauseResume"].firstMatch.waitForExistence(timeout: 5),
+                          "Tapping the status must open Controls (\(scenario)).")
+            if scenario == "home" { shot(app, "30-status-opens-controls") }
+        }
+    }
+
+    @MainActor
     func testPresentationStates() {
         for scenario in ["steps", "paused", "highlight-light", "highlight-medium", "highlight-strong",
                          "empty-heart-rate", "empty-steps", "single-heart-rate", "permission", "no-reminders"] {

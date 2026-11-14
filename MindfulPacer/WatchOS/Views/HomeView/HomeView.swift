@@ -102,12 +102,19 @@ struct HomeView: View {
                 .tint(viewModel.stepsHighlight?.color ?? Color.gray)
                 .accessibilityIdentifier("watch.steps")
 
-                Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
-                    .font(.caption2)
-                    .foregroundStyle(viewModel.statusMessage.color)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 2)
-                    .accessibilityIdentifier("watch.status")
+                // The status is the way into Controls, where monitoring is paused and resumed.
+                Button { showsControls = true } label: {
+                    Label(viewModel.statusMessage.localized, systemImage: viewModel.statusMessage.symbolName)
+                        .font(.caption2)
+                        .foregroundStyle(viewModel.statusMessage.color)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens Controls")
+                .accessibilityIdentifier("watch.status")
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
