@@ -351,18 +351,32 @@ class HomeViewModel {
         Services.shared.systemDelegate.requestCreateReflectionOnPhone()
     }
     
+    var monitoringControlAction: MonitoringControlAction {
+        MonitoringControlAction(isSessionActive: isMonitoring, isManuallyPaused: isManuallyPaused)
+    }
+
     func togglePauseResume() {
+        let action = monitoringControlAction
         guard usesLiveServices else {
-            isManuallyPaused.toggle()
-            isMonitoring = !isManuallyPaused
-            statusMessage = isManuallyPaused ? .paused : .monitoring
+            isManuallyPaused = !action.startsMonitoring
+            isMonitoring = action.startsMonitoring
+            statusMessage = action.startsMonitoring ? .monitoring : .paused
             return
         }
-        if isManuallyPaused {
-            Services.shared.monitorService.resumeMonitoring()
-        } else {
+        switch action {
+        case .pause:
             Services.shared.monitorService.pauseMonitoring()
+        case .resume:
+            Services.shared.monitorService.resumeMonitoring()
+        case .restart:
+            Services.shared.monitorService.restartMonitoring()
         }
+    }
+
+    /// Monitoring can stop while the app is in the background, so re-check it whenever the app becomes active.
+    func refreshMonitoringState() {
+        guard usesLiveServices else { return }
+        Services.shared.monitorService.refreshState()
     }
     
     func didSelectTab(_ tab: HomePage) {
