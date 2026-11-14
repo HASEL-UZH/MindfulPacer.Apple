@@ -281,13 +281,19 @@ struct SettingsView: View {
 
     private var contactUs: some View {
         Button {
-            viewModel.presentSheet(
-                .mailView(
-                    recipient: viewModel.contactSupportRecipient,
-                    subject: viewModel.contactSupportSubject,
-                    body: nil
+            MailView.compose(
+                recipient: viewModel.contactSupportRecipient,
+                subject: viewModel.contactSupportSubject,
+                openURL: openURL
+            ) {
+                viewModel.presentSheet(
+                    .mailView(
+                        recipient: viewModel.contactSupportRecipient,
+                        subject: viewModel.contactSupportSubject,
+                        body: nil
+                    )
                 )
-            )
+            }
         } label: {
             SettingsRowLabel(
                 title: String(localized: "Contact Us"),

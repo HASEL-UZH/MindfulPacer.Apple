@@ -15,6 +15,7 @@ extension SettingsView {
         // MARK: Properties
         
         @Environment(\.dismiss) private var dismiss
+        @Environment(\.openURL) private var openURL
         @Bindable var viewModel: SettingsViewModel
         
         // MARK: Body
@@ -69,13 +70,20 @@ extension SettingsView {
         
         private var systemReportShareButton: some View {
             Button {
-                viewModel.presentSheet(
-                    .mailView(
-                        recipient: viewModel.contactSupportRecipient,
-                        subject: viewModel.contactSupportSubject,
-                        body: viewModel.systemReport
+                MailView.compose(
+                    recipient: viewModel.contactSupportRecipient,
+                    subject: viewModel.contactSupportSubject,
+                    body: viewModel.systemReport,
+                    openURL: openURL
+                ) {
+                    viewModel.presentSheet(
+                        .mailView(
+                            recipient: viewModel.contactSupportRecipient,
+                            subject: viewModel.contactSupportSubject,
+                            body: viewModel.systemReport
+                        )
                     )
-                )
+                }
             } label: {
                 Label("Share System Report", systemImage: "square.and.arrow.up.fill")
             }

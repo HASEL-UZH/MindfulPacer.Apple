@@ -63,3 +63,36 @@ struct MailView: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: UIViewControllerRepresentableContext<MailView>) {}
 }
+
+// MARK: - Mail Fallback
+
+extension MailView {
+    /// The composer cannot be created without a configured Mail account, so the message is
+    /// handed to the system mail link in that case.
+    @MainActor
+    static func compose(
+        recipient: String,
+        subject: String,
+        body: String? = nil,
+        openURL: OpenURLAction,
+        presentComposer: () -> Void
+    ) {
+        if MFMailComposeViewController.canSendMail() {
+            presentComposer()
+        } else if let url = mailtoURL(recipient: recipient, subject: subject, body: body) {
+            openURL(url)
+        }
+    }
+
+    nonisolated static func mailtoURL(recipient: String, subject: String, body: String? = nil) -> URL? {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = recipient
+        var queryItems = [URLQueryItem(name: "subject", value: subject)]
+        if let body {
+            queryItems.append(URLQueryItem(name: "body", value: body))
+        }
+        components.queryItems = queryItems
+        return components.url
+    }
+}
