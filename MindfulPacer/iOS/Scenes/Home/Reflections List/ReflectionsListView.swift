@@ -219,6 +219,9 @@ extension HomeView {
                         .font(.caption)
                         .foregroundStyle(Color.secondary)
                         .lineLimit(2)
+
+                    ReflectionStatusLabels(reflection: reflection)
+                        .font(.caption)
                 }
             }
             .padding(.vertical, 4)
@@ -307,7 +310,7 @@ extension HomeView {
 
                 let wellBeing = Symptom.wellBeing(reflection.wellBeing)
                 ExpandableMetadataMenuChip(
-                    title: wellBeing.description,
+                    title: "\(wellBeing.displayName): \(wellBeing.description)",
                     systemImage: wellBeing.icon,
                     isActive: reflection.wellBeing != nil,
                     tint: wellBeing.color
@@ -331,7 +334,7 @@ extension HomeView {
                     title: "Crash",
                     systemImage: "exclamationmark.triangle.fill",
                     isActive: reflection.didTriggerCrash,
-                    tint: .orange
+                    tint: .red
                 ) {
                     viewModel.toggleReflectionCrash(reflection)
                 }
@@ -372,14 +375,6 @@ extension HomeView {
 
             if let mood = reflection.mood {
                 parts.append("\(mood.emoji) \(mood.text)")
-            }
-
-            if let wellBeing = reflection.wellBeing {
-                parts.append(Symptom.wellBeing(wellBeing).description)
-            }
-
-            if reflection.didTriggerCrash {
-                parts.append(String(localized: "Crash"))
             }
 
             return parts.joined(separator: " - ")

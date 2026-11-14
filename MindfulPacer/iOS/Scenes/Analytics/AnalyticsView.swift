@@ -244,14 +244,7 @@ struct AnalyticsView: View {
                 .font(.headline).foregroundStyle(Color.primary)
             Text(reflection.date, format: .dateTime.month(.abbreviated).day().hour().minute())
                 .font(.subheadline).foregroundStyle(Color.secondary)
-            if reflection.didTriggerCrash {
-                Label("Crash", systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.red)
-            }
-            if let wellBeing = reflection.wellBeing {
-                Text(Symptom.wellBeing(wellBeing).description)
-                    .foregroundStyle(Symptom.wellBeing(wellBeing).color)
-            }
+            ReflectionStatusLabels(reflection: reflection)
             if let mood = reflection.mood {
                 Text("\(mood.emoji) \(mood.text)").foregroundStyle(Color.secondary)
             }

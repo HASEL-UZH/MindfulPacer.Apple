@@ -59,42 +59,17 @@ struct ReflectionCell: View {
                 Text(reflection.date.formatted(.dateTime.day().month().hour().minute()))
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
+
+                ReflectionStatusLabels(reflection: reflection)
+                    .font(.caption)
             }
 
             Spacer()
 
-            if reflection.didTriggerCrash {
-                Icon(name: "exclamationmark.triangle.fill", color: .red, background: true)
-            }
-            
-            if modeOfUse == .essentials {
-                if let wellBeing = reflection.wellBeing {
-                    Icon(
-                        name: "cross.fill",
-                        color: Symptom.wellBeing(wellBeing).color,
-                        background: true
-                    )
-                }
-            } else {
-                if let mood = reflection.mood {
-                    Text(mood.emoji)
-                        .frame(width: 24, height: 24)
-                        .padding(4)
-                        .background {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(.yellow.opacity(0.1))
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(.yellow.opacity(0.1), lineWidth: 1.5)
-                            }
-                        }
-                } else if let wellBeing = reflection.wellBeing {
-                    Icon(
-                        name: "cross.fill",
-                        color: Symptom.wellBeing(wellBeing).color,
-                        background: true
-                    )
-                }
+            if modeOfUse != .essentials, let mood = reflection.mood {
+                Text(mood.emoji)
+                    .font(.title3)
+                    .accessibilityLabel(mood.text)
             }
         }
     }
@@ -108,3 +83,29 @@ struct ReflectionCell: View {
 //
 //    }
 //}
+
+/// Shared by history, Home, and Analytics so a severity value always has context.
+struct ReflectionStatusLabels: View {
+    let reflection: Reflection
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let value = reflection.wellBeing {
+                let wellBeing = Symptom.wellBeing(value)
+                Label {
+                    Text("\(Text("Subjective Well-being")): \(Text(wellBeing.description))")
+                } icon: {
+                    Image(systemName: wellBeing.icon)
+                }
+                .foregroundStyle(wellBeing.color)
+            }
+            if reflection.didTriggerCrash {
+                Label("Crash", systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+            }
+        }
+        .labelStyle(.titleAndIcon)
+        .multilineTextAlignment(.leading)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}

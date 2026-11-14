@@ -60,13 +60,9 @@ extension HomeView {
                         .foregroundStyle(Color.primary)
                     Text(reflection.date, format: .dateTime.month(.abbreviated).day().hour().minute())
                         .font(.caption).foregroundStyle(Color.secondary)
-                    if reflection.didTriggerCrash {
-                        Label("Crash", systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption).foregroundStyle(.red)
-                    } else if let wellBeing = reflection.wellBeing {
-                        Text(Symptom.wellBeing(wellBeing).description)
-                            .font(.caption).foregroundStyle(Symptom.wellBeing(wellBeing).color)
-                    } else if let mood = reflection.mood {
+                    ReflectionStatusLabels(reflection: reflection)
+                        .font(.caption)
+                    if reflection.wellBeing == nil, let mood = reflection.mood {
                         Text("\(mood.emoji) \(mood.text)")
                             .font(.caption).foregroundStyle(Color.secondary)
                     }
