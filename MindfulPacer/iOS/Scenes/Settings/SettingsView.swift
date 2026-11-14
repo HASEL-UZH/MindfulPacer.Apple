@@ -73,8 +73,6 @@ struct SettingsView: View {
                     viewOnboarding
                 } header: {
                     Text("General")
-                } footer: {
-                    Text("Expanded mode unlocks fine-grained self-reports for fatigue, shortness of breath, pains, and other factors.")
                 }
 
                 Section {
