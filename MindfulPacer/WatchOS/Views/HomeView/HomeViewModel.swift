@@ -79,9 +79,10 @@ class HomeViewModel {
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
         if statusMessage == .permissionDenied {
+            let measurement: Reminder.MeasurementType = metric == .heartRate ? .heartRate : .steps
             return ChartEmptyState(
                 title: "Health Permission Needed",
-                subtitle: "Enable \(metric == .heartRate ? "Heart Rate" : "Steps") access in the Health settings on your iPhone.",
+                subtitle: "Enable \(measurement.localized) access in the Health settings on your iPhone.",
                 symbol: "hand.raised.fill"
             )
         }

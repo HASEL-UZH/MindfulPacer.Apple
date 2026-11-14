@@ -1070,7 +1070,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             alertTriggeredSubject.send(r)
         } else {
             let content = UNMutableNotificationContent()
-            content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
+            content.title = rule.measurementType == .heartRate
+                ? String(localized: "Heart Rate Alert")
+                : String(localized: "Steps Alert")
             content.body = rule.alertMessage
             content.sound = .defaultCritical
             content.categoryIdentifier = "HEART_RATE_ALERT"
