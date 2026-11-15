@@ -115,6 +115,27 @@ public struct AlertRule: Identifiable, Sendable, Equatable {
     var notificationSent: Bool = false
 }
 
+/// What the monitoring button in Controls does for the current state.
+/// There is always an action, so the button can never be a dead end.
+enum MonitoringControlAction: Equatable {
+    case pause
+    case resume
+    /// Monitoring is neither running nor paused, e.g. after the system ended the workout.
+    case restart
+
+    init(isSessionActive: Bool, isManuallyPaused: Bool) {
+        if isManuallyPaused {
+            self = .resume
+        } else if isSessionActive {
+            self = .pause
+        } else {
+            self = .restart
+        }
+    }
+
+    var startsMonitoring: Bool { self != .pause }
+}
+
 extension AlertRule {
     var highlightRule: ReminderHighlightState.Rule {
         let threshold: Double
@@ -165,6 +186,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     private var isStartingWorkoutSession = false
     private var isEndingWorkoutSession = false
     private var isCheckingRecoveredWorkoutSession = false
+    private var lastAutomaticRestart: Date?
+    /// Counts start attempts, so an attempt whose session already ended cannot change newer state.
+    private var workoutStartAttempt = 0
     private var monitoringIntent: MonitoringIntent = .active
 
     var isAppInForeground: Bool = true
@@ -327,11 +351,14 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
 
     private func startWorkoutSession() {
+        discardEndedWorkoutSessionIfNeeded()
         guard workoutSession == nil else { return }
         guard !isStartingWorkoutSession, !isEndingWorkoutSession, !isCheckingRecoveredWorkoutSession else { return }
         guard monitoringIntent == .active, !isManuallyPaused else { return }
 
         isStartingWorkoutSession = true
+        workoutStartAttempt += 1
+        let attempt = workoutStartAttempt
 
         Task {
             var pendingSession: HKWorkoutSession?
@@ -339,6 +366,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
             do {
                 let isAuthorized = try await requestAuthorization()
+                guard attempt == workoutStartAttempt else { return }
                 guard isAuthorized else {
                     isStartingWorkoutSession = false
                     statusMessage = .permissionDenied
@@ -366,6 +394,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
                 session.startActivity(with: Date())
                 try await builder.beginCollection(at: Date())
+                // The session ended or failed while it was starting and was already cleaned up.
+                guard attempt == workoutStartAttempt else { return }
                 guard monitoringIntent == .active, !isManuallyPaused else {
                     isStartingWorkoutSession = false
                     discardAndEndUnsavedWorkoutSession(session: session, builder: builder)
@@ -386,6 +416,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                 writeComplicationState(.active)
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
             } catch {
+                guard attempt == workoutStartAttempt else { return }
                 if pendingSession != nil || pendingBuilder != nil {
                     discardAndEndUnsavedWorkoutSession(session: pendingSession, builder: pendingBuilder)
                     if self.workoutSession === pendingSession {
@@ -462,6 +493,73 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
 
         session.delegate = nil
+    }
+
+    // MARK: - Sessions ended outside the app
+
+    /// The system can end or fail a workout the app did not stop itself, for example while the Watch charges.
+    /// Keeping that dead session makes `startWorkoutSession()` return early forever, which left monitoring
+    /// stuck in "Not Monitoring" until the app was relaunched.
+    private func handleSessionEndedOutsideApp(sessionID: ObjectIdentifier) {
+        guard let session = workoutSession, ObjectIdentifier(session) == sessionID else { return }
+        guard !isEndingWorkoutSession else { return }
+
+        if isStartingWorkoutSession {
+            // This session was still starting. Invalidate that attempt so it cannot mark monitoring active.
+            workoutStartAttempt += 1
+            isStartingWorkoutSession = false
+        }
+
+        let builder = workoutBuilder
+        stopStepsTimer()
+        stopComplicationHeartbeat()
+        isSessionActive = false
+        clearWidgetHighlights()
+        heartRate = 0
+        discardAndEndUnsavedWorkoutSession(session: session, builder: builder)
+        workoutSession = nil
+        workoutBuilder = nil
+
+        guard monitoringIntent == .active, !isManuallyPaused else {
+            if monitoringIntent == .paused {
+                statusMessage = .paused
+                writeComplicationState(.paused)
+            }
+            return
+        }
+
+        statusMessage = .notMonitoring
+        writeComplicationState(.inactive)
+        restartAfterUnexpectedEnd()
+    }
+
+    /// At most one automatic attempt per minute, so a workout the system keeps ending cannot cause a restart loop.
+    /// If the attempt is not possible right now, the next app activation or the Controls button starts it.
+    private func restartAfterUnexpectedEnd() {
+        let now = Date()
+        if let last = lastAutomaticRestart, now.timeIntervalSince(last) < 60 { return }
+        lastAutomaticRestart = now
+        startWorkoutSession()
+    }
+
+    /// A session that already ended can never run again; holding on to it would block every later start.
+    private func discardEndedWorkoutSessionIfNeeded() {
+        guard !isStartingWorkoutSession, !isEndingWorkoutSession,
+              let session = workoutSession,
+              session.state == .ended || session.state == .stopped else { return }
+
+        discardAndEndUnsavedWorkoutSession(session: session, builder: workoutBuilder)
+        workoutSession = nil
+        workoutBuilder = nil
+        isSessionActive = false
+    }
+
+    /// Starts monitoring again when it is neither running nor paused. Called from Controls and on app activation.
+    func restartMonitoring() {
+        guard !isSessionActive else { return }
+        setMonitoringIntent(.active)
+        lastAutomaticRestart = nil
+        refreshState()
     }
 
     private func endRecoveredWorkoutSession(_ session: HKWorkoutSession) {
@@ -571,6 +669,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
     }
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        let sessionID = ObjectIdentifier(workoutSession)
         Task { @MainActor in
             // Only update complication if the state change wasn't triggered by user (manual pause/resume)
             // This handles system-triggered pauses (wrist down, app backgrounded, etc.)
@@ -586,15 +685,23 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
                     self.stopComplicationHeartbeat()
                 }
             case .stopped, .ended:
+                // A session that was already replaced must not change the state of its successor.
+                guard let current = self.workoutSession, ObjectIdentifier(current) == sessionID else { return }
                 self.isSessionActive = false
                 self.writeComplicationState(self.monitoringIntent == .paused ? .paused : .inactive)
                 self.stopComplicationHeartbeat()
+                self.handleSessionEndedOutsideApp(sessionID: sessionID)
             default:
                 break
             }
         }
     }
-    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {}
+    nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
+        let sessionID = ObjectIdentifier(workoutSession)
+        Task { @MainActor in
+            self.handleSessionEndedOutsideApp(sessionID: sessionID)
+        }
+    }
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
 
     // MARK: - Steps timer

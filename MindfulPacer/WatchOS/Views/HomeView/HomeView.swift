@@ -68,7 +68,10 @@ struct HomeView: View {
             if state != .none { showsControls = false }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { viewModel.refreshHighlights() }
+            if phase == .active {
+                viewModel.refreshHighlights()
+                viewModel.refreshMonitoringState()
+            }
         }
         .onAppear { viewModel.onAppear() }
         .onChange(of: viewModel.selectedTab) { _, page in viewModel.didSelectTab(page) }
@@ -270,6 +273,9 @@ struct WatchControlsView: View {
     @Bindable var viewModel: HomeViewModel
     @Environment(\.dismiss) private var dismiss
 
+    /// The button always offers an action: it resumes whenever monitoring is not running.
+    private var startsMonitoring: Bool { viewModel.monitoringControlAction.startsMonitoring }
+
     var body: some View {
         NavigationStack {
             List {
@@ -279,11 +285,10 @@ struct WatchControlsView: View {
                     Button {
                         viewModel.togglePauseResume()
                     } label: {
-                        Label(LocalizedStringKey(viewModel.isManuallyPaused ? "Resume Monitoring" : "Pause Monitoring"),
-                              systemImage: viewModel.isManuallyPaused ? "play.fill" : "pause.fill")
+                        Label(LocalizedStringKey(startsMonitoring ? "Resume Monitoring" : "Pause Monitoring"),
+                              systemImage: startsMonitoring ? "play.fill" : "pause.fill")
                     }
-                    .tint(viewModel.isManuallyPaused ? .green : .yellow)
-                    .disabled(!viewModel.isMonitoring && !viewModel.isManuallyPaused)
+                    .tint(startsMonitoring ? .green : .yellow)
                     .accessibilityIdentifier("watch.pauseResume")
                 } footer: {
                     Text(viewModel.statusMessage.description)
