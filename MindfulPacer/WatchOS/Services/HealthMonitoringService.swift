@@ -9,6 +9,7 @@ import UserNotifications
 import Combine
 import SwiftUI
 import CoreData
+import SwiftData
 import WidgetKit
 
 // MARK: - StatusMessage
@@ -137,6 +138,36 @@ enum MonitoringControlAction: Equatable {
 }
 
 extension AlertRule {
+    init(reminder: Reminder) {
+        let threshold = Double(reminder.threshold)
+        self.init(
+            id: reminder.id,
+            alertID: nil,
+            measurementType: reminder.measurementType,
+            reminderType: reminder.reminderType,
+            ruleType: reminder.measurementType == .heartRate ? .heartRate(threshold: threshold) : .steps(threshold: threshold),
+            duration: reminder.interval.timeInterval,
+            alertMessage: reminder.triggerSummary,
+            interval: reminder.interval
+        )
+    }
+
+    /// Rules for the reminders currently in the store: heart rate first, then by descending threshold.
+    /// Rules are value snapshots, so nothing keeps a reference to a reminder that is deleted later.
+    @MainActor
+    static func currentRules(in context: ModelContext) throws -> [AlertRule] {
+        try context.fetch(FetchDescriptor<Reminder>())
+            .sorted { lhs, rhs in
+                guard lhs.measurementType == rhs.measurementType else {
+                    if lhs.measurementType == .heartRate { return true }
+                    if rhs.measurementType == .heartRate { return false }
+                    return lhs.measurementType.rawValue < rhs.measurementType.rawValue
+                }
+                return lhs.threshold > rhs.threshold
+            }
+            .map(AlertRule.init(reminder:))
+    }
+
     var highlightRule: ReminderHighlightState.Rule {
         let threshold: Double
         switch ruleType {
@@ -193,7 +224,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
     var isAppInForeground: Bool = true
 
-    private var reminders: [Reminder] = []
+    private lazy var modelContext: ModelContext = ModelContainer.prod.mainContext
+    private var reminderSyncTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
     private var stepsTimer: DispatchSourceTimer?
     private var complicationHeartbeat: DispatchSourceTimer?
@@ -235,7 +267,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - CloudKit change handling (debounced)
 
     private func subscribeToCloudKitChanges() {
-        NotificationCenter.default.publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
+        let center = NotificationCenter.default
+        center.publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
+            .merge(with: center.publisher(for: .NSPersistentStoreRemoteChange))
             .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
@@ -243,9 +277,20 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             }
             .store(in: &cancellables)
     }
-    
-    func configure(reminders: [Reminder]) {
-        self.reminders = reminders
+
+    /// The iPhone announces a reminder change before iCloud has delivered it to the Watch.
+    /// Re-read the store a few times, so the change appears even when no store notification
+    /// arrives and the status cannot stay on "Syncing...".
+    func remindersChangedOnPhone() {
+        statusMessage = .syncing
+        reminderSyncTask?.cancel()
+        reminderSyncTask = Task { [weak self] in
+            for delay in [2, 5, 15] {
+                try? await Task.sleep(for: .seconds(delay))
+                guard !Task.isCancelled else { return }
+                self?.refreshState()
+            }
+        }
     }
     
     // MARK: - State refresh
@@ -266,34 +311,19 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     }
     
     private func rebuildRulesPreservingState() -> Bool {
-        var next: [AlertRule] = []
-        next.reserveCapacity(reminders.count)
-
-        for rem in reminders {
-            let newRuleType: RuleType = (rem.measurementType == .heartRate)
-                ? .heartRate(threshold: Double(rem.threshold))
-                : .steps(threshold: Double(rem.threshold))
-
-            let newRule = AlertRule(
-                id: rem.id,
-                alertID: nil,
-                measurementType: rem.measurementType,
-                reminderType: rem.reminderType,
-                ruleType: newRuleType,
-                duration: rem.interval.timeInterval,
-                alertMessage: rem.triggerSummary,
-                interval: rem.interval
-            )
-
-            next.append(newRule)
-
-            if runtimeByRuleID[rem.id] == nil {
-                runtimeByRuleID[rem.id] = RuleRuntimeState()
-            }
+        // Read the store on every refresh, so reminders created, edited or deleted on the iPhone
+        // take effect without relaunching the app. A failed read keeps the current rules.
+        guard let next = try? AlertRule.currentRules(in: modelContext) else {
+            return !activeRules.isEmpty
         }
 
-        let validIDs = Set(next.map(\.id))
-        runtimeByRuleID = runtimeByRuleID.filter { validIDs.contains($0.key) }
+        var runtime: [UUID: RuleRuntimeState] = [:]
+        for rule in next {
+            let isUnchanged = activeRules.contains { rulesConfigEqual(lhs: $0, rhs: rule) }
+            // An edited reminder starts fresh, so progress towards the old threshold cannot trigger the new one.
+            runtime[rule.id] = isUnchanged ? (runtimeByRuleID[rule.id] ?? RuleRuntimeState()) : RuleRuntimeState()
+        }
+        runtimeByRuleID = runtime
 
         if next != activeRules {
             activeRules = next
