@@ -73,8 +73,6 @@ struct SettingsView: View {
                     viewOnboarding
                 } header: {
                     Text("General")
-                } footer: {
-                    Text("Expanded mode unlocks fine-grained self-reports for fatigue, shortness of breath, pains, and other factors.")
                 }
 
                 Section {
@@ -281,13 +279,19 @@ struct SettingsView: View {
 
     private var contactUs: some View {
         Button {
-            viewModel.presentSheet(
-                .mailView(
-                    recipient: viewModel.contactSupportRecipient,
-                    subject: viewModel.contactSupportSubject,
-                    body: nil
+            MailView.compose(
+                recipient: viewModel.contactSupportRecipient,
+                subject: viewModel.contactSupportSubject,
+                openURL: openURL
+            ) {
+                viewModel.presentSheet(
+                    .mailView(
+                        recipient: viewModel.contactSupportRecipient,
+                        subject: viewModel.contactSupportSubject,
+                        body: nil
+                    )
                 )
-            )
+            }
         } label: {
             SettingsRowLabel(
                 title: String(localized: "Contact Us"),

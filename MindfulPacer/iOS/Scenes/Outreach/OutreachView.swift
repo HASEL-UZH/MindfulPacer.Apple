@@ -18,6 +18,7 @@ enum OutreachViewNavigationDestination: Hashable {
 }
 
 struct OutreachView: View {
+    @Environment(\.openURL) private var openURL
     @State private var viewModel: OutreachViewModel = ScenesContainer.shared.outreachViewModel()
 
     var body: some View {
@@ -174,11 +175,17 @@ struct OutreachView: View {
                 }
                 Divider().padding(.leading, 32)
                 Button {
-                    viewModel.presentSheet(.mailView(
+                    MailView.compose(
                         recipient: viewModel.contactSupportRecipient,
                         subject: viewModel.contactSupportSubject,
-                        body: nil
-                    ))
+                        openURL: openURL
+                    ) {
+                        viewModel.presentSheet(.mailView(
+                            recipient: viewModel.contactSupportRecipient,
+                            subject: viewModel.contactSupportSubject,
+                            body: nil
+                        ))
+                    }
                 } label: {
                     resourceRow("Contact Us", systemImage: "envelope", accessory: "chevron.right")
                 }

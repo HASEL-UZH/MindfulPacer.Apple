@@ -344,8 +344,13 @@ extension MissedReflectionTrendCard {
                 triggerWindowStart: triggerWindowStart,
                 interval: reflection.interval
             )
+            // The threshold explains why the reminder fired, so it stays in view even below the readings.
             let yDomain = measurementType == .heartRate
-                ? HeartRateChartScale.domain(values: rawSamples.map(\.value), thresholds: [Double(threshold)])
+                ? HeartRateChartScale.domain(
+                    values: rawSamples.map(\.value),
+                    thresholds: [Double(threshold)],
+                    includesLowThresholds: true
+                )
                 : Self.makeReflectionYDomain(samples: samples, threshold: Double(threshold))
             let clampedTriggerDate = min(max(triggerDate, xDomain.lowerBound), xDomain.upperBound)
             let clampedThreshold = min(max(Double(threshold), yDomain.lowerBound), yDomain.upperBound)
@@ -381,7 +386,7 @@ extension MissedReflectionTrendCard {
             self.init(
                 title: measurementType.localized,
                 systemImage: measurementType.icon,
-                headline: reflection.reminderTriggerSummary,
+                headline: reflection.localizedReminderTriggerSummary,
                 subtitle: subtitle,
                 currentSummary: .init(
                     label: String(localized: "At trigger"),
@@ -397,14 +402,14 @@ extension MissedReflectionTrendCard {
                 ),
                 currentSamples: currentSamples,
                 comparisonSamples: [],
-                valueRules: yDomain.contains(Double(threshold)) ? [
+                valueRules: [
                     .init(
                         value: Double(threshold),
                         label: String(localized: "Threshold"),
                         color: reminderType.color.opacity(0.72),
                         lineStyle: .init(lineWidth: 1.5, lineCap: .round, dash: [5, 5])
                     )
-                ] : [],
+                ],
                 shadedRegions: shadedRegions,
                 areaFills: [],
                 markerDate: clampedTriggerDate,
@@ -883,6 +888,27 @@ extension MissedReflectionTrendCard {
     }
 }
 
+// MARK: - Reflection Trigger Summary
+
+extension Reflection {
+    /// The stored summary embeds the English interval name, so the interval is written out
+    /// by the system formatter in the user's language instead.
+    var localizedReminderTriggerSummary: String {
+        guard let measurementType, let threshold, let interval, interval.timeInterval > 0 else {
+            return reminderTriggerSummary
+        }
+
+        let duration = Duration.seconds(interval.timeInterval)
+            .formatted(.units(allowed: [.days, .hours, .minutes], width: .wide))
+        switch measurementType {
+        case .heartRate:
+            return String(localized: "Above \(threshold) bpm for \(duration)")
+        case .steps:
+            return String(localized: "Above \(threshold) steps within the window of \(duration)")
+        }
+    }
+}
+
 // MARK: - MissedReflectionTrendSummaryRow
 
 private struct MissedReflectionTrendSummaryRow: View {
@@ -1120,7 +1146,7 @@ private struct MissedReflectionTrendChart: View {
                     "\($0.date.formatted(.dateTime.hour().minute())), \($0.valueText)"
                 } ?? "")
             } else {
-                Text(data.emptyChartText ?? "No chart data is available.")
+                Text(data.emptyChartText ?? String(localized: "No chart data is available."))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: chartHeight, alignment: .center)

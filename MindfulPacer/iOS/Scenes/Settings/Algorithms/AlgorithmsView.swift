@@ -166,7 +166,7 @@ private struct BufferTextFieldView: View {
             } label: {
                 SettingsRowLabel(
                     title: interval.localized,
-                    subtitle: "Default: \(formattedTime(defaultSeconds))",
+                    subtitle: String(localized: "Default: \(formattedTime(defaultSeconds))"),
                     systemImage: interval.icon
                 )
             }

@@ -231,7 +231,7 @@ struct EditReflectionView: View {
         Button {
             viewModel.presentSheet(.activity)
         } label: {
-            formRow(title: "Activity", systemImage: "rectangle.grid.2x2") {
+            formRow(title: String(localized: "Activity"), systemImage: "rectangle.grid.2x2") {
                 rowValue(viewModel.selectedActivity?.name ?? String(localized: "Select"),
                          isRequiredMissing: viewModel.selectedActivity == nil)
             }
@@ -246,7 +246,7 @@ struct EditReflectionView: View {
             Button {
                 viewModel.presentSheet(.subactivity(activity))
             } label: {
-                formRow(title: "Subactivity", systemImage: "rectangle.grid.3x3") {
+                formRow(title: String(localized: "Subactivity"), systemImage: "rectangle.grid.3x3") {
                     rowValue(viewModel.selectedSubactivity?.name ?? String(localized: "None"))
                 }
                 .contentShape(.rect)
@@ -259,7 +259,7 @@ struct EditReflectionView: View {
         Button {
             viewModel.presentSheet(.mood)
         } label: {
-            formRow(title: "Mood", systemImage: "face.smiling") {
+            formRow(title: String(localized: "Mood"), systemImage: "face.smiling") {
                 rowValue(viewModel.selectedMood.map { "\($0.emoji) \($0.text)" } ?? String(localized: "Not Set"))
             }
             .contentShape(.rect)

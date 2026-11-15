@@ -151,9 +151,16 @@ struct AnalyticsView: View {
         let chips = Dictionary(uniqueKeysWithValues: viewModel.reflectionChips.map { ($0.id, $0) })
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Reflections in Period")
-                    .font(.headline)
-                    .foregroundStyle(Color.primary)
+                if viewModel.reflectionsInPeriod.isEmpty {
+                    Text("Your reflections will appear alongside your health data.")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text("Select a reflection")
+                        .font(.headline)
+                        .foregroundStyle(Color.primary)
+                }
                 Spacer(minLength: 8)
                 Button("Create Reflection", systemImage: "plus") {
                     viewModel.presentSheet(.editReflectionView(nil))
@@ -164,19 +171,9 @@ struct AnalyticsView: View {
                 .controlSize(.regular)
                 .tint(.accentColor)
             }
-            if viewModel.reflectionsInPeriod.isEmpty {
-                Text("Your reflections will appear alongside your health data.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
-                    .padding(.vertical, 8)
-            } else {
-                Text("Select a reflection to highlight it on the chart.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
-                ForEach(viewModel.reflectionsInPeriod) { bucket in
-                    reflectionSelection(bucket, chip: chips[viewModel.reflectionChipID(for: bucket)])
-                        .id(viewModel.reflectionChipID(for: bucket))
-                }
+            ForEach(viewModel.reflectionsInPeriod) { bucket in
+                reflectionSelection(bucket, chip: chips[viewModel.reflectionChipID(for: bucket)])
+                    .id(viewModel.reflectionChipID(for: bucket))
             }
         }
         .frame(maxWidth: 900, alignment: .leading)

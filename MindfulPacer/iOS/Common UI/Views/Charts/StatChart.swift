@@ -233,11 +233,11 @@ struct StatChartConfiguration {
     /// Summary mode label shown above the value when nothing is selected.
     var summaryModeLabel: String {
         switch summaryMode {
-        case .average: "Average"
-        case .total: "Total"
-        case .min: "Min"
-        case .max: "Max"
-        case .latest: "Latest"
+        case .average: String(localized: "Average")
+        case .total: String(localized: "Total")
+        case .min: String(localized: "Min")
+        case .max: String(localized: "Max")
+        case .latest: String(localized: "Latest")
         }
     }
 }

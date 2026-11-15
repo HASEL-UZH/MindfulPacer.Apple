@@ -397,14 +397,19 @@ final class RedesignNavigationTests: XCTestCase {
         capture(app, "Existing reminder editor")
         let savedID = newID ?? "missing-new-reminder"
         XCTAssertFalse(app.buttons["reminder.editor.measurement"].exists)
-        XCTAssertFalse(app.buttons["reminder.editor.strength"].exists)
         let measurement = app.descendants(matching: .any).matching(identifier: "reminder.editor.measurement").firstMatch
-        let strength = app.descendants(matching: .any).matching(identifier: "reminder.editor.strength").firstMatch
+        let strength = app.buttons["reminder.editor.strength"]
+        XCTAssertTrue(strength.exists, "The strength of an existing reminder can be changed.")
         XCTAssertTrue(measurement.label.contains("Heart Rate"))
         XCTAssertTrue(strength.label.contains("Light"))
         measurement.tap()
+        XCTAssertFalse(app.buttons["Done"].exists, "The measurement of an existing reminder must not open a picker.")
         strength.tap()
-        XCTAssertFalse(app.buttons["Done"].exists, "Existing types must not open a picker.")
+        XCTAssertTrue(app.buttons["Medium"].waitForExistence(timeout: 5))
+        capture(app, "Existing reminder strength picker")
+        app.buttons["Medium"].tap()
+        XCTAssertTrue(strength.waitForExistence(timeout: 5))
+        XCTAssertTrue(strength.label.contains("Medium"))
         app.buttons["reminder.editor.threshold"].tap()
         input.tap()
         input.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 3) + "104")
@@ -419,8 +424,8 @@ final class RedesignNavigationTests: XCTestCase {
         XCTAssertTrue(app.buttons["reminder.editor.threshold"].label.contains("104"))
         XCTAssertTrue(app.buttons["reminder.editor.interval"].label.contains("2 Minutes"))
         XCTAssertTrue(measurement.label.contains("Heart Rate"))
-        XCTAssertTrue(strength.label.contains("Light"))
-        capture(app, "Locked reminder types and red delete action")
+        XCTAssertTrue(strength.label.contains("Medium"), "The edited strength must be saved.")
+        capture(app, "Locked measurement, editable strength and red delete action")
         app.buttons["reminder.editor.threshold"].tap()
         input.tap()
         input.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 3) + "109")
@@ -709,7 +714,8 @@ final class RedesignNavigationTests: XCTestCase {
                 if context == "reminders" {
                     let measurement = app.descendants(matching: .any).matching(identifier: "reminder.editor.measurement").firstMatch
                     XCTAssertEqual(measurement.label.contains("Heart Rate"), itemLabel.contains("Heart Rate"))
-                    XCTAssertFalse(app.buttons["reminder.editor.strength"].exists)
+                    XCTAssertFalse(app.buttons["reminder.editor.measurement"].exists)
+                    XCTAssertTrue(app.buttons["reminder.editor.strength"].exists)
                 }
                 app.buttons["Cancel"].tap()
                 XCTAssertTrue(header.waitForExistence(timeout: 5), "Closing an item must return to Home, without also pushing its list.")

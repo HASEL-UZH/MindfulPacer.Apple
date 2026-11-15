@@ -204,6 +204,9 @@ struct HomeView: View {
                 switch context {
                 case .today:
                     homeHeadline("How are you feeling?", "Take a moment to reflect on your day.")
+                    if !viewModel.missedReflections.isEmpty {
+                        missedReflectionsWidget
+                    }
                     createReflectionCard
                     healthPermissionsWidget
                     watchConnectionNotice
@@ -211,13 +214,13 @@ struct HomeView: View {
                     ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                     RemindersWidget(viewModel: viewModel) { navigationPath.append(.remindersList) }
                 case .reflections:
-                    HomeReflectionHistoryView(reflections: viewModel.reflections)
                     homeHeadline("Your days, in perspective.", "Notice how you feel, one reflection at a time.")
-                    ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                     missedReflectionsWidget
+                    HomeReflectionHistoryView(reflections: viewModel.reflections)
+                    ReflectionsWidget(viewModel: viewModel) { navigationPath.append(.reviewsList) }
                 case .reminders:
-                    HomeReminderOverviewView(reminders: reminders)
                     homeHeadline("A gentle nudge to pause.", "Make space for reflection with reminders that fit your day.")
+                    HomeReminderOverviewView(reminders: reminders)
                     RemindersWidget(viewModel: viewModel) { navigationPath.append(.remindersList) }
                 }
             }
@@ -421,7 +424,9 @@ struct HomeView: View {
                             .monospacedDigit()
                             .foregroundStyle(.red)
 
-                        Text(viewModel.missedReflections.count == 1 ? "reflection needs review" : "reflections need review")
+                        Text(viewModel.missedReflections.count == 1
+                             ? String(localized: "reflection needs review")
+                             : String(localized: "reflections need review"))
                             .font(.subheadline)
                             .foregroundStyle(Color.secondary)
                     }
@@ -439,7 +444,8 @@ struct HomeView: View {
     // MARK: Steps and Heart Rate Widgets
     
     private var stepsAndHeartRateWidgets: some View {
-        let layout = dynamicTypeSize >= .xxxLarge
+        let isStacked = dynamicTypeSize >= .xxxLarge
+        let layout = isStacked
             ? AnyLayout(VStackLayout(spacing: 12))
             : AnyLayout(HStackLayout(alignment: .top, spacing: 12))
         return layout {
@@ -455,6 +461,8 @@ struct HomeView: View {
                 HeartRateWidget(viewModel: viewModel)
             }
         }
+        // Side by side, a definite row height lets both cards stretch to the taller one.
+        .fixedSize(horizontal: false, vertical: !isStacked)
     }
     
     // MARK: Navigation Destination
@@ -513,8 +521,8 @@ struct HomeView: View {
         switch toast {
         case .successfullyCreatedReflection:
             Toast(
-                title: "Successfully Created Reflection",
-                message: "Your reflection has been saved"
+                title: String(localized: "Successfully Created Reflection"),
+                message: String(localized: "Your reflection has been saved")
             )
             .toastStyle(.success)
         }
@@ -545,7 +553,7 @@ struct HomeView: View {
 
     // MARK: Shared Home Components
 
-    private func navigationAccessory(_ title: String) -> some View {
+    private func navigationAccessory(_ title: LocalizedStringKey) -> some View {
         HStack(spacing: 6) {
             Text(title)
             Image(systemName: "chevron.right")

@@ -11,19 +11,32 @@ struct StatChartScaleTests {
         #expect(HeartRateChartScale.domain(values: [.nan, .infinity, 0]) == 50...104.8)
     }
 
-    @Test @MainActor func missedReflectionHeartRateUsesSampleMinimum() throws {
+    @Test func heartRateScaleCanIncludeThresholdsBelowTheData() {
+        #expect(HeartRateChartScale.domain(values: [135, 160], thresholds: [120]).lowerBound == 125)
+        let domain = HeartRateChartScale.domain(values: [135, 160], thresholds: [120], includesLowThresholds: true)
+        #expect(domain.lowerBound == 110)
+        #expect(domain.upperBound > 160)
+        #expect(HeartRateChartScale.domain(values: [78, 85, 110], thresholds: [130], includesLowThresholds: true)
+            == HeartRateChartScale.domain(values: [78, 85, 110], thresholds: [130]))
+        #expect(HeartRateChartScale.domain(values: [], thresholds: [40], includesLowThresholds: true).contains(40))
+    }
+
+    @Test @MainActor func missedReflectionHeartRateKeepsThresholdBelowSamplesVisible() throws {
         let reflection = Reflection(
+            date: Date(timeIntervalSince1970: 240),
             wellBeing: nil, fatigue: nil, shortnessOfBreath: nil, sleepDisorder: nil,
             cognitiveImpairment: nil, physicalPain: nil, depressionOrAnxiety: nil,
-            measurementType: .heartRate, reminderType: .strong, threshold: 100, interval: .oneMinute,
-            triggerSamples: [112, 125, 118].enumerated().map {
+            measurementType: .heartRate, reminderType: .strong, threshold: 120, interval: .fiveMinutes,
+            triggerSamples: [154, 160, 148, 135, 141].enumerated().map {
                 .init(type: .heartRate, value: Double($0.element),
-                      date: Date(timeIntervalSince1970: Double($0.offset * 30)))
+                      date: Date(timeIntervalSince1970: Double($0.offset * 60)))
             }
         )
         let data = try #require(MissedReflectionTrendCard.Data(reflection: reflection))
-        #expect(data.yDomain.lowerBound == 102)
-        #expect(data.valueRules.isEmpty, "Don't draw an out-of-range threshold at a false value.")
+        #expect(data.yDomain.lowerBound == 110)
+        #expect(data.yDomain.upperBound > 160)
+        #expect(data.valueRules.map(\.value) == [120], "The threshold line is drawn at its true value.")
+        #expect(data.shadedRegions.map(\.yRange.lowerBound) == [120])
     }
 
     @Test func heartRateStartsTenBelowVisibleMinimum() {

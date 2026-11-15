@@ -172,9 +172,11 @@ class CreateReminderViewModel {
 
     func saveReminder(_ reminder: Reminder?) {
         guard let reminder,
+              let reminderType = selectedReminderType,
               let threshold,
               let interval = selectedInterval else { return }
-        
+
+        reminder.reminderType = reminderType
         reminder.threshold = threshold
         reminder.interval = interval
 
