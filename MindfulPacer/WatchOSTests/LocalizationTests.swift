@@ -175,18 +175,18 @@ struct WatchOSLocalizationTests {
     /// Proper nouns, brand names, and terms that are intentionally identical
     /// to the English key in at least one locale.
     private static let identicalAcrossLanguages: Set<String> = [
-        "%@\n%@",
+        "%@\n%@", "%lld BPM", "%lld%%",
         "1 Minute", "10 Minutes", "15 Minutes",
         "2 Minutes", "5 Minutes", "30 Minutes",
         "Absent", "App Info", "Apple Health Integration",
-        "Apple Watch", "Apple Watch Support", "Articles",
+        "Apple Watch", "Apple Watch Support", "Articles", "Build",
         "Community", "Date", "Fatigue", "Gaming", "General", "Home",
         "Label", "Long Covid Kids Schweiz",
         "Meditation", "Meetings", "Mild", "MindfulPacer",
         "MindfulPacer ", "MindfulPacer Version %@", "Minutes",
         "Networking", "Normal", "Note", "Onboarding", "Outreach",
         "Relaxation", "Roadmap", "Start", "Status Info",
-        "Stretching", "Yoga",
+        "Stretching", "Version", "Yoga",
         "iPhone + Apple Watch",
     ]
 

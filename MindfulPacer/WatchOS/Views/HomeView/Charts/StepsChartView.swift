@@ -5,7 +5,7 @@ struct StepsChartView: View {
     let viewModel: HomeViewModel
 
     var body: some View {
-        ScrollView {
+        WatchPage {
             VStack(alignment: .leading, spacing: 8) {
                 if viewModel.hasStepsData {
                     WatchChartSummary(label: "TOTAL · LAST HOUR", value: Int(viewModel.hourlyStepData.last?.steps ?? 0),
@@ -32,6 +32,8 @@ struct StepsChartView: View {
                         Text("\(viewModel.todaysSteps.formatted()) steps").monospacedDigit()
                     }
                     .font(.caption2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 } else {
                     let state = viewModel.emptyState(for: .steps)
                     WatchEmptyState(title: state.title, symbol: state.symbol, message: state.subtitle)
@@ -40,6 +42,7 @@ struct StepsChartView: View {
             .padding(.horizontal, 10)
             .padding(.bottom, 4)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("watch.stepsChart")
     }
 }

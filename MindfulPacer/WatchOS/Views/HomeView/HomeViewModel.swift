@@ -79,9 +79,10 @@ class HomeViewModel {
 
     func emptyState(for metric: ChartMetric) -> ChartEmptyState {
         if statusMessage == .permissionDenied {
+            let measurement: Reminder.MeasurementType = metric == .heartRate ? .heartRate : .steps
             return ChartEmptyState(
                 title: "Health Permission Needed",
-                subtitle: "Enable \(metric == .heartRate ? "Heart Rate" : "Steps") access in the Health settings on your iPhone.",
+                subtitle: "Enable \(measurement.localized) access in the Health settings on your iPhone.",
                 symbol: "hand.raised.fill"
             )
         }
@@ -293,11 +294,12 @@ class HomeViewModel {
     func refreshHighlights() {
         guard usesLiveServices else { return }
         Services.shared.monitorService.refreshWidgetHighlights()
+        Task { await fetchTodaysSteps() }
     }
 
     func onAppear() {
         guard usesLiveServices else { return }
-        refreshHighlights()
+        Services.shared.monitorService.refreshWidgetHighlights()
         heartRateSamples = Services.shared.monitorService.recentHeartRateSamples
         Services.shared.systemDelegate.configure()
         
@@ -366,9 +368,11 @@ class HomeViewModel {
         self.hourlyStepData = await Services.shared.monitorService.fetchHourlyStepData()
     }
     
+    /// The step count and the steps highlight are refreshed together, so they cannot disagree.
     func fetchTodaysSteps() async {
         let steps = await Services.shared.monitorService.fetchTodaysSteps()
         self.todaysSteps = Int(steps)
+        await Services.shared.monitorService.refreshStepHighlights()
     }
     
     private func triggerInAppAlert(for rule: AlertRule) {

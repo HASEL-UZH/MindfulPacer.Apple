@@ -329,6 +329,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             activeRules = next
             widgetHighlights.retainRules(next.map(\.highlightRule))
             refreshWidgetHighlights()
+            Task { await refreshStepHighlights() }
         }
 
         return !next.isEmpty
@@ -445,6 +446,7 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
 
                 writeComplicationState(.active)
                 WidgetCenter.shared.reloadTimelines(ofKind: "MindfulPacerStatus")
+                await refreshStepHighlights()
             } catch {
                 guard attempt == workoutStartAttempt else { return }
                 if pendingSession != nil || pendingBuilder != nil {
@@ -876,6 +878,8 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         let stepRules = activeRules.filter { $0.measurementType == .steps }
         guard !stepRules.isEmpty else { return }
 
+        Task { await refreshStepHighlights() }
+
         let now = Date()
         let calendar = Calendar.current
 
@@ -965,7 +969,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
     // MARK: - Widget highlights
 
     func refreshWidgetHighlights() {
-        widgetHighlights.expireSteps(at: Date())
+        var highlights = widgetHighlights
+        highlights.expireSteps(at: Date())
+        if highlights != widgetHighlights { widgetHighlights = highlights }
         highlightExpirationTimer?.invalidate()
         highlightExpirationTimer = nil
         guard let expiration = widgetHighlights.nextExpiration else { return }
@@ -976,6 +982,53 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
         }
         RunLoop.main.add(timer, forMode: .common)
         highlightExpirationTimer = timer
+    }
+
+    /// Step highlights follow the step count, not the notifications: a passed threshold shows even when
+    /// its notification was sent earlier, is muted for the day or is held back by the cooldown.
+    func refreshStepHighlights() async {
+        guard isSessionActive, !isManuallyPaused else { return }
+
+        let now = Date()
+        var totals: [(rule: AlertRule, total: Double)] = []
+        for rule in activeRules where rule.measurementType == .steps {
+            guard let total = await stepTotal(for: rule, at: now) else { continue }
+            totals.append((rule, total))
+        }
+
+        // Monitoring or the reminders can change while the counts are read.
+        guard isSessionActive, !isManuallyPaused else { return }
+        var highlights = widgetHighlights
+        for (rule, total) in totals where activeRules.contains(where: { rulesConfigEqual(lhs: $0, rhs: rule) }) {
+            highlights.updateSteps(total, for: rule.highlightRule, at: now)
+        }
+        if highlights != widgetHighlights { widgetHighlights = highlights }
+        refreshWidgetHighlights()
+    }
+
+    /// Steps counted in a reminder's interval, using the same windows as `checkStepRules()`:
+    /// since midnight for one-day reminders, otherwise the last interval. `nil` when the count is unknown.
+    private func stepTotal(for rule: AlertRule, at now: Date) async -> Double? {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        let isOneDayInterval = (rule.interval == .oneDay) || (rule.duration == 86400)
+        let start = isOneDayInterval ? Calendar.current.startOfDay(for: now) : now.addingTimeInterval(-rule.duration)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: start,
+            end: now,
+            options: isOneDayInterval ? [] : .strictStartDate
+        )
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: .quantitySample(type: stepType, predicate: predicate),
+            options: .cumulativeSum
+        )
+        do {
+            let result = try await descriptor.result(for: healthStore)
+            return result?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+        } catch let error as HKError where error.code == .errorNoData {
+            return 0
+        } catch {
+            return nil
+        }
     }
 
     private func clearWidgetHighlights() {
@@ -1017,7 +1070,9 @@ final class HealthMonitorService: NSObject, ObservableObject, HKWorkoutSessionDe
             alertTriggeredSubject.send(r)
         } else {
             let content = UNMutableNotificationContent()
-            content.title = rule.measurementType == .heartRate ? "Heart Rate Alert" : "Steps Alert"
+            content.title = rule.measurementType == .heartRate
+                ? String(localized: "Heart Rate Alert")
+                : String(localized: "Steps Alert")
             content.body = rule.alertMessage
             content.sound = .defaultCritical
             content.categoryIdentifier = "HEART_RATE_ALERT"

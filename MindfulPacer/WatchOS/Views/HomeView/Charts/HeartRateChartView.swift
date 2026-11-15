@@ -5,7 +5,7 @@ struct HeartRateChartView: View {
     let viewModel: HomeViewModel
 
     var body: some View {
-        ScrollView {
+        WatchPage {
             VStack(alignment: .leading, spacing: 8) {
                 if viewModel.hasHeartRateData {
                     WatchChartSummary(label: "AVERAGE · LAST HOUR", value: viewModel.avgHeartRate,
@@ -43,6 +43,8 @@ struct HeartRateChartView: View {
                             .monospacedDigit()
                     }
                     .font(.caption2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 } else {
                     let state = viewModel.emptyState(for: .heartRate)
                     WatchEmptyState(title: state.title, symbol: state.symbol, message: state.subtitle)
@@ -51,6 +53,7 @@ struct HeartRateChartView: View {
             .padding(.horizontal, 10)
             .padding(.bottom, 4)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("watch.heartRateChart")
     }
 }
@@ -66,6 +69,9 @@ struct WatchChartSummary: View {
             Text(label)
                 .font(.system(.caption2, design: .rounded, weight: .medium))
                 .foregroundStyle(.secondary)
+                // One line, so a longer translation cannot make the page taller than the screen.
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(value, format: .number)
                     .font(.system(.title, design: .rounded, weight: .semibold))
@@ -81,6 +87,7 @@ struct WatchChartSummary: View {
 
 private struct WatchChartAxes: ViewModifier {
     let dateRange: ClosedRange<Date>
+    @Environment(\.watchPageScrolls) private var pageScrolls
 
     func body(content: Content) -> some View {
         content
@@ -100,7 +107,9 @@ private struct WatchChartAxes: ViewModifier {
                     AxisValueLabel().font(.system(size: 9))
                 }
             }
-            .frame(height: 72)
+            // The chart takes the height the page has left, so the page always fits the screen.
+            // On a page that scrolls it keeps a fixed height.
+            .frame(minHeight: 44, idealHeight: pageScrolls ? 72 : 44, maxHeight: pageScrolls ? 72 : .infinity)
     }
 }
 

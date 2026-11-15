@@ -1,9 +1,44 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Inactive" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inaktiv"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inactivo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inactif"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inattivo"
+          }
+        }
+      }
+    },
     "MindfulPacer" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MindfulPacer"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "MindfulPacer"
@@ -20,13 +55,36 @@
             "state" : "translated",
             "value" : "MindfulPacer"
           }
-        },
-          "es" : {
-            "stringUnit" : {
-              "state" : "translated",
-              "value" : "MindfulPacer"
-            }
+        }
+      }
+    },
+    "Monitoring" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoring"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoreo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoring"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoraggio"
+          }
+        }
       }
     },
     "Monitoring Status" : {
@@ -35,6 +93,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Monitoring Status"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado del monitoreo"
           }
         },
         "fr" : {
@@ -48,13 +112,36 @@
             "state" : "translated",
             "value" : "Stato del monitoraggio"
           }
-        },
-          "es" : {
-            "stringUnit" : {
-              "state" : "translated",
-              "value" : "Estado del monitoreo"
-            }
+        }
+      }
+    },
+    "Paused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausiert"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pausa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pause"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In pausa"
+          }
+        }
       }
     },
     "See if MindfulPacer monitoring is active at a glance." : {
@@ -63,6 +150,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Auf einen Blick erkennen, ob das MindfulPacer Monitoring aktiv ist."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba de un vistazo si el monitoreo de MindfulPacer está activo."
           }
         },
         "fr" : {
@@ -76,13 +169,7 @@
             "state" : "translated",
             "value" : "Controlla a colpo d'occhio se il monitoraggio MindfulPacer è attivo."
           }
-        },
-          "es" : {
-            "stringUnit" : {
-              "state" : "translated",
-              "value" : "Comprueba de un vistazo si el monitoreo de MindfulPacer está activo."
-            }
-          }
+        }
       }
     }
   },
